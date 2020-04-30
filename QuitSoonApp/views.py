@@ -12,7 +12,7 @@ def register_view(request):
     return render(request, 'registration/register.html')
     # response_data = {}
     # if request.method == 'POST':
-    #     form = UserCreationFormWithMail(request.POST)
+    #     form = RegistrationForm(request.POST)
     #     if form.is_valid():
     #         email = request.POST['email']
     #         if User.objects.filter(email=email).exists():
