@@ -42,14 +42,17 @@ htmlcov/
 .tox/
 .nox/
 .coverage
+.coveragerc
 .coverage.*
 .cache
+.cache/
 nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
 .pytest_cache/
+geckodriver.log
 
 # Translations
 *.mo
@@ -60,6 +63,7 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+quit_soon_project/staticfiles/
 
 # Flask stuff:
 instance/
