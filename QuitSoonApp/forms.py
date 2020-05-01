@@ -7,17 +7,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
 
 
-class EmailField(forms.CharField):
-    def to_python(self, value):
-        return unicodedata.normalize('NFKC', super().to_python(value))
-
-    def widget_attrs(self, widget):
-        return {
-            **super().widget_attrs(widget),
-            'autocapitalize': 'none',
-            'autocomplete': 'email',
-        }
-
 class RegistrationForm(UserCreationForm):
     """
     A form that creates a user, with no privileges, from the given username, email and
@@ -25,10 +14,11 @@ class RegistrationForm(UserCreationForm):
     """
     email = forms.EmailField(required=True)
 
-    class Meta:
-        model = User
-        fields = ("username", "email")
-        field_classes = {'username': UsernameField, 'email': EmailField}
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        if User.objects.filter(email=data).exists():
+            raise forms.ValidationError("This email already used")
+        return data
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
