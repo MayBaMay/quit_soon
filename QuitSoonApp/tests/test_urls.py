@@ -4,7 +4,7 @@ from django.urls import resolve, reverse
 
 from ..views import (
     index,
-    register, login,
+    register_view, login_view,
 )
 
 class TestUrls(SimpleTestCase):
@@ -18,9 +18,9 @@ class TestUrls(SimpleTestCase):
     def test_register_view_url_is_resolved(self):
         """test register_view"""
         url = reverse('QuitSoonApp:register')
-        self.assertEqual(resolve(url).func, register)
+        self.assertEqual(resolve(url).func, register_view)
 
     def test_login_url_is_resolved(self):
         """test login_url"""
         url = reverse('QuitSoonApp:login')
-        self.assertEqual(resolve(url).func, login)
+        self.assertEqual(resolve(url).func, login_view)

@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.http import HttpResponse, JsonResponse, Http404
+
+from .forms import RegistrationForm
 
 
 # Create your views here.
@@ -9,20 +13,20 @@ def index(request):
     """index View"""
     return render(request, 'index.html')
 
-def register(request):
+def register_view(request):
     """Registration view creating a user and returning json response to ajax"""
     response_data = {}
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
+            user = authenticate(username=email, password=raw_password)
             login(request, user)
             response_data = {'response':"success"}
         else:
-            emil = request.POST['emil']
+            email = request.POST['email']
             username = request.POST['username']
             password1 = request.POST['password1']
             password2 = request.POST['password2']
@@ -38,7 +42,7 @@ def register(request):
     else:
         return render(request, 'registration/register.html')
 
-def login(request):
+def login_view(request):
     """Login view returning json response to ajax"""
     return render(request, 'registration/login.html')
     response_data = {}
