@@ -1,6 +1,22 @@
+import unicodedata
+
 from django import forms
-from django.contrib.auth.forms import UserCreationForm, UsernameField
+from django.contrib.auth.forms import UserCreationForm, UsernameField, AuthenticationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext, gettext_lazy as _
+
+
+class EmailField(forms.CharField):
+    def to_python(self, value):
+        return unicodedata.normalize('NFKC', super().to_python(value))
+
+    def widget_attrs(self, widget):
+        return {
+            **super().widget_attrs(widget),
+            'autocapitalize': 'none',
+            'autocomplete': 'email',
+        }
 
 class RegistrationForm(UserCreationForm):
     """
@@ -12,16 +28,17 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "email")
-        # field_classes = {'username': UsernameField}
+        field_classes = {'username': UsernameField, 'email': EmailField}
 
     def save(self, commit=True):
-        user = super().save(commit=False)
+        user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+        user.email = self.cleaned_data["email"]
         if commit:
             user.save()
         return user
 
-class LoginForm(forms.Form):
+class LoginForm(AuthenticationForm):
     """
     Base class for authenticating users. Extend this to get a form that accepts
     username/password logins.
@@ -31,7 +48,6 @@ class LoginForm(forms.Form):
         max_length=254,
         widget=forms.EmailInput(attrs={'autocomplete': 'email'})
     )
-
     password = forms.CharField(
         label=_("Password"),
         strip=False,
@@ -66,16 +82,19 @@ class LoginForm(forms.Form):
     def clean(self):
         email = self.cleaned_data.get('email')
         password = self.cleaned_data.get('password')
-        if User.objects.filter(email=email).exists():
-            username = User.objects.get(email=email)
-            if username is not None and password:
+
+        if email is not None and password:
+            try:
+                username = User.objects.get(email=email).username
                 self.user_cache = authenticate(self.request, username=username, password=password)
                 if self.user_cache is None:
                     raise self.get_invalid_login_error()
                 else:
                     self.confirm_login_allowed(self.user_cache)
-        return self.cleaned_data
+            except:
+                raise self.get_invalid_login_error()
 
+        return self.cleaned_data
 
     def confirm_login_allowed(self, user):
         """
@@ -99,5 +118,5 @@ class LoginForm(forms.Form):
         return ValidationError(
             self.error_messages['invalid_login'],
             code='invalid_login',
-            params={'username': self.username_field.verbose_name},
+            params={'username': self.email_field.verbose_name},
         )
