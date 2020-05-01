@@ -46,7 +46,8 @@
     e.preventDefault();
   });
 
-  $('#registerForm').submit(function(e){
+  $('#registerForm').on('submit', function(e){
+    console.log('submited');
     let formId = $(this).attr('id');
     let submitBtn = $(this).find('a[type=submit]');
     $('.username-error').css('display', 'none');

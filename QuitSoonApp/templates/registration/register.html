@@ -13,6 +13,9 @@
 
   <title>SB Admin 2 - Register</title>
 
+  <!-- Icons-->
+  <link rel="icon" href="{% static 'QuitSoonApp/favicon/favicon.ico' %}">
+
   <!-- Custom fonts for this template-->
   <link href="{% static 'QuitSoonApp/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -36,7 +39,7 @@
               <div class="text-center">
                 <h1 class="h4 text-gray-900 mb-4">Créer un compte</h1>
               </div>
-              <form class="user" id="registerForm" method="post" action="{% url 'QuitSoonApp:register' %}">
+              <form class="user" id="registerForm" method="POST" action="{% url 'QuitSoonApp:register' %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <input type="text" class="form-control form-control-user" name="username" id="signUp-username" placeholder="Pseudo">
@@ -65,7 +68,7 @@
                 <p class="text-danger text-center error invalid-pwd-error">Mot de passe incorrect</p>
                 <p class="text-danger text-center error pwd-db-error">Les mots de passe ne correspondent pas</p>
 
-                <a id="signin-btn" type="submit" class="btn btn-primary btn-user btn-block">
+                <a id="signup-btn" type="submit" class="btn btn-primary btn-user btn-block">
                   Valider
                 </a>
               </form>
