@@ -18,7 +18,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="{% static 'QuitSoonApp/css/sb-admin-2.min.css' %}" rel="stylesheet">
+  <link href="{% static 'QuitSoonApp/css/sb-admin-2.css' %}" rel="stylesheet">
 
 </head>
 
@@ -34,15 +34,25 @@
           <div class="col-lg-7">
             <div class="p-5">
               <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4">Créez un compte!</h1>
+                <h1 class="h4 text-gray-900 mb-4">Créer un compte</h1>
               </div>
-              <form class="user" id="registerForm" method="post" action="">
+              <form class="user" id="registerForm" method="post" action="{% url 'QuitSoonApp:register' %}">
                 {% csrf_token %}
                 <div class="form-group">
                     <input type="text" class="form-control form-control-user" name="username" id="signUp-username" placeholder="Pseudo">
+                    <p class="text-danger text-center error username-error">Un utilisateur existe déjà à ce nom</p>
                 </div>
                 <div class="form-group">
-                  <input type="email" class="form-control form-control-user" name="email" id="signUp-email" placeholder="Address email">
+                  <input type="email" class="form-control form-control-user" name="email" id="signUp-email" placeholder="Adresse email">
+                  <p class="text-danger text-center error email-error">Un compte est déjà créé avec cette adresse email</p>
+                </div>
+                <div class="password_restrictions">
+                  <ul>
+                    <li>Votre mot de passe doit contenir au minimum 8 caractères.</li>
+                    <li>Votre mot de passe doit différer de vos autres informations personnelles.</li>
+                    <li>Votre mot de passe ne peut pas être un mot de passe couramment utilisé.</li>
+                    <li>Votre mot de passe ne peut pas être entièrement numérique.</li>
+                  </ul>
                 </div>
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
@@ -52,7 +62,10 @@
                     <input type="password" class="form-control form-control-user" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
                   </div>
                 </div>
-                <a href="login.html" class="btn btn-primary btn-user btn-block">
+                <p class="text-danger text-center error invalid-pwd-error">Mot de passe incorrect</p>
+                <p class="text-danger text-center error pwd-db-error">Les mots de passe ne correspondent pas</p>
+
+                <a id="signin-btn" type="submit" class="btn btn-primary btn-user btn-block">
                   Valider
                 </a>
               </form>
@@ -79,7 +92,7 @@
   <script src="{% static 'QuitSoonApp/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="{% static 'QuitSoonApp/js/sb-admin-2.min.js' %}"></script>
+  <script src="{% static 'QuitSoonApp/js/sb-admin-2.js' %}"></script>
 
 </body>
 

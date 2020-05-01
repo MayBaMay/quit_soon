@@ -46,4 +46,45 @@
     e.preventDefault();
   });
 
+  $('#registerForm').submit(function(e){
+    let formId = $(this).attr('id');
+    let submitBtn = $(this).find('a[type=submit]');
+    $('.username-error').css('display', 'none');
+    $('.email-error').css('display', 'none');
+    $('.pwd-db-error').css('display', 'none');
+    $('.invalid-pwd-error').css('display', 'none');
+    e.preventDefault();
+    $.ajax({
+      url: "/register/", // the file to call
+      type: "POST", // GET or POST
+      data: $(this).serialize(), // get the form data
+      success: function(data){
+        let register_response = jQuery.parseJSON(data);
+        // console.log(register_response);
+        if (register_response.response == "success"){
+          document.location.reload(true);
+          let url = location.host;
+          window.location.replace(url);
+        }
+        else if (register_response.response == "username already in DB") {
+          $('.username-error').css('display', 'block');
+          submitBtn.prop('disabled', false);
+        }
+         else if (register_response.response == "email already in DB") {
+           $('.email-error').css('display', 'block');
+           submitBtn.prop('disabled', false);
+        }
+        else if (register_response.response == "passwords diff") {
+          $('.pwd-db-error').css('display', 'block');
+          console.log("diff");
+          submitBtn.prop('disabled', false);
+        }
+        else if (register_response.response == "invalid password") {
+          $('.invalid-pwd-error').css('display', 'block');
+          submitBtn.prop('disabled', false);
+        }
+      }
+    })
+  });
+
 })(jQuery); // End of use strict
