@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
+
 
 # Create your views here.
 
@@ -41,7 +43,7 @@ def login(request):
     return render(request, 'registration/login.html')
     response_data = {}
     if request.method == 'POST':
-        form = LoginForm(request=request, data=request.POST)
+        form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')

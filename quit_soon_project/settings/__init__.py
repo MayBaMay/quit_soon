@@ -80,7 +80,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'quit_soon_project.backends.EmailAuthBackend',
 )
 
 ROOT_URLCONF = 'quit_soon_project.urls'
