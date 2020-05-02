@@ -51,23 +51,22 @@ def login_view(request):
         if form.is_valid():
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
-            username = form.get_user()
-            user = authenticate(username=username, password=password)
+            user = authenticate(username=email, password=password)
             if user is not None:
                 login(request, user)
-                response_data = {'user':"success"}
+                response_data = {'response':"success"}
             else:
-                response_data = {'user':"error-user-none"}
+                response_data = {'response':"error-user-none"}
         else:
-            username = request.POST['username']
+            email = request.POST['email']
             password = request.POST['password']
             try:
-                user = User.objects.get(username=username)
+                user = User.objects.get(email=email)
                 if user.password != password:
-                    response_data = {'user':"wrong_password"}
+                    response_data = {'response':"wrong_password"}
                 else:
-                    response_data = {'user':"error"}
+                    response_data = {'response':"error"}
             except User.DoesNotExist:
-                response_data = {'user':"user_unknown"}
+                response_data = {'response':"user_unknown"}
         return HttpResponse(JsonResponse(response_data))
     raise Http404()
