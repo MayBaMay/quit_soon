@@ -9,10 +9,7 @@ from .forms import RegistrationForm, LoginForm
 
 def index(request):
     """index View"""
-    if request.user.is_authenticated():
-        return render(request, 'index.html')
-    else:
-        return render(request, 'index.html')
+    return render(request, 'index.html')
 
 def register_view(request):
     """Registration view creating a user"""
@@ -41,6 +38,3 @@ def login_view(request):
                 login(request, user)
                 return redirect('QuitSoonApp:index')
     return render(request, 'registration/login.html', {'form':form})
-
-def profile(request):
-    return render(request, 'QuitSoonApp/profile.html')
