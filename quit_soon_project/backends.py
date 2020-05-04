@@ -19,3 +19,13 @@ class EmailAuthBackend(BaseBackend):
                 return user
         except User.DoesNotExist:
             return None
+
+    def get_user(self, user_id):
+        try:
+            user = User.objects.get(pk = user_id) # Note that you MUST use pk = user_id in getting the user.  Otherwise, it will fail and even though the user is authenticated, the user will not be logged in
+
+            if user.is_active:
+                return user
+            return None
+        except User.DoesNotExist:
+            return None

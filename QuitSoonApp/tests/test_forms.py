@@ -26,6 +26,7 @@ class test_registration(TestCase):
         self.assertEqual(user.email, "test@test.com")
         self.assertEqual(user.check_password('t3stpassword'), True)
         self.assertTrue(user.is_authenticated)
+        self.assertTrue(User.objects.filter(username='brandnewuser').exists())
 
     def test_blank_data(self):
         form = RegistrationForm({})
@@ -86,4 +87,5 @@ def test_AuthenticationForm_with_email_backend(TestCase):
         form = AuthenticationForm(data=data)
         self.assertFalse(form.is_valid())
         user = form.save()
+        self.assertTrue(user is not None)
         self.assertFalse(user.is_authenticated)

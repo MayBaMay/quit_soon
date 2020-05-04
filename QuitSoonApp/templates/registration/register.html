@@ -41,13 +41,20 @@
               </div>
               <form class="user" id="registerForm" method="POST" action="{% url 'QuitSoonApp:register' %}">
                 {% csrf_token %}
-                <div class="form-group">
+                {% if form.non_field_errors %}
+                  <ol>
+                  {% for error in form.subject.errors %}
+                      <li class="text-danger text-center error"><strong>{{ error|escape }}</strong></li>
+                  {% endfor %}
+                  </ol>
+                {% endif %}
+                <div class="fieldWrapper form-group">
+                  {{ form.username.errors }}
                     <input type="text" class="form-control form-control-user" name="username" id="signUp-username" placeholder="Pseudo">
-                    <p class="text-danger text-center error username-error">Un utilisateur existe déjà à ce nom</p>
                 </div>
-                <div class="form-group">
+                <div class="fieldWrapper form-group">
+                  {{ form.email.errors }}
                   <input type="email" class="form-control form-control-user" name="email" id="signUp-email" placeholder="Adresse email">
-                  <p class="text-danger text-center error email-error">Un compte est déjà créé avec cette adresse email</p>
                 </div>
                 <div class="password_restrictions">
                   <ul>
@@ -58,19 +65,18 @@
                   </ul>
                 </div>
                 <div class="form-group row">
-                  <div class="col-sm-6 mb-3 mb-sm-0">
+                  {{ form.password1.errors }}
+                  {{ form.password2.errors }}
+                  <div class="fieldWrapper col-sm-6 mb-3 mb-sm-0">
                     <input type="password" class="form-control form-control-user" name="password1" id="signUp-Password1" placeholder="Mot de passe">
                   </div>
-                  <div class="col-sm-6">
-                    <input type="password" class="form-control form-control-user" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
+                  <div class="fieldWrapper col-sm-6">
+                      <input type="password" class="form-control form-control-user" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
                   </div>
                 </div>
-                <p class="text-danger text-center error invalid-pwd-error">Mot de passe incorrect</p>
-                <p class="text-danger text-center error pwd-db-error">Les mots de passe ne correspondent pas</p>
 
-                <a id="signup-btn" type="submit" class="btn btn-primary btn-user btn-block">
-                  Valider
-                </a>
+                <input id="signup-btn" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Valider">
+
               </form>
               <hr>
               <div class="text-center">
