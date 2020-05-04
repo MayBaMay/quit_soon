@@ -10975,7 +10975,7 @@ form.user .btn-user {
   }
 }
 
-.error:before {
+.error:before, .errorlist:before {
   content: attr(data-text);
   position: absolute;
   left: -2px;
@@ -11003,5 +11003,5 @@ body.sidebar-toggled footer.sticky-footer {
 }
 
 .errorlist {
-  color: red;
+  list-style-type: none;
 }

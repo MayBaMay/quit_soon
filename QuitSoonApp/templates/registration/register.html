@@ -41,13 +41,7 @@
               </div>
               <form class="user" id="registerForm" method="POST" action="{% url 'QuitSoonApp:register' %}">
                 {% csrf_token %}
-                {% if form.non_field_errors %}
-                  <ol>
-                  {% for error in form.subject.errors %}
-                      <li class="text-danger text-center error"><strong>{{ error|escape }}</strong></li>
-                  {% endfor %}
-                  </ol>
-                {% endif %}
+                {{ form.non_field_errors }}
                 <div class="fieldWrapper form-group">
                   {{ form.username.errors }}
                     <input type="text" class="form-control form-control-user" name="username" id="signUp-username" placeholder="Pseudo">

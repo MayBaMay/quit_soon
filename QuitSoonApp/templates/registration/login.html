@@ -47,21 +47,16 @@
                   </div>
                   <form class="user" id="loginform" action="" method="POST">
                     {% csrf_token %}
-                    <div class="form-group">
-                      <input type="email" class="form-control form-control-user" name="username" id="signIn-Email" aria-describedby="emailHelp" placeholder="Adresse email">
+                    {{ form.non_field_errors }}
+                    <div class="fieldWrapper form-group ">
+                      {{ form.username.errors }}
+                      <input type="text" class="form-control form-control-user" name="username" id="signIn-Email" aria-describedby="emailHelp" placeholder="Adresse email ou pseudo">
                     </div>
-                    <div class="form-group">
+                    <div class="fieldWrapper form-group">
+                      {{ form.password.errors }}
                       <input type="password" class="form-control form-control-user" name="password" id="signIn-Password" placeholder="Mot de passe">
                     </div>
-                    <div class="form-group">
-                      <div class="custom-control custom-checkbox small">
-                        <input type="checkbox" class="custom-control-input" id="customCheck">
-                        <label class="custom-control-label" for="customCheck">Se souvenir de moi</label>
-                      </div>
-                    </div>
-                    <a href="index.html" class="btn btn-primary btn-user btn-block">
-                      Valider
-                    </a>
+                    <input id="signin-btn" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Valider">
                   </form>
                   <hr>
                   <div class="text-center">

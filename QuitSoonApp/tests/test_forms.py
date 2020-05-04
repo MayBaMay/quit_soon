@@ -1,10 +1,8 @@
 from django.test import TransactionTestCase, TestCase
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import AuthenticationForm
 
-
-from QuitSoonApp.forms import RegistrationForm
+from QuitSoonApp.forms import RegistrationForm, LoginForm
 from django.contrib.auth.models import User
 
 
@@ -69,7 +67,7 @@ def test_AuthenticationForm_with_email_backend(TestCase):
 
     def test_login_with_email(self):
         data = {'username':'random@email.com', 'password':'arandompassword'}
-        form = AuthenticationForm(data=data)
+        form = LoginForm(data=data)
         self.assertTrue(form.is_valid())
         user = form.save()
         self.assertTrue(user.is_authenticated)
@@ -77,14 +75,14 @@ def test_AuthenticationForm_with_email_backend(TestCase):
 
     def test_login_with_username(self):
         data = {'username':'arandomname', 'password':'arandompassword'}
-        form = AuthenticationForm(data=data)
+        form = LoginForm(data=data)
         self.assertFalse(form.is_valid())
         user = form.save()
         self.assertFalse(user.is_authenticated)
 
     def test_login_fails(self):
         data = {'username':'sfaidsfSFl', 'password':'gdqgqdcdGBNGS'}
-        form = AuthenticationForm(data=data)
+        form = LoginForm(data=data)
         self.assertFalse(form.is_valid())
         user = form.save()
         self.assertTrue(user is not None)
