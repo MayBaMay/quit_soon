@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
   <!-- Custom styles for this template-->
-  <link href="{% static 'QuitSoonApp/css/sb-admin-2.css' %}" rel="stylesheet">
+  <link href="{% static 'QuitSoonApp/css/quitsoon.min.css' %}" rel="stylesheet">
 
 </head>
 
@@ -189,14 +189,14 @@
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Valerie Luna</span>
+                <!-- <span class="mr-2 d-none d-lg-inline text-gray-600 small">Se connecter</span> -->
                 <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{% url 'QuitSoonApp:login' %}">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Profile
+                  Connexion
                 </a>
                 <a class="dropdown-item" href="#">
                   <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -557,7 +557,7 @@
   <script src="{% static 'QuitSoonApp/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="{% static 'QuitSoonApp/js/sb-admin-2.js' %}"></script>
+  <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
 
   <!-- Page level plugins -->
   <script src="{% static 'QuitSoonApp/vendor/chart.js/Chart.min.js' %}"></script>
