@@ -33,7 +33,7 @@ class RegisterClientTestCase(TestCase):
         response = self.client.post(reverse('QuitSoonApp:register'),
                                     data=data,
                                     follow=True)
-        self.assertRedirects(response, '/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/profile/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue(User.objects.filter(username='NewUserTest').exists())
         self.assertTrue(User.objects.get(username='NewUserTest').is_authenticated)
 
@@ -98,7 +98,7 @@ class LoginClientTestCase(TransactionTestCase):
         response = self.client.post(reverse('QuitSoonApp:login'),
                                     data=data,
                                     follow=True)
-        self.assertRedirects(response, '/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/profile/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue(User.objects.filter(username='loginTestUser').exists())
         self.assertTrue(User.objects.get(username='loginTestUser').is_authenticated)
         user = User.objects.get(username='loginTestUser')
@@ -112,7 +112,7 @@ class LoginClientTestCase(TransactionTestCase):
         response = self.client.post(reverse('QuitSoonApp:login'),
                                     data=data,
                                     follow=True)
-        self.assertRedirects(response, '/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/profile/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue(User.objects.filter(username='loginTestUser').exists())
         self.assertTrue(User.objects.get(username='loginTestUser').is_authenticated)
         user = User.objects.get(username='loginTestUser')
