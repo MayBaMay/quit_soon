@@ -45,7 +45,7 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Me connecter</h1>
                   </div>
-                  <form class="user" id="loginform" action="" method="POST">
+                  <form class="user form-with-password" id="loginform" action="" method="POST">
                     {% csrf_token %}
                     {{ form.non_field_errors }}
                     <div class="fieldWrapper form-group ">
@@ -54,7 +54,14 @@
                     </div>
                     <div class="fieldWrapper form-group">
                       {{ form.password.errors }}
-                      <input type="password" class="form-control form-control-user" name="password" id="signIn-Password" placeholder="Mot de passe">
+                      <div class="row">
+                        <div class="col-11">
+                          <input type="password" class="form-control form-control-user password-field" name="password" id="signIn-Password" placeholder="Mot de passe">
+                        </div>
+                        <div class="col-1">
+                          <i class="fa fa-eye pass-status" id="login-eye"></i>
+                        </div>
+                      </div>
                     </div>
                     <input id="signin-btn" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Valider">
                   </form>
@@ -85,7 +92,7 @@
   <script src="{% static 'QuitSoonApp/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
 
   <!-- Custom scripts for all pages-->
-  <script src="vjs/quitsoon.min.js' %}"></script>
+  <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
 
 </body>
 
