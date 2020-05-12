@@ -46,5 +46,25 @@
     e.preventDefault();
   });
 
+  $('.pass-status').on('click', function(e){
+    var passwordInput = $('.password-field');
+    var passStatus = $('.pass-status');
+
+    if (passwordInput.prop('type') == 'password'){
+      passwordInput.prop('type','text');
+      passStatus.toggleClass('fa-eye fa-eye-slash');
+    }
+    else{
+      passwordInput.prop('type','password');
+      passStatus.toggleClass('fa-eye-slash fa-eye');
+    }
+  });
+
+  $('.form-with-password').on('submit', function(e){
+    var passwordInput = $('.password-field');
+    passwordInput.prop('type','password');
+    return true;
+  });
+
 
 })(jQuery); // End of use strict

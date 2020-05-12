@@ -9,7 +9,10 @@ from .forms import RegistrationForm, LoginForm
 
 def index(request):
     """index View"""
-    return render(request, 'index.html')
+    if request.user.is_authenticated:
+        return redirect('QuitSoonApp:profile')
+    else:
+        return render(request, 'index.html')
 
 def register_view(request):
     """Registration view creating a user"""
