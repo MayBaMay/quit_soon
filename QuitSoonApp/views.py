@@ -41,3 +41,7 @@ def login_view(request):
                 login(request, user)
                 return redirect('QuitSoonApp:index')
     return render(request, 'registration/login.html', {'form':form})
+
+
+def profile(request):
+    return render(request, 'QuitSoonApp/profile.html')
