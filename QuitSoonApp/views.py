@@ -46,13 +46,13 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('QuitSoonApp:index')
-    return render(request, 'registration/login.html', context)
-
-def profile(request):
-    return render(request, 'QuitSoonApp/profile.html')
+    return render(request, 'registration/login.html', {'form':form})
 
 def today(request):
     return render(request, 'QuitSoonApp/today.html')
+
+def profile(request):
+    return render(request, 'QuitSoonApp/profile.html')
 
 def paquets(request):
     return render(request, 'QuitSoonApp/paquets.html')
