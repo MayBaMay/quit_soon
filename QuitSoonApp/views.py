@@ -1,9 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse, Http404
+from django.contrib.auth.models import User
 
+from .models import (
+    UserProfile,
+    Paquet, ConsoCig,
+    Alternative, ConsoAlternative,
+    Objectif, Trophee
+)
 from .forms import RegistrationForm, LoginForm
 
 
@@ -40,7 +46,7 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('QuitSoonApp:index')
-    return render(request, 'registration/login.html', {'form':form})
+    return render(request, 'registration/login.html', context)
 
-def profile(request):
-    return render(request, 'QuitSoonApp/profile.html')
+def today(request):
+    return render(request, 'QuitSoonApp/today.html')
