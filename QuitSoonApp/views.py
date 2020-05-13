@@ -1,16 +1,22 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse, Http404
+from django.contrib.auth.models import User
 
+from .models import (
+    UserProfile,
+    Paquet, ConsoCig,
+    Alternative, ConsoAlternative,
+    Objectif, Trophee
+)
 from .forms import RegistrationForm, LoginForm
 
 
 def index(request):
     """index View"""
     if request.user.is_authenticated:
-        return redirect('QuitSoonApp:profile')
+        return redirect('QuitSoonApp:today')
     else:
         return render(request, 'index.html')
 
@@ -42,6 +48,20 @@ def login_view(request):
                 return redirect('QuitSoonApp:index')
     return render(request, 'registration/login.html', {'form':form})
 
+def today(request):
+    return render(request, 'QuitSoonApp/today.html')
 
 def profile(request):
     return render(request, 'QuitSoonApp/profile.html')
+
+def paquets(request):
+    return render(request, 'QuitSoonApp/paquets.html')
+
+def alternatives(request):
+    return render(request, 'QuitSoonApp/alternatives.html')
+
+def suivi(request):
+    return render(request, 'QuitSoonApp/suivi.html')
+
+def objectifs(request):
+    return render(request, 'QuitSoonApp/objectifs.html')
