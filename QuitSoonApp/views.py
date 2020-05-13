@@ -16,7 +16,7 @@ from .forms import RegistrationForm, LoginForm
 def index(request):
     """index View"""
     if request.user.is_authenticated:
-        return redirect('QuitSoonApp:profile')
+        return redirect('QuitSoonApp:today')
     else:
         return render(request, 'index.html')
 
@@ -48,5 +48,20 @@ def login_view(request):
                 return redirect('QuitSoonApp:index')
     return render(request, 'registration/login.html', context)
 
+def profile(request):
+    return render(request, 'QuitSoonApp/profile.html')
+
 def today(request):
     return render(request, 'QuitSoonApp/today.html')
+
+def paquets(request):
+    return render(request, 'QuitSoonApp/paquets.html')
+
+def alternatives(request):
+    return render(request, 'QuitSoonApp/alternatives.html')
+
+def suivi(request):
+    return render(request, 'QuitSoonApp/suivi.html')
+
+def objectifs(request):
+    return render(request, 'QuitSoonApp/objectifs.html')
