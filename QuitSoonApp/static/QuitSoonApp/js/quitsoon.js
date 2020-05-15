@@ -127,7 +127,8 @@
     var submitBtn = $(this).find('input[type=submit]');
     $('.oldpwd-error').css('display', 'none');
     $('.newpwd-error').css('display', 'none');
-    $('.≈-error').css('display', 'none');
+    $('.dbpwd-error').css('display', 'none');
+    $('.newpassword-error').css('display', 'none');
     e.preventDefault();
     $.ajax({
       url: "/new_password/", // the file to call
@@ -154,6 +155,29 @@
         }
         else {
           $('.newpassword-error').css('display', 'block');
+          submitBtn.prop('disabled', false);
+        }
+      });
+  });
+
+  $('#NewParametersForm').submit(function(e){
+    var form = $(this);
+    var submitBtn = $(this).find('input[type=submit]');
+    $('.newparameters-error').css('display', 'none');
+    e.preventDefault();
+    $.ajax({
+      url: "/new_parameters/", // the file to call
+      type: "POST", // GET or POST
+      data: $(this).serialize(), // get the form data
+      })
+      .done(function(data) {
+        var new_parameters_response = jQuery.parseJSON(data);
+        if (new_parameters_response.response == "success"){
+          document.location.reload(true);
+          $('#modal_starting_parameters').modal('hide');
+        }
+        else {
+          $('.newparameters-error').css('display', 'block');
           submitBtn.prop('disabled', false);
         }
       });

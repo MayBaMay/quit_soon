@@ -12,8 +12,8 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, LoginForm, ParametersForm
-
+from .forms import RegistrationForm, ParametersForm
+from .modules.resetprofile import ResetProfile
 
 def index(request):
     """index View"""
@@ -38,9 +38,9 @@ def register_view(request):
 
 def login_view(request):
     """Login view connecting a user"""
-    form = LoginForm()
+    form = AuthenticationForm()
     if request.method == 'POST':
-        form = LoginForm(request=request, data=request.POST)
+        form = AuthenticationForm(request=request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -56,11 +56,10 @@ def today(request):
 def profile(request):
     userprofile = UserProfile.objects.filter(user=request.user)
     if userprofile:
-        print('ok')
+        userprofile = UserProfile.objects.get(user=request.user)
     else:
-        print('none')
-    context = { 'userprofile':userprofile,
-                'today': date.today()}
+        userprofile = 'undefined'
+    context = { 'userprofile':userprofile}
     return render(request, 'QuitSoonApp/profile.html', context)
 
 def new_name(request):
@@ -129,9 +128,18 @@ def new_parameters(request):
     if request.method == 'POST':
         form = ParametersForm(request.POST)
         if form.is_valid():
-            pass
+            reset = ResetProfile(request.user, request.POST)
+            userprofile = reset.new_profile()
+            response_data = {'response':'success'}
     else:
         raise Http404()
+    return HttpResponse(JsonResponse(response_data))
+
+    userprofile = UserProfile.objects.filter(user=request.user)
+    if userprofile:
+        response_data = {'userprofile':UserProfile.objects.get(user=request.user)}
+    else:
+        print('none')
     return HttpResponse(JsonResponse(response_data))
 
 def paquets(request):

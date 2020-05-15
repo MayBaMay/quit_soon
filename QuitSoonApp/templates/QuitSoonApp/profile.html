@@ -18,8 +18,13 @@
   <div class="container">
     <b>
       <p>MON SUIVI<a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" ><i class="fas fa-edit ml-1"></i></a></p>
-      <p>Début du suivi: {{ userprofile.debut_suivi }}</p>
-      <p>Nb de cigarette moyen/jr en début de suivi : {{ userprofile.starting_nb_cig }}</p>
+      {% if userprofile %}
+        <p>Début du suivi : {{ userprofile.date_start }}</p>
+        <p>Nb de cigarette moyen/jr en début de suivi : {{ userprofile.starting_nb_cig }}</p>
+      {% else %}
+      <p>Vous n'avez pas encore paramétré vos informations de début de suivi.</p>
+      <p>Pour bénéficier des fonctionnalités de l'application veuillez remédier à celà en cliquant <a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" >ici</a></p>
+      {% endif %}
    </b>
   </div>
 
@@ -150,14 +155,13 @@
       <form id="NewParametersForm" method="post" action="{% url 'QuitSoonApp:new_parameters' %}">
         {% csrf_token %}
         <div class="form-group">
-          <label for="date_suivi"><b>Début du suivi : </b></label>
-          <input type="datetime-local" name="date_suivi" id="date_suivi" class="form-control"
-           value="{{ today }}" min="2018-06-07T00:00" max="2018-06-14T00:00" required="required" />
+          <label for="date_start"><b>Début du suivi : </b></label>
+          <input type="date" name="date_start" id="date_start" class="form-control" required="required" />
          <div class="text-danger text-center -error" id="" style="display:none;">
         </div>
         <div class="form-group">
-          <label for="nb_cig_start"><b>Nb cigarettes moyen/jour en début de suivi : </b></label>
-          <input type="number" name="nb_cig_start" id="nb_cig_start" class="form-control"
+          <label for="starting_nb_cig"><b>Nb cigarettes moyen/jour en début de suivi : </b></label>
+          <input type="number" name="starting_nb_cig" id="starting_nb_cig" class="form-control"
            value="" required="required" />
          <div class="text-danger text-center -error" id="" style="display:none;">
         </div>
