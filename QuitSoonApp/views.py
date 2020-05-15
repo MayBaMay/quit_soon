@@ -54,12 +54,14 @@ def today(request):
     return render(request, 'QuitSoonApp/today.html')
 
 def profile(request):
-    userprofile = UserProfile.objects.filter(user=request.user)
-    if userprofile:
-        userprofile = UserProfile.objects.get(user=request.user)
-    else:
-        userprofile = 'undefined'
-    context = { 'userprofile':userprofile}
+    context = {'userprofile':None}
+    if request.user.is_authenticated:
+        userprofile = UserProfile.objects.filter(user=request.user)
+        if userprofile:
+            userprofile = UserProfile.objects.get(user=request.user)
+        else:
+            userprofile = 'undefined'
+        context = { 'userprofile':userprofile}
     return render(request, 'QuitSoonApp/profile.html', context)
 
 def new_name(request):
@@ -115,7 +117,6 @@ def new_password(request):
             if request.user.check_password(old_password) == False:
                 response_data = {'response':"incorrect old password"}
             elif new_password1 != new_password2:
-                print(new_password1, new_password2)
                 response_data = {'response':"new password not confirmed"}
             else:
                 response_data = {'response':"incorrect newpassword"}
@@ -124,7 +125,7 @@ def new_password(request):
     return HttpResponse(JsonResponse(response_data))
 
 def new_parameters(request):
-    response_data = {}
+    response_data = {'response':None}
     if request.method == 'POST':
         form = ParametersForm(request.POST)
         if form.is_valid():
@@ -133,13 +134,6 @@ def new_parameters(request):
             response_data = {'response':'success'}
     else:
         raise Http404()
-    return HttpResponse(JsonResponse(response_data))
-
-    userprofile = UserProfile.objects.filter(user=request.user)
-    if userprofile:
-        response_data = {'userprofile':UserProfile.objects.get(user=request.user)}
-    else:
-        print('none')
     return HttpResponse(JsonResponse(response_data))
 
 def paquets(request):

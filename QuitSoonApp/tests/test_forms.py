@@ -63,6 +63,6 @@ class test_ParametersForm(TestCase):
             username="arandomname", email="random@email.com", password="arandompassword")
 
     def test_form(self):
-        data = {'user':self.user, 'date_suivi':'2020-05-17', 'nb_cig_start':'4'}
+        data = {'user':self.user, 'date_start':'2020-05-17', 'starting_nb_cig':'4'}
         form = ParametersForm(data=data)
         self.assertTrue(form.is_valid())

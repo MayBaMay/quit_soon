@@ -5,6 +5,7 @@
 
 {{title}}
 
+  {% if user.is_authenticated %}
   <div class="container">
     <b>
       <p>MES INFORMATIONS PERSONNELLES</p>
@@ -27,6 +28,21 @@
       {% endif %}
    </b>
   </div>
+
+  {% else %}
+
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
 
 
