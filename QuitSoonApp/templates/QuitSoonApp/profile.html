@@ -3,6 +3,174 @@
 
 {% block content %}
 
-MES INFORMATIONS PERSONNELLES
+{{title}}
+
+  <div class="container">
+    <b>
+      <p>MES INFORMATIONS PERSONNELLES</p>
+      <p>Nom d'utilisateur : {{ user.username }} <a href="#" id="newName"title="Modfier" data-toggle="modal" data-target="#modal_change_username" ><i class="fas fa-edit ml-1"></i></a></p>
+      <p>Adresse mail : {{ user.email }} <a href="#" id="newemail"title="Modfier" data-toggle="modal" data-target="#modal_change_email" ><i class="fas fa-edit"></i></a></p>
+   </b>
+   <p><a href="#" id="newpassword" title="Modfier" data-toggle="modal" data-target="#modal_change_password">Modifier mon mot de passe<i class="fas fa-edit ml-1"></i></a></p>
+
+  </div>
+
+  <div class="container">
+    <b>
+      <p>MON SUIVI<a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" ><i class="fas fa-edit ml-1"></i></a></p>
+      <p>Début du suivi: {{ userprofile.debut_suivi }}</p>
+      <p>Nb de cigarette moyen/jr en début de suivi : {{ userprofile.starting_nb_cig }}</p>
+   </b>
+  </div>
+
+
+
+  <!--  change_username Form Modal -->
+  <div id="modal_change_username" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Changer de nom d"utilisateur</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form id="NewNameForm" method="post" action="{% url 'QuitSoonApp:new_name' %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <input type="username" name="username" id="new_username" class="form-control"
+               placeholder="Nouveau nom d'utilisateur" required="required" />
+            </div>
+            <div class="text-danger text-center username-error" id="" style="display:none;">
+              <p>Un utilisateur existe déjà à ce nom</p>
+            </div>
+            <p class="text-danger text-center newname-error" style="display:none;">Une erreur est survenue</p>
+            <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End of change_username-->
+
+  <!--  change_password Form Modal -->
+<div id="modal_change_email" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Changer mon adresse email</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <form id="NewEmailForm" method="post" action="{% url 'QuitSoonApp:new_email' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <input type="email" name="email" id="new_email" class="form-control"
+             placeholder="Nouvelle adresse email" required="required" />
+          </div>
+          <div class="text-danger text-center dbemail-error" id="" style="display:none;">
+            <p>Un compte existe déjà avec cette adresse email</p>
+          </div>
+          <p class="text-danger text-center newemail-error" style="display:none;">Une erreur est survenue</p>
+          <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of change_email-->
+
+<!--  change_password Form Modal -->
+<div id="modal_change_password" class="modal fade" tabindex="-1" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Changer mon mot de passe</h4>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+      <form id="NewPasswordForm" method="post" action="{% url 'QuitSoonApp:new_password' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="password" name="old_password" id="old_password" class="form-control"
+           placeholder="Ancien mot de passe" required="required" />
+           <div class="text-danger text-center oldpwd-error" id="" style="display:none;">
+             <p>Cette entrée ne correspond pas à votre ancien mot de passe</p>
+           </div>
+        </div>
+        <div class="form-group">
+          <input type="password" name="new_password1" id="new_password1" class="form-control"
+           placeholder="Nouveau mot de passe" required="required" />
+           <div class="text-danger text-center newpwd-error" id="" style="display:none;">
+             <p>Ce mot de passe ne correspond pas aux critères de sécurité :
+               <ul>
+                <li>Votre mot de passe ne peut pas trop ressembler à vos autres informations personnelles.</li>
+                <li>Votre mot de passe doit contenir au minimum 8 caractères.</li>
+                <li>Votre mot de passe ne peut pas être un mot de passe couramment utilisé.</li>
+                <li>Votre mot de passe ne peut pas être entièrement numérique.</li>
+              </ul>
+             </p>
+           </div>
+          <input type="password" name="new_password2" id="new_password2" class="form-control"
+           placeholder="Confirmation du nouveau mot de passe" required="required" />
+         <div class="text-danger text-center dbpwd-error" id="" style="display:none;">
+           <p>Mots de passe différents, veuillez confirmer votre nouveau mot de passe</p>
+         </div>
+        </div>
+        <p class="text-danger text-center newpassword-error" style="display:none;">Une erreur est survenue</p>
+        <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+    </div>
+  </div>
+</div>
+</div>
+<!-- End of change_password-->
+
+<!--  change_password Form Modal -->
+<div id="modal_starting_parameters" class="modal fade" tabindex="-1" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Changer mes paramètres de suivi</h4>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+      {% if not userprofile %}
+      <p class="">Attention la modification des paramètres de suivi a pour effet de réinitialiser l'intégralité de vos données de suivi.
+      Seules le paramétrage de vos paquets et de vos alternatives seront conservées.</p>
+      {% endif %}
+      <form id="NewParametersForm" method="post" action="{% url 'QuitSoonApp:new_parameters' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="date_suivi"><b>Début du suivi : </b></label>
+          <input type="datetime-local" name="date_suivi" id="date_suivi" class="form-control"
+           value="{{ today }}" min="2018-06-07T00:00" max="2018-06-14T00:00" required="required" />
+         <div class="text-danger text-center -error" id="" style="display:none;">
+        </div>
+        <div class="form-group">
+          <label for="nb_cig_start"><b>Nb cigarettes moyen/jour en début de suivi : </b></label>
+          <input type="number" name="nb_cig_start" id="nb_cig_start" class="form-control"
+           value="" required="required" />
+         <div class="text-danger text-center -error" id="" style="display:none;">
+        </div>
+        <p class="text-danger text-center newparameters-error" style="display:none;">Une erreur est survenue</p>
+        <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+    </div>
+  </div>
+</div>
+</div>
+<!-- End of change_password-->
 
 {% endblock %}

@@ -51,3 +51,8 @@ class LoginForm(AuthenticationForm):
                 if self.user_cache is None:
                     raise forms.ValidationError("Le mot de passe est invalide (attention aux majuscules et minuscules)")
         return data
+
+
+class ParametersForm(forms.Form):
+    date_suivi = forms.DateField()
+    nb_cig_start = forms.IntegerField()
