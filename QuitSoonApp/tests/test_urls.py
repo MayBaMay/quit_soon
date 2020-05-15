@@ -2,11 +2,12 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
-from ..views import (
+from QuitSoonApp.views import (
     index, today,
     register_view, login_view,
     profile, paquets, alternatives,
-    suivi, objectifs
+    suivi, objectifs,
+    new_name, new_email, new_password, new_parameters,
 )
 
 class TestUrls(SimpleTestCase):
@@ -32,11 +33,6 @@ class TestUrls(SimpleTestCase):
         url = reverse('QuitSoonApp:today')
         self.assertEqual(resolve(url).func, today)
 
-    def test_profile_url_is_resolved(self):
-        """test today"""
-        url = reverse('QuitSoonApp:profile')
-        self.assertEqual(resolve(url).func, profile)
-
     def test_paquets_url_is_resolved(self):
         """test paquets"""
         url = reverse('QuitSoonApp:paquets')
@@ -56,3 +52,29 @@ class TestUrls(SimpleTestCase):
         """test objectifs"""
         url = reverse('QuitSoonApp:objectifs')
         self.assertEqual(resolve(url).func, objectifs)
+        
+
+    def test_profile_url_is_resolved(self):
+        """test today"""
+        url = reverse('QuitSoonApp:profile')
+        self.assertEqual(resolve(url).func, profile)
+
+    def test_new_name_url_is_resolved(self):
+        """test new_name"""
+        url = reverse('QuitSoonApp:new_name')
+        self.assertEqual(resolve(url).func, new_name)
+
+    def test_new_email_url_is_resolved(self):
+        """test new_email"""
+        url = reverse('QuitSoonApp:new_email')
+        self.assertEqual(resolve(url).func, new_email)
+
+    def test_new_password_url_is_resolved(self):
+        """test new_password"""
+        url = reverse('QuitSoonApp:new_password')
+        self.assertEqual(resolve(url).func, new_password)
+
+    def test_new_parameters_url_is_resolved(self):
+        """test new_parameters"""
+        url = reverse('QuitSoonApp:new_parameters')
+        self.assertEqual(resolve(url).func, new_parameters)
