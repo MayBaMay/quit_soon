@@ -5,9 +5,10 @@ from django.urls import resolve, reverse
 from QuitSoonApp.views import (
     index, today,
     register_view, login_view,
-    profile, paquets, alternatives,
+    profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    new_name, new_email, new_password, new_parameters,
+    paquets, bad, bad_history,
+    alternatives, good, good_history,
 )
 
 class TestUrls(SimpleTestCase):
@@ -28,31 +29,6 @@ class TestUrls(SimpleTestCase):
         url = reverse('QuitSoonApp:login')
         self.assertEqual(resolve(url).func, login_view)
 
-    def test_today_url_is_resolved(self):
-        """test today"""
-        url = reverse('QuitSoonApp:today')
-        self.assertEqual(resolve(url).func, today)
-
-    def test_paquets_url_is_resolved(self):
-        """test paquets"""
-        url = reverse('QuitSoonApp:paquets')
-        self.assertEqual(resolve(url).func, paquets)
-
-    def test_alternatives_url_is_resolved(self):
-        """test alternatives"""
-        url = reverse('QuitSoonApp:alternatives')
-        self.assertEqual(resolve(url).func, alternatives)
-
-    def test_suivi_url_is_resolved(self):
-        """test suivi"""
-        url = reverse('QuitSoonApp:suivi')
-        self.assertEqual(resolve(url).func, suivi)
-
-    def test_objectifs_url_is_resolved(self):
-        """test objectifs"""
-        url = reverse('QuitSoonApp:objectifs')
-        self.assertEqual(resolve(url).func, objectifs)
-        
 
     def test_profile_url_is_resolved(self):
         """test today"""
@@ -78,3 +54,51 @@ class TestUrls(SimpleTestCase):
         """test new_parameters"""
         url = reverse('QuitSoonApp:new_parameters')
         self.assertEqual(resolve(url).func, new_parameters)
+
+
+    def test_today_url_is_resolved(self):
+        """test today"""
+        url = reverse('QuitSoonApp:today')
+        self.assertEqual(resolve(url).func, today)
+
+    def test_suivi_url_is_resolved(self):
+        """test suivi"""
+        url = reverse('QuitSoonApp:suivi')
+        self.assertEqual(resolve(url).func, suivi)
+
+    def test_objectifs_url_is_resolved(self):
+        """test objectifs"""
+        url = reverse('QuitSoonApp:objectifs')
+        self.assertEqual(resolve(url).func, objectifs)
+
+
+    def test_paquets_url_is_resolved(self):
+        """test paquets"""
+        url = reverse('QuitSoonApp:paquets')
+        self.assertEqual(resolve(url).func, paquets)
+
+    def test_bad_url_is_resolved(self):
+        """test bad"""
+        url = reverse('QuitSoonApp:bad')
+        self.assertEqual(resolve(url).func, bad)
+
+    def test_bad_history_url_is_resolved(self):
+        """test bad_history"""
+        url = reverse('QuitSoonApp:bad_history')
+        self.assertEqual(resolve(url).func, bad_history)
+
+
+    def test_alternatives_url_is_resolved(self):
+        """test alternatives"""
+        url = reverse('QuitSoonApp:alternatives')
+        self.assertEqual(resolve(url).func, alternatives)
+
+    def test_good_url_is_resolved(self):
+        """test good"""
+        url = reverse('QuitSoonApp:good')
+        self.assertEqual(resolve(url).func, good)
+
+    def test_good_history_url_is_resolved(self):
+        """test good_history"""
+        url = reverse('QuitSoonApp:good_history')
+        self.assertEqual(resolve(url).func, good_history)
