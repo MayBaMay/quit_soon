@@ -12,11 +12,17 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
 
     path('today/', views.today, name='today'),
-    path('paquets/', views.paquets, name='paquets'),
-    path('alternatives/', views.alternatives, name='alternatives'),
     path('suivi/', views.suivi, name='suivi'),
     path('objectifs/', views.objectifs, name='objectifs'),
-    
+
+    path('paquets/', views.paquets, name='paquets'),
+    path('bad/', views.bad, name='bad'),
+    path('bad_history/', views.bad_history, name='bad_history'),
+
+    path('alternatives/', views.alternatives, name='alternatives'),
+    path('good/', views.good, name='good'),
+    path('good_history/', views.good_history, name='good_history'),
+
     path('profile/', views.profile, name='profile'),
     path('new_name/', views.new_name, name='new_name'),
     path('new_email/', views.new_email, name='new_email'),

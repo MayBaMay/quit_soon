@@ -12,7 +12,7 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, ParametersForm
+from .forms import RegistrationForm, ParametersForm, PaquetForm
 from .modules.resetprofile import ResetProfile
 
 def index(request):
@@ -137,10 +137,26 @@ def new_parameters(request):
     return HttpResponse(JsonResponse(response_data))
 
 def paquets(request):
-    return render(request, 'QuitSoonApp/paquets.html')
+    form = PaquetForm()
+    if request.method == 'POST':
+        form = PaquetForm(request.POST)
+
+    return render(request, 'QuitSoonApp/paquets.html', {'form': form})
+
+def bad(request):
+    return render(request, 'QuitSoonApp/bad.html')
+
+def bad_history(request):
+    return render(request, 'QuitSoonApp/bad_history.html')
 
 def alternatives(request):
     return render(request, 'QuitSoonApp/alternatives.html')
+
+def good(request):
+    return render(request, 'QuitSoonApp/good.html')
+
+def good_history(request):
+    return render(request, 'QuitSoonApp/good_history.html')
 
 def suivi(request):
     return render(request, 'QuitSoonApp/suivi.html')

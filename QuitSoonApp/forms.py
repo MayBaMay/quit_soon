@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
 
+from QuitSoonApp.models import Paquet
+
 
 class RegistrationForm(UserCreationForm):
     """
@@ -33,3 +35,25 @@ class RegistrationForm(UserCreationForm):
 class ParametersForm(forms.Form):
     date_start = forms.DateField()
     starting_nb_cig = forms.IntegerField()
+
+
+class PaquetForm(forms.Form):
+
+    class Meta:
+        model = Paquet
+        fields = ['type_cig', 'brand', 'qt_paquet', 'price']
+
+    TYPE_CIG_CHOICES = [
+        ('IND', 'Cigarettes industrielles'),
+        ('ROL', 'Cigarettes roulées'),
+        ('CIGARES', 'Cigares'),
+        ('CIGARIOS', 'Cigarios'),
+        ('PIPE', 'Pipe'),
+        ('NB', 'Autres(en nb/paquet)'),
+        ('GR', 'Autres(en g/paquet)'),
+    ]
+
+    type_cig = forms.CharField(label='Type', widget=forms.Select(choices=TYPE_CIG_CHOICES))
+    brand = forms.CharField(label='Marque')
+    qt_paquet = forms.IntegerField(label='Quantité')
+    price = forms.DecimalField(label='Prix')
