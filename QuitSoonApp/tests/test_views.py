@@ -20,6 +20,7 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
+from QuitSoonApp.forms import PaquetForm
 
 
 class RegisterClientTestCase(TestCase):
@@ -302,3 +303,69 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
         self.assertEqual(UserProfile.objects.get(user=self.user).date_start, datetime.date(2020, 5, 17))
         self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)
+
+
+class BadAndGoodHabitsParametersTestCase(TestCase):
+    """
+    Tests on parameters pages, good (alternatives) or bad (packs)
+    """
+
+    def setUp(self):
+        """setup tests"""
+        self.user = User.objects.create_user(
+            'TestUser', 'test@test.com', 'testpassword')
+        self.client.login(username=self.user.username, password='testpassword')
+
+    def test_paquets_view_get(self):
+        """Test get paquets view"""
+        response = self.client.get(reverse('QuitSoonApp:paquets'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
+
+    def test_paquets_view_post_succes(self):
+        """Test client post a form with success"""
+        data = {'type_cig':'IND',
+                'brand':'Camel',
+                'qt_paquet':'20',
+                'price':'10'}
+        response = self.client.post(reverse('QuitSoonApp:paquets'),
+                                    data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
+        db_pack = Paquet.objects.filter(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.assertTrue(db_pack.exists())
+        self.assertEqual(db_pack[0].unit, 'U')
+        self.assertEqual(db_pack[0].g_per_cig, None)
+
+
+    def test_paquets_view_post_fails(self):
+        """Test client post a form with invalid datas"""
+        Paquet.objects.create(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        datas = {'type_cig':'GR',
+                'brand':'Brandtest',
+                'qt_paquet':'50',
+                'price':'50'}
+        response = self.client.post(reverse('QuitSoonApp:paquets'),
+                                    data=datas)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
+        db_pack = Paquet.objects.filter(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.assertFalse(db_pack.exists())

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
 
-from QuitSoonApp.models import Paquet
+from QuitSoonApp.models import UserProfile, Paquet
 
 
 class RegistrationForm(UserCreationForm):
@@ -32,28 +32,33 @@ class RegistrationForm(UserCreationForm):
         return user
 
 
-class ParametersForm(forms.Form):
-    date_start = forms.DateField()
-    starting_nb_cig = forms.IntegerField()
+class ParametersForm(forms.ModelForm):
+    """A form for user to define smoking habits when starting using app"""
+
+    class Meta:
+        model = UserProfile
+        fields = ['date_start', 'starting_nb_cig']
 
 
-class PaquetForm(forms.Form):
+class PaquetForm(forms.ModelForm):
+    """A form for user to create a new smoking usual pack"""
 
     class Meta:
         model = Paquet
         fields = ['type_cig', 'brand', 'qt_paquet', 'price']
 
-    TYPE_CIG_CHOICES = [
-        ('IND', 'Cigarettes industrielles'),
-        ('ROL', 'Cigarettes roulées'),
-        ('CIGARES', 'Cigares'),
-        ('CIGARIOS', 'Cigarios'),
-        ('PIPE', 'Pipe'),
-        ('NB', 'Autres(en nb/paquet)'),
-        ('GR', 'Autres(en g/paquet)'),
-    ]
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
 
-    type_cig = forms.CharField(label='Type', widget=forms.Select(choices=TYPE_CIG_CHOICES))
-    brand = forms.CharField(label='Marque')
-    qt_paquet = forms.IntegerField(label='Quantité')
-    price = forms.DecimalField(label='Prix')
+    def clean(self):
+        cleaned_data = super(PaquetForm, self).clean()
+        same_packs = Paquet.objects.filter(
+            user=self.user,
+            type_cig=cleaned_data.get('type_cig'),
+            brand=cleaned_data.get('brand'),
+            qt_paquet=cleaned_data.get('qt_paquet'),
+            price=cleaned_data.get('price'),
+            )
+        if same_packs:
+            raise forms.ValidationError("Vous avez déjà enregistré ce paquet")

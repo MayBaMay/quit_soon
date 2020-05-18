@@ -3,25 +3,41 @@
 
 {% block content %}
 
-À CHAQUE JOUR SUFFIT SA PEINE,
-ET AUJOURD'HUI?
-  <div class="row">
-    <div class="col-lg-6 mb-4">
-      <div class="card bg-danger text-white shadow">
-        <div class="card-body">
-          <i class="fas fa-skull mr-3"></i>
-          JE ME FAIS DU MAL
+{% if user.is_authenticated %}
+
+  À CHAQUE JOUR SUFFIT SA PEINE,
+  ET AUJOURD'HUI?
+    <div class="row">
+      <div class="col-lg-6 mb-4">
+        <div class="card bg-danger text-white shadow">
+          <div class="card-body">
+            <i class="fas fa-skull mr-3"></i>
+            JE ME FAIS DU MAL
+          </div>
         </div>
       </div>
-    </div>
-    <div class="col-lg-6 mb-4">
-      <div class="card bg-success text-white shadow">
-        <div class="card-body">
-          <i class="fas fa-running mr-3"></i>
-          JE ME FAIS DU BIEN
+      <div class="col-lg-6 mb-4">
+        <div class="card bg-success text-white shadow">
+          <div class="card-body">
+            <i class="fas fa-running mr-3"></i>
+            JE ME FAIS DU BIEN
+          </div>
         </div>
       </div>
+  </div>
+
+{% else %}
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
     </div>
-</div>
+  </div>
+{% endif %}
 
 {% endblock %}

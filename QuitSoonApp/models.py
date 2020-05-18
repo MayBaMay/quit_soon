@@ -39,6 +39,9 @@ class Paquet(models.Model):
     g_per_cig = models.DecimalField(max_digits=3, decimal_places=1, null=True)
     display = models.BooleanField(default=True)
 
+    class Meta:
+        unique_together = ('user', 'type_cig', 'brand', 'qt_paquet', 'price')
+
     def __str__(self):
         return "%s %s %s%s" % (self.type_cig, self.brand, self.qt_paquet, self.unit)
 

@@ -1,0 +1,127 @@
+from decimal import *
+
+from django.test import TransactionTestCase, TestCase
+from django.utils.timezone import make_aware
+from django.urls import reverse
+from django.contrib import auth
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
+from QuitSoonApp.views import (
+    index, today,
+    register_view, login_view,
+    profile, new_name, new_email, new_password, new_parameters,
+    suivi, objectifs,
+    paquets, bad, bad_history,
+    alternatives, good, good_history,
+)
+from QuitSoonApp.models import (
+    UserProfile,
+    Paquet, ConsoCig,
+    Alternative, ConsoAlternative,
+    Objectif, Trophee
+)
+from QuitSoonApp.modules.save_pack import SavePack
+
+
+class SavePackTestCase(TestCase):
+
+    def setUp(self):
+        """setup tests"""
+        self.usertest = User.objects.create_user(
+            'NewUserTest', 'test@test.com', 'testpassword')
+        UserProfile.objects.create(
+            user=self.usertest,
+            date_start='2012-12-12',
+            starting_nb_cig=3
+        )
+
+    def test_get_unit_u(self):
+        """test SavePack.get_unit method if type_cig == IND"""
+        datas ={
+            'type_cig':'IND',
+            'brand':'Camel',
+            'qt_paquet':20,
+            'price':10,
+            }
+        pack = SavePack(self.usertest, datas)
+        self.assertEqual(pack.get_unit(), 'U')
+        self.assertEqual(pack.unit, 'U')
+
+    def test_get_unit_g(self):
+        """test SavePack.get_unit method if type_cig == ROL"""
+        datas ={
+            'type_cig':'ROL',
+            'brand':'1637',
+            'qt_paquet':30,
+            'price':11,
+            }
+        pack = SavePack(self.usertest, datas)
+        self.assertEqual(pack.get_unit(), 'G')
+        self.assertEqual(pack.unit, 'G')
+
+    def test_get_g_per_cig_u(self):
+        """test SavePack.g_per_cig method if type_cig == 'IND'"""
+        datas ={
+            'type_cig':'IND',
+            'brand':'Camel',
+            'qt_paquet':20,
+            'price':10,
+            }
+        pack = SavePack(self.usertest, datas)
+        self.assertEqual(pack.get_g_per_cig(), None)
+        self.assertEqual(pack.g_per_cig, None)
+
+    def test_get_unit_g(self):
+        """test SavePack.g_per_cig method if type_cig == 'ROL'"""
+        datas ={
+            'type_cig':'ROL',
+            'brand':'1637',
+            'qt_paquet':30,
+            'price':11,
+            }
+        pack = SavePack(self.usertest, datas)
+        self.assertEqual(pack.get_g_per_cig(), 0.8)
+        self.assertEqual(pack.g_per_cig, 0.8)
+
+    def test_create_pack_ind(self):
+        """test SavePack.create_pack method if type_cig == 'IND'"""
+        datas ={
+            'type_cig':'IND',
+            'brand':'Camel',
+            'qt_paquet':20,
+            'price':10,
+            }
+        pack = SavePack(self.usertest, datas)
+        pack.create_pack()
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.assertTrue(db_pack.exists())
+        self.assertEqual(db_pack[0].unit, 'U')
+        self.assertEqual(db_pack[0].g_per_cig, None)
+
+    def test_create_pack_gr(self):
+        """test SavePack.create_pack method if type_cig == 'GR'"""
+        datas ={
+            'type_cig':'GR',
+            'brand':'test autre',
+            'qt_paquet':50,
+            'price':30,
+            }
+        pack = SavePack(self.usertest, datas)
+        pack.create_pack()
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='GR',
+            brand='TEST AUTRE',
+            qt_paquet=50,
+            price=30,
+            )
+        self.assertTrue(db_pack.exists())
+        self.assertEqual(db_pack[0].unit, 'G')
+        self.assertEqual(db_pack[0].g_per_cig, Decimal('0.8'))
