@@ -53,26 +53,18 @@
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <!-- <span class="mr-2 d-none d-lg-inline text-gray-600 small">Se connecter</span> -->
-                <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                Connexion
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="{% url 'QuitSoonApp:login' %}">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Connexion
+                  Me connecter à mon compte
                 </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Settings
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Activity Log
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                <a class="dropdown-item" href="{% url 'QuitSoonApp:register' %}">
+                  <i class="fas fa-user-circle fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Créer un compte
                 </a>
               </div>
             </li>
@@ -88,34 +80,29 @@
           <!-- Page Heading -->
           <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Tabayarriver!</h1>
-            <a href="{% url 'QuitSoonApp:register' %}"
-               class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-               <i class="fas fa-user fa-sm text-white-50 mr-3"></i>Créer un compte</a>
           </div>
 
           <!-- Content Row -->
           <div class="row">
-            <div class="col-xl-8 col-lg-7">
-              <div class="card shadow mb-4">
-                <div class="card-body">
-                  <div class="">
-                    Présentation de l'application, c'est cool, pratique et motaivant!<br>
+            <div class="card shadow mb-4">
+              <div class="card-body">
+                <div class="">
+                  Présentation de l'application, c'est cool, pratique et motivant!<br>
+                  <br>
+                  Avant de craquer, j'appuie sur le bouton rouge avec la méchante tête de mort,
+                  ça fait réfléchir...<br>
+                  J'ai un retour sur :<br>
+                    - le nombre de cigarette fumé dans la journée<br>
+                    - la moyenne de cigarette par jour<br>
+                    - l'argent dépensé pour ce poison et surtout l'argent que j'éconnomise en baissant ma consommation<br>
+                    ...<br>
                     <br>
-                    Avant de craquer, j'appuie sur le bouton rouge avec la méchante tête de mort,
-                    ça fait réfléchir...v
-                    J'ai un retour sur :<br>
-                      - le nombre de cigarette fumé dans la journée<br>
-                      - la moyenne de cogarette par jour<br>
-                      - l'argent dépensé pour ce poison et surtout l'argent que j'éconnomise en baissant ma consommationv
-                      ...<br>
-                      <br>
-                    Pour me motiver à avoir des comportement plus sains, j'enregistre ces activités.<br>
-                    Que ce soit du sport, des soins ou des loisirs, j'appuie sur le bouton vert sympas qui fait du bien<br>
-                    Je peux également y surveiller ma consommation de substitut nicotinique qui me permette de lentement écrabouiller ma dépendance.<br>
-                    Je peux donc constater les effets bénéfiques de mes activités saines et substitut sur ma consommation en baisse
-                    et me donner encore plus envie de choisir d'autres alternative à : "Je m'ennuie, allez, une petite clope...".
-                    Et ben non, je vais faire autre chose!<br>
-                  </div>
+                  Pour me motiver à avoir des comportements plus sains, j'enregistre ces activités.<br>
+                  Que ce soit du sport, des soins ou des loisirs, j'appuie sur le bouton vert sympas qui fait du bien.<br>
+                  Je peux également y surveiller ma consommation de substitut nicotinique qui me permette de lentement écrabouiller ma dépendance.<br>
+                  Je peux donc constater les effets bénéfiques de mes activités saines et substitut sur ma consommation en baisse
+                  et me donner encore plus envie de choisir d'autres alternative à : "Je m'ennuie, allez, une petite clope...".
+                  Et ben non, je vais faire autre chose!<br>
                 </div>
               </div>
             </div>
@@ -126,7 +113,7 @@
           <div class="row">
 
             <!-- Area Chart -->
-            <div class="col-xl-8 col-lg-7">
+            <div class="col-xl-8 col-lg-6">
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -142,7 +129,7 @@
             </div>
 
             <!-- Pie Chart -->
-            <div class="col-xl-4 col-lg-5">
+            <div class="col-xl-4 col-lg-6">
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
