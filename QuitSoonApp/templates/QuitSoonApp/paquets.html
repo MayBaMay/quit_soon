@@ -3,6 +3,42 @@
 
 {% block content %}
 
-MES PAQUETS
+  <!-- Begin Page Content -->
+  <div class="container-fluid">
 
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+      <h1 class="h3 mb-0 text-gray-800">MES CLOPES</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row">
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <div class="">
+            <p><b>Nouveau paquet :</b></p>
+            <form class="user form-with-password" id="paquetform" action="{% url 'QuitSoonApp:paquets' %}" method="POST">
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              {% for field in form %}
+                <div class="fieldWrapper form-group ">
+                  {{ field }}
+                  {{ field.error }}
+                </div>
+              {% endfor %}
+              <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-danger text-white shadow">
+        <div class="card-body">
+          <a href="{% url 'QuitSoonApp:bad' %}"><i class="fas fa-skull mr-3"></i>
+          JE ME FAIS DU MAL
+          </a>
+        </div>
+      </div>
+    </div>
+
+</div>
 {% endblock %}

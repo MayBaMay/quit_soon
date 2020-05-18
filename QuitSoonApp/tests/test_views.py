@@ -9,9 +9,10 @@ from django.core.exceptions import ValidationError
 from QuitSoonApp.views import (
     index, today,
     register_view, login_view,
-    profile, paquets, alternatives,
+    profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    new_name, new_email, new_password, new_parameters,
+    paquets, bad, bad_history,
+    alternatives, good, good_history,
 )
 from QuitSoonApp.models import (
     UserProfile,
