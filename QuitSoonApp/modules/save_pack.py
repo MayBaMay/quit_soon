@@ -6,6 +6,7 @@ This module allowes user to save a new instance of cigarettes pack
 from decimal import *
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from ..models import (
     UserProfile,
     Paquet, ConsoCig,
@@ -50,6 +51,7 @@ class SavePack:
 
     def create_pack(self):
         """Create pack from datas"""
+        # unicity checked in form and in model index
         newpack = Paquet.objects.create(
             user=self.user,
             type_cig=self.type_cig,
@@ -61,3 +63,29 @@ class SavePack:
             price_per_cig=self.price_per_cig
             )
         return newpack
+
+    def delete_pack(self):
+        try :
+            pack = Paquet.objects.get(
+                user=self.user,
+                type_cig=self.type_cig,
+                brand=self.brand,
+                qt_paquet=self.qt_paquet,
+                price=self.price
+                )
+            pack_filtered = Paquet.objects.filter(
+                user=self.user,
+                type_cig=self.type_cig,
+                brand=self.brand,
+                qt_paquet=self.qt_paquet,
+                price=self.price
+                )
+            # check if already smoked by user
+            if ConsoCig.objects.filter(paquet=pack):
+                # if yes: update display to False
+                pack_filtered.update(display=False)
+            else:
+                # if not: delete object
+                pack_filtered.delete()
+        except ObjectDoesNotExist:
+            pass

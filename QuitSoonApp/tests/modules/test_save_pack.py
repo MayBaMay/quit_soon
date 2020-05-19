@@ -1,4 +1,5 @@
-from decimal import *
+from decimal import Decimal
+import datetime
 
 from django.test import TransactionTestCase, TestCase
 from django.utils.timezone import make_aware
@@ -108,7 +109,7 @@ class SavePackTestCase(TestCase):
         self.assertEqual(pack.get_price_per_cig, 0.29)
         self.assertEqual(pack.price_per_cig, 0.29)
 
-    def test_create_pack_ind(self):
+    def test_create_new_pack_ind(self):
         """test SavePack.create_pack method if type_cig == 'IND'"""
         datas ={
             'type_cig':'IND',
@@ -130,7 +131,7 @@ class SavePackTestCase(TestCase):
         self.assertEqual(db_pack[0].g_per_cig, None)
         self.assertEqual(db_pack[0].price_per_cig, 0.5)
 
-    def test_create_pack_gr(self):
+    def test_create_new_pack_gr(self):
         """test SavePack.create_pack method if type_cig == 'GR'"""
         datas ={
             'type_cig':'GR',
@@ -151,3 +152,62 @@ class SavePackTestCase(TestCase):
         self.assertEqual(db_pack[0].unit, 'G')
         self.assertEqual(db_pack[0].g_per_cig, Decimal('0.8'))
         self.assertEqual(db_pack[0].price_per_cig, Decimal('0.48'))
+
+    def test_delete_unused_pack_ind(self):
+        """test SavePack.delete_pack method with unused pack"""
+        Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        datas ={
+            'type_cig':'IND',
+            'brand':'CAMEL',
+            'qt_paquet':20,
+            'price':10,
+            }
+        pack = SavePack(self.usertest, datas)
+        pack.delete_pack()
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.assertFalse(db_pack.exists())
+
+    def test_delete_used_pack_ind(self):
+        """test SavePack.delete_pack method with used pack"""
+        pack = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='CIGARIOS',
+            brand='ELPASO',
+            qt_paquet=5,
+            price=10,
+            )
+        ConsoCig.objects.create(
+            user=self.usertest,
+            date_cig=datetime.date(2020, 5, 13),
+            time_cig=datetime.time(13, 55),
+            paquet=pack,
+        )
+        datas ={
+            'type_cig':'CIGARIOS',
+            'brand':'ELPASO',
+            'qt_paquet':5,
+            'price':10,
+            }
+        pack = SavePack(self.usertest, datas)
+        pack.delete_pack()
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='CIGARIOS',
+            brand='ELPASO',
+            qt_paquet=5,
+            price=10,
+            )
+        self.assertTrue(db_pack.exists())
+        self.assertEqual(db_pack[0].display, False)

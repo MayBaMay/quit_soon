@@ -42,17 +42,112 @@
           <div class="card-body">
             <p><b>Mes clopes :</b></p>
             <div class="">
-                {% for paquet in paquets %}
+              {% if ind %}
+                <p><b>Cigarettes industrielles</b></p>
+                {% for paquet in ind %}
                   <div class="row">
-                    {{ paquet.brand }} {{ paquet.qt_paquet }}/paquet {{ paquet.price }}€  {{ paquet.price_per_cig }}€/cig
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}/paquet
+                    {{ paquet.price }}€
+                    {{ paquet.price_per_cig }}€/cig
+                    <a href="{% url 'QuitSoonApp:delete_pack' %}"><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
+              {% endif %}
             </div>
 
+            <div class="">
+              {% if rol %}
+                <p><b>Cigarettes roulées</b></p>
+                {% for paquet in rol %}
+                  <div class="row">
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}g/paquet
+                    {{ paquet.price }}€
+                    <form class="" action="" method="post">
+                      <input type="hidden" name="" value="{{ paquet.g_per_cig }}">
+                    </form>
+                    <p type="">{{ paquet.g_per_cig }}g/cigarette </p><i class="fas fa-edit"></i>
+                    {{ paquet.price_per_cig }}€/cig
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if cigares %}
+                <p><b>Cigares</b></p>
+                {% for paquet in cigares %}
+                  <div class="row">
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}/paquet
+                    {{ paquet.price }}€
+                    {{ paquet.price_per_cig }}€/cig
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if cigarios %}
+                <p><b>Cigarios</b></p>
+                {% for paquet in cigarios %}
+                  <div class="row">
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}/paquet
+                    {{ paquet.price }}€
+                    {{ paquet.price_per_cig }}€/cig
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if pipe %}
+                <p><b>Pipe</b></p>
+                {% for paquet in pipe %}
+                  <div class="row">
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}/paquet
+                    {{ paquet.price }}€
+                    {{ paquet.price_per_cig }}€/cig
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if nb %}
+                <p><b>Autres(en nb/paquet)</b></p>
+                {% for paquet in nb %}
+                  <div class="row">
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}/paquet
+                    {{ paquet.price }}€
+                    {{ paquet.price_per_cig }}€/cig
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if gr %}
+                <p><b>Autres(en g/paquet)</b></p>
+                {% for paquet in gr %}
+                  <div class="row">
+                    {{ paquet.brand }}
+                    {{ paquet.qt_paquet }}/paquet
+                    {{ paquet.price }}€
+                    {{ paquet.price_per_cig }}€/cig
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
-
 
     {% else %}
       <div class="container text-center">

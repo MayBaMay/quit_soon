@@ -16,6 +16,7 @@ urlpatterns = [
     path('objectifs/', views.objectifs, name='objectifs'),
 
     path('paquets/', views.paquets, name='paquets'),
+    path('delete_pack/', views.delete_pack, name='delete_pack'),
     path('bad/', views.bad, name='bad'),
     path('bad_history/', views.bad_history, name='bad_history'),
 

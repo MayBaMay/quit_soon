@@ -151,12 +151,28 @@ def paquets(request):
             new_pack = SavePack(request.user, form.cleaned_data)
             new_pack.create_pack()
             form = PaquetForm(request.user)
+    # select users packs for display in paquets page
     paquets = Paquet.objects.filter(user=request.user, display=True)
     context = {
         'form':form,
-        'paquets':paquets,
-    }
+        # get packs per type
+        'ind':paquets.filter(type_cig='IND'),
+        'rol':paquets.filter(type_cig='ROL'),
+        'cigares':paquets.filter(type_cig='CIGARES'),
+        'cigarios':paquets.filter(type_cig='CIGARIOS'),
+        'pipe':paquets.filter(type_cig='PIPE'),
+        'nb':paquets.filter(type_cig='NB'),
+        'gr':paquets.filter(type_cig='GR'),
+        }
     return render(request, 'QuitSoonApp/paquets.html', context)
+
+def delete_pack(request):
+    """
+    Used when user click on the trash of one of the paquet
+    Don't delete it but change display attribute into False if already used
+    """
+    pass
+
 
 def bad(request):
     """User smokes"""
