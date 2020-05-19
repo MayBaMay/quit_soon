@@ -7,7 +7,7 @@ from QuitSoonApp.views import (
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    paquets, delete_pack, bad, bad_history,
+    paquets, delete_pack, change_g_per_cig, bad, bad_history,
     alternatives, good, good_history,
 )
 
@@ -81,6 +81,11 @@ class TestUrls(SimpleTestCase):
         """test delete_pack"""
         url = reverse('QuitSoonApp:delete_pack', args=['type_cig', 'brand', 20, 3.3])
         self.assertEqual(resolve(url).func, delete_pack)
+
+    def test_change_g_per_cig_url_is_resolved(self):
+        """test change_g_per_cig"""
+        url = reverse('QuitSoonApp:change_g_per_cig')
+        self.assertEqual(resolve(url).func, change_g_per_cig)
 
     def test_bad_url_is_resolved(self):
         """test bad"""

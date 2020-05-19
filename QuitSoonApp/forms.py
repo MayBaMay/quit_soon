@@ -40,12 +40,7 @@ class ParametersForm(forms.ModelForm):
         fields = ['date_start', 'starting_nb_cig']
 
 
-class PaquetForm(forms.ModelForm):
-    """A form for user to create a new smoking usual pack"""
-
-    class Meta:
-        model = Paquet
-        fields = ['type_cig', 'brand', 'qt_paquet', 'price']
+class SmokeForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -56,8 +51,15 @@ class PaquetForm(forms.ModelForm):
         return data.upper()
 
 
+class PaquetFormCreation(SmokeForm):
+    """A form for user to create a new smoking usual pack"""
+
+    class Meta:
+        model = Paquet
+        fields = ['type_cig', 'brand', 'qt_paquet', 'price']
+
     def clean(self):
-        cleaned_data = super(PaquetForm, self).clean()
+        cleaned_data = super(PaquetFormCreation, self).clean()
         same_packs = Paquet.objects.filter(
             user=self.user,
             type_cig=cleaned_data.get('type_cig'),
@@ -67,3 +69,10 @@ class PaquetForm(forms.ModelForm):
             )
         if same_packs:
             raise forms.ValidationError("Vous avez déjà enregistré ce paquet")
+
+
+class PaquetFormCustomGInCig(SmokeForm):
+
+    class Meta:
+        model = Paquet
+        fields = ['type_cig', 'brand', 'qt_paquet', 'price', 'g_per_cig']

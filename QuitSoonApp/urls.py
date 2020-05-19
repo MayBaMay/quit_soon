@@ -19,6 +19,7 @@ urlpatterns = [
     path('delete_pack/<type_cig>/<brand>/<qt_paquet>/<price>/',
         views.delete_pack,
         name='delete_pack'),
+    path('change_g_per_cig/', views.change_g_per_cig, name='change_g_per_cig'),
     path('bad/', views.bad, name='bad'),
     path('bad_history/', views.bad_history, name='bad_history'),
 

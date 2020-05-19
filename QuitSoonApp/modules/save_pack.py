@@ -89,3 +89,6 @@ class SavePack:
                 pack_filtered.delete()
         except ObjectDoesNotExist:
             pass
+
+    def change_g_per_cig_pack(self, g_per_cig):
+        self.g_per_cig = g_per_cig

@@ -64,12 +64,17 @@
                     {{ paquet.brand }}
                     {{ paquet.qt_paquet }}g/paquet
                     {{ paquet.price }}€
-                    <form class="" action="" method="post">
-                      <input type="hidden" name="" value="{{ paquet.g_per_cig }}">
+                    <form class="form-cig-change" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
+                      <input type="hidden" name="brand" value="{{ paquet.brand }}">
+                      <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
+                      <input type="hidden" name="price" value="{{ paquet.price }}">
+                      <input name="" value="{{ paquet.g_per_cig }}">
                     </form>
-                    <p type="">{{ paquet.g_per_cig }}g/cigarette </p><i class="fas fa-edit"></i>
+                    <p type="">{{ paquet.g_per_cig }}g/cigarette</p><i class="fas fa-edit cig-change"></i>
                     {{ paquet.price_per_cig }}€/cig
-                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
 
                   </div>
                 {% endfor %}
@@ -85,6 +90,7 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
               {% endif %}
@@ -99,6 +105,7 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
               {% endif %}
@@ -113,6 +120,7 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
               {% endif %}
@@ -127,6 +135,7 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
               {% endif %}
@@ -141,6 +150,7 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
               {% endif %}

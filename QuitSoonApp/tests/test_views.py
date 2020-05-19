@@ -20,7 +20,7 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from QuitSoonApp.forms import PaquetForm
+from QuitSoonApp.forms import PaquetFormCreation
 
 
 class RegisterClientTestCase(TestCase):

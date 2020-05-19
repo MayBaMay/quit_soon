@@ -94,7 +94,7 @@
       });
   });
 
-  $('#NewEmailForm').submit(function(e){
+  $('#NewEmailForm').on('submit', function(e){
     var form = $(this);
     var submitBtn = $(this).find('input[type=submit]');
     $('.newemail-error').css('display', 'none');
@@ -122,7 +122,7 @@
       });
   });
 
-  $('#NewPasswordForm').submit(function(e){
+  $('#NewPasswordForm').on('submit', function(e){
     var form = $(this);
     var submitBtn = $(this).find('input[type=submit]');
     $('.oldpwd-error').css('display', 'none');
@@ -160,7 +160,7 @@
       });
   });
 
-  $('#NewParametersForm').submit(function(e){
+  $('#NewParametersForm').on('submit', function(e){
     var form = $(this);
     var submitBtn = $(this).find('input[type=submit]');
     $('.newparameters-error').css('display', 'none');
@@ -183,5 +183,18 @@
       });
   });
 
+  $('.cig-change').on('click', function(e){
+    $('.cig-change').css('display', 'none');
+    $('.cig-change').prev().css('display', 'none');
+    $('.cig-change').siblings( ".form-cig-change" ).css('display', 'block');
+  });
 
+  $('.form-cig-change').on('keypress', function(e){
+    if(e.which == 13) {
+      $('.cig-change').css('display', 'block');
+      $('.cig-change').prev().css('display', 'block');
+      $('.cig-change').siblings( ".form-cig-change" ).css('display', 'none');
+      e.preventDefault();
+    }
+  });
 })(jQuery); // End of use strict

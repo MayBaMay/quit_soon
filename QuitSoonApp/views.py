@@ -13,7 +13,7 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, ParametersForm, PaquetForm
+from .forms import RegistrationForm, ParametersForm, PaquetFormCreation
 from .modules.resetprofile import ResetProfile
 from .modules.save_pack import SavePack
 
@@ -144,14 +144,14 @@ def new_parameters(request):
 
 def paquets(request):
     """Smoking parameters, user different packs"""
-    form = PaquetForm(request.user)
+    form = PaquetFormCreation(request.user)
     if request.method == 'POST':
         # receive smoking habits from user in a
-        form = PaquetForm(request.user, request.POST)
+        form = PaquetFormCreation(request.user, request.POST)
         if form.is_valid():
             new_pack = SavePack(request.user, form.cleaned_data)
             new_pack.create_pack()
-            form = PaquetForm(request.user)
+            form = PaquetFormCreation(request.user)
     # select users packs for display in paquets page
     paquets = Paquet.objects.filter(user=request.user, display=True)
     context = {
@@ -181,6 +181,19 @@ def delete_pack(request, type_cig, brand, qt_paquet, price):
     new_pack = SavePack(request.user, datas)
     new_pack.delete_pack()
     return redirect('QuitSoonApp:paquets')
+
+def change_g_per_cig(self):
+    """
+    User can change the number of gr per cigarette
+    and so chane the price of each cigarette
+    """
+    if request.method == 'POST':
+        print(request.POST['g_per_cig'])
+        form = PaquetFormCreationCustomGInCig(request.user, request.POST)
+        if form.is_valid():
+            pass
+    return redirect('QuitSoonApp:paquets')
+
 
 def bad(request):
     """User smokes"""
