@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -166,13 +167,20 @@ def paquets(request):
         }
     return render(request, 'QuitSoonApp/paquets.html', context)
 
-def delete_pack(request):
+def delete_pack(request, type_cig, brand, qt_paquet, price):
     """
     Used when user click on the trash of one of the paquet
     Don't delete it but change display attribute into False if already used
     """
-    pass
-
+    datas = {
+        'type_cig':type_cig,
+        'brand':brand,
+        'qt_paquet':int(qt_paquet),
+        'price':Decimal(price.replace(',','.')),
+    }
+    new_pack = SavePack(request.user, datas)
+    new_pack.delete_pack()
+    return redirect('QuitSoonApp:paquets')
 
 def bad(request):
     """User smokes"""

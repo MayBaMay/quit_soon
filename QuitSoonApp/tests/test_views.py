@@ -343,10 +343,9 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
         self.assertEqual(db_pack[0].unit, 'U')
         self.assertEqual(db_pack[0].g_per_cig, None)
 
-
     def test_paquets_view_post_fails(self):
         """Test client post a form with invalid datas"""
-        Paquet.objects.create(
+        brandtest = Paquet.objects.create(
             user=self.user,
             type_cig='GR',
             brand='BRANDTEST',
@@ -354,18 +353,38 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             price=30,
             )
         datas = {'type_cig':'GR',
-                'brand':'Brandtest',
+                'brand':'BRANDTEST',
                 'qt_paquet':'50',
-                'price':'50'}
+                'price':'30'}
         response = self.client.post(reverse('QuitSoonApp:paquets'),
                                     data=datas)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
         db_pack = Paquet.objects.filter(
             user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
             )
-        self.assertFalse(db_pack.exists())
+        self.assertEqual(db_pack.count(), 1)
+        self.assertEqual(db_pack[0].id, brandtest.id)
+
+    def test_delete_pack_views(self):
+        Paquet.objects.create(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        response = self.client.post(reverse('QuitSoonApp:delete_pack', args=['GR', 'BRANDTEST', 50, 30]))
+        self.assertEqual(response.status_code, 302)
+        filter = Paquet.objects.filter(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        self.assertFalse(filter.exists())

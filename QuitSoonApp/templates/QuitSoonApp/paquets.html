@@ -50,7 +50,7 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
-                    <a href="{% url 'QuitSoonApp:delete_pack' %}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </div>
                 {% endfor %}
               {% endif %}
