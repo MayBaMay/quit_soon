@@ -51,6 +51,11 @@ class PaquetForm(forms.ModelForm):
         self.user = user
         super().__init__(*args, **kwargs)
 
+    def clean_brand(self):
+        data = self.cleaned_data['brand']
+        return data.upper()
+
+
     def clean(self):
         cleaned_data = super(PaquetForm, self).clean()
         same_packs = Paquet.objects.filter(

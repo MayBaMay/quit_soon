@@ -37,6 +37,7 @@ class Paquet(models.Model):
     )
     price = models.DecimalField(max_digits=5, decimal_places=2)
     g_per_cig = models.DecimalField(max_digits=3, decimal_places=1, null=True)
+    price_per_cig = models.DecimalField(max_digits=4, decimal_places=2, null=True)
     display = models.BooleanField(default=True)
 
     class Meta:

@@ -16,7 +16,6 @@
       <div class="row">
         <div class="card shadow mb-4">
           <div class="card-body">
-            <div class="">
               <p><b>Nouveau paquet :</b></p>
               <p>{{ error }}</p>
               <form class="user form-with-password" id="paquetform" action="{% url 'QuitSoonApp:paquets' %}" method="POST">
@@ -31,13 +30,29 @@
                 {% endfor %}
                 <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
               </form>
-            </div>
           </div>
         </div>
         </div>
         <button class="button button5"><a href="{% url 'QuitSoonApp:bad' %}"><i class="fas fa-skull mr-3"></i>
         JE ME FAIS DU MAL
         </a></button>
+
+      <div class="row">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <p><b>Mes clopes :</b></p>
+            <div class="">
+                {% for paquet in paquets %}
+                  <div class="row">
+                    {{ paquet.brand }} {{ paquet.qt_paquet }}/paquet {{ paquet.price }}€  {{ paquet.price_per_cig }}€/cig
+                  </div>
+                {% endfor %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
 
     {% else %}
       <div class="container text-center">

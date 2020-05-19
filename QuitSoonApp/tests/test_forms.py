@@ -99,7 +99,7 @@ class test_PaquetForm(TestCase):
         Paquet.objects.create(
             user=self.user,
             type_cig='IND',
-            brand='Camel',
+            brand='CAMEL',
             qt_paquet=20,
             price=10,
             )

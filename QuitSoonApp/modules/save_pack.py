@@ -3,6 +3,8 @@
 """
 This module allowes user to save a new instance of cigarettes pack
 """
+from decimal import *
+
 from django.contrib.auth.models import User
 from ..models import (
     UserProfile,
@@ -17,23 +19,34 @@ class SavePack:
     def __init__(self, user, datas):
         self.user = user
         self.type_cig = datas['type_cig']
-        self.brand = datas['brand'].upper()
+        self.brand = datas['brand']
         self.qt_paquet = datas['qt_paquet']
-        self.unit = self.get_unit()
+        self.unit = self.get_unit
         self.price = datas['price']
-        self.g_per_cig = self.get_g_per_cig()
+        self.g_per_cig = self.get_initial_g_per_cig
+        self.price_per_cig = self.get_price_per_cig
 
+    @property
     def get_unit(self):
         """method getting unit from type_cig"""
         if self.type_cig in ['ROL', 'PIPE', 'GR']:
             return 'G'
         return 'U'
 
-    def get_g_per_cig(self):
+    @property
+    def get_initial_g_per_cig(self):
         """ column g_per_cig only needed for """
         if self.unit == 'G':
             return 0.8
         return None
+
+    @property
+    def get_price_per_cig(self):
+        """ get price per cigarette """
+        if self.unit == 'G':
+            nb_cig = self.qt_paquet / self.g_per_cig
+            return Decimal(self.price) / Decimal(nb_cig)
+        return Decimal(self.price)/self.qt_paquet
 
     def create_pack(self):
         """Create pack from datas"""
@@ -45,5 +58,6 @@ class SavePack:
             unit=self.unit,
             price=self.price,
             g_per_cig=self.g_per_cig,
+            price_per_cig=self.price_per_cig
             )
         return newpack

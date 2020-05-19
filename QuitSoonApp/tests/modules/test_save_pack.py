@@ -45,7 +45,7 @@ class SavePackTestCase(TestCase):
             'price':10,
             }
         pack = SavePack(self.usertest, datas)
-        self.assertEqual(pack.get_unit(), 'U')
+        self.assertEqual(pack.get_unit, 'U')
         self.assertEqual(pack.unit, 'U')
 
     def test_get_unit_g(self):
@@ -57,10 +57,10 @@ class SavePackTestCase(TestCase):
             'price':11,
             }
         pack = SavePack(self.usertest, datas)
-        self.assertEqual(pack.get_unit(), 'G')
+        self.assertEqual(pack.get_unit, 'G')
         self.assertEqual(pack.unit, 'G')
 
-    def test_get_g_per_cig_u(self):
+    def test_get_initial_g_per_cig_u(self):
         """test SavePack.g_per_cig method if type_cig == 'IND'"""
         datas ={
             'type_cig':'IND',
@@ -69,7 +69,7 @@ class SavePackTestCase(TestCase):
             'price':10,
             }
         pack = SavePack(self.usertest, datas)
-        self.assertEqual(pack.get_g_per_cig(), None)
+        self.assertEqual(pack.get_initial_g_per_cig, None)
         self.assertEqual(pack.g_per_cig, None)
 
     def test_get_unit_g(self):
@@ -81,14 +81,38 @@ class SavePackTestCase(TestCase):
             'price':11,
             }
         pack = SavePack(self.usertest, datas)
-        self.assertEqual(pack.get_g_per_cig(), 0.8)
+        self.assertEqual(pack.get_initial_g_per_cig, 0.8)
         self.assertEqual(pack.g_per_cig, 0.8)
+
+    def tes_get_price_per_cig_u(self):
+        """test SavePack.get_price_per_cig method if type_cig == 'IND'"""
+        datas ={
+            'type_cig':'IND',
+            'brand':'Camel',
+            'qt_paquet':20,
+            'price':10,
+        }
+        pack = SavePack(self.usertest, datas)
+        self.assertEqual(pack.get_price_per_cig, 0.5)
+        self.assertEqual(pack.price_per_cig, 0.5)
+
+    def tes_get_price_per_cig_gr(self):
+        """test SavePack.get_price_per_cig method if type_cig == 'IND'"""
+        datas ={
+            'type_cig':'ROL',
+            'brand':'1637',
+            'qt_paquet':30,
+            'price':11,
+            }
+        pack = SavePack(self.usertest, datas)
+        self.assertEqual(pack.get_price_per_cig, 0.29)
+        self.assertEqual(pack.price_per_cig, 0.29)
 
     def test_create_pack_ind(self):
         """test SavePack.create_pack method if type_cig == 'IND'"""
         datas ={
             'type_cig':'IND',
-            'brand':'Camel',
+            'brand':'CAMEL',
             'qt_paquet':20,
             'price':10,
             }
@@ -104,12 +128,13 @@ class SavePackTestCase(TestCase):
         self.assertTrue(db_pack.exists())
         self.assertEqual(db_pack[0].unit, 'U')
         self.assertEqual(db_pack[0].g_per_cig, None)
+        self.assertEqual(db_pack[0].price_per_cig, 0.5)
 
     def test_create_pack_gr(self):
         """test SavePack.create_pack method if type_cig == 'GR'"""
         datas ={
             'type_cig':'GR',
-            'brand':'test autre',
+            'brand':'TEST AUTRE',
             'qt_paquet':50,
             'price':30,
             }
@@ -125,3 +150,4 @@ class SavePackTestCase(TestCase):
         self.assertTrue(db_pack.exists())
         self.assertEqual(db_pack[0].unit, 'G')
         self.assertEqual(db_pack[0].g_per_cig, Decimal('0.8'))
+        self.assertEqual(db_pack[0].price_per_cig, Decimal('0.48'))

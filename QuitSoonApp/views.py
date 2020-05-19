@@ -145,13 +145,18 @@ def paquets(request):
     """Smoking parameters, user different packs"""
     form = PaquetForm(request.user)
     if request.method == 'POST':
+        # receive smoking habits from user in a
         form = PaquetForm(request.user, request.POST)
         if form.is_valid():
             new_pack = SavePack(request.user, form.cleaned_data)
             new_pack.create_pack()
             form = PaquetForm(request.user)
-            return render(request, 'QuitSoonApp/paquets.html', {'form':form})
-    return render(request, 'QuitSoonApp/paquets.html', {'form':form})
+    paquets = Paquet.objects.filter(user=request.user, display=True)
+    context = {
+        'form':form,
+        'paquets':paquets,
+    }
+    return render(request, 'QuitSoonApp/paquets.html', context)
 
 def bad(request):
     """User smokes"""
