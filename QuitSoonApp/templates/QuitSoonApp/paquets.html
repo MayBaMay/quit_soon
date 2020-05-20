@@ -77,7 +77,6 @@
                     <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
                     {{ paquet.price_per_cig }}€/cig
                     <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
-
                   </div>
                 {% endfor %}
               {% endif %}
@@ -117,13 +116,23 @@
               {% if pipe %}
                 <p><b>Pipe</b></p>
                 {% for paquet in pipe %}
-                  <div class="row">
-                    {{ paquet.brand }}
-                    {{ paquet.qt_paquet }}/paquet
-                    {{ paquet.price }}€
-                    {{ paquet.price_per_cig }}€/cig
-                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
-                  </div>
+                <div class="row">
+                  {{ paquet.brand }}
+                  {{ paquet.qt_paquet }}g/paquet
+                  {{ paquet.price }}€
+                  <form class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
+                    <input type="hidden" name="brand" value="{{ paquet.brand }}">
+                    <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
+                    <input type="hidden" name="price" value="{{ paquet.price|unlocalize }}">
+                    <input type="number" step="0.1" name="g_per_cig" value="{{ paquet.g_per_cig|unlocalize }}">
+                  </form>
+                  <p class="show" type="">{{ paquet.g_per_cig }}g/cigarette</p>
+                  <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
+                  {{ paquet.price_per_cig }}€/cig
+                  <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
+                </div>
                 {% endfor %}
               {% endif %}
             </div>
@@ -147,13 +156,23 @@
               {% if gr %}
                 <p><b>Autres(en g/paquet)</b></p>
                 {% for paquet in gr %}
-                  <div class="row">
-                    {{ paquet.brand }}
-                    {{ paquet.qt_paquet }}/paquet
-                    {{ paquet.price }}€
-                    {{ paquet.price_per_cig }}€/cig
-                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
-                  </div>
+                <div class="row">
+                  {{ paquet.brand }}
+                  {{ paquet.qt_paquet }}g/paquet
+                  {{ paquet.price }}€
+                  <form class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
+                    <input type="hidden" name="brand" value="{{ paquet.brand }}">
+                    <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
+                    <input type="hidden" name="price" value="{{ paquet.price|unlocalize }}">
+                    <input type="number" step="0.1" name="g_per_cig" value="{{ paquet.g_per_cig|unlocalize }}">
+                  </form>
+                  <p class="show" type="">{{ paquet.g_per_cig }}g/cigarette</p>
+                  <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
+                  {{ paquet.price_per_cig }}€/cig
+                  <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
+                </div>
                 {% endfor %}
               {% endif %}
             </div>
