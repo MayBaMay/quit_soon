@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
 
-from QuitSoonApp.models import UserProfile, Paquet
+from QuitSoonApp.models import UserProfile, Paquet, Alternative
 
 
 class RegistrationForm(UserCreationForm):
@@ -76,3 +76,38 @@ class PaquetFormCustomGInCig(PaquetForm):
     class Meta:
         model = Paquet
         fields = ['type_cig', 'brand', 'qt_paquet', 'price', 'g_per_cig']
+
+
+class AlternativeForm(forms.ModelForm):
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+        self.fields['alternative'].required = False
+        self.fields['substitut'].required = False
+        self.fields['nicotine'].required = False
+
+    class Meta:
+        model = Alternative
+        fields = ['type_alternative', 'alternative', 'substitut', 'nicotine']
+
+    def clean_alternative(self):
+        data = self.cleaned_data['alternative']
+        if data and self.cleaned_data['type_alternative'] == 'Su':
+            raise forms.ValidationError("Vous avez choisi un type 'Substitut', le champ 'alternative' doit donc être vide")
+        if data:
+            return data.upper()
+
+    def clean_substitut(self):
+        data = self.cleaned_data['substitut']
+        if data and self.cleaned_data['type_alternative'] != 'Su':
+            raise forms.ValidationError("Vous n'avez pas choisi un type 'Substitut', le champ 'substitut' doit donc être vide")
+        if data:
+            return data
+
+    def clean_nicotine(self):
+        data = self.cleaned_data['nicotine']
+        if data and self.cleaned_data['type_alternative'] != 'Su':
+            raise forms.ValidationError("Vous n'avez pas choisi un type 'Substitut', le champ 'nicotine' doit donc être vide")
+        if data:
+            return data

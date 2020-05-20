@@ -65,17 +65,31 @@ class Alternative(models.Model):
         ('So', 'Soin'),
         ('Su', 'Substitut'),
     ]
+    SUBSTITUT = [
+        ('P24', 'Patchs(24h)'),
+        ('P16', 'Patchs(16h)'),
+        ('PAST', 'Pastilles'),
+        ('GM', 'Gommes à mâcher'),
+        ('GS', 'Gommes à sucer'),
+        ('CS', 'Comprimés sublinguaux'),
+        ('ECIG', 'Cigarette éléctronique'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     type_alternative = models.CharField(
         max_length=200,
         choices=TYPE_ALTERNATIVE,
         default='Sp',
     )
-    alternative = models.CharField(max_length=200)
+    alternative = models.CharField(max_length=200, null=True)
+    substitut = models.CharField(
+        max_length=200,
+        choices=SUBSTITUT,
+        null=True,
+    )
     nicotine = models.FloatField(null=True)
 
     class Meta:
-        unique_together = ('type_alternative', 'alternative', 'nicotine')
+        unique_together = ('user', 'type_alternative', 'alternative', 'substitut', 'nicotine')
 
 
 class ConsoAlternative(models.Model):

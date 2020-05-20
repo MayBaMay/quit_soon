@@ -3,7 +3,12 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from QuitSoonApp.forms import RegistrationForm, ParametersForm, PaquetFormCreation, PaquetFormCustomGInCig
+from QuitSoonApp.forms import (
+    RegistrationForm,
+    ParametersForm,
+    PaquetFormCreation,
+    PaquetFormCustomGInCig,
+    AlternativeForm)
 from QuitSoonApp.models import UserProfile, Paquet
 
 
@@ -129,3 +134,63 @@ class test_PaquetFormCustomGInCig(TestCase):
                 'g_per_cig':'0.9'}
         form = PaquetFormCustomGInCig(self.user, data)
         self.assertTrue(form.is_valid())
+
+class test_AlternativeForm(TestCase):
+
+    def setUp(self):
+        """setup tests"""
+        self.user = User.objects.create_user(
+            username="arandomname", email="random@email.com", password="arandompassword")
+
+    def test_AlternativeForm_is_valid(self):
+        """test valid AlternativeForm"""
+        data = {'type_alternative':'Sp',
+                'alternative':'COURSE',}
+        form = AlternativeForm(self.user, data)
+        self.assertTrue(form.is_valid())
+
+    def test_AlternativeForm_is_valid_substitut(self):
+        """test valid AlternativeForm with substitut entry"""
+        data = {'type_alternative':'Su',
+                'alternative':'',
+                'substitut':'P24',
+                'nicotine':'2',
+                }
+        form = AlternativeForm(self.user, data)
+        self.assertTrue(form.is_valid())
+
+    def test_AlternativeForm_is_valid_failed_clean_alternative(self):
+        """test in valid AlternativeForm pb clean_alternative"""
+        data = {'type_alternative':'Su',
+                'alternative':'COURSE',
+                'substitut':'',
+                'nicotine':'',
+                }
+        form = AlternativeForm(self.user, data)
+        self.assertRaises(ValidationError)
+        self.assertTrue('alternative' in form.errors.as_data().keys())
+        self.assertFalse(form.is_valid())
+
+    def test_AlternativeForm_is_valid_failed_clean_substitut(self):
+        """test in valid AlternativeForm pb clean_substitut"""
+        data = {'type_alternative':'Sp',
+                'alternative':'COURSE',
+                'substitut':'PAST',
+                'nicotine':'',
+                }
+        form = AlternativeForm(self.user, data)
+        self.assertRaises(ValidationError)
+        self.assertTrue('substitut' in form.errors.as_data().keys())
+        self.assertFalse(form.is_valid())
+
+    def test_AlternativeForm_is_valid_failed_clean_nicotine(self):
+        """test in valid AlternativeForm pb clean_nicotine"""
+        data = {'type_alternative':'Sp',
+                'alternative':'COURSE',
+                'substitut':'PAST',
+                'nicotine':'3',
+                }
+        form = AlternativeForm(self.user, data)
+        self.assertRaises(ValidationError)
+        self.assertTrue('nicotine' in form.errors.as_data().keys())
+        self.assertFalse(form.is_valid())

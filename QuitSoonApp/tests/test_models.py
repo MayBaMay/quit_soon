@@ -60,7 +60,7 @@ class TestModels(TestCase):
         self.alternative2 = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
-            alternative='PASTILLES',
+            substitut='PASTILLES',
             nicotine=2,
         )
         self.consoalter = ConsoAlternative.objects.create(
