@@ -13,7 +13,7 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, ParametersForm, PaquetFormCreation
+from .forms import RegistrationForm, ParametersForm, PaquetFormCreation, PaquetFormCustomGInCig
 from .modules.resetprofile import ResetProfile
 from .modules.save_pack import SavePack
 
@@ -182,16 +182,18 @@ def delete_pack(request, type_cig, brand, qt_paquet, price):
     new_pack.delete_pack()
     return redirect('QuitSoonApp:paquets')
 
-def change_g_per_cig(self):
+def change_g_per_cig(request):
     """
     User can change the number of gr per cigarette
     and so chane the price of each cigarette
     """
     if request.method == 'POST':
-        print(request.POST['g_per_cig'])
-        form = PaquetFormCreationCustomGInCig(request.user, request.POST)
+        form = PaquetFormCustomGInCig(request.user, request.POST)
         if form.is_valid():
-            pass
+            change_pack = SavePack(request.user, form.cleaned_data)
+            change_pack.update_pack_g_per_cig()
+        else:
+            print(form.errors.as_data())
     return redirect('QuitSoonApp:paquets')
 
 

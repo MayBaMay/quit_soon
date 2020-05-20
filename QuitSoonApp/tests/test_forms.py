@@ -126,6 +126,6 @@ class test_PaquetFormCustomGInCig(TestCase):
                 'brand':'Camel',
                 'qt_paquet':'20',
                 'price':'10',
-                'g_per_cig':'0,9'}
+                'g_per_cig':'0.9'}
         form = PaquetFormCustomGInCig(self.user, data)
         self.assertTrue(form.is_valid())

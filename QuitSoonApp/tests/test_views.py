@@ -1,3 +1,4 @@
+from decimal import Decimal
 import datetime
 
 from django.test import TransactionTestCase, TestCase
@@ -371,6 +372,7 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
         self.assertEqual(db_pack[0].id, brandtest.id)
 
     def test_delete_pack_views(self):
+        """Test client post delete_pack view"""
         Paquet.objects.create(
             user=self.user,
             type_cig='GR',
@@ -388,3 +390,27 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             price=30,
             )
         self.assertFalse(filter.exists())
+
+    def test_change_g_per_cig_view(self):
+        """Test client post hange_g_per_cig view"""
+        pack = Paquet.objects.create(
+            user=self.user,
+            type_cig='PIPE',
+            brand='BRANDTEST',
+            qt_paquet=40,
+            price=100,
+            )
+        self.assertEqual(pack.g_per_cig, None)
+        data = {'type_cig':'PIPE',
+                'brand':'BRANDTEST',
+                'qt_paquet':'40',
+                'price':'100',
+                'g_per_cig':'1.1'
+                }
+        response = self.client.post(reverse('QuitSoonApp:change_g_per_cig'),
+                                    data=data)
+        paquet = Paquet.objects.get(
+            id=pack.id,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(paquet.g_per_cig, Decimal('1.1'))

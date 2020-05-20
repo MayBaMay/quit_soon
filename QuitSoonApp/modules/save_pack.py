@@ -24,7 +24,11 @@ class SavePack:
         self.qt_paquet = datas['qt_paquet']
         self.unit = self.get_unit
         self.price = datas['price']
-        self.g_per_cig = self.get_initial_g_per_cig
+        try:
+            g_per_cig = datas['g_per_cig']
+        except KeyError:
+            g_per_cig = None
+        self.g_per_cig = self.get_g_per_cig(g_per_cig)
         self.price_per_cig = self.get_price_per_cig
 
     @property
@@ -34,12 +38,14 @@ class SavePack:
             return 'G'
         return 'U'
 
-    @property
-    def get_initial_g_per_cig(self):
+    def get_g_per_cig(self, g_per_cig=''):
         """ column g_per_cig only needed for """
-        if self.unit == 'G':
-            return 0.8
-        return None
+        if g_per_cig:
+            return g_per_cig
+        else:
+            if self.unit == 'G':
+                return 0.8
+            return None
 
     @property
     def get_price_per_cig(self):
@@ -90,5 +96,15 @@ class SavePack:
         except ObjectDoesNotExist:
             pass
 
-    def change_g_per_cig_pack(self, g_per_cig):
-        self.g_per_cig = g_per_cig
+    def update_pack_g_per_cig(self):
+        try :
+            pack_filtered = Paquet.objects.filter(
+                user=self.user,
+                type_cig=self.type_cig,
+                brand=self.brand,
+                qt_paquet=self.qt_paquet,
+                price=self.price
+                )
+            pack_filtered.update(g_per_cig=self.g_per_cig)
+        except ObjectDoesNotExist:
+            pass

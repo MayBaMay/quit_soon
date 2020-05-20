@@ -40,7 +40,7 @@ class ParametersForm(forms.ModelForm):
         fields = ['date_start', 'starting_nb_cig']
 
 
-class SmokeForm(forms.ModelForm):
+class PaquetForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
@@ -51,7 +51,7 @@ class SmokeForm(forms.ModelForm):
         return data.upper()
 
 
-class PaquetFormCreation(SmokeForm):
+class PaquetFormCreation(PaquetForm):
     """A form for user to create a new smoking usual pack"""
 
     class Meta:
@@ -71,7 +71,7 @@ class PaquetFormCreation(SmokeForm):
             raise forms.ValidationError("Vous avez déjà enregistré ce paquet")
 
 
-class PaquetFormCustomGInCig(SmokeForm):
+class PaquetFormCustomGInCig(PaquetForm):
 
     class Meta:
         model = Paquet
