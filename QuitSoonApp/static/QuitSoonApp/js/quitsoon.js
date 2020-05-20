@@ -1,6 +1,9 @@
 (function($) {
   "use strict"; // Start of use strict
 
+  var changeId = null
+  var changeFormId = null
+
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -94,7 +97,7 @@
       });
   });
 
-  $('#NewEmailForm').submit(function(e){
+  $('#NewEmailForm').on('submit', function(e){
     var form = $(this);
     var submitBtn = $(this).find('input[type=submit]');
     $('.newemail-error').css('display', 'none');
@@ -122,7 +125,7 @@
       });
   });
 
-  $('#NewPasswordForm').submit(function(e){
+  $('#NewPasswordForm').on('submit', function(e){
     var form = $(this);
     var submitBtn = $(this).find('input[type=submit]');
     $('.oldpwd-error').css('display', 'none');
@@ -160,7 +163,7 @@
       });
   });
 
-  $('#NewParametersForm').submit(function(e){
+  $('#NewParametersForm').on('submit', function(e){
     var form = $(this);
     var submitBtn = $(this).find('input[type=submit]');
     $('.newparameters-error').css('display', 'none');
@@ -183,5 +186,23 @@
       });
   });
 
+  $('.cig-change').on('click', function(e){
+    if ($(this).attr('id') == 'submit'){
+      $(this).siblings(".form-cig-change").find('input[type=number]').attr('type', 'hidden');
+      $(this).siblings(".form-cig-change").submit();
+    }
+    else {
+      e.preventDefault();
+      // reset all paquets rows
+      $('.cig-change').prev().removeClass('hide').addClass('show');
+      $('.cig-change').siblings( ".form-cig-change" ).removeClass('show').addClass('hide');
+      $('.cig-change').removeAttr('id','submit')
+      // change only this row
+      $(this).prev().removeClass('show').addClass('hide');
+      $(this).siblings(".form-cig-change").removeClass('hide').addClass('show');
+      $(this).attr('id', 'submit')
+      // $(this).removeClass('cig-change').addclass('id','cig-change')
+    }
+  });
 
 })(jQuery); // End of use strict
