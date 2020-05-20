@@ -1,3 +1,4 @@
+from decimal import Decimal
 import datetime
 
 from django.test import TransactionTestCase, TestCase
@@ -20,6 +21,7 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
+from QuitSoonApp.forms import PaquetFormCreation
 
 
 class RegisterClientTestCase(TestCase):
@@ -302,3 +304,113 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
         self.assertEqual(UserProfile.objects.get(user=self.user).date_start, datetime.date(2020, 5, 17))
         self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)
+
+
+class BadAndGoodHabitsParametersTestCase(TestCase):
+    """
+    Tests on parameters pages, good (alternatives) or bad (packs)
+    """
+
+    def setUp(self):
+        """setup tests"""
+        self.user = User.objects.create_user(
+            'TestUser', 'test@test.com', 'testpassword')
+        self.client.login(username=self.user.username, password='testpassword')
+
+    def test_paquets_view_get(self):
+        """Test get paquets view"""
+        response = self.client.get(reverse('QuitSoonApp:paquets'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
+
+    def test_paquets_view_post_succes(self):
+        """Test client post a form with success"""
+        data = {'type_cig':'IND',
+                'brand':'Camel',
+                'qt_paquet':'20',
+                'price':'10'}
+        response = self.client.post(reverse('QuitSoonApp:paquets'),
+                                    data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
+        db_pack = Paquet.objects.filter(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.assertTrue(db_pack.exists())
+        self.assertEqual(db_pack[0].unit, 'U')
+        self.assertEqual(db_pack[0].g_per_cig, None)
+
+    def test_paquets_view_post_fails(self):
+        """Test client post a form with invalid datas"""
+        brandtest = Paquet.objects.create(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        datas = {'type_cig':'GR',
+                'brand':'BRANDTEST',
+                'qt_paquet':'50',
+                'price':'30'}
+        response = self.client.post(reverse('QuitSoonApp:paquets'),
+                                    data=datas)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
+        db_pack = Paquet.objects.filter(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        self.assertEqual(db_pack.count(), 1)
+        self.assertEqual(db_pack[0].id, brandtest.id)
+
+    def test_delete_pack_views(self):
+        """Test client post delete_pack view"""
+        Paquet.objects.create(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        response = self.client.post(reverse('QuitSoonApp:delete_pack', args=['GR', 'BRANDTEST', 50, 30]))
+        self.assertEqual(response.status_code, 302)
+        filter = Paquet.objects.filter(
+            user=self.user,
+            type_cig='GR',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            )
+        self.assertFalse(filter.exists())
+
+    def test_change_g_per_cig_view(self):
+        """Test client post hange_g_per_cig view"""
+        pack = Paquet.objects.create(
+            user=self.user,
+            type_cig='PIPE',
+            brand='BRANDTEST',
+            qt_paquet=40,
+            price=100,
+            )
+        self.assertEqual(pack.g_per_cig, None)
+        data = {'type_cig':'PIPE',
+                'brand':'BRANDTEST',
+                'qt_paquet':'40',
+                'price':'100',
+                'g_per_cig':'1.1'
+                }
+        response = self.client.post(reverse('QuitSoonApp:change_g_per_cig'),
+                                    data=data)
+        paquet = Paquet.objects.get(
+            id=pack.id,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(paquet.g_per_cig, Decimal('1.1'))

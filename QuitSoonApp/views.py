@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -12,8 +13,9 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, ParametersForm, PaquetForm
+from .forms import RegistrationForm, ParametersForm, PaquetFormCreation, PaquetFormCustomGInCig
 from .modules.resetprofile import ResetProfile
+from .modules.save_pack import SavePack
 
 def index(request):
     """index View"""
@@ -51,9 +53,11 @@ def login_view(request):
     return render(request, 'registration/login.html', {'form':form})
 
 def today(request):
+    """Welcome page if user.is_authenticated. Actions for the day"""
     return render(request, 'QuitSoonApp/today.html')
 
 def profile(request):
+    """User profile page with authentication infos and smoking habits"""
     context = {'userprofile':None}
     if request.user.is_authenticated:
         userprofile = UserProfile.objects.filter(user=request.user)
@@ -103,6 +107,7 @@ def new_email(request):
     return HttpResponse(JsonResponse(response_data))
 
 def new_password(request):
+    """View changing user password"""
     response_data = {}
     if request.method == 'POST':
         form = PasswordChangeForm(user=request.user, data=request.POST)
@@ -125,6 +130,7 @@ def new_password(request):
     return HttpResponse(JsonResponse(response_data))
 
 def new_parameters(request):
+    """View changing user smoking habits when starting using app"""
     response_data = {'response':None}
     if request.method == 'POST':
         form = ParametersForm(request.POST)
@@ -137,29 +143,84 @@ def new_parameters(request):
     return HttpResponse(JsonResponse(response_data))
 
 def paquets(request):
-    form = PaquetForm()
+    """Smoking parameters, user different packs"""
+    form = PaquetFormCreation(request.user)
     if request.method == 'POST':
-        form = PaquetForm(request.POST)
+        # receive smoking habits from user in a
+        form = PaquetFormCreation(request.user, request.POST)
+        if form.is_valid():
+            new_pack = SavePack(request.user, form.cleaned_data)
+            new_pack.create_pack()
+            form = PaquetFormCreation(request.user)
+    # select users packs for display in paquets page
+    paquets = Paquet.objects.filter(user=request.user, display=True)
+    context = {
+        'form':form,
+        # get packs per type
+        'ind':paquets.filter(type_cig='IND'),
+        'rol':paquets.filter(type_cig='ROL'),
+        'cigares':paquets.filter(type_cig='CIGARES'),
+        'cigarios':paquets.filter(type_cig='CIGARIOS'),
+        'pipe':paquets.filter(type_cig='PIPE'),
+        'nb':paquets.filter(type_cig='NB'),
+        'gr':paquets.filter(type_cig='GR'),
+        }
+    return render(request, 'QuitSoonApp/paquets.html', context)
 
-    return render(request, 'QuitSoonApp/paquets.html', {'form': form})
+def delete_pack(request, type_cig, brand, qt_paquet, price):
+    """
+    Used when user click on the trash of one of the paquet
+    Don't delete it but change display attribute into False if already used
+    """
+    datas = {
+        'type_cig':type_cig,
+        'brand':brand,
+        'qt_paquet':int(qt_paquet),
+        'price':Decimal(price.replace(',','.')),
+    }
+    new_pack = SavePack(request.user, datas)
+    new_pack.delete_pack()
+    return redirect('QuitSoonApp:paquets')
+
+def change_g_per_cig(request):
+    """
+    User can change the number of gr per cigarette
+    and so chane the price of each cigarette
+    """
+    if request.method == 'POST':
+        form = PaquetFormCustomGInCig(request.user, request.POST)
+        if form.is_valid():
+            change_pack = SavePack(request.user, form.cleaned_data)
+            change_pack.update_pack_g_per_cig()
+        else:
+            print(form.errors.as_data())
+    return redirect('QuitSoonApp:paquets')
+
 
 def bad(request):
+    """User smokes"""
     return render(request, 'QuitSoonApp/bad.html')
 
 def bad_history(request):
+    """User smoking history page"""
     return render(request, 'QuitSoonApp/bad_history.html')
 
 def alternatives(request):
+    """Healthy parameters, user different activities or substitutes"""
     return render(request, 'QuitSoonApp/alternatives.html')
 
 def good(request):
+    """User do a healthy activity or uses substitutes"""
     return render(request, 'QuitSoonApp/good.html')
 
 def good_history(request):
+    """User healthy history page"""
     return render(request, 'QuitSoonApp/good_history.html')
 
 def suivi(request):
+    """Page with user results, graphs..."""
     return render(request, 'QuitSoonApp/suivi.html')
 
 def objectifs(request):
+    """Page with user trophees and goals"""
     return render(request, 'QuitSoonApp/objectifs.html')
