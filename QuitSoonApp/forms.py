@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField, Authentic
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
+from django.core.exceptions import NON_FIELD_ERRORS
 
 from QuitSoonApp.models import UserProfile, Paquet, Alternative
 
@@ -85,29 +86,36 @@ class AlternativeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['alternative'].required = False
         self.fields['substitut'].required = False
+        self.fields['substitut'].widget.attrs.update({'class': 'hide'})
         self.fields['nicotine'].required = False
+        self.fields['nicotine'].widget = forms.HiddenInput()
 
     class Meta:
         model = Alternative
         fields = ['type_alternative', 'alternative', 'substitut', 'nicotine']
+        error_messages = {
+            NON_FIELD_ERRORS: {
+                'unique_together': "Vous avez déjà enregistré cet attribut.",
+            }
+        }
 
     def clean_alternative(self):
         data = self.cleaned_data['alternative']
-        if data and self.cleaned_data['type_alternative'] == 'Su':
-            raise forms.ValidationError("Vous avez choisi un type 'Substitut', le champ 'alternative' doit donc être vide")
         if data:
+            if self.cleaned_data['type_alternative'] == 'Su':
+                raise forms.ValidationError("Vous avez choisi un type 'Substitut', le champ 'alternative' doit donc être vide")
             return data.upper()
 
     def clean_substitut(self):
         data = self.cleaned_data['substitut']
-        if data and self.cleaned_data['type_alternative'] != 'Su':
-            raise forms.ValidationError("Vous n'avez pas choisi un type 'Substitut', le champ 'substitut' doit donc être vide")
         if data:
+            if self.cleaned_data['type_alternative'] != 'Su':
+                raise forms.ValidationError("ous n'avez pas choisi un type 'Substitut', le champ 'substitut' doit donc être vide")
             return data
 
     def clean_nicotine(self):
         data = self.cleaned_data['nicotine']
-        if data and self.cleaned_data['type_alternative'] != 'Su':
-            raise forms.ValidationError("Vous n'avez pas choisi un type 'Substitut', le champ 'nicotine' doit donc être vide")
         if data:
+            if self.cleaned_data['type_alternative'] != 'Su':
+                raise forms.ValidationError("ous n'avez pas choisi un type 'Substitut', le champ 'nicotine' doit donc être vide")
             return data

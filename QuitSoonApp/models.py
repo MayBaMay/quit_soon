@@ -71,7 +71,7 @@ class Alternative(models.Model):
         ('PAST', 'Pastilles'),
         ('GM', 'Gommes à mâcher'),
         ('GS', 'Gommes à sucer'),
-        ('CS', 'Comprimés sublinguaux'),
+        ('c', 'Comprimés sublinguaux'),
         ('ECIG', 'Cigarette éléctronique'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -87,6 +87,7 @@ class Alternative(models.Model):
         null=True,
     )
     nicotine = models.FloatField(null=True)
+    display = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('user', 'type_alternative', 'alternative', 'substitut', 'nicotine')

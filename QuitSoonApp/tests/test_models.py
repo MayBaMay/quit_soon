@@ -117,6 +117,19 @@ class TestModels(TestCase):
         self.assertEqual(Alternative.objects.filter(user=self.usertest).count(), 2)
         self.assertEqual(Alternative.objects.filter(user=self.usertest, type_alternative='Su').count(), 1)
 
+    def test_alternative_model_double(self):
+        """ test alternative creation"""
+        self.alternative3 = Alternative.objects.create(
+            user=self.usertest,
+            type_alternative='Su',
+            substitut='PASTILLES',
+            nicotine=3,
+        )
+        self.assertTrue(Alternative.objects.filter(user=self.usertest).exists())
+        self.assertEqual(Alternative.objects.filter(user=self.usertest).count(), 3)
+        self.assertEqual(Alternative.objects.filter(user=self.usertest, type_alternative='Su').count(), 2)
+
+
     def test_consoalter_model(self):
         """ test conso alternative creation"""
         self.assertTrue(ConsoAlternative.objects.filter(user=self.usertest).exists())

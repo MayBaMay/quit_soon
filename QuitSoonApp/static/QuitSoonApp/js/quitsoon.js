@@ -205,4 +205,33 @@
     }
   });
 
+  $('#id_type_alternative').on('change', function(e) {
+    // IF VALUE TYPE == SUBSTITUT   --->   ALTERNATIVE NOT SHOWN AND EMPTY
+    if ($(this).val() == 'Su') {
+      // SHOW / HIDE FIELDS
+      $('#id_alternative').siblings('.label').removeClass('show').addClass('hide');
+      $('#id_alternative').attr('type', 'hidden');
+      $('#id_substitut').before('<span class=label>Substitut: </span>');
+      $('#id_substitut').removeClass('hide').addClass('show');
+      $('#id_nicotine').before('<span class=label>Nicotine: </span>');
+      $('#id_nicotine').removeAttr('type', 'hidden');
+      // CLEAN FIELDS
+      $('#id_alternative').val('');
+    }
+    // ELSE   --->   SUBSTITUT AND NICOTINE NOT SHOWN AND EMPTY
+    else {
+      // SHOW / HIDE FIELDS
+      $('#id_alternative').siblings('.label').removeClass('hide').addClass('show');
+      $('#id_alternative').removeAttr('type', 'hidden');
+      $('#id_substitut').removeClass('show').addClass('hide');
+      $('#id_substitut').siblings('.label').removeClass('show').addClass('hide');
+      $('#id_nicotine').attr('type', 'hidden');
+      $('#id_nicotine').siblings('.label').removeClass('show').addClass('hide');
+      // CLEAN FIELDS
+      $('#id_substitut').val('');
+      $('#id_nicotine').val('');
+      console.log($("id_substitut").children("option:selected").val());
+    }
+  });
+
 })(jQuery); // End of use strict

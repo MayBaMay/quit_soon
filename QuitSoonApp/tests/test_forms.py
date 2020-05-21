@@ -9,7 +9,7 @@ from QuitSoonApp.forms import (
     PaquetFormCreation,
     PaquetFormCustomGInCig,
     AlternativeForm)
-from QuitSoonApp.models import UserProfile, Paquet
+from QuitSoonApp.models import UserProfile, Paquet, Alternative
 
 
 class test_registration(TestCase):
@@ -152,7 +152,6 @@ class test_AlternativeForm(TestCase):
     def test_AlternativeForm_is_valid_substitut(self):
         """test valid AlternativeForm with substitut entry"""
         data = {'type_alternative':'Su',
-                'alternative':'',
                 'substitut':'P24',
                 'nicotine':'2',
                 }
@@ -163,8 +162,6 @@ class test_AlternativeForm(TestCase):
         """test in valid AlternativeForm pb clean_alternative"""
         data = {'type_alternative':'Su',
                 'alternative':'COURSE',
-                'substitut':'',
-                'nicotine':'',
                 }
         form = AlternativeForm(self.user, data)
         self.assertRaises(ValidationError)
@@ -176,7 +173,6 @@ class test_AlternativeForm(TestCase):
         data = {'type_alternative':'Sp',
                 'alternative':'COURSE',
                 'substitut':'PAST',
-                'nicotine':'',
                 }
         form = AlternativeForm(self.user, data)
         self.assertRaises(ValidationError)
@@ -194,3 +190,41 @@ class test_AlternativeForm(TestCase):
         self.assertRaises(ValidationError)
         self.assertTrue('nicotine' in form.errors.as_data().keys())
         self.assertFalse(form.is_valid())
+
+    def test_AlternativeForm_fail_validate_unicity(self):
+        first = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Sp',
+            alternative='COURSE',
+        )
+        data = {'type_alternative':'Sp',
+                'alternative':'COURSE',}
+        form = AlternativeForm(self.user, data)
+        self.assertRaises(ValidationError)
+        db_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Sp',
+            alternative='COURSE',
+            )
+        self.assertEqual(db_alternative.count(), 1)
+        self.assertEqual(first.id, db_alternative[0].id)
+
+    def test_AlternativeForm_fail_validate_unicity(self):
+        first = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Sp',
+            alternative='COURSE',
+        )
+        data = {'type_alternative':'Sp',
+                'alternative':'COURSE',
+                'substitut':'',
+                'nicotine':''}
+        form = AlternativeForm(self.user, data)
+        self.assertRaises(ValidationError)
+        db_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Sp',
+            alternative='COURSE',
+            )
+        self.assertEqual(db_alternative.count(), 1)
+        self.assertEqual(first.id, db_alternative[0].id)

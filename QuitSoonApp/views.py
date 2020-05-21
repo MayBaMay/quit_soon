@@ -13,9 +13,16 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, ParametersForm, PaquetFormCreation, PaquetFormCustomGInCig
+from .forms import (
+    RegistrationForm,
+    ParametersForm,
+    PaquetFormCreation,
+    PaquetFormCustomGInCig,
+    AlternativeForm
+    )
 from .modules.resetprofile import ResetProfile
 from .modules.save_pack import SavePack
+from .modules.save_alternative import SaveAlternative
 
 def index(request):
     """index View"""
@@ -207,7 +214,25 @@ def bad_history(request):
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
-    return render(request, 'QuitSoonApp/alternatives.html')
+    form = AlternativeForm(request.user)
+    if request.method == 'POST':
+        # receive smoking habits from user in a
+        form = AlternativeForm(request.user, request.POST)
+        if form.is_valid():
+            new_alternative = SaveAlternative(request.user, form.cleaned_data)
+            new_alternative.create_alternative()
+            form = AlternativeForm(request.user)
+    # select users packs for display in paquets page
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    context = {
+        'form':form,
+        # get packs per type
+        'Sp':alternatives.filter(type_alternative='Sp'),
+        'Lo':alternatives.filter(type_alternative='Lo'),
+        'So':alternatives.filter(type_alternative='So'),
+        'Su':alternatives.filter(type_alternative='Su'),
+        }
+    return render(request, 'QuitSoonApp/alternatives.html', context)
 
 def good(request):
     """User do a healthy activity or uses substitutes"""

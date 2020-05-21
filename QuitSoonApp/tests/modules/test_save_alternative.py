@@ -49,7 +49,6 @@ class SavePackTestCase(TestCase):
             user=self.usertest,
             type_alternative='Sp',
             alternative='COURSE',
-            nicotine=None,
             )
         self.assertTrue(db_create_alternative.exists())
 
@@ -57,7 +56,7 @@ class SavePackTestCase(TestCase):
         """test SavePack.create_alternative method if type_alternative == 'Su'"""
         datas ={
             'type_alternative':'Su',
-            'alternative':'PATCHS(24h)',
+            'substitut':'PATCHS(24h)',
             'nicotine': 2,
             }
         alternative = SaveAlternative(self.usertest, datas)
@@ -65,7 +64,7 @@ class SavePackTestCase(TestCase):
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,
             type_alternative='Su',
-            alternative='PATCHS(24h)',
+            substitut='PATCHS(24h)',
             nicotine=2,
             )
         self.assertTrue(db_create_alternative.exists())

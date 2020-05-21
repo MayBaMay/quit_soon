@@ -20,8 +20,18 @@ class SaveAlternative:
     def __init__(self, user, datas):
         self.user = user
         self.type_alternative = datas['type_alternative']
-        self.alternative = datas['alternative']
-        self.nicotine = datas['nicotine']
+        try:
+            self.alternative = datas['alternative']
+        except KeyError:
+            self.alternative = ''
+        try:
+            self.substitut = datas['substitut']
+        except KeyError:
+            self.substitut=''
+        try:
+            self.nicotine = datas['nicotine']
+        except KeyError:
+            self.nicotine = ''
 
     def create_alternative(self):
         """Create pack from datas"""
@@ -30,6 +40,7 @@ class SaveAlternative:
             user=self.user,
             type_alternative=self.type_alternative,
             alternative=self.alternative,
+            substitut=self.substitut,
             nicotine=self.nicotine,
             )
         return newAlternative
