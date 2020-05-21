@@ -233,8 +233,11 @@ class SavePackTestCase(TestCase):
             brand='TABACO',
             qt_paquet=40,
             price=15,
+            g_per_cig=0.8,
+            price_per_cig=0.3
             )
-        self.assertEqual(paquet.g_per_cig, None)
+        self.assertEqual(paquet.g_per_cig, 0.8)
+        self.assertEqual(paquet.price_per_cig, 0.3)
         datas ={
             'type_cig':'ROL',
             'brand':'TABACO',
@@ -248,3 +251,4 @@ class SavePackTestCase(TestCase):
             id=paquet.id,
         )
         self.assertEqual(find_pack.g_per_cig, Decimal('0.6'))
+        self.assertEqual(find_pack.price_per_cig, Decimal('0.22'))

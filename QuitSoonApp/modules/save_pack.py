@@ -55,6 +55,28 @@ class SavePack:
             return Decimal(self.price) / Decimal(nb_cig)
         return Decimal(self.price)/self.qt_paquet
 
+    @property
+    def get_pack(self):
+        pack = Paquet.objects.get(
+            user=self.user,
+            type_cig=self.type_cig,
+            brand=self.brand,
+            qt_paquet=self.qt_paquet,
+            price=self.price
+            )
+        return pack
+
+    @property
+    def filter_pack(self):
+        pack = Paquet.objects.filter(
+            user=self.user,
+            type_cig=self.type_cig,
+            brand=self.brand,
+            qt_paquet=self.qt_paquet,
+            price=self.price
+            )
+        return pack
+
     def create_pack(self):
         """Create pack from datas"""
         # unicity checked in form and in model index
@@ -72,20 +94,8 @@ class SavePack:
 
     def delete_pack(self):
         try :
-            pack = Paquet.objects.get(
-                user=self.user,
-                type_cig=self.type_cig,
-                brand=self.brand,
-                qt_paquet=self.qt_paquet,
-                price=self.price
-                )
-            pack_filtered = Paquet.objects.filter(
-                user=self.user,
-                type_cig=self.type_cig,
-                brand=self.brand,
-                qt_paquet=self.qt_paquet,
-                price=self.price
-                )
+            pack = self.get_pack
+            pack_filtered = self.filter_pack
             # check if already smoked by user
             if ConsoCig.objects.filter(paquet=pack):
                 # if yes: update display to False
@@ -98,13 +108,10 @@ class SavePack:
 
     def update_pack_g_per_cig(self):
         try :
-            pack_filtered = Paquet.objects.filter(
-                user=self.user,
-                type_cig=self.type_cig,
-                brand=self.brand,
-                qt_paquet=self.qt_paquet,
-                price=self.price
+            pack_filtered = self.filter_pack
+            pack_filtered.update(
+                g_per_cig=self.g_per_cig,
+                price_per_cig=self.get_price_per_cig
                 )
-            pack_filtered.update(g_per_cig=self.g_per_cig)
         except ObjectDoesNotExist:
             pass

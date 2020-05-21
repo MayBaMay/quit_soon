@@ -18,7 +18,9 @@ from .forms import (
     ParametersForm,
     PaquetFormCreation,
     PaquetFormCustomGInCig,
-    AlternativeForm
+    TypeAlternativeForm,
+    ActivityForm,
+    SubstitutForm,
     )
 from .modules.resetprofile import ResetProfile
 from .modules.save_pack import SavePack
@@ -214,18 +216,23 @@ def bad_history(request):
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
-    form = AlternativeForm(request.user)
+    alternative_form = TypeAlternativeForm(request.user)
+    activity_form = ActivityForm(request.user)
+    substitut_form = SubstitutForm(request.user)
     if request.method == 'POST':
+        print('valid')
         # receive smoking habits from user in a
-        form = AlternativeForm(request.user, request.POST)
-        if form.is_valid():
-            new_alternative = SaveAlternative(request.user, form.cleaned_data)
-            new_alternative.create_alternative()
-            form = AlternativeForm(request.user)
+        alternative_form = TypeAlternativeForm(request.user, request.POST)
+        if alternative_form.is_valid():
+            if activity_form.is_valid() or substitut_form.is_valid():
+                new_alternative = SaveAlternative(request.user, form.cleaned_data)
+                new_alternative.create_alternative()
     # select users packs for display in paquets page
     alternatives = Alternative.objects.filter(user=request.user, display=True)
     context = {
-        'form':form,
+        'alternative_form':alternative_form,
+        'activity_form':activity_form,
+        'substitut_form':substitut_form,
         # get packs per type
         'Sp':alternatives.filter(type_alternative='Sp'),
         'Lo':alternatives.filter(type_alternative='Lo'),

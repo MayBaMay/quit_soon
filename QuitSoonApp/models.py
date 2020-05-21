@@ -59,30 +59,45 @@ class ConsoCig(models.Model):
 
 
 class Alternative(models.Model):
+
     TYPE_ALTERNATIVE = [
+        ('Ac', 'Activité'),
+        ('Su', 'Substitut'),
+    ]
+
+    TYPE_ACTIVITY = [
         ('Sp', 'Sport'),
         ('Lo', 'Loisir'),
         ('So', 'Soin'),
-        ('Su', 'Substitut'),
     ]
+
     SUBSTITUT = [
         ('P24', 'Patchs(24h)'),
         ('P16', 'Patchs(16h)'),
         ('PAST', 'Pastilles'),
         ('GM', 'Gommes à mâcher'),
         ('GS', 'Gommes à sucer'),
-        ('c', 'Comprimés sublinguaux'),
+        ('CS', 'Comprimés sublinguaux'),
         ('ECIG', 'Cigarette éléctronique'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     type_alternative = models.CharField(
-        max_length=200,
+        max_length=2,
         choices=TYPE_ALTERNATIVE,
-        default='Sp',
+        default='Ac',
     )
-    alternative = models.CharField(max_length=200, null=True)
+
+    # ACTIVITY FIELDS #
+    type_activity = models.CharField(
+        max_length=2,
+        choices=TYPE_ACTIVITY,
+        null=True,
+    )
+    activity = models.CharField(max_length=200, null=True)
+
+    # SUBSTITUT FIELDS #
     substitut = models.CharField(
-        max_length=200,
+        max_length=4,
         choices=SUBSTITUT,
         null=True,
     )
@@ -90,7 +105,7 @@ class Alternative(models.Model):
     display = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ('user', 'type_alternative', 'alternative', 'substitut', 'nicotine')
+        unique_together = ('user', 'type_alternative', 'activity', 'substitut', 'nicotine')
 
 
 class ConsoAlternative(models.Model):

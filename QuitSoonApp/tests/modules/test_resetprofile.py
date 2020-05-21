@@ -62,12 +62,13 @@ class ResetProfileTestCase(TestCase):
         )
         self.alternative = Alternative.objects.create(
             user=self.usertest,
-            alternative='VELO',
+            type_activity='Sp',
+            activity='VELO',
         )
         self.alternative2 = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
-            alternative='PASTILLES',
+            substitut='PAST',
             nicotine=2,
         )
         self.consoalter = ConsoAlternative.objects.create(

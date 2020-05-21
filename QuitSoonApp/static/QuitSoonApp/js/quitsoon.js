@@ -1,9 +1,6 @@
 (function($) {
   "use strict"; // Start of use strict
 
-  var changeId = null
-  var changeFormId = null
-
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -205,33 +202,34 @@
     }
   });
 
+  $('#id_substitut').prop('required',false);
+  $('#id_nicotine').prop('required',false);
+  $('#id_type_activity').prop('required',true);
+  $('#id_activity').prop('required',true);
+  $('.activity_form').removeClass('hide').addClass('show');
+  $('.substitut_form').removeClass('show').addClass('hide');
+
   $('#id_type_alternative').on('change', function(e) {
-    // IF VALUE TYPE == SUBSTITUT   --->   ALTERNATIVE NOT SHOWN AND EMPTY
-    if ($(this).val() == 'Su') {
-      // SHOW / HIDE FIELDS
-      $('#id_alternative').siblings('.label').removeClass('show').addClass('hide');
-      $('#id_alternative').attr('type', 'hidden');
-      $('#id_substitut').before('<span class=label>Substitut: </span>');
-      $('#id_substitut').removeClass('hide').addClass('show');
-      $('#id_nicotine').before('<span class=label>Nicotine: </span>');
-      $('#id_nicotine').removeAttr('type', 'hidden');
-      // CLEAN FIELDS
-      $('#id_alternative').val('');
+
+    // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
+   if ($(this).val() == 'Su') {
+     $('#id_type_activity').prop('required',false);
+     $('#id_activity').prop('required',false);
+     $('#id_substitut').prop('required',true);
+     $('#id_nicotine').prop('required',true);
+     $('.activity_form').removeClass('show').addClass('hide');
+     $('.substitut_form').removeClass('hide').addClass('show');
     }
-    // ELSE   --->   SUBSTITUT AND NICOTINE NOT SHOWN AND EMPTY
-    else {
-      // SHOW / HIDE FIELDS
-      $('#id_alternative').siblings('.label').removeClass('hide').addClass('show');
-      $('#id_alternative').removeAttr('type', 'hidden');
-      $('#id_substitut').removeClass('show').addClass('hide');
-      $('#id_substitut').siblings('.label').removeClass('show').addClass('hide');
-      $('#id_nicotine').attr('type', 'hidden');
-      $('#id_nicotine').siblings('.label').removeClass('show').addClass('hide');
-      // CLEAN FIELDS
-      $('#id_substitut').val('');
-      $('#id_nicotine').val('');
-      console.log($("id_substitut").children("option:selected").val());
-    }
+   // ELSE   --->    SHOW ACTIVITY FORM
+   else {
+     $('#id_substitut').prop('required',false);
+     $('#id_nicotine').prop('required',false);
+     $('#id_type_activity').prop('required',true);
+     $('#id_activity').prop('required',true);
+     $('.activity_form').removeClass('hide').addClass('show');
+     $('.substitut_form').removeClass('show').addClass('hide');
+   }
+
   });
 
 })(jQuery); // End of use strict

@@ -41,11 +41,14 @@ class ParametersForm(forms.ModelForm):
         fields = ['date_start', 'starting_nb_cig']
 
 
-class PaquetForm(forms.ModelForm):
+class UserRelatedForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super().__init__(*args, **kwargs)
+
+
+class PaquetForm(UserRelatedForm):
 
     def clean_brand(self):
         data = self.cleaned_data['brand']
@@ -79,43 +82,26 @@ class PaquetFormCustomGInCig(PaquetForm):
         fields = ['type_cig', 'brand', 'qt_paquet', 'price', 'g_per_cig']
 
 
-class AlternativeForm(forms.ModelForm):
-
-    def __init__(self, user, *args, **kwargs):
-        self.user = user
-        super().__init__(*args, **kwargs)
-        self.fields['alternative'].required = False
-        self.fields['substitut'].required = False
-        self.fields['substitut'].widget.attrs.update({'class': 'hide'})
-        self.fields['nicotine'].required = False
-        self.fields['nicotine'].widget = forms.HiddenInput()
+class TypeAlternativeForm(UserRelatedForm):
 
     class Meta:
         model = Alternative
-        fields = ['type_alternative', 'alternative', 'substitut', 'nicotine']
-        error_messages = {
-            NON_FIELD_ERRORS: {
-                'unique_together': "Vous avez déjà enregistré cet attribut.",
-            }
-        }
+        fields = ['type_alternative']
 
-    def clean_alternative(self):
-        data = self.cleaned_data['alternative']
-        if data:
-            if self.cleaned_data['type_alternative'] == 'Su':
-                raise forms.ValidationError("Vous avez choisi un type 'Substitut', le champ 'alternative' doit donc être vide")
-            return data.upper()
 
-    def clean_substitut(self):
-        data = self.cleaned_data['substitut']
-        if data:
-            if self.cleaned_data['type_alternative'] != 'Su':
-                raise forms.ValidationError("ous n'avez pas choisi un type 'Substitut', le champ 'substitut' doit donc être vide")
-            return data
+class ActivityForm(UserRelatedForm):
 
-    def clean_nicotine(self):
-        data = self.cleaned_data['nicotine']
-        if data:
-            if self.cleaned_data['type_alternative'] != 'Su':
-                raise forms.ValidationError("ous n'avez pas choisi un type 'Substitut', le champ 'nicotine' doit donc être vide")
-            return data
+    class Meta:
+        model = Alternative
+        fields = ['type_activity', 'activity']
+
+    def clean_activity(self):
+        data = self.cleaned_data['activity']
+        return data.upper()
+
+
+class SubstitutForm(UserRelatedForm):
+
+    class Meta:
+        model = Alternative
+        fields = ['substitut', 'nicotine']

@@ -21,17 +21,21 @@ class SaveAlternative:
         self.user = user
         self.type_alternative = datas['type_alternative']
         try:
-            self.alternative = datas['alternative']
+            self.type_activity = datas['type_activity']
         except KeyError:
-            self.alternative = ''
+            self.type_activity = None
+        try:
+            self.activity = datas['activity']
+        except KeyError:
+            self.activity = None
         try:
             self.substitut = datas['substitut']
         except KeyError:
-            self.substitut=''
+            self.substitut = None
         try:
             self.nicotine = datas['nicotine']
         except KeyError:
-            self.nicotine = ''
+            self.nicotine = None
 
     def create_alternative(self):
         """Create pack from datas"""
@@ -39,47 +43,48 @@ class SaveAlternative:
         newAlternative = Alternative.objects.create(
             user=self.user,
             type_alternative=self.type_alternative,
-            alternative=self.alternative,
+            type_activity=self.type_activity,
+            activity=self.activity,
             substitut=self.substitut,
             nicotine=self.nicotine,
             )
         return newAlternative
-
-    # def delete_pack(self):
-    #     try :
-    #         pack = Paquet.objects.get(
-    #             user=self.user,
-    #             type_cig=self.type_cig,
-    #             brand=self.brand,
-    #             qt_paquet=self.qt_paquet,
-    #             price=self.price
-    #             )
-    #         pack_filtered = Paquet.objects.filter(
-    #             user=self.user,
-    #             type_cig=self.type_cig,
-    #             brand=self.brand,
-    #             qt_paquet=self.qt_paquet,
-    #             price=self.price
-    #             )
-    #         # check if already smoked by user
-    #         if ConsoCig.objects.filter(paquet=pack):
-    #             # if yes: update display to False
-    #             pack_filtered.update(display=False)
-    #         else:
-    #             # if not: delete object
-    #             pack_filtered.delete()
-    #     except ObjectDoesNotExist:
-    #         pass
-    #
-    # def update_pack_g_per_cig(self):
-    #     try :
-    #         pack_filtered = Paquet.objects.filter(
-    #             user=self.user,
-    #             type_cig=self.type_cig,
-    #             brand=self.brand,
-    #             qt_paquet=self.qt_paquet,
-    #             price=self.price
-    #             )
-    #         pack_filtered.update(g_per_cig=self.g_per_cig)
-    #     except ObjectDoesNotExist:
-    #         pass
+#
+#     # def delete_pack(self):
+#     #     try :
+#     #         pack = Paquet.objects.get(
+#     #             user=self.user,
+#     #             type_cig=self.type_cig,
+#     #             brand=self.brand,
+#     #             qt_paquet=self.qt_paquet,
+#     #             price=self.price
+#     #             )
+#     #         pack_filtered = Paquet.objects.filter(
+#     #             user=self.user,
+#     #             type_cig=self.type_cig,
+#     #             brand=self.brand,
+#     #             qt_paquet=self.qt_paquet,
+#     #             price=self.price
+#     #             )
+#     #         # check if already smoked by user
+#     #         if ConsoCig.objects.filter(paquet=pack):
+#     #             # if yes: update display to False
+#     #             pack_filtered.update(display=False)
+#     #         else:
+#     #             # if not: delete object
+#     #             pack_filtered.delete()
+#     #     except ObjectDoesNotExist:
+#     #         pass
+#     #
+#     # def update_pack_g_per_cig(self):
+#     #     try :
+#     #         pack_filtered = Paquet.objects.filter(
+#     #             user=self.user,
+#     #             type_cig=self.type_cig,
+#     #             brand=self.brand,
+#     #             qt_paquet=self.qt_paquet,
+#     #             price=self.price
+#     #             )
+#     #         pack_filtered.update(g_per_cig=self.g_per_cig)
+#     #     except ObjectDoesNotExist:
+#     #         pass

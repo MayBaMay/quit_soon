@@ -55,12 +55,13 @@ class TestModels(TestCase):
         )
         self.alternative = Alternative.objects.create(
             user=self.usertest,
-            alternative='VELO',
+            type_activity='Sp',
+            activity='VELO',
         )
         self.alternative2 = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
-            substitut='PASTILLES',
+            substitut='PAST',
             nicotine=2,
         )
         self.consoalter = ConsoAlternative.objects.create(
@@ -122,7 +123,7 @@ class TestModels(TestCase):
         self.alternative3 = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
-            substitut='PASTILLES',
+            substitut='PAST',
             nicotine=3,
         )
         self.assertTrue(Alternative.objects.filter(user=self.usertest).exists())

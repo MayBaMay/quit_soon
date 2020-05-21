@@ -30,25 +30,21 @@ class SavePackTestCase(TestCase):
         """setup tests"""
         self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
-        UserProfile.objects.create(
-            user=self.usertest,
-            date_start='2012-12-12',
-            starting_nb_cig=3
-        )
 
     def test_create_new_alternative(self):
         """test SavePack.create_alternative method if type_alternative != 'Su'"""
         datas ={
-            'type_alternative':'Sp',
-            'alternative':'COURSE',
-            'nicotine': None,
+            'type_alternative':'Ac',
+            'type_activity':'Sp',
+            'activity': 'COURSE',
             }
         alternative = SaveAlternative(self.usertest, datas)
         alternative.create_alternative()
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,
-            type_alternative='Sp',
-            alternative='COURSE',
+            type_alternative='Ac',
+            type_activity='Sp',
+            activity='COURSE',
             )
         self.assertTrue(db_create_alternative.exists())
 
@@ -56,7 +52,7 @@ class SavePackTestCase(TestCase):
         """test SavePack.create_alternative method if type_alternative == 'Su'"""
         datas ={
             'type_alternative':'Su',
-            'substitut':'PATCHS(24h)',
+            'substitut':'P24',
             'nicotine': 2,
             }
         alternative = SaveAlternative(self.usertest, datas)
@@ -64,8 +60,8 @@ class SavePackTestCase(TestCase):
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,
             type_alternative='Su',
-            substitut='PATCHS(24h)',
-            nicotine=2,
+            substitut='P24',
+            nicotine=2.0,
             )
         self.assertTrue(db_create_alternative.exists())
 
