@@ -8,7 +8,7 @@ from QuitSoonApp.views import (
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
     paquets, delete_pack, change_g_per_cig, bad, bad_history,
-    alternatives, good, good_history,
+    alternatives, delete_alternative, good, good_history,
 )
 
 class TestUrls(SimpleTestCase):
@@ -102,6 +102,12 @@ class TestUrls(SimpleTestCase):
         """test alternatives"""
         url = reverse('QuitSoonApp:alternatives')
         self.assertEqual(resolve(url).func, alternatives)
+
+    def test_delete_alternative_url_is_resolved(self):
+        """test delete_alternative"""
+        url = reverse('QuitSoonApp:delete_alternative',
+                      args=['Ac', 'Sp', 'Course', None, None])
+        self.assertEqual(resolve(url).func, delete_alternative)
 
     def test_good_url_is_resolved(self):
         """test good"""

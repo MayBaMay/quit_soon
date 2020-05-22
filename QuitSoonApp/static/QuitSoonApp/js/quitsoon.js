@@ -1,9 +1,6 @@
 (function($) {
   "use strict"; // Start of use strict
 
-  var changeId = null
-  var changeFormId = null
-
   // Toggle the side navigation
   $("#sidebarToggle, #sidebarToggleTop").on('click', function(e) {
     $("body").toggleClass("sidebar-toggled");
@@ -203,6 +200,36 @@
       $(this).attr('id', 'submit')
       // $(this).removeClass('cig-change').addclass('id','cig-change')
     }
+  });
+
+  $('#id_substitut').prop('required',false);
+  $('#id_nicotine').prop('required',false);
+  $('#id_type_activity').prop('required',true);
+  $('#id_activity').prop('required',true);
+  $('.activity_form').removeClass('hide').addClass('show');
+  $('.substitut_form').removeClass('show').addClass('hide');
+
+  $('#id_type_alternative').on('change', function(e) {
+
+    // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
+   if ($(this).val() == 'Su') {
+     $('#id_type_activity').prop('required',false).val('');
+     $('#id_activity').prop('required',false).val('');
+     $('#id_substitut').prop('required',true);
+     $('#id_nicotine').prop('required',true);
+     $('.activity_form').removeClass('show').addClass('hide');
+     $('.substitut_form').removeClass('hide').addClass('show');
+    }
+   // ELSE   --->    SHOW ACTIVITY FORM
+   else {
+     $('#id_substitut').prop('required',false).val('');
+     $('#id_nicotine').prop('required',false).val('');
+     $('#id_type_activity').prop('required',true);
+     $('#id_activity').prop('required',true);
+     $('.activity_form').removeClass('hide').addClass('show');
+     $('.substitut_form').removeClass('show').addClass('hide');
+   }
+
   });
 
 })(jQuery); // End of use strict

@@ -6,8 +6,9 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField, Authentic
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
+from django.core.exceptions import NON_FIELD_ERRORS
 
-from QuitSoonApp.models import UserProfile, Paquet
+from QuitSoonApp.models import UserProfile, Paquet, Alternative
 
 
 class RegistrationForm(UserCreationForm):
@@ -40,11 +41,14 @@ class ParametersForm(forms.ModelForm):
         fields = ['date_start', 'starting_nb_cig']
 
 
-class PaquetForm(forms.ModelForm):
+class UserRelatedForm(forms.ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super().__init__(*args, **kwargs)
+
+
+class PaquetForm(UserRelatedForm):
 
     def clean_brand(self):
         data = self.cleaned_data['brand']
@@ -76,3 +80,28 @@ class PaquetFormCustomGInCig(PaquetForm):
     class Meta:
         model = Paquet
         fields = ['type_cig', 'brand', 'qt_paquet', 'price', 'g_per_cig']
+
+
+class TypeAlternativeForm(UserRelatedForm):
+
+    class Meta:
+        model = Alternative
+        fields = ['type_alternative']
+
+
+class ActivityForm(UserRelatedForm):
+
+    class Meta:
+        model = Alternative
+        fields = ['type_activity', 'activity']
+
+    def clean_activity(self):
+        data = self.cleaned_data['activity']
+        return data.upper()
+
+
+class SubstitutForm(UserRelatedForm):
+
+    class Meta:
+        model = Alternative
+        fields = ['substitut', 'nicotine']

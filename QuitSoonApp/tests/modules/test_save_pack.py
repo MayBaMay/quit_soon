@@ -166,6 +166,35 @@ class SavePackTestCase(TestCase):
         self.assertEqual(db_pack[0].g_per_cig, Decimal('0.8'))
         self.assertEqual(db_pack[0].price_per_cig, Decimal('0.48'))
 
+    def test_create_pack_already_in_db(self):
+        """test SavePack.create_pack method if type_cig == 'GR'"""
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='GR',
+            brand='TEST AUTRE',
+            qt_paquet=50,
+            price=30,
+            display=False,
+            )
+        datas ={
+            'type_cig':'GR',
+            'brand':'TEST AUTRE',
+            'qt_paquet':50,
+            'price':30,
+            }
+        pack = SavePack(self.usertest, datas)
+        pack.create_pack()
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='GR',
+            brand='TEST AUTRE',
+            qt_paquet=50,
+            price=30,
+            )
+        self.assertFalse(db_pack.count() == 2)
+        self.assertEqual(db_pack.count(), 1)
+        self.assertEqual(db_pack[0].display, True)
+
     def test_delete_unused_pack_ind(self):
         """test SavePack.delete_pack method with unused pack"""
         Paquet.objects.create(
@@ -233,8 +262,11 @@ class SavePackTestCase(TestCase):
             brand='TABACO',
             qt_paquet=40,
             price=15,
+            g_per_cig=0.8,
+            price_per_cig=0.3
             )
-        self.assertEqual(paquet.g_per_cig, None)
+        self.assertEqual(paquet.g_per_cig, 0.8)
+        self.assertEqual(paquet.price_per_cig, 0.3)
         datas ={
             'type_cig':'ROL',
             'brand':'TABACO',
@@ -248,3 +280,4 @@ class SavePackTestCase(TestCase):
             id=paquet.id,
         )
         self.assertEqual(find_pack.g_per_cig, Decimal('0.6'))
+        self.assertEqual(find_pack.price_per_cig, Decimal('0.22'))
