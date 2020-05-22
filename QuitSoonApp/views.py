@@ -13,9 +13,18 @@ from .models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import RegistrationForm, ParametersForm, PaquetFormCreation, PaquetFormCustomGInCig
+from .forms import (
+    RegistrationForm,
+    ParametersForm,
+    PaquetFormCreation,
+    PaquetFormCustomGInCig,
+    TypeAlternativeForm,
+    ActivityForm,
+    SubstitutForm,
+    )
 from .modules.resetprofile import ResetProfile
 from .modules.save_pack import SavePack
+from .modules.save_alternative import SaveAlternative
 
 def index(request):
     """index View"""
@@ -207,7 +216,79 @@ def bad_history(request):
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
-    return render(request, 'QuitSoonApp/alternatives.html')
+    alternative_form = TypeAlternativeForm(request.user)
+    activity_form = ActivityForm(request.user)
+    substitut_form = SubstitutForm(request.user)
+
+    if request.method == 'POST':
+        # rget wich type of alternative
+        form_data = {'type_alternative':request.POST['type_alternative']}
+        alternative_form = TypeAlternativeForm(request.user, form_data)
+        if alternative_form.is_valid():
+            final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
+
+            if alternative_form.cleaned_data['type_alternative']== 'Ac' :
+                form_data = {'type_activity':request.POST['type_activity'],
+                             'activity':request.POST['activity']}
+                activity_form = ActivityForm(request.user, form_data)
+                if activity_form.is_valid():
+                    # keep only fields from alternative_form & activity_form
+                    final_data['type_activity'] = activity_form.cleaned_data['type_activity']
+                    final_data['activity'] = activity_form.cleaned_data['activity']
+                    # Create a SaveAlternative object and create a new alternative
+                    new_alternative = SaveAlternative(request.user, final_data)
+                    new_alternative.create_alternative()
+
+                    alternative_form = TypeAlternativeForm(request.user)
+                    activity_form = ActivityForm(request.user)
+                    substitut_form = SubstitutForm(request.user)
+
+            elif alternative_form.cleaned_data['type_alternative'] == 'Su' :
+                form_data = {'substitut':request.POST['substitut'],
+                             'nicotine':request.POST['nicotine']}
+                substitut_form = SubstitutForm(request.user, form_data)
+                if substitut_form.is_valid():
+                    # keep only fields from alternative_form & substitut_form
+                    final_data['substitut'] = substitut_form.cleaned_data['substitut']
+                    final_data['nicotine'] = substitut_form.cleaned_data['nicotine']
+                    # Create a SaveAlternative object and create a new alternative
+                    new_alternative = SaveAlternative(request.user, final_data)
+                    new_alternative.create_alternative()
+
+                    alternative_form = TypeAlternativeForm(request.user)
+                    activity_form = ActivityForm(request.user)
+                    substitut_form = SubstitutForm(request.user)
+
+    # select users packs for display in paquets page
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    context = {
+        'alternative_form':alternative_form,
+        'activity_form':activity_form,
+        'substitut_form':substitut_form,
+        # get packs per type
+        'Sp':alternatives.filter(type_activity='Sp'),
+        'Lo':alternatives.filter(type_activity='Lo'),
+        'So':alternatives.filter(type_activity='So'),
+        'Su':alternatives.filter(type_alternative='Su'),
+        }
+    return render(request, 'QuitSoonApp/alternatives.html', context)
+
+def delete_alternative(request, type_alternative, type_activity, activity, substitut, nicotine):
+    """
+    Used when user click on the trash of one of the alternative
+    Don't delete it but change display attribute into False if already used in ConsoAlternative
+    """
+    data = {
+        'type_alternative':type_alternative,
+        'type_activity':type_activity,
+        'activity':activity,
+        'substitut':substitut,
+        'nicotine':nicotine,
+    }
+    new_alternative = SaveAlternative(request.user, data)
+    new_alternative.delete_alternative()
+    return redirect('QuitSoonApp:alternatives')
+
 
 def good(request):
     """User do a healthy activity or uses substitutes"""

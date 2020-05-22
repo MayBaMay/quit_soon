@@ -55,12 +55,13 @@ class TestModels(TestCase):
         )
         self.alternative = Alternative.objects.create(
             user=self.usertest,
-            alternative='VELO',
+            type_activity='Sp',
+            activity='VELO',
         )
         self.alternative2 = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
-            alternative='PASTILLES',
+            substitut='PAST',
             nicotine=2,
         )
         self.consoalter = ConsoAlternative.objects.create(
@@ -116,6 +117,19 @@ class TestModels(TestCase):
         self.assertTrue(Alternative.objects.filter(user=self.usertest).exists())
         self.assertEqual(Alternative.objects.filter(user=self.usertest).count(), 2)
         self.assertEqual(Alternative.objects.filter(user=self.usertest, type_alternative='Su').count(), 1)
+
+    def test_alternative_model_double(self):
+        """ test alternative creation"""
+        self.alternative3 = Alternative.objects.create(
+            user=self.usertest,
+            type_alternative='Su',
+            substitut='PAST',
+            nicotine=3,
+        )
+        self.assertTrue(Alternative.objects.filter(user=self.usertest).exists())
+        self.assertEqual(Alternative.objects.filter(user=self.usertest).count(), 3)
+        self.assertEqual(Alternative.objects.filter(user=self.usertest, type_alternative='Su').count(), 2)
+
 
     def test_consoalter_model(self):
         """ test conso alternative creation"""

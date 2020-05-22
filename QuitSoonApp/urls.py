@@ -24,6 +24,9 @@ urlpatterns = [
     path('bad_history/', views.bad_history, name='bad_history'),
 
     path('alternatives/', views.alternatives, name='alternatives'),
+    path('delete_alternative/<type_alternative>/<type_activity>/<activity>/<substitut>/<nicotine>/',
+        views.delete_alternative,
+        name='delete_alternative'),
     path('good/', views.good, name='good'),
     path('good_history/', views.good_history, name='good_history'),
 
