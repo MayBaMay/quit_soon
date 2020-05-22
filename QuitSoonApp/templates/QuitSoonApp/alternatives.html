@@ -81,8 +81,10 @@
               <p><b>Sports</b></p>
               {% for activity in Sp %}
                 <div class="row">
-                  {{ activity.alternative }}
-                  <!-- <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a> -->
+                  {{ activity.activity }}
+                  <a href="/delete_alternative/{{activity.type_alternative}}/{{activity.type_activity}}/{{activity.activity}}/{{activity.substitut}}/{{activity.nicotine}}/"">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </a>
                 </div>
               {% endfor %}
             {% endif %}
@@ -93,9 +95,10 @@
               <p><b>Loisirs</b></p>
               {% for activity in Lo %}
                 <div class="row">
-                  {{ activity.alternative }}
-                  <!-- <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a> -->
-                </div>
+                  {{ activity.activity }}
+                  <a href="/delete_alternative/{{activity.type_alternative}}/{{activity.type_activity}}/{{activity.activity}}/{{activity.substitut}}/{{activity.nicotine}}/"">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </a>                </div>
               {% endfor %}
             {% endif %}
           </div>
@@ -105,9 +108,10 @@
               <p><b>Soins</b></p>
               {% for activity in So %}
                 <div class="row">
-                  {{ activity.alternative }}
-                  <!-- <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a> -->
-                </div>
+                  {{ activity.activity }}
+                  <a href="/delete_alternative/{{activity.type_alternative}}/{{activity.type_activity}}/{{activity.activity}}/{{activity.substitut}}/{{activity.nicotine}}/"">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </a>                </div>
               {% endfor %}
             {% endif %}
           </div>
@@ -115,12 +119,13 @@
           <div class="">
             {% if Su %}
               <p><b>Substituts</b></p>
-              {% for activity in Su %}
+              {% for substitut in Su %}
                 <div class="row">
-                  {{ activity.substitut }}
-                  {{ activity.nicotine }}
-                  <!-- <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a> -->
-                </div>
+                  {{ substitut.substitut }}
+                  {{ substitut.nicotine }}
+                  <a href="/delete_alternative/{{substitut.type_alternative}}/{{substitut.type_activity}}/{{substitut.activity}}/{{substitut.substitut}}/{{substitut.nicotine}}/"">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </a>                </div>
               {% endfor %}
             {% endif %}
           </div>

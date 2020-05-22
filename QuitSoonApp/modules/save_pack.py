@@ -79,17 +79,21 @@ class SavePack:
 
     def create_pack(self):
         """Create pack from datas"""
-        # unicity checked in form and in model index
-        newpack = Paquet.objects.create(
-            user=self.user,
-            type_cig=self.type_cig,
-            brand=self.brand,
-            qt_paquet=self.qt_paquet,
-            unit=self.unit,
-            price=self.price,
-            g_per_cig=self.g_per_cig,
-            price_per_cig=self.price_per_cig
-            )
+        try:
+            self.get_pack
+            pack = self.filter_pack
+            pack.update(display=True)
+        except:
+            newpack = Paquet.objects.create(
+                user=self.user,
+                type_cig=self.type_cig,
+                brand=self.brand,
+                qt_paquet=self.qt_paquet,
+                unit=self.unit,
+                price=self.price,
+                g_per_cig=self.g_per_cig,
+                price_per_cig=self.price_per_cig
+                )
         return newpack
 
     def delete_pack(self):

@@ -416,59 +416,147 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
         self.assertEqual(paquet.g_per_cig, Decimal('1.1'))
         self.assertEqual(paquet.price_per_cig, Decimal('2.75'))
 
-    # def test_alternatives_view_post_succes_alt(self):
-    #     """Test client post a form with alternatives with success"""
-    #     data = {'type_alternative':'Sp',
-    #             'alternative':'Course à pied'}
-    #     response = self.client.post(reverse('QuitSoonApp:alternatives'),
-    #                                 data=data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
-    #     db_alternative = Alternative.objects.filter(
-    #         user=self.user,
-    #         type_alternative='Sp',
-    #         alternative='COURSE À PIED',
-    #         )
-    #     self.assertTrue(db_alternative.exists())
-    #
-    # def test_alternatives_view_post_succes_subs(self):
-    #     """Test client post a form with alternatives with success"""
-    #     data = {'type_alternative':'Su',
-    #             'substitut':'P24',
-    #             'nicotine':'2',
-    #             }
-    #     response = self.client.post(reverse('QuitSoonApp:alternatives'),
-    #                                 data=data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
-    #     db_alternative = Alternative.objects.filter(
-    #         user=self.user,
-    #         type_alternative='Su',
-    #         substitut='P24',
-    #         nicotine='2',
-    #         )
-    #     self.assertTrue(db_alternative.exists())
-    #
-    # def test_alternatives_view_post_succes_unique(self):
-    #     """Test client post a form with alternatives with success"""
-    #     Alternative.objects.create(
-    #         user=self.user,
-    #         type_alternative='Su',
-    #         substitut='GS',
-    #         nicotine='2',
-    #         )
-    #     data = {'type_alternative':'Su',
-    #             'substitut':'GS',
-    #             'nicotine':'2',
-    #             }
-    #     response = self.client.post(reverse('QuitSoonApp:alternatives'),
-    #                                 data=data)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
-    #     db_alternative = Alternative.objects.filter(
-    #         user=self.user,
-    #         type_alternative='Su',
-    #         substitut='GS',
-    #         nicotine='2',
-    #         )
-    #     self.assertTrue(db_alternative.count(), 1)
+    def test_alternatives_view_post_succes_alt(self):
+        """Test client post a form with alternatives with success"""
+        data = {'type_alternative':'Ac',
+                'type_activity':'Sp',
+                'activity':'Course à pied'}
+        response = self.client.post(reverse('QuitSoonApp:alternatives'),
+                                    data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
+        db_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='Sp',
+            activity='COURSE À PIED',
+            )
+        self.assertTrue(db_alternative.exists())
+
+    def test_alternatives_view_post_succes_subs(self):
+        """Test client post a form with alternatives with success"""
+        data = {'type_alternative':'Su',
+                'substitut':'P24',
+                'nicotine':'2',
+                }
+        response = self.client.post(reverse('QuitSoonApp:alternatives'),
+                                    data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
+        db_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Su',
+            substitut='P24',
+            nicotine='2',
+            )
+        self.assertTrue(db_alternative.exists())
+
+    def test_alternatives_view_post_fails_unique(self):
+        """Test client post a form with alternatives fails because of IntegrityError"""
+        Alternative.objects.create(
+            user=self.user,
+            type_alternative='Su',
+            substitut='GS',
+            nicotine='2',
+            )
+        data = {'type_alternative':'Su',
+                'substitut':'GS',
+                'nicotine':'2',
+                }
+        response = self.client.post(reverse('QuitSoonApp:alternatives'),
+                                    data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
+        db_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Su',
+            substitut='GS',
+            nicotine='2',
+            )
+        self.assertTrue(db_alternative.count(), 1)
+
+    def test_alternatives_view_post_get_only_relevant_form(self):
+        """Test client post a form with alternatives with success"""
+        data = {'type_alternative':'Su',
+                'type_activity':'P16',
+                'activity':'Course',
+                'substitut':'P16',
+                'nicotine':'2',
+                }
+        response = self.client.post(reverse('QuitSoonApp:alternatives'),
+                                    data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/alternatives.html')
+        db_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Su',
+            substitut='P16',
+            nicotine='2',
+            )
+        self.assertTrue(db_alternative.exists())
+
+    def test_delete_alternative_views_activity(self):
+        """Test client post delete_alternative view with activity datas"""
+        Alternative.objects.create(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='So',
+            activity='tabacologue',
+            )
+        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=['Ac', 'So', 'tabacologue', None, None]))
+        self.assertEqual(response.status_code, 302)
+        filter = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='So',
+            activity='tabacologue',
+            )
+        self.assertFalse(filter.exists())
+
+    def test_delete_alternative_views_substitut(self):
+        """Test client post delete_alternative view with substitut datas"""
+        Alternative.objects.create(
+            user=self.user,
+            type_alternative='Su',
+            substitut='GM',
+            nicotine=None,
+            )
+        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=['Su', None, None, 'GM', None]))
+        self.assertEqual(response.status_code, 302)
+        filter = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Su',
+            type_activity='GM',
+            activity=None,
+            )
+        self.assertFalse(filter.exists())
+
+    def test_delete_alternative_views_substitut_used_in_ConsoAlternative(self):
+        """Test client post delete_alternative view with substitut datas while used in ConsoAlternative"""
+        alternative = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Su',
+            substitut='GM',
+            nicotine=None,
+            )
+        conso = ConsoAlternative.objects.create(
+            user=self.user,
+            date_alter=datetime.date(2020, 5, 13),
+            time_alter=datetime.time(13, 55),
+            alternative=alternative,
+        )
+        filter_conso = ConsoAlternative.objects.filter(
+            user=self.user,
+            alternative=alternative,
+            )
+        self.assertTrue(filter_conso.exists())
+        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=['Su', None, None, 'GM', None]))
+        self.assertEqual(response.status_code, 302)
+        filter_alternative = Alternative.objects.filter(
+            user=self.user,
+            type_alternative='Su',
+            substitut='GM',
+            nicotine=None,
+            )
+        self.assertTrue(filter_alternative.exists())
+        self.assertEqual(filter_alternative[0].display, False)
