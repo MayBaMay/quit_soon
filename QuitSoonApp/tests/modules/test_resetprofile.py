@@ -1,18 +1,9 @@
 import datetime
 
-from django.test import TransactionTestCase, TestCase
+from django.test import TestCase
 from django.utils.timezone import make_aware
-from django.urls import reverse
-from django.contrib import auth
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 
-from QuitSoonApp.views import (
-    index, today,
-    register_view, login_view,
-    profile, paquets, alternatives,
-    suivi, objectifs
-)
 from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,

@@ -21,7 +21,7 @@ urlpatterns = [
         name='delete_pack'),
     path('change_g_per_cig/', views.change_g_per_cig, name='change_g_per_cig'),
     path('bad/', views.bad, name='bad'),
-    path('bad_history/', views.bad_history, name='bad_history'),
+    path('delete_smoke/<id_smoke>/', views.delete_smoke, name='delete_smoke'),
 
     path('alternatives/', views.alternatives, name='alternatives'),
     path('delete_alternative/<type_alternative>/<type_activity>/<activity>/<substitut>/<nicotine>/',

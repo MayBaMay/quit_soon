@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 import unicodedata
+import datetime
 
 from django import forms
 from django.contrib.auth import authenticate
@@ -8,7 +11,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext, gettext_lazy as _
 from django.core.exceptions import NON_FIELD_ERRORS
 
-from QuitSoonApp.models import UserProfile, Paquet, Alternative
+from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, Alternative, ConsoAlternative
 
 
 class RegistrationForm(UserCreationForm):
@@ -70,6 +73,7 @@ class PaquetFormCreation(PaquetForm):
             brand=cleaned_data.get('brand'),
             qt_paquet=cleaned_data.get('qt_paquet'),
             price=cleaned_data.get('price'),
+            display=True,
             )
         if same_packs:
             raise forms.ValidationError("Vous avez déjà enregistré ce paquet")
@@ -105,3 +109,125 @@ class SubstitutForm(UserRelatedForm):
     class Meta:
         model = Alternative
         fields = ['substitut', 'nicotine']
+
+
+class SmokeForm(forms.Form):
+
+    date_smoke = forms.DateField(
+        required=True,
+        label='Date',
+        widget=forms.DateInput(
+            attrs={'class':"form-control currentDate",
+                    'type':'date'},
+    ))
+
+    time_smoke = forms.TimeField(
+        required=True,
+        label='Heure',
+        widget=forms.DateInput
+            (attrs={'class':"form-control currentTime",
+                    'type':'time'},
+    ))
+
+    given_field = forms.BooleanField(
+        required=False,
+        initial=False,
+        label="J'ai taxé ma clope",
+        widget=forms.CheckboxInput()
+    )
+
+    type_cig_field = forms.ChoiceField(
+        required=True,
+        choices=[],
+        widget=forms.Select
+        (attrs={'class':"form-control showtypes"}),
+        label='',
+        )
+
+    def return_select():
+        return forms.ChoiceField(
+            required=False,
+            choices=[],
+            widget=forms.Select
+            (attrs={'class':"form-control hide"}),
+            label='',
+            )
+
+    indus_pack_field = return_select()
+    rol_pack_field = return_select()
+    cigares_pack_field = return_select()
+    pipe_pack_field = return_select()
+    nb_pack_field = return_select()
+    gr_pack_field = return_select()
+
+    def __init__(self, user, *args, **kwargs):
+
+        self.user = user
+        super(SmokeForm, self).__init__(*args, **kwargs)
+
+        self.user_packs = Paquet.objects.filter(user=self.user, display=True)
+        self.user_conso = ConsoCig.objects.filter(user=self.user)
+        self.lastsmoke = self.last_smoke
+
+        TYPE_CHOICES = []
+        for pack in self.user_packs.order_by('type_cig').distinct('type_cig'):
+            TYPE_CHOICES.append((pack.type_cig, pack.get_type_cig_display))
+            if pack.type_cig == self.lastsmoke.type_cig:
+                self.initial['type_cig_field'] = (pack.type_cig, pack.get_type_cig_display)
+        TYPE_CHOICES = tuple(TYPE_CHOICES)
+
+
+        self.fields['type_cig_field'].choices = TYPE_CHOICES
+
+        INDUS_CHOICES = self.config_field('IND')
+        self.fields['indus_pack_field'].choices = INDUS_CHOICES
+
+        ROL_CHOICES = self.config_field('ROL')
+        self.fields['rol_pack_field'].choices = ROL_CHOICES
+
+        CIGARES_CHOICES = self.config_field('CIGARES')
+        self.fields['cigares_pack_field'].choices = CIGARES_CHOICES
+
+        PIPE_CHOICES = self.config_field('PIPE')
+        self.fields['pipe_pack_field'].choices = PIPE_CHOICES
+
+        NB_CHOICES = self.config_field('NB')
+        self.fields['nb_pack_field'].choices = NB_CHOICES
+
+        GR_CHOICES = self.config_field('GR')
+        self.fields['gr_pack_field'].choices = GR_CHOICES
+
+    @property
+    def last_smoke(self):
+        if self.user_conso:
+            lastsmoke = self.user_conso.last().paquet
+            if lastsmoke:
+                return lastsmoke
+            else:
+                # get the last cig not given
+                for conso in self.user_conso.order_by('-date_cig', '-time_cig'):
+                    if conso.paquet:
+                        return conso.paquet
+                    else:
+                        pass
+                return Paquet.objects.filter(user=self.user)[0]
+        else:
+            return Paquet.objects.filter(user=self.user)[0]
+
+
+    def config_field(self, type):
+        type_cig_conf_dict = {
+            'IND': 'indus_pack_field',
+            'ROL': 'rol_pack_field',
+            'CIGARES': 'cigares_pack_field',
+            'PIPE': 'pipe_pack_field',
+            'NB': 'nb_pack_field',
+            'GR': 'gr_pack_field',
+        }
+        CHOICES = []
+        for pack in self.user_packs.filter(type_cig=type):
+            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
+            CHOICES.append((pack.id, display))
+            if pack.brand == self.lastsmoke.brand and pack.qt_paquet == self.lastsmoke.qt_paquet:
+                self.initial[type_cig_conf_dict[type]] = (pack.id, display)
+        return tuple(CHOICES)

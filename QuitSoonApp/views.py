@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from datetime import date
 from decimal import Decimal
 
@@ -21,10 +23,9 @@ from .forms import (
     TypeAlternativeForm,
     ActivityForm,
     SubstitutForm,
+    SmokeForm,
     )
-from .modules.resetprofile import ResetProfile
-from .modules.save_pack import SavePack
-from .modules.save_alternative import SaveAlternative
+from .modules import ResetProfile, SavePack, SaveSmoke, SaveAlternative
 
 def index(request):
     """index View"""
@@ -169,7 +170,6 @@ def paquets(request):
         'ind':paquets.filter(type_cig='IND'),
         'rol':paquets.filter(type_cig='ROL'),
         'cigares':paquets.filter(type_cig='CIGARES'),
-        'cigarios':paquets.filter(type_cig='CIGARIOS'),
         'pipe':paquets.filter(type_cig='PIPE'),
         'nb':paquets.filter(type_cig='NB'),
         'gr':paquets.filter(type_cig='GR'),
@@ -208,11 +208,40 @@ def change_g_per_cig(request):
 
 def bad(request):
     """User smokes"""
-    return render(request, 'QuitSoonApp/bad.html')
+    # check if packs are in parameters to fill fields with actual packs
+    packs = Paquet.objects.filter(user=request.user, display=True)
+    context = {'packs':packs}
+    if packs :
+        form = SmokeForm(request.user)
+        if request.method == 'POST':
+            form = SmokeForm(request.user, request.POST)
+            if form.is_valid():
+                smoke = SaveSmoke(request.user, form.cleaned_data)
+                smoke.create_conso_cig()
+                form = SmokeForm(request.user)
+        context['form'] = form
+    smoke = ConsoCig.objects.filter(user=request.user)
+    context['smoke'] = smoke
+    return render(request, 'QuitSoonApp/bad.html', context)
 
-def bad_history(request):
-    """User smoking history page"""
-    return render(request, 'QuitSoonApp/bad_history.html')
+def delete_smoke(request, id_smoke):
+    if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
+        data = {'id_smoke':id_smoke}
+        smoke = SaveSmoke(request.user, data)
+        smoke.delete_conso_cig()
+        return redirect('QuitSoonApp:bad')
+    else:
+        raise Http404()
+
+def delete_alternative(request, id_smoke):
+    """
+    Used when user click on the trash of one of the alternative
+    Don't delete it but change display attribute into False if already used in ConsoAlternative
+    """
+    data = {'id_smoke':id_smoke}
+    smoke = SaveSmoke(request.user, data)
+    smoke.delete_conso_cig()
+    return redirect('QuitSoonApp:bad')
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
