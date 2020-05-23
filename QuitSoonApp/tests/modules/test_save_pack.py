@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from decimal import Decimal
 import datetime
 
@@ -225,7 +227,7 @@ class SavePackTestCase(TestCase):
         """test SavePack.delete_pack method with used pack"""
         pack = Paquet.objects.create(
             user=self.usertest,
-            type_cig='CIGARIOS',
+            type_cig='CIGARES',
             brand='ELPASO',
             qt_paquet=5,
             price=10,
@@ -237,7 +239,7 @@ class SavePackTestCase(TestCase):
             paquet=pack,
         )
         datas ={
-            'type_cig':'CIGARIOS',
+            'type_cig':'CIGARES',
             'brand':'ELPASO',
             'qt_paquet':5,
             'price':10,
@@ -246,7 +248,7 @@ class SavePackTestCase(TestCase):
         pack.delete_pack()
         db_pack = Paquet.objects.filter(
             user=self.usertest,
-            type_cig='CIGARIOS',
+            type_cig='CIGARES',
             brand='ELPASO',
             qt_paquet=5,
             price=10,

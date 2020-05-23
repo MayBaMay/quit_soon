@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from datetime import date
 from decimal import Decimal
 
@@ -21,9 +23,11 @@ from .forms import (
     TypeAlternativeForm,
     ActivityForm,
     SubstitutForm,
+    TypeCigSelect,
     )
 from .modules.resetprofile import ResetProfile
 from .modules.save_pack import SavePack
+from .modules.save_smoke import SaveSmoke
 from .modules.save_alternative import SaveAlternative
 
 def index(request):
@@ -169,7 +173,6 @@ def paquets(request):
         'ind':paquets.filter(type_cig='IND'),
         'rol':paquets.filter(type_cig='ROL'),
         'cigares':paquets.filter(type_cig='CIGARES'),
-        'cigarios':paquets.filter(type_cig='CIGARIOS'),
         'pipe':paquets.filter(type_cig='PIPE'),
         'nb':paquets.filter(type_cig='NB'),
         'gr':paquets.filter(type_cig='GR'),
@@ -208,7 +211,14 @@ def change_g_per_cig(request):
 
 def bad(request):
     """User smokes"""
-    return render(request, 'QuitSoonApp/bad.html')
+    TypeCigSelectForm = TypeCigSelect(request.user)
+    if request.method == 'POST':
+        form = TypeCigSelect(request.user, request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+            smoke = SaveSmoke(request.user, form.cleaned_data)
+    context = {'TypeCigSelectForm':TypeCigSelectForm,}
+    return render(request, 'QuitSoonApp/bad.html', context)
 
 def bad_history(request):
     """User smoking history page"""

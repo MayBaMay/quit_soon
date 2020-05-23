@@ -229,7 +229,45 @@
      $('.activity_form').removeClass('hide').addClass('show');
      $('.substitut_form').removeClass('show').addClass('hide');
    }
+  });
 
+  displayPaquetsFields();
+
+  $('#selected_types_cig').on('change', function(e) {
+    $('.show').removeClass('show').addClass('hide');
+    displayPaquetsFields()
   });
 
 })(jQuery); // End of use strict
+
+var dateField = document.querySelector('.currentDate');
+var timeField = document.querySelector('.currentTime');
+var date = new Date();
+
+// Set the date & time
+dateField.value = date.getFullYear().toString() + '-' +
+  (date.getMonth() + 1).toString().padStart(2, 0) +
+  '-' + date.getDate().toString().padStart(2, 0);
+timeField.value = date.getHours().toString().padStart(2, 0) + ':' +
+  date.getMinutes().toString().padStart(2, 0);
+
+function displayPaquetsFields(){
+  if ($('#selected_types_cig').val() == 'IND') {
+    $('#select_indus').removeClass('hide').addClass('show');
+  }
+  else if ($('#selected_types_cig').val() == 'ROL') {
+    $('#select_rolled').removeClass('hide').addClass('show');
+  }
+  else if ($('#selected_types_cig').val() == 'CIGARES') {
+    $('#select_cigares').removeClass('hide').addClass('show');
+  }
+  else if ($('#selected_types_cig').val() == 'PIPE') {
+      $('#select_pipe').removeClass('hide').addClass('show');
+  }
+  else if ($('#selected_types_cig').val() == 'NB') {
+    $('#select_nb').removeClass('hide').addClass('show');
+  }
+  else if ($('#selected_types_cig').val() == 'GR') {
+    $('#select_gr').removeClass('hide').addClass('show');
+  };
+}

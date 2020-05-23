@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from django.test import TransactionTestCase, TestCase
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
