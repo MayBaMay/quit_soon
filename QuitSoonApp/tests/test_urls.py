@@ -79,7 +79,7 @@ class TestUrls(SimpleTestCase):
 
     def test_delete_pack_url_is_resolved(self):
         """test delete_pack"""
-        url = reverse('QuitSoonApp:delete_pack', args=['type_cig', 'brand', 20, 3.3])
+        url = reverse('QuitSoonApp:delete_pack', args=['id_pack'])
         self.assertEqual(resolve(url).func, delete_pack)
 
     def test_change_g_per_cig_url_is_resolved(self):
@@ -100,8 +100,7 @@ class TestUrls(SimpleTestCase):
 
     def test_delete_alternative_url_is_resolved(self):
         """test delete_alternative"""
-        url = reverse('QuitSoonApp:delete_alternative',
-                      args=['Ac', 'Sp', 'Course', None, None])
+        url = reverse('QuitSoonApp:delete_alternative', args=['id_pack'])
         self.assertEqual(resolve(url).func, delete_alternative)
 
     def test_good_url_is_resolved(self):

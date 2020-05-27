@@ -372,7 +372,7 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
 
     def test_delete_pack_views(self):
         """Test client post delete_pack view"""
-        Paquet.objects.create(
+        db_pack = Paquet.objects.create(
             user=self.user,
             type_cig='GR',
             brand='BRANDTEST',
@@ -381,7 +381,7 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             )
         response = self.client.post(reverse(
             'QuitSoonApp:delete_pack',
-            args=['GR', 'BRANDTEST', 50, 30]))
+            args=[db_pack.id]))
         self.assertEqual(response.status_code, 302)
         filter = Paquet.objects.filter(
             user=self.user,
@@ -636,43 +636,43 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
 
     def test_delete_alternative_views_activity(self):
         """Test client post delete_alternative view with activity datas"""
-        Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.user,
             type_alternative='Ac',
             type_activity='So',
             activity='tabacologue',
             )
-        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=['Ac', 'So', 'tabacologue', None, None]))
+        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id]))
         self.assertEqual(response.status_code, 302)
-        filter = Alternative.objects.filter(
+        filter_alternative = Alternative.objects.filter(
             user=self.user,
             type_alternative='Ac',
             type_activity='So',
             activity='tabacologue',
             )
-        self.assertFalse(filter.exists())
+        self.assertFalse(filter_alternative.exists())
 
     def test_delete_alternative_views_substitut(self):
         """Test client post delete_alternative view with substitut datas"""
-        Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.user,
             type_alternative='Su',
             substitut='GM',
             nicotine=None,
             )
-        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=['Su', None, None, 'GM', None]))
+        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id]))
         self.assertEqual(response.status_code, 302)
-        filter = Alternative.objects.filter(
+        filter_alternative = Alternative.objects.filter(
             user=self.user,
             type_alternative='Su',
             type_activity='GM',
             activity=None,
             )
-        self.assertFalse(filter.exists())
+        self.assertFalse(filter_alternative.exists())
 
     def test_delete_alternative_views_substitut_used_in_ConsoAlternative(self):
         """Test client post delete_alternative view with substitut datas while used in ConsoAlternative"""
-        alternative = Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.user,
             type_alternative='Su',
             substitut='GM',
@@ -682,14 +682,14 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             user=self.user,
             date_alter=datetime.date(2020, 5, 13),
             time_alter=datetime.time(13, 55),
-            alternative=alternative,
+            alternative=db_alternative,
         )
         filter_conso = ConsoAlternative.objects.filter(
             user=self.user,
-            alternative=alternative,
+            alternative=db_alternative,
             )
         self.assertTrue(filter_conso.exists())
-        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=['Su', None, None, 'GM', None]))
+        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id]))
         self.assertEqual(response.status_code, 302)
         filter_alternative = Alternative.objects.filter(
             user=self.user,

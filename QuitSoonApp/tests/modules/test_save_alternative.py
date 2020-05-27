@@ -14,13 +14,26 @@ class SavePackTestCase(TestCase):
         self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
 
+    def test_get_request_data(self):
+        datas ={
+            'type_alternative':'Su',
+            'substitut':'P24',
+            'nicotine': 2,
+            }
+        alternative = SaveAlternative(self.usertest, datas)
+        self.assertEqual(alternative.get_request_data('type_alternative'), 'Su')
+        self.assertEqual(alternative.get_request_data('type_activity'), None)
+        self.assertEqual(alternative.get_request_data('activity'), None)
+        self.assertEqual(alternative.get_request_data('substitut'), 'P24')
+        self.assertEqual(alternative.get_request_data('nicotine'), 2)
+
     def test_if_strNone_get_None_or_str(self):
         data = 'None'
         self.assertEqual(SaveAlternative.if_strNone_get_None_or_str(data), None)
         data = 1637
         self.assertEqual(SaveAlternative.if_strNone_get_None_or_str(data), '1637')
-        data = 'str'
-        self.assertEqual(SaveAlternative.if_strNone_get_None_or_str(data), 'str')
+        data = 'Su'
+        self.assertEqual(SaveAlternative.if_strNone_get_None_or_str(data), 'Su')
 
     def if_strNone_get_None_or_float(self):
         data = 'None'
@@ -31,6 +44,23 @@ class SavePackTestCase(TestCase):
         self.assertEqual(SaveAlternative.if_strNone_get_None_or_str(data), 2.0)
         data = 'erreur'
         self.assertEqual(SaveAlternative.if_strNone_get_None_or_str(data), None)
+
+    def test_get_alternative(self):
+        old = Alternative.objects.create(
+            user=self.usertest,
+            type_alternative='Ac',
+            type_activity='Sp',
+            activity='COURSE',
+            display=False,
+            )
+
+        datas ={
+            'type_alternative':'Ac',
+            'type_activity':'Sp',
+            'activity': 'COURSE',
+            }
+        alt = SaveAlternative(self.usertest, datas)
+        self.assertTrue(alt.get_alternative)
 
     def test_create_new_alternative(self):
         """test SavePack.create_alternative method if type_alternative != 'Su'"""
@@ -58,6 +88,7 @@ class SavePackTestCase(TestCase):
             nicotine=2.0,
             display=False,
             )
+
         datas ={
             'type_alternative':'Su',
             'substitut':'P24',
@@ -117,53 +148,45 @@ class SavePackTestCase(TestCase):
 
     def test_delete_unused_alternative_activity(self):
         """test SaveAlternative.delete_alternative method with unused alternative"""
-        Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',
             type_activity='So',
             activity='PSYCHOLOGUE',
             )
-        datas ={
-            'type_alternative':'Ac',
-            'type_activity':'So',
-            'activity':'PSYCHOLOGUE',
-            }
-        alternative = SaveAlternative(self.usertest, datas)
+        data = {'id_alternative': db_alternative.id}
+        alternative = SaveAlternative(self.usertest, data)
         alternative.delete_alternative()
-        db_alternative = Alternative.objects.filter(
+        filter_alternative = Alternative.objects.filter(
             user=self.usertest,
             type_alternative='Ac',
             type_activity='So',
             activity='PSYCHOLOGUE',
             )
-        self.assertFalse(db_alternative.exists())
+        self.assertFalse(filter_alternative.exists())
 
     def test_delete_unused_alternative_substitut(self):
         """test SaveAlternative.delete_alternative method with unused alternative"""
-        Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
             substitut='ECIG',
             nicotine=2.0,
             )
-        datas ={
-            'type_alternative':'Su',
-            'substitut':'ECIG',
-            'nicotine':2,
-            }
-        alternative = SaveAlternative(self.usertest, datas)
+        data = {'id_alternative': db_alternative.id}
+        alternative = SaveAlternative(self.usertest, data)
         alternative.delete_alternative()
-        db_alternative = Alternative.objects.filter(
+        filter_alternative = Alternative.objects.filter(
             user=self.usertest,
             type_alternative='Su',
             substitut='ECIG',
             nicotine=2.0,
             )
-        self.assertFalse(db_alternative.exists())
+        self.assertFalse(filter_alternative.exists())
 
     def test_delete_used_alternative_activity(self):
         """test SavePack.delete_alternative method with used alternative"""
-        alternative = Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',
             type_activity='So',
@@ -173,27 +196,23 @@ class SavePackTestCase(TestCase):
             user=self.usertest,
             date_alter=datetime.date(2020, 5, 13),
             time_alter=datetime.time(13, 55),
-            alternative=alternative,
+            alternative=db_alternative,
         )
-        datas ={
-            'type_alternative':'Ac',
-            'type_activity':'So',
-            'activity':'PSYCHOLOGUE',
-            }
-        alternative = SaveAlternative(self.usertest, datas)
+        data = {'id_alternative': db_alternative.id}
+        alternative = SaveAlternative(self.usertest, data)
         alternative.delete_alternative()
-        db_alternative = Alternative.objects.filter(
+        filter_alternative = Alternative.objects.filter(
             user=self.usertest,
             type_alternative='Ac',
             type_activity='So',
             activity='PSYCHOLOGUE',
             )
-        self.assertTrue(db_alternative.exists())
-        self.assertEqual(db_alternative[0].display, False)
+        self.assertTrue(filter_alternative.exists())
+        self.assertEqual(filter_alternative[0].display, False)
 
     def test_delete_used_alternative_substitut(self):
         """test SavePack.delete_alternative method with used alternative"""
-        alternative = Alternative.objects.create(
+        db_alternative = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
             substitut='ECIG',
@@ -203,20 +222,16 @@ class SavePackTestCase(TestCase):
             user=self.usertest,
             date_alter=datetime.date(2020, 5, 13),
             time_alter=datetime.time(13, 55),
-            alternative=alternative,
+            alternative=db_alternative,
         )
-        datas ={
-            'type_alternative':'Su',
-            'substitut':'ECIG',
-            'nicotine':'2',
-            }
-        alternative = SaveAlternative(self.usertest, datas)
+        data = {'id_alternative': db_alternative.id}
+        alternative = SaveAlternative(self.usertest, data)
         alternative.delete_alternative()
-        db_alternative = Alternative.objects.filter(
+        filter_alternative = Alternative.objects.filter(
             user=self.usertest,
             type_alternative='Su',
             substitut='ECIG',
             nicotine=2.0,
             )
-        self.assertTrue(db_alternative.exists())
-        self.assertEqual(db_alternative[0].display, False)
+        self.assertTrue(filter_alternative.exists())
+        self.assertEqual(filter_alternative[0].display, False)
