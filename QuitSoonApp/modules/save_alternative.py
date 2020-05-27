@@ -3,16 +3,11 @@
 """
 This module allowes user to save a new instance of cigarettes pack
 """
-from decimal import *
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from ..models import (
-    UserProfile,
-    Paquet, ConsoCig,
-    Alternative, ConsoAlternative,
-    Objectif, Trophee
-)
+
+from ..models import Alternative, ConsoAlternative
 
 class SaveAlternative:
     """class returning an new DB object paquet or False"""
@@ -111,16 +106,3 @@ class SaveAlternative:
                 alternative_filtered.delete()
         except ObjectDoesNotExist as e:
             print(e)
-
-#     # def update_pack_g_per_cig(self):
-#     #     try :
-#     #         pack_filtered = Paquet.objects.filter(
-#     #             user=self.user,
-#     #             type_cig=self.type_cig,
-#     #             brand=self.brand,
-#     #             qt_paquet=self.qt_paquet,
-#     #             price=self.price
-#     #             )
-#     #         pack_filtered.update(g_per_cig=self.g_per_cig)
-#     #     except ObjectDoesNotExist:
-#     #         pass

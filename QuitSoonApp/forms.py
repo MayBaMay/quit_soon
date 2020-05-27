@@ -73,6 +73,7 @@ class PaquetFormCreation(PaquetForm):
             brand=cleaned_data.get('brand'),
             qt_paquet=cleaned_data.get('qt_paquet'),
             price=cleaned_data.get('price'),
+            display=True,
             )
         if same_packs:
             raise forms.ValidationError("Vous avez déjà enregistré ce paquet")
@@ -110,7 +111,7 @@ class SubstitutForm(UserRelatedForm):
         fields = ['substitut', 'nicotine']
 
 
-class TypeCigSelect(forms.Form):
+class SmokeForm(forms.Form):
 
     date_smoke = forms.DateField(
         required=True,
@@ -128,80 +129,49 @@ class TypeCigSelect(forms.Form):
                     'type':'time'},
     ))
 
-    type_cig_field = forms.ChoiceField(
-        required=True,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control",
-                'id':'selected_types_cig'}),
-        label='',
-    )
-
-    indus_pack_field = forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control mt-3 hide",
-                'id':'select_indus'}),
-        label='',
-    )
-
-    rol_pack_field = forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control mt-3 hide",
-                'id':'select_rolled'}),
-        label='',
-    )
-
-    cigares_pack_field = forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control mt-3 hide",
-                'id':'select_cigares'}),
-        label='',
-    )
-
-    pipe_pack_field = forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control mt-3 hide",
-                'id':'select_pipe'}),
-        label='',
-    )
-
-    nb_pack_field = forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control mt-3 hide",
-                'id':'select_nb'}),
-        label='',
-    )
-
-    gr_pack_field = forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-        (attrs={'class':"form-control mt-3 hide",
-                'id':'select_gr'}),
-        label='',
-    )
-
     given_field = forms.BooleanField(
         required=False,
-        label="J'ai taxé ma clope")
+        label="J'ai taxé ma clope",
+        widget=forms.CheckboxInput()
+    )
+
+    def return_select():
+        return forms.ChoiceField(
+            required=True,
+            choices=[],
+            widget=forms.Select
+            (attrs={'class':"form-control hide"}),
+            label='',
+            )
+
+    type_cig_field = return_select()
+    indus_pack_field = return_select()
+    rol_pack_field = return_select()
+    cigares_pack_field = return_select()
+    pipe_pack_field = return_select()
+    nb_pack_field = return_select()
+    gr_pack_field = return_select()
 
     def __init__(self, user, *args, **kwargs):
 
         self.user = user
-        super(TypeCigSelect, self).__init__(*args, **kwargs)
+        super(SmokeForm, self).__init__(*args, **kwargs)
 
-        user_packs = Paquet.objects.filter(user=self.user)
-        lastsmoke = ConsoCig.objects.filter(user=self.user).last().paquet
+        user_packs = Paquet.objects.filter(user=self.user, display=True)
+        user_conso = ConsoCig.objects.filter(user=self.user)
+
+        if user_conso:
+            lastsmoke = user_conso.last().paquet
+            if lastsmoke == None:
+                # get the last cig not given
+                for conso in user_conso.order_by('date_cig', 'time_cig'):
+                    if conso.paquet:
+                        lastsmoke = conso.paquet
+                # if still pack == None
+                if not lastsmoke:
+                    lastsmoke = Paquet.objects.filter(user=self.user)[0]
+        else:
+            lastsmoke = Paquet.objects.filter(user=self.user)[0]
 
         TYPE_CHOICES = []
         for pack in user_packs.order_by('type_cig').distinct('type_cig'):
@@ -227,7 +197,7 @@ class TypeCigSelect(forms.Form):
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
             ROL_CHOICES.append((pack.id, display))
             if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['indus_pack_field'] = (pack.id, display)
+                self.initial['rol_pack_field'] = (pack.id, display)
         ROL_CHOICES = tuple(ROL_CHOICES)
 
         self.fields['rol_pack_field'].choices = ROL_CHOICES
@@ -237,7 +207,7 @@ class TypeCigSelect(forms.Form):
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
             CIGARES_CHOICES.append((pack.id, display))
             if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['indus_pack_field'] = (pack.id, display)
+                self.initial['cigares_pack_field'] = (pack.id, display)
         CIGARES_CHOICES = tuple(CIGARES_CHOICES)
 
         self.fields['cigares_pack_field'].choices = CIGARES_CHOICES
@@ -247,7 +217,7 @@ class TypeCigSelect(forms.Form):
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
             PIPE_CHOICES.append((pack.id, display))
             if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['indus_pack_field'] = (pack.id, display)
+                self.initial['pipe_pack_field'] = (pack.id, display)
         PIPE_CHOICES = tuple(PIPE_CHOICES)
 
         self.fields['pipe_pack_field'].choices = PIPE_CHOICES
@@ -257,7 +227,7 @@ class TypeCigSelect(forms.Form):
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
             NB_CHOICES.append((pack.id, display))
             if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['indus_pack_field'] = (pack.id, display)
+                self.initial['nb_pack_field'] = (pack.id, display)
         NB_CHOICES = tuple(NB_CHOICES)
 
         self.fields['nb_pack_field'].choices = NB_CHOICES
@@ -267,7 +237,7 @@ class TypeCigSelect(forms.Form):
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
             GR_CHOICES.append((pack.id, display))
             if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['indus_pack_field'] = (pack.id, display)
+                self.initial['gr_pack_field'] = (pack.id, display)
         GR_CHOICES = tuple(GR_CHOICES)
 
         self.fields['gr_pack_field'].choices = GR_CHOICES

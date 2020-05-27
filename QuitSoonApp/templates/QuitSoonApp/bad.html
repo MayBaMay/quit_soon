@@ -5,31 +5,37 @@
 
 JE VAIS CRAQUER ...
 
-{{ lastsmoke.paquet.type_cig }}
+{% if not packs %}
+  Vous n'avez enregistré aucun paquet,<br>
+  Veuillez paramétrer vos paquets
+  <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
 
-<form method='post' action="{% url 'QuitSoonApp:bad' %}"">
-  {% csrf_token %}
-  <!-- <div class="form-group">
-    <label for="date_smoke"><b>Date: </b></label>
-    <input type="date" name="date_smoke" class="form-control currentDate" required="required" />
-  </div>
-  <div class="form-group">
-    <label for="time_smoke"><b>Heure: </b></label>
-    <input type="time" name="time_smoke" class="form-control currentTime" required="required" />
-  </div> -->
-  <div class="form-group">
-    <label for="selected_types_cig"><b>Tabac: </b></label>
-      {{ form.non_field_errors }}
-      {% for field in TypeCigSelectForm %}
-        <div class="fieldWrapper form-group ">
-          {{ field.label }}
-          {{ field }}
-          {{ field.error }}
-        </div>
-      {% endfor %}
-  </div>
-  <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
-</form>
+{% else %}
+  <form id="smokeform" method='post' action="{% url 'QuitSoonApp:bad' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          <div class="fieldWrapper form-group ">
+            {{ field.label }}
+            {{ field }}
+            {{ field.error }}
+          </div>
+        {% endfor %}
+    </div>
+    <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+  </form>
+{% endif %}
 
+  {% for conso in smoke %}
+    <div class="row">
+      {% if conso.given %}
+        {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
+      {% else %}
+        {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
+      {% endif %}
+      <a href="/delete_smoke/{{conso.id}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
+    </div>
+  {% endfor %}
 
 {% endblock %}

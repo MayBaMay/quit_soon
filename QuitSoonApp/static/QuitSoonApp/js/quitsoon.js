@@ -233,7 +233,15 @@
 
   displayPaquetsFields();
 
-  $('#selected_types_cig').on('change', function(e) {
+  $('#id_given_field').change(function() {
+      if (this.checked) {
+          $('.show').removeClass('show').addClass('hide');
+      } else {
+          displayPaquetsFields();
+      }
+  });
+
+  $('#id_type_cig_field').on('change', function(e) {
     $('.show').removeClass('show').addClass('hide');
     displayPaquetsFields()
   });
@@ -252,22 +260,23 @@ timeField.value = date.getHours().toString().padStart(2, 0) + ':' +
   date.getMinutes().toString().padStart(2, 0);
 
 function displayPaquetsFields(){
-  if ($('#selected_types_cig').val() == 'IND') {
-    $('#select_indus').removeClass('hide').addClass('show');
+  $('#id_type_cig_field').removeClass('hide').addClass('show');
+  if ($('#id_type_cig_field').val() == 'IND') {
+    $('#id_indus_pack_field').removeClass('hide').addClass('show');
   }
-  else if ($('#selected_types_cig').val() == 'ROL') {
-    $('#select_rolled').removeClass('hide').addClass('show');
+  else if ($('#id_type_cig_field').val() == 'ROL') {
+    $('#id_rol_pack_field').removeClass('hide').addClass('show');
   }
-  else if ($('#selected_types_cig').val() == 'CIGARES') {
-    $('#select_cigares').removeClass('hide').addClass('show');
+  else if ($('#id_type_cig_field').val() == 'CIGARES') {
+    $('#id_cigares_pack_field').removeClass('hide').addClass('show');
   }
-  else if ($('#selected_types_cig').val() == 'PIPE') {
-      $('#select_pipe').removeClass('hide').addClass('show');
+  else if ($('#id_type_cig_field').val() == 'PIPE') {
+      $('#id_pipe_pack_field').removeClass('hide').addClass('show');
   }
-  else if ($('#selected_types_cig').val() == 'NB') {
-    $('#select_nb').removeClass('hide').addClass('show');
+  else if ($('#id_type_cig_field').val() == 'NB') {
+    $('#id_nb_pack_field').removeClass('hide').addClass('show');
   }
-  else if ($('#selected_types_cig').val() == 'GR') {
-    $('#select_gr').removeClass('hide').addClass('show');
+  else if ($('#id_type_cig_field').val() == 'GR') {
+    $('#id_gr_pack_field').removeClass('hide').addClass('show');
   };
 }

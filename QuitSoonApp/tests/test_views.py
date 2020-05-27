@@ -12,7 +12,7 @@ from QuitSoonApp.views import (
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    paquets, bad, bad_history,
+    paquets, bad,
     alternatives, good, good_history,
 )
 from QuitSoonApp.models import (

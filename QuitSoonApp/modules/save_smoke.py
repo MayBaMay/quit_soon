@@ -1,56 +1,110 @@
 #!/usr/bin/env python
 
-from django import forms
-
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from QuitSoonApp.models import (
-    UserProfile,
-    Paquet, ConsoCig,
-    Alternative, ConsoAlternative,
-    Objectif, Trophee
-)
+from django.db.utils import IntegrityError
+
+from QuitSoonApp.models import Paquet, ConsoCig
 
 
 class SaveSmoke:
-    """Save informations of cigarette consumtion"""
+    """Save informations of cigarette consumption"""
 
     def __init__(self, user, datas):
+        self.datas = datas
         self.user = user
-        self.date_smoke = datas['date_smoke']
-        self.time_smoke = datas['time_smoke']
-        self.type_cig = datas['type_cig_field']
-        self.pack = self.get_pack(datas)
-        print(self.pack)
+        self.id = self.get_request_data('id_smoke')
+        self.date_cig = self.get_request_data('date_smoke')
+        self.time_cig = self.get_request_data('time_smoke')
+        self.given = self.get_request_data('given_field')
+        self.paquet = self.get_pack
 
-    def get_pack(self, datas):
-        if self.type_cig == 'IND':
-            try:
-                return Paquet.objects.get(id = int(datas[('indus_pack_field')]))
-            except (ObjectDoesNotExist, ValueError):
-                pass
-        elif self.type_cig == 'ROL':
-            try:
-                return Paquet.objects.get(id = int(datas[('rol_pack_field')]))
-            except (ObjectDoesNotExist, ValueError):
-                None
-        elif self.type_cig == 'CIGARES':
-            try:
-                return Paquet.objects.get(id = int(datas[('cigares_pack_field')]))
-            except (ObjectDoesNotExist, ValueError):
-                None
-        elif self.type_cig == 'PIPE':
-            try:
-                return Paquet.objects.get(id = int(datas[('pipe_pack_field')]))
-            except (ObjectDoesNotExist, ValueError):
-                None
-        elif self.type_cig == 'NB':
-            try:
-                return Paquet.objects.get(id = int(datas[('nb_pack_field')]))
-            except (ObjectDoesNotExist, ValueError):
-                None
-        elif self.type_cig == 'GR':
-            try:
-                return Paquet.objects.get(id = int(datas[('gr_pack_field')]))
-            except (ObjectDoesNotExist, ValueError):
-                None
+    def get_request_data(self, data):
+        try:
+            return self.datas[data]
+        except KeyError:
+            return None
+
+    @property
+    def get_conso_cig(self):
+        try:
+            if self.id:
+                smoke = ConsoCig.objects.get(id=self.id)
+            else:
+                smoke = ConsoCig.objects.get(
+                    user=self.user,
+                    date_cig=self.date_cig,
+                    time_cig=self.time_cig,
+                    paquet=self.paquet,
+                    given=self.given,
+                    )
+            return smoke
+        except (ObjectDoesNotExist, ValueError, AttributeError):
+            return None
+
+    @property
+    def get_pack(self):
+        try:
+            # when user wants to delete a smoke, smoke id is returned in request
+            return self.get_conso_cig.paquet
+        except (ObjectDoesNotExist, AttributeError):
+            if self.given :
+                return None
+            else:
+                # check type_cig selected to keep datas from the appropriated field
+                if self.get_request_data('type_cig_field') == 'IND':
+                    try:
+                        return Paquet.objects.get(id = int(self.get_request_data('indus_pack_field')))
+                    except (ObjectDoesNotExist, ValueError):
+                        pass
+                elif self.get_request_data('type_cig_field') == 'ROL':
+                    try:
+                        return Paquet.objects.get(id = int(self.get_request_data('rol_pack_field')))
+                    except (ObjectDoesNotExist, ValueError):
+                        pass
+                elif self.get_request_data('type_cig_field') == 'CIGARES':
+                    try:
+                        return Paquet.objects.get(id = int(self.get_request_data('cigares_pack_field')))
+                    except (ObjectDoesNotExist, ValueError):
+                        pass
+                elif self.get_request_data('type_cig_field') == 'PIPE':
+                    try:
+                        return Paquet.objects.get(id = int(self.get_request_data('pipe_pack_field')))
+                    except (ObjectDoesNotExist, ValueError):
+                        pass
+                elif self.get_request_data('type_cig_field') == 'NB':
+                    try:
+                        return Paquet.objects.get(id = int(self.get_request_data('nb_pack_field')))
+                    except (ObjectDoesNotExist, ValueError):
+                        pass
+                elif self.get_request_data('type_cig_field') == 'GR':
+                    try:
+                        return Paquet.objects.get(id = int(self.get_request_data('gr_pack_field')))
+                    except (ObjectDoesNotExist, ValueError):
+                        pass
+            return None
+
+    def create_conso_cig(self):
+        """Create pack from datas"""
+        try:
+            newconsocig = ConsoCig.objects.create(
+                user=self.user,
+                date_cig=self.date_cig,
+                time_cig=self.time_cig,
+                paquet=self.paquet,
+                given=self.given,
+                )
+            self.id = newconsocig.id
+            return newconsocig
+        except IntegrityError:
+            return None
+
+    def delete_conso_cig(self):
+        ##
+        self.get_conso_cig.paquet
+        # only delete ConsoCig if request gives id with delete_smoke view
+        if self.id:
+            self.get_conso_cig.delete()
+        # check if packs still in DB while zero conso and display=False
+        if self.paquet.display == False:
+            self.paquet.delete()
