@@ -100,11 +100,6 @@ class SaveSmoke:
             return None
 
     def delete_conso_cig(self):
-        ##
-        self.get_conso_cig.paquet
         # only delete ConsoCig if request gives id with delete_smoke view
         if self.id:
             self.get_conso_cig.delete()
-        # check if packs still in DB while zero conso and display=False
-        if self.paquet.display == False:
-            self.paquet.delete()

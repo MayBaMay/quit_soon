@@ -64,7 +64,6 @@ class RegisterClientTestCase(TestCase):
         self.assertFalse(User.objects.get(username='registerTestUser').email == 'testnewUser@test.com')
         self.assertRaises(ValidationError)
 
-
     def test_register_bad_email(self):
         """Test client register with success"""
         data = {'username':'NewUserTest',
@@ -380,7 +379,9 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             qt_paquet=50,
             price=30,
             )
-        response = self.client.post(reverse('QuitSoonApp:delete_pack', args=['GR', 'BRANDTEST', 50, 30]))
+        response = self.client.post(reverse(
+            'QuitSoonApp:delete_pack',
+            args=['GR', 'BRANDTEST', 50, 30]))
         self.assertEqual(response.status_code, 302)
         filter = Paquet.objects.filter(
             user=self.user,
@@ -415,6 +416,144 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(paquet.g_per_cig, Decimal('1.1'))
         self.assertEqual(paquet.price_per_cig, Decimal('2.75'))
+
+    def test_bad_get_no_pack(self):
+        """ test get bad view with no pack saved by user """
+        response = self.client.get(reverse('QuitSoonApp:bad'))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['packs'].exists())
+        self.assertFalse(response.context['smoke'].exists())
+
+    def test_bad_get_form(self):
+        """ test get bad view with packs saved by user, get form"""
+        db_pack_ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        response = self.client.get(reverse('QuitSoonApp:bad'))
+        self.assertTrue(response.context['packs'].exists())
+        self.assertFalse(response.context['smoke'].exists())
+        self.assertTrue('form' in response.context)
+
+    def test_bad_post_validform_given_true(self):
+        """ test post bad view with given=True """
+        db_pack_ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='NEW BRAND',
+            qt_paquet=20,
+            price=11,
+            )
+        data = {
+            'date_smoke':datetime.date(2020, 5, 26),
+            'time_smoke':datetime.time(12, 56),
+            'type_cig_field':'IND',
+            'indus_pack_field':db_pack_ind.id,
+            'given_field':True,
+            }
+        response = self.client.post(reverse('QuitSoonApp:bad'),
+                                    data=data)
+        filter_smoke = ConsoCig.objects.filter(
+            user=self.user,
+        )
+        self.assertTrue(filter_smoke.exists())
+        self.assertEqual(filter_smoke.count(), 1)
+
+    def test_bad_post_validform_given_false(self):
+        """ test post bad view with given=false """
+        db_pack_ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        db_pack_ind2 = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='PHILIP MORRIS',
+            qt_paquet=20,
+            price=10.2,
+            )
+        db_pack_rol = Paquet.objects.create(
+            user=self.user,
+            type_cig='ROL',
+            brand='1637',
+            qt_paquet=30,
+            price=12,
+            )
+        db_pack_nb = Paquet.objects.create(
+            user=self.user,
+            type_cig='NB',
+            brand='beedies',
+            qt_paquet=30,
+            price=5,
+            )
+        data = {
+            'date_smoke':datetime.date(2020, 5, 26),
+            'time_smoke':datetime.time(12, 56),
+            'type_cig_field':'IND',
+            'indus_pack_field':db_pack_ind.id,
+            'rol_pack_field':db_pack_rol.id,
+            'nb_pack_field':db_pack_nb.id,
+            'given_field':False,
+            }
+        response = self.client.post(reverse('QuitSoonApp:bad'), data=data)
+        filter_smoke = ConsoCig.objects.filter(
+            user=self.user,
+        )
+        self.assertTrue(filter_smoke.exists())
+        self.assertEqual(filter_smoke.count(), 1)
+
+    def test_delete_smoke_fail(self):
+        """ test get delete_smoke view with unexisting ConsoCig """
+        response = self.client.post(reverse(
+            'QuitSoonApp:delete_smoke',
+            args=[40]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_smoke_given_true(self):
+        """ test get delete_smoke smoke.given=True """
+        db_smoke_given = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 17),
+            time_cig=datetime.time(13, 15),
+            paquet=None,
+            given=True,
+            )
+        response = self.client.post(reverse(
+            'QuitSoonApp:delete_smoke',
+            args=[db_smoke_given.id]))
+        self.assertEqual(response.status_code, 302)
+        filter_conso = ConsoCig.objects.filter(user=self.user, id=db_smoke_given.id)
+        self.assertFalse(filter_conso.exists())
+
+    def test_delete_smoke_given_false(self):
+        """ test get delete_smoke smoke.given=False """
+        db_pack = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        db_smoke_given = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 17),
+            time_cig=datetime.time(13, 15),
+            paquet=db_pack,
+            given=False,
+            )
+        id = db_smoke_given.id
+        response = self.client.post(reverse(
+            'QuitSoonApp:delete_smoke',
+            args=[db_smoke_given.id]))
+        self.assertEqual(response.status_code, 302)
+        filter_conso = ConsoCig.objects.filter(user=self.user, id=id)
+        self.assertFalse(filter_conso.exists())
 
     def test_alternatives_view_post_succes_alt(self):
         """Test client post a form with alternatives with success"""

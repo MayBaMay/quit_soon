@@ -216,7 +216,6 @@ def bad(request):
         if request.method == 'POST':
             form = SmokeForm(request.user, request.POST)
             if form.is_valid():
-                print(form.cleaned_data)
                 smoke = SaveSmoke(request.user, form.cleaned_data)
                 smoke.create_conso_cig()
                 form = SmokeForm(request.user)
@@ -226,10 +225,13 @@ def bad(request):
     return render(request, 'QuitSoonApp/bad.html', context)
 
 def delete_smoke(request, id_smoke):
-    data = {'id_smoke':id_smoke}
-    smoke = SaveSmoke(request.user, data)
-    smoke.delete_conso_cig()
-    return redirect('QuitSoonApp:bad')
+    if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
+        data = {'id_smoke':id_smoke}
+        smoke = SaveSmoke(request.user, data)
+        smoke.delete_conso_cig()
+        return redirect('QuitSoonApp:bad')
+    else:
+        raise Http404()
 
 def delete_alternative(request, id_smoke):
     """

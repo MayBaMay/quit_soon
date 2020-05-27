@@ -54,7 +54,7 @@ class SaveSmokeTestCase(TestCase):
             'rol_pack_field': self.db_pack_rol.id,
             'given_field':False,
             }
-        self.old_smoke_ind = {'id_smoke': self.db_smoke_ind.id}
+        self.old_smoke_ind_data = {'id_smoke': self.db_smoke_ind.id}
 
     def test_get_request_data(self):
         """test SaveSmoke.get_request_data method"""
@@ -84,19 +84,12 @@ class SaveSmokeTestCase(TestCase):
 
     def test_get_pack_smoke_id(self):
         """test SaveSmoke.get_pack method with id_smoke in datas (for delete_smoke view)"""
-        smoke = SaveSmoke(self.usertest, self.old_smoke_ind)
+        smoke = SaveSmoke(self.usertest, self.old_smoke_ind_data)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
         self.assertEqual(smoke.paquet, self.db_pack_ind)
 
     def test_create_conso_cig(self):
         """test SaveSmoke.create_conso_cig method with new conso datas"""
-        new_datas_ind = {
-            'date_smoke': datetime.date(2020, 5, 17),
-            'time_smoke': datetime.time(13, 15),
-            'indus_pack_field':self.db_pack_ind.id,
-            'rol_pack_field': self.db_pack_rol.id,
-            'given_field':False,
-            }
         smoke = SaveSmoke(self.usertest, self.new_datas_ind)
         smoke.create_conso_cig()
         new_smoke = ConsoCig.objects.filter(user=self.usertest,
@@ -109,12 +102,32 @@ class SaveSmokeTestCase(TestCase):
 
     def test_create_conso_cig_datas_id_smoke(self):
         """test SaveSmoke.create_conso_cig method with id_smoke in request"""
-        smoke = SaveSmoke(self.usertest, self.old_smoke_ind)
+        smoke = SaveSmoke(self.usertest, self.old_smoke_ind_data)
         self.assertEqual(smoke.create_conso_cig(), None)
+
+    def test_create_conso_cig_given(self):
+        """ test SaveSmoke.create_conso_cig method with given=True """
+        new_datas_given_cig = {
+            'date_smoke': datetime.date(2020, 7, 15),
+            'time_smoke': datetime.time(20, 15),
+            'indus_pack_field':self.db_pack_ind.id,
+            'rol_pack_field': self.db_pack_rol.id,
+            'given_field':True,
+            }
+        smoke = SaveSmoke(self.usertest, new_datas_given_cig)
+        smoke.create_conso_cig()
+        self.assertEqual(smoke.paquet, None)
+        new_given_smoke = ConsoCig.objects.filter(user=self.usertest,
+                             date_cig=datetime.date(2020, 7, 15),
+                             time_cig=datetime.time(20, 15),
+                             paquet=None,
+                             given=True)
+        self.assertTrue(new_given_smoke.exists())
+
 
     def test_get_conso_cig_id_smoke(self):
         """test SaveSmoke.conso_cig method with id_smoke in request"""
-        smoke = SaveSmoke(self.usertest, self.old_smoke_ind)
+        smoke = SaveSmoke(self.usertest, self.old_smoke_ind_data)
         self.assertEqual(smoke.get_conso_cig, self.db_smoke_ind)
 
     def test_get_conso_cig_new_conso(self):
@@ -134,35 +147,23 @@ class SaveSmokeTestCase(TestCase):
         smoke = SaveSmoke(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_conso_cig, None)
 
-    def test_delete_conso_cig_old_pack(self):
-        """test SaveSmoke.delete_conso method pack not displayed so not used anymore by user"""
-        db_pack_pipe = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='PIPE',
-            brand='TABAC À PIPE',
-            qt_paquet=50,
-            price=100,
-            display=False,
-            )
-        db_smoke_pipe = ConsoCig.objects.create(
-            user=self.usertest,
-            date_cig=datetime.date(2020, 5, 17),
-            time_cig=datetime.time(13, 15),
-            paquet=db_pack_pipe,
-            )
-        datas = {'id_smoke': db_smoke_pipe.id}
-        smoke = SaveSmoke(self.usertest, datas)
-        smoke.delete_conso_cig()
-        filter_conso = ConsoCig.objects.filter(user=self.usertest, paquet=db_pack_pipe.id)
-        self.assertFalse(filter_conso.exists())
-        filter_pack = Paquet.objects.filter(user=self.usertest, type_cig='PIPE')
-        self.assertFalse(filter_pack.exists())
-
-    def test_delete_conso_cig_still_used_pack(self):
-        """test SaveSmoke.delete_conso method pack displayed so still used by user"""
-        smoke = SaveSmoke(self.usertest, self.old_smoke_ind)
+    def test_delete_conso_cig(self):
+        """test SaveSmoke.delete_conso method"""
+        smoke = SaveSmoke(self.usertest, self.old_smoke_ind_data)
         smoke.delete_conso_cig()
         filter_conso = ConsoCig.objects.filter(user=self.usertest, paquet=self.db_pack_ind.id)
         self.assertFalse(filter_conso.exists())
-        filter_pack = Paquet.objects.filter(user=self.usertest, id=self.db_pack_ind.id)
-        self.assertTrue(filter_pack.exists())
+
+    def test_delete_conso_cig_given_cig(self):
+        """test SaveSmoke.delete_conso method with cig == given cig"""
+        db_smoke_given = ConsoCig.objects.create(
+            user=self.usertest,
+            date_cig=datetime.date(2020, 5, 17),
+            time_cig=datetime.time(13, 15),
+            paquet=None,
+            )
+        data = {'id_smoke': db_smoke_given.id}
+        smoke = SaveSmoke(self.usertest, data)
+        smoke.delete_conso_cig()
+        filter_conso = ConsoCig.objects.filter(user=self.usertest, id=db_smoke_given.id)
+        self.assertFalse(filter_conso.exists())

@@ -236,7 +236,9 @@
   $('#id_given_field').change(function() {
       if (this.checked) {
           $('.show').removeClass('show').addClass('hide');
+          $('.showtypes').removeClass('showtypes').addClass('hidetypes');
       } else {
+          $('.hidetypes').removeClass('hidetypes').addClass('showtypes');
           displayPaquetsFields();
       }
   });
@@ -260,7 +262,6 @@ timeField.value = date.getHours().toString().padStart(2, 0) + ':' +
   date.getMinutes().toString().padStart(2, 0);
 
 function displayPaquetsFields(){
-  $('#id_type_cig_field').removeClass('hide').addClass('show');
   if ($('#id_type_cig_field').val() == 'IND') {
     $('#id_indus_pack_field').removeClass('hide').addClass('show');
   }

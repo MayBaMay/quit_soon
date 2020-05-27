@@ -131,20 +131,28 @@ class SmokeForm(forms.Form):
 
     given_field = forms.BooleanField(
         required=False,
+        initial=False,
         label="J'ai taxé ma clope",
         widget=forms.CheckboxInput()
     )
 
+    type_cig_field = forms.ChoiceField(
+        required=True,
+        choices=[],
+        widget=forms.Select
+        (attrs={'class':"form-control showtypes"}),
+        label='',
+        )
+
     def return_select():
         return forms.ChoiceField(
-            required=True,
+            required=False,
             choices=[],
             widget=forms.Select
             (attrs={'class':"form-control hide"}),
             label='',
             )
 
-    type_cig_field = return_select()
     indus_pack_field = return_select()
     rol_pack_field = return_select()
     cigares_pack_field = return_select()
@@ -157,87 +165,69 @@ class SmokeForm(forms.Form):
         self.user = user
         super(SmokeForm, self).__init__(*args, **kwargs)
 
-        user_packs = Paquet.objects.filter(user=self.user, display=True)
-        user_conso = ConsoCig.objects.filter(user=self.user)
-
-        if user_conso:
-            lastsmoke = user_conso.last().paquet
-            if lastsmoke == None:
-                # get the last cig not given
-                for conso in user_conso.order_by('date_cig', 'time_cig'):
-                    if conso.paquet:
-                        lastsmoke = conso.paquet
-                # if still pack == None
-                if not lastsmoke:
-                    lastsmoke = Paquet.objects.filter(user=self.user)[0]
-        else:
-            lastsmoke = Paquet.objects.filter(user=self.user)[0]
+        self.user_packs = Paquet.objects.filter(user=self.user, display=True)
+        self.user_conso = ConsoCig.objects.filter(user=self.user)
+        self.lastsmoke = self.last_smoke
 
         TYPE_CHOICES = []
-        for pack in user_packs.order_by('type_cig').distinct('type_cig'):
+        for pack in self.user_packs.order_by('type_cig').distinct('type_cig'):
             TYPE_CHOICES.append((pack.type_cig, pack.get_type_cig_display))
-            if pack.type_cig == lastsmoke.type_cig:
+            if pack.type_cig == self.lastsmoke.type_cig:
                 self.initial['type_cig_field'] = (pack.type_cig, pack.get_type_cig_display)
         TYPE_CHOICES = tuple(TYPE_CHOICES)
 
+
         self.fields['type_cig_field'].choices = TYPE_CHOICES
 
-        INDUS_CHOICES = []
-        for pack in user_packs.filter(type_cig='IND'):
-            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            INDUS_CHOICES.append((pack.id, display))
-            if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['indus_pack_field'] = (pack.id, display)
-        INDUS_CHOICES = tuple(INDUS_CHOICES)
-
+        INDUS_CHOICES = self.config_field('IND')
         self.fields['indus_pack_field'].choices = INDUS_CHOICES
 
-        ROL_CHOICES = []
-        for pack in user_packs.filter(type_cig='ROL'):
-            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            ROL_CHOICES.append((pack.id, display))
-            if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['rol_pack_field'] = (pack.id, display)
-        ROL_CHOICES = tuple(ROL_CHOICES)
-
+        ROL_CHOICES = self.config_field('ROL')
         self.fields['rol_pack_field'].choices = ROL_CHOICES
 
-        CIGARES_CHOICES = []
-        for pack in user_packs.filter(type_cig='CIGARES'):
-            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            CIGARES_CHOICES.append((pack.id, display))
-            if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['cigares_pack_field'] = (pack.id, display)
-        CIGARES_CHOICES = tuple(CIGARES_CHOICES)
-
+        CIGARES_CHOICES = self.config_field('CIGARES')
         self.fields['cigares_pack_field'].choices = CIGARES_CHOICES
 
-        PIPE_CHOICES = []
-        for pack in user_packs.filter(type_cig='PIPE'):
-            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            PIPE_CHOICES.append((pack.id, display))
-            if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['pipe_pack_field'] = (pack.id, display)
-        PIPE_CHOICES = tuple(PIPE_CHOICES)
-
+        PIPE_CHOICES = self.config_field('PIPE')
         self.fields['pipe_pack_field'].choices = PIPE_CHOICES
 
-        NB_CHOICES = []
-        for pack in user_packs.filter(type_cig='NB'):
-            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            NB_CHOICES.append((pack.id, display))
-            if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['nb_pack_field'] = (pack.id, display)
-        NB_CHOICES = tuple(NB_CHOICES)
-
+        NB_CHOICES = self.config_field('NB')
         self.fields['nb_pack_field'].choices = NB_CHOICES
 
-        GR_CHOICES = []
-        for pack in user_packs.filter(type_cig='GR'):
-            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            GR_CHOICES.append((pack.id, display))
-            if pack.brand == lastsmoke.brand and pack.qt_paquet == lastsmoke.qt_paquet:
-                self.initial['gr_pack_field'] = (pack.id, display)
-        GR_CHOICES = tuple(GR_CHOICES)
-
+        GR_CHOICES = self.config_field('GR')
         self.fields['gr_pack_field'].choices = GR_CHOICES
+
+    @property
+    def last_smoke(self):
+        if self.user_conso:
+            lastsmoke = self.user_conso.last().paquet
+            if lastsmoke:
+                return lastsmoke
+            else:
+                # get the last cig not given
+                for conso in self.user_conso.order_by('-date_cig', '-time_cig'):
+                    if conso.paquet:
+                        return conso.paquet
+                    else:
+                        pass
+                return Paquet.objects.filter(user=self.user)[0]
+        else:
+            return Paquet.objects.filter(user=self.user)[0]
+
+
+    def config_field(self, type):
+        type_cig_conf_dict = {
+            'IND': 'indus_pack_field',
+            'ROL': 'rol_pack_field',
+            'CIGARES': 'cigares_pack_field',
+            'PIPE': 'pipe_pack_field',
+            'NB': 'nb_pack_field',
+            'GR': 'gr_pack_field',
+        }
+        CHOICES = []
+        for pack in self.user_packs.filter(type_cig=type):
+            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
+            CHOICES.append((pack.id, display))
+            if pack.brand == self.lastsmoke.brand and pack.qt_paquet == self.lastsmoke.qt_paquet:
+                self.initial[type_cig_conf_dict[type]] = (pack.id, display)
+        return tuple(CHOICES)
