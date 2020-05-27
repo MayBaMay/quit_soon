@@ -20,15 +20,14 @@ urlpatterns = [
         views.delete_pack,
         name='delete_pack'),
     path('change_g_per_cig/', views.change_g_per_cig, name='change_g_per_cig'),
-    path('bad/', views.bad, name='bad'),
+    path('smoke/', views.smoke, name='smoke'),
     path('delete_smoke/<id_smoke>/', views.delete_smoke, name='delete_smoke'),
 
     path('alternatives/', views.alternatives, name='alternatives'),
     path('delete_alternative/<id_alternative>/',
         views.delete_alternative,
         name='delete_alternative'),
-    path('good/', views.good, name='good'),
-    path('good_history/', views.good_history, name='good_history'),
+    path('health/', views.health, name='health'),
 
     path('profile/', views.profile, name='profile'),
     path('new_name/', views.new_name, name='new_name'),

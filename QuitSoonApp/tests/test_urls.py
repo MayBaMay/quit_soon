@@ -7,8 +7,8 @@ from QuitSoonApp.views import (
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    paquets, delete_pack, change_g_per_cig, bad,
-    alternatives, delete_alternative, good, good_history,
+    paquets, delete_pack, change_g_per_cig, smoke,
+    alternatives, delete_alternative, health, health_history,
 )
 
 class TestUrls(SimpleTestCase):
@@ -87,10 +87,10 @@ class TestUrls(SimpleTestCase):
         url = reverse('QuitSoonApp:change_g_per_cig')
         self.assertEqual(resolve(url).func, change_g_per_cig)
 
-    def test_bad_url_is_resolved(self):
-        """test bad"""
-        url = reverse('QuitSoonApp:bad')
-        self.assertEqual(resolve(url).func, bad)
+    def test_smoke_url_is_resolved(self):
+        """test smoke"""
+        url = reverse('QuitSoonApp:smoke')
+        self.assertEqual(resolve(url).func, smoke)
 
 
     def test_alternatives_url_is_resolved(self):
@@ -103,12 +103,7 @@ class TestUrls(SimpleTestCase):
         url = reverse('QuitSoonApp:delete_alternative', args=['id_pack'])
         self.assertEqual(resolve(url).func, delete_alternative)
 
-    def test_good_url_is_resolved(self):
-        """test good"""
-        url = reverse('QuitSoonApp:good')
-        self.assertEqual(resolve(url).func, good)
-
-    def test_good_history_url_is_resolved(self):
-        """test good_history"""
-        url = reverse('QuitSoonApp:good_history')
-        self.assertEqual(resolve(url).func, good_history)
+    def test_health_url_is_resolved(self):
+        """test health"""
+        url = reverse('QuitSoonApp:health')
+        self.assertEqual(resolve(url).func, health)
