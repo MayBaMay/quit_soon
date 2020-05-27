@@ -229,7 +229,55 @@
      $('.activity_form').removeClass('hide').addClass('show');
      $('.substitut_form').removeClass('show').addClass('hide');
    }
+  });
 
+  displayPaquetsFields();
+
+  $('#id_given_field').change(function() {
+      if (this.checked) {
+          $('.show').removeClass('show').addClass('hide');
+          $('.showtypes').removeClass('showtypes').addClass('hidetypes');
+      } else {
+          $('.hidetypes').removeClass('hidetypes').addClass('showtypes');
+          displayPaquetsFields();
+      }
+  });
+
+  $('#id_type_cig_field').on('change', function(e) {
+    $('.show').removeClass('show').addClass('hide');
+    displayPaquetsFields()
   });
 
 })(jQuery); // End of use strict
+
+var dateField = document.querySelector('.currentDate');
+var timeField = document.querySelector('.currentTime');
+var date = new Date();
+
+// Set the date & time
+dateField.value = date.getFullYear().toString() + '-' +
+  (date.getMonth() + 1).toString().padStart(2, 0) +
+  '-' + date.getDate().toString().padStart(2, 0);
+timeField.value = date.getHours().toString().padStart(2, 0) + ':' +
+  date.getMinutes().toString().padStart(2, 0);
+
+function displayPaquetsFields(){
+  if ($('#id_type_cig_field').val() == 'IND') {
+    $('#id_indus_pack_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_cig_field').val() == 'ROL') {
+    $('#id_rol_pack_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_cig_field').val() == 'CIGARES') {
+    $('#id_cigares_pack_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_cig_field').val() == 'PIPE') {
+      $('#id_pipe_pack_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_cig_field').val() == 'NB') {
+    $('#id_nb_pack_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_cig_field').val() == 'GR') {
+    $('#id_gr_pack_field').removeClass('hide').addClass('show');
+  };
+}

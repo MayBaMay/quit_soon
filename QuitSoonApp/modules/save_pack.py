@@ -3,16 +3,12 @@
 """
 This module allowes user to save a new instance of cigarettes pack
 """
-from decimal import *
+from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from ..models import (
-    UserProfile,
-    Paquet, ConsoCig,
-    Alternative, ConsoAlternative,
-    Objectif, Trophee
-)
+
+from ..models import Paquet, ConsoCig
 
 class SavePack:
     """class returning an new DB object paquet or False"""
@@ -81,8 +77,8 @@ class SavePack:
         """Create pack from datas"""
         try:
             self.get_pack
-            pack = self.filter_pack
-            pack.update(display=True)
+            newpack = self.filter_pack
+            newpack.update(display=True)
         except:
             newpack = Paquet.objects.create(
                 user=self.user,
