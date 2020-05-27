@@ -82,7 +82,7 @@
               {% for activity in Sp %}
                 <div class="row">
                   {{ activity.activity }}
-                  <a href="/delete_alternative/{{activity.type_alternative}}/{{activity.type_activity}}/{{activity.activity}}/{{activity.substitut}}/{{activity.nicotine}}/"">
+                  <a href="/delete_alternative/{{activity.id}}/"">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                   </a>
                 </div>
@@ -96,7 +96,7 @@
               {% for activity in Lo %}
                 <div class="row">
                   {{ activity.activity }}
-                  <a href="/delete_alternative/{{activity.type_alternative}}/{{activity.type_activity}}/{{activity.activity}}/{{activity.substitut}}/{{activity.nicotine}}/"">
+                  <a href="/delete_alternative/{{activity.id}}/"">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                   </a>                </div>
               {% endfor %}
@@ -109,8 +109,8 @@
               {% for activity in So %}
                 <div class="row">
                   {{ activity.activity }}
-                  <a href="/delete_alternative/{{activity.type_alternative}}/{{activity.type_activity}}/{{activity.activity}}/{{activity.substitut}}/{{activity.nicotine}}/"">
-                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    <a href="/delete_alternative/{{activity.id}}/"">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
                   </a>                </div>
               {% endfor %}
             {% endif %}
@@ -123,7 +123,7 @@
                 <div class="row">
                   {{ substitut.substitut }}
                   {{ substitut.nicotine }}
-                  <a href="/delete_alternative/{{substitut.type_alternative}}/{{substitut.type_activity}}/{{substitut.activity}}/{{substitut.substitut}}/{{substitut.nicotine}}/"">
+                  <a href="/delete_alternative/{{substitut.id}}/"">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                   </a>                </div>
               {% endfor %}

@@ -176,20 +176,18 @@ def paquets(request):
         }
     return render(request, 'QuitSoonApp/paquets.html', context)
 
-def delete_pack(request, type_cig, brand, qt_paquet, price):
+def delete_pack(request, id_pack):
     """
     Used when user click on the trash of one of the paquet
     Don't delete it but change display attribute into False if already used
     """
-    datas = {
-        'type_cig':type_cig,
-        'brand':brand,
-        'qt_paquet':int(qt_paquet),
-        'price':Decimal(price.replace(',','.')),
-    }
-    new_pack = SavePack(request.user, datas)
-    new_pack.delete_pack()
-    return redirect('QuitSoonApp:paquets')
+    if Paquet.objects.filter(user=request.user, id=id_pack).exists():
+        data = {'id_pack':id_pack}
+        new_pack = SavePack(request.user, data)
+        new_pack.delete_pack()
+        return redirect('QuitSoonApp:paquets')
+    else:
+        raise Http404()
 
 def change_g_per_cig(request):
     """
@@ -232,16 +230,6 @@ def delete_smoke(request, id_smoke):
         return redirect('QuitSoonApp:bad')
     else:
         raise Http404()
-
-def delete_alternative(request, id_smoke):
-    """
-    Used when user click on the trash of one of the alternative
-    Don't delete it but change display attribute into False if already used in ConsoAlternative
-    """
-    data = {'id_smoke':id_smoke}
-    smoke = SaveSmoke(request.user, data)
-    smoke.delete_conso_cig()
-    return redirect('QuitSoonApp:bad')
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
@@ -302,22 +290,18 @@ def alternatives(request):
         }
     return render(request, 'QuitSoonApp/alternatives.html', context)
 
-def delete_alternative(request, type_alternative, type_activity, activity, substitut, nicotine):
+def delete_alternative(request, id_alternative):
     """
     Used when user click on the trash of one of the alternative
     Don't delete it but change display attribute into False if already used in ConsoAlternative
     """
-    data = {
-        'type_alternative':type_alternative,
-        'type_activity':type_activity,
-        'activity':activity,
-        'substitut':substitut,
-        'nicotine':nicotine,
-    }
-    new_alternative = SaveAlternative(request.user, data)
-    new_alternative.delete_alternative()
-    return redirect('QuitSoonApp:alternatives')
-
+    if Alternative.objects.filter(user=request.user, id=id_alternative).exists():
+        data = {'id_alternative': id_alternative}
+        new_alternative = SaveAlternative(request.user, data)
+        new_alternative.delete_alternative()
+        return redirect('QuitSoonApp:alternatives')
+    else:
+        raise Http404()
 
 def good(request):
     """User do a healthy activity or uses substitutes"""
