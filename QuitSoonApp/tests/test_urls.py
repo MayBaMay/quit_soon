@@ -8,7 +8,7 @@ from QuitSoonApp.views import (
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
     paquets, delete_pack, change_g_per_cig, smoke,
-    alternatives, delete_alternative, health, health_history,
+    alternatives, delete_alternative, health,
 )
 
 class TestUrls(SimpleTestCase):

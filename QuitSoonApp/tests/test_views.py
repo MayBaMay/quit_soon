@@ -13,7 +13,7 @@ from QuitSoonApp.views import (
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
     paquets, smoke,
-    alternatives, health, health_history,
+    alternatives, health,
 )
 from QuitSoonApp.models import (
     UserProfile,
