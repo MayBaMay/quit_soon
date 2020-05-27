@@ -7,8 +7,8 @@ such as informations in tables : ConsoCig, ConsoAlternative, Objectif and Trophe
 from django.contrib.auth.models import User
 from ..models import (
     UserProfile,
-    Paquet, ConsoCig,
-    Alternative, ConsoAlternative,
+    ConsoCig,
+    ConsoAlternative,
     Objectif, Trophee
 )
 

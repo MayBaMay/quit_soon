@@ -1,41 +1,24 @@
+#!/usr/bin/env python
+
+"""Module testing save_pack module"""
+
 from decimal import Decimal
 import datetime
 
-from django.test import TransactionTestCase, TestCase
-from django.utils.timezone import make_aware
-from django.urls import reverse
-from django.contrib import auth
+from django.test import TestCase
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 
-from QuitSoonApp.views import (
-    index, today,
-    register_view, login_view,
-    profile, new_name, new_email, new_password, new_parameters,
-    suivi, objectifs,
-    paquets, bad, bad_history,
-    alternatives, good, good_history,
-)
-from QuitSoonApp.models import (
-    UserProfile,
-    Paquet, ConsoCig,
-    Alternative, ConsoAlternative,
-    Objectif, Trophee
-)
-from QuitSoonApp.modules.save_pack import SavePack
+from QuitSoonApp.models import Paquet, ConsoCig
+from QuitSoonApp.modules import SavePack
 
 
 class SavePackTestCase(TestCase):
+    """class testing SavePack """
 
     def setUp(self):
         """setup tests"""
         self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
-        UserProfile.objects.create(
-            user=self.usertest,
-            date_start='2012-12-12',
-            starting_nb_cig=3
-        )
 
     def test_get_unit_u(self):
         """test SavePack.get_unit method if type_cig == IND"""
@@ -225,7 +208,7 @@ class SavePackTestCase(TestCase):
         """test SavePack.delete_pack method with used pack"""
         pack = Paquet.objects.create(
             user=self.usertest,
-            type_cig='CIGARIOS',
+            type_cig='CIGARES',
             brand='ELPASO',
             qt_paquet=5,
             price=10,
@@ -237,7 +220,7 @@ class SavePackTestCase(TestCase):
             paquet=pack,
         )
         datas ={
-            'type_cig':'CIGARIOS',
+            'type_cig':'CIGARES',
             'brand':'ELPASO',
             'qt_paquet':5,
             'price':10,
@@ -246,7 +229,7 @@ class SavePackTestCase(TestCase):
         pack.delete_pack()
         db_pack = Paquet.objects.filter(
             user=self.usertest,
-            type_cig='CIGARIOS',
+            type_cig='CIGARES',
             brand='ELPASO',
             qt_paquet=5,
             price=10,
