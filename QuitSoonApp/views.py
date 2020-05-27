@@ -204,7 +204,7 @@ def change_g_per_cig(request):
     return redirect('QuitSoonApp:paquets')
 
 
-def bad(request):
+def smoke(request):
     """User smokes"""
     # check if packs are in parameters to fill fields with actual packs
     packs = Paquet.objects.filter(user=request.user, display=True)
@@ -220,14 +220,14 @@ def bad(request):
         context['form'] = form
     smoke = ConsoCig.objects.filter(user=request.user)
     context['smoke'] = smoke
-    return render(request, 'QuitSoonApp/bad.html', context)
+    return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
     if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
         data = {'id_smoke':id_smoke}
         smoke = SaveSmoke(request.user, data)
         smoke.delete_conso_cig()
-        return redirect('QuitSoonApp:bad')
+        return redirect('QuitSoonApp:smoke')
     else:
         raise Http404()
 
@@ -303,13 +303,13 @@ def delete_alternative(request, id_alternative):
     else:
         raise Http404()
 
-def good(request):
+def health(request):
     """User do a healthy activity or uses substitutes"""
-    return render(request, 'QuitSoonApp/good.html')
+    return render(request, 'QuitSoonApp/health.html')
 
-def good_history(request):
+def health_history(request):
     """User healthy history page"""
-    return render(request, 'QuitSoonApp/good_history.html')
+    return render(request, 'QuitSoonApp/health_history.html')
 
 def suivi(request):
     """Page with user results, graphs..."""

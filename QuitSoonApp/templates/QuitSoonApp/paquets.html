@@ -34,7 +34,7 @@
           </div>
         </div>
         </div>
-        <button class="button button5"><a href="{% url 'QuitSoonApp:bad' %}"><i class="fas fa-skull mr-3"></i>
+        <button class="button button5"><a href="{% url 'QuitSoonApp:smoke' %}"><i class="fas fa-skull mr-3"></i>
         JE ME FAIS DU MAL
         </a></button>
 
@@ -91,7 +91,11 @@
                     {{ paquet.qt_paquet }}/paquet
                     {{ paquet.price }}€
                     {{ paquet.price_per_cig }}€/cig
+<<<<<<< HEAD
                     <a href="/delete_pack/{{paquet.id}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
+=======
+                    <a href="/delete_pack/{{paquet.type_cig}}/{{paquet.brand}}/{{paquet.qt_paquet}}/{{paquet.price}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
+>>>>>>> da092afb71c3eb082673b4c6e6bb54582a9f480f
                   </div>
                 {% endfor %}
               {% endif %}

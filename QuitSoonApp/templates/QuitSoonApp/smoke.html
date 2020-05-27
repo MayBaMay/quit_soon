@@ -11,7 +11,7 @@ JE VAIS CRAQUER ...
   <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
 
 {% else %}
-  <form id="smokeform" method='post' action="{% url 'QuitSoonApp:bad' %}">
+  <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
     {% csrf_token %}
     <div class="form-group">
         {{ form.non_field_errors }}

@@ -12,8 +12,8 @@ from QuitSoonApp.views import (
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    paquets, bad,
-    alternatives, good, good_history,
+    paquets, smoke,
+    alternatives, health,
 )
 from QuitSoonApp.models import (
     UserProfile,
@@ -51,7 +51,7 @@ class RegisterClientTestCase(TestCase):
         self.assertTrue(User.objects.filter(username='NewUserTest').exists())
         self.assertTrue(User.objects.get(username='NewUserTest').is_authenticated)
 
-    def test_register_bad_user(self):
+    def test_register_smoke_user(self):
         """Test client register with success"""
         data = {'username':'registerTestUser',
                 'email':'testnewUser@test.com',
@@ -64,7 +64,7 @@ class RegisterClientTestCase(TestCase):
         self.assertFalse(User.objects.get(username='registerTestUser').email == 'testnewUser@test.com')
         self.assertRaises(ValidationError)
 
-    def test_register_bad_email(self):
+    def test_register_smoke_email(self):
         """Test client register with success"""
         data = {'username':'NewUserTest',
                 'email':'test@test.com',
@@ -305,9 +305,9 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)
 
 
-class BadAndGoodHabitsParametersTestCase(TestCase):
+class smokeAndhealthHabitsParametersTestCase(TestCase):
     """
-    Tests on parameters pages, good (alternatives) or bad (packs)
+    Tests on parameters pages, health (alternatives) or smoke (packs)
     """
 
     def setUp(self):
@@ -417,15 +417,15 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
         self.assertEqual(paquet.g_per_cig, Decimal('1.1'))
         self.assertEqual(paquet.price_per_cig, Decimal('2.75'))
 
-    def test_bad_get_no_pack(self):
-        """ test get bad view with no pack saved by user """
-        response = self.client.get(reverse('QuitSoonApp:bad'))
+    def test_smoke_get_no_pack(self):
+        """ test get smoke view with no pack saved by user """
+        response = self.client.get(reverse('QuitSoonApp:smoke'))
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context['packs'].exists())
         self.assertFalse(response.context['smoke'].exists())
 
-    def test_bad_get_form(self):
-        """ test get bad view with packs saved by user, get form"""
+    def test_smoke_get_form(self):
+        """ test get smoke view with packs saved by user, get form"""
         db_pack_ind = Paquet.objects.create(
             user=self.user,
             type_cig='IND',
@@ -433,13 +433,13 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             qt_paquet=20,
             price=10,
             )
-        response = self.client.get(reverse('QuitSoonApp:bad'))
+        response = self.client.get(reverse('QuitSoonApp:smoke'))
         self.assertTrue(response.context['packs'].exists())
         self.assertFalse(response.context['smoke'].exists())
         self.assertTrue('form' in response.context)
 
-    def test_bad_post_validform_given_true(self):
-        """ test post bad view with given=True """
+    def test_smoke_post_validform_given_true(self):
+        """ test post smoke view with given=True """
         db_pack_ind = Paquet.objects.create(
             user=self.user,
             type_cig='IND',
@@ -454,7 +454,7 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             'indus_pack_field':db_pack_ind.id,
             'given_field':True,
             }
-        response = self.client.post(reverse('QuitSoonApp:bad'),
+        response = self.client.post(reverse('QuitSoonApp:smoke'),
                                     data=data)
         filter_smoke = ConsoCig.objects.filter(
             user=self.user,
@@ -462,8 +462,8 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
         self.assertTrue(filter_smoke.exists())
         self.assertEqual(filter_smoke.count(), 1)
 
-    def test_bad_post_validform_given_false(self):
-        """ test post bad view with given=false """
+    def test_smoke_post_validform_given_false(self):
+        """ test post smoke view with given=false """
         db_pack_ind = Paquet.objects.create(
             user=self.user,
             type_cig='IND',
@@ -501,7 +501,7 @@ class BadAndGoodHabitsParametersTestCase(TestCase):
             'nb_pack_field':db_pack_nb.id,
             'given_field':False,
             }
-        response = self.client.post(reverse('QuitSoonApp:bad'), data=data)
+        response = self.client.post(reverse('QuitSoonApp:smoke'), data=data)
         filter_smoke = ConsoCig.objects.filter(
             user=self.user,
         )
