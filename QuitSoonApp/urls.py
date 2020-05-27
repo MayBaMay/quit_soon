@@ -16,7 +16,7 @@ urlpatterns = [
     path('objectifs/', views.objectifs, name='objectifs'),
 
     path('paquets/', views.paquets, name='paquets'),
-    path('delete_pack/<type_cig>/<brand>/<qt_paquet>/<price>/',
+    path('delete_pack/<id_pack>/',
         views.delete_pack,
         name='delete_pack'),
     path('change_g_per_cig/', views.change_g_per_cig, name='change_g_per_cig'),
@@ -24,7 +24,7 @@ urlpatterns = [
     path('delete_smoke/<id_smoke>/', views.delete_smoke, name='delete_smoke'),
 
     path('alternatives/', views.alternatives, name='alternatives'),
-    path('delete_alternative/<type_alternative>/<type_activity>/<activity>/<substitut>/<nicotine>/',
+    path('delete_alternative/<id_alternative>/',
         views.delete_alternative,
         name='delete_alternative'),
     path('good/', views.good, name='good'),

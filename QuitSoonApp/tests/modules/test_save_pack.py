@@ -93,7 +93,7 @@ class SavePackTestCase(TestCase):
         self.assertEqual(pack.get_price_per_cig, 0.5)
         self.assertEqual(pack.price_per_cig, 0.5)
 
-    def tes_get_price_per_cig_gr(self):
+    def test_get_price_per_cig_gr(self):
         """test SavePack.get_price_per_cig method if type_cig == 'IND'"""
         datas ={
             'type_cig':'ROL',
@@ -102,8 +102,8 @@ class SavePackTestCase(TestCase):
             'price':11,
             }
         pack = SavePack(self.usertest, datas)
-        self.assertEqual(pack.get_price_per_cig, 0.29)
-        self.assertEqual(pack.price_per_cig, 0.29)
+        self.assertEqual(pack.get_price_per_cig, Decimal('0.2933333333333333333333333333'))
+        self.assertEqual(pack.price_per_cig, Decimal('0.2933333333333333333333333333'))
 
     def test_create_new_pack_ind(self):
         """test SavePack.create_pack method if type_cig == 'IND'"""
@@ -180,19 +180,14 @@ class SavePackTestCase(TestCase):
 
     def test_delete_unused_pack_ind(self):
         """test SavePack.delete_pack method with unused pack"""
-        Paquet.objects.create(
+        db_pack = Paquet.objects.create(
             user=self.usertest,
             type_cig='IND',
             brand='CAMEL',
             qt_paquet=20,
             price=10,
             )
-        datas ={
-            'type_cig':'IND',
-            'brand':'CAMEL',
-            'qt_paquet':20,
-            'price':10,
-            }
+        datas = {'id_pack': db_pack.id}
         pack = SavePack(self.usertest, datas)
         pack.delete_pack()
         db_pack = Paquet.objects.filter(
@@ -206,7 +201,7 @@ class SavePackTestCase(TestCase):
 
     def test_delete_used_pack_ind(self):
         """test SavePack.delete_pack method with used pack"""
-        pack = Paquet.objects.create(
+        db_pack = Paquet.objects.create(
             user=self.usertest,
             type_cig='CIGARES',
             brand='ELPASO',
@@ -217,25 +212,20 @@ class SavePackTestCase(TestCase):
             user=self.usertest,
             date_cig=datetime.date(2020, 5, 13),
             time_cig=datetime.time(13, 55),
-            paquet=pack,
+            paquet=db_pack,
         )
-        datas ={
-            'type_cig':'CIGARES',
-            'brand':'ELPASO',
-            'qt_paquet':5,
-            'price':10,
-            }
+        datas ={'id_pack': db_pack.id}
         pack = SavePack(self.usertest, datas)
         pack.delete_pack()
-        db_pack = Paquet.objects.filter(
+        filter_pack = Paquet.objects.filter(
             user=self.usertest,
             type_cig='CIGARES',
             brand='ELPASO',
             qt_paquet=5,
             price=10,
             )
-        self.assertTrue(db_pack.exists())
-        self.assertEqual(db_pack[0].display, False)
+        self.assertTrue(filter_pack.exists())
+        self.assertEqual(filter_pack[0].display, False)
 
     def test_update_pack_g_per_cig(self):
         """test SavePack.update_pack_g_per_cig method"""
