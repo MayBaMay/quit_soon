@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import Alternative, ConsoAlternative
 
-class SaveAlternative:
+class AlternativeManager:
     """class returning an new DB object paquet or False"""
 
     def __init__(self, user, datas):

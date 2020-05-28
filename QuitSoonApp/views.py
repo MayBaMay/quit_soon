@@ -25,7 +25,7 @@ from .forms import (
     SubstitutForm,
     SmokeForm,
     )
-from .modules import ResetProfile, SavePack, SaveSmoke, SaveAlternative
+from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager
 
 def index(request):
     """index View"""
@@ -159,7 +159,7 @@ def paquets(request):
         # receive smoking habits from user in a
         form = PaquetFormCreation(request.user, request.POST)
         if form.is_valid():
-            new_pack = SavePack(request.user, form.cleaned_data)
+            new_pack = PackManager(request.user, form.cleaned_data)
             new_pack.create_pack()
             form = PaquetFormCreation(request.user)
     # select users packs for display in paquets page
@@ -183,7 +183,7 @@ def delete_pack(request, id_pack):
     """
     if Paquet.objects.filter(user=request.user, id=id_pack).exists():
         data = {'id_pack':id_pack}
-        new_pack = SavePack(request.user, data)
+        new_pack = PackManager(request.user, data)
         new_pack.delete_pack()
         return redirect('QuitSoonApp:paquets')
     else:
@@ -197,7 +197,7 @@ def change_g_per_cig(request):
     if request.method == 'POST':
         form = PaquetFormCustomGInCig(request.user, request.POST)
         if form.is_valid():
-            change_pack = SavePack(request.user, form.cleaned_data)
+            change_pack = PackManager(request.user, form.cleaned_data)
             change_pack.update_pack_g_per_cig()
         else:
             print(form.errors.as_data())
@@ -214,7 +214,7 @@ def smoke(request):
         if request.method == 'POST':
             form = SmokeForm(request.user, request.POST)
             if form.is_valid():
-                smoke = SaveSmoke(request.user, form.cleaned_data)
+                smoke = SmokeManager(request.user, form.cleaned_data)
                 smoke.create_conso_cig()
                 form = SmokeForm(request.user)
         context['form'] = form
@@ -225,7 +225,7 @@ def smoke(request):
 def delete_smoke(request, id_smoke):
     if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
         data = {'id_smoke':id_smoke}
-        smoke = SaveSmoke(request.user, data)
+        smoke = SmokeManager(request.user, data)
         smoke.delete_conso_cig()
         return redirect('QuitSoonApp:smoke')
     else:
@@ -252,8 +252,8 @@ def alternatives(request):
                     # keep only fields from alternative_form & activity_form
                     final_data['type_activity'] = activity_form.cleaned_data['type_activity']
                     final_data['activity'] = activity_form.cleaned_data['activity']
-                    # Create a SaveAlternative object and create a new alternative
-                    new_alternative = SaveAlternative(request.user, final_data)
+                    # Create a AlternativeManager object and create a new alternative
+                    new_alternative = AlternativeManager(request.user, final_data)
                     new_alternative.create_alternative()
 
                     alternative_form = TypeAlternativeForm(request.user)
@@ -268,8 +268,8 @@ def alternatives(request):
                     # keep only fields from alternative_form & substitut_form
                     final_data['substitut'] = substitut_form.cleaned_data['substitut']
                     final_data['nicotine'] = substitut_form.cleaned_data['nicotine']
-                    # Create a SaveAlternative object and create a new alternative
-                    new_alternative = SaveAlternative(request.user, final_data)
+                    # Create a AlternativeManager object and create a new alternative
+                    new_alternative = AlternativeManager(request.user, final_data)
                     new_alternative.create_alternative()
 
                     alternative_form = TypeAlternativeForm(request.user)
@@ -297,7 +297,7 @@ def delete_alternative(request, id_alternative):
     """
     if Alternative.objects.filter(user=request.user, id=id_alternative).exists():
         data = {'id_alternative': id_alternative}
-        new_alternative = SaveAlternative(request.user, data)
+        new_alternative = AlternativeManager(request.user, data)
         new_alternative.delete_alternative()
         return redirect('QuitSoonApp:alternatives')
     else:
