@@ -55,7 +55,7 @@ class test_SmokeForm(TestCase):
             'date_smoke':datetime.date(2020, 5, 26),
             'time_smoke':datetime.time(12, 56),
             'type_cig_field':'IND',
-            'indus_pack_field':self.db_pack_ind.id,
+            'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field':self.db_pack_rol.id,
             'nb_pack_field':self.db_pack_nb.id,
             'given_field':False,
@@ -146,12 +146,12 @@ class test_SmokeForm(TestCase):
         pack1 = self.db_pack_ind
         pack2 = self.db_pack_ind2
         self.assertEqual(
-            form.config_field('indus_pack_field','IND'),
+            form.config_field('ind_pack_field','IND'),
             ((pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)),
               (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)),)
             )
         self.assertEqual(
-            form.initial['indus_pack_field'],
+            form.initial['ind_pack_field'],
             (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit))
             )
         pack3 = self.db_pack_rol

@@ -26,7 +26,7 @@ from .forms import (
     SmokeForm,
     HealthForm,
     )
-from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager
+from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager, HealthManager
 
 def index(request):
     """index View"""
@@ -308,15 +308,14 @@ def health(request):
     """User do a healthy activity or uses substitutes"""
     # check if packs are in parameters to fill fields with actual packs
     alternatives = Alternative.objects.filter(user=request.user, display=True)
-    print(alternatives)
     context = {'alternatives':alternatives}
     if alternatives :
         form = HealthForm(request.user)
         if request.method == 'POST':
             form = HealthForm(request.user, request.POST)
             if form.is_valid():
-                # smoke = SmokeManager(request.user, form.cleaned_data)
-                # smoke.create_conso_cig()
+                new_health = HealthManager(request.user, form.cleaned_data)
+                new_health.create_conso_alternative()
                 form = HealthForm(request.user)
         context['form'] = form
     health = ConsoAlternative.objects.filter(user=request.user)

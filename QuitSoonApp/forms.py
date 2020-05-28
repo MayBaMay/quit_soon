@@ -155,7 +155,7 @@ class SmokeForm(forms.Form):
             label='',
             )
 
-    indus_pack_field = return_select()
+    ind_pack_field = return_select()
     rol_pack_field = return_select()
     cigares_pack_field = return_select()
     pipe_pack_field = return_select()
@@ -179,8 +179,8 @@ class SmokeForm(forms.Form):
         TYPE_CHOICES = tuple(TYPE_CHOICES)
         self.fields['type_cig_field'].choices = TYPE_CHOICES
 
-        INDUS_CHOICES = self.config_field('indus_pack_field', 'IND')
-        self.fields['indus_pack_field'].choices = INDUS_CHOICES
+        IND_CHOICES = self.config_field('ind_pack_field', 'IND')
+        self.fields['ind_pack_field'].choices = IND_CHOICES
 
         ROL_CHOICES = self.config_field('rol_pack_field', 'ROL')
         self.fields['rol_pack_field'].choices = ROL_CHOICES
