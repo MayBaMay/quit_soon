@@ -8,7 +8,7 @@ from QuitSoonApp.models import Paquet, ConsoCig
 
 
 class SmokeManager:
-    """Save informations of cigarette consumption"""
+    """Manage informations of cigarette consumption"""
 
     def __init__(self, user, datas):
         self.datas = datas

@@ -113,6 +113,7 @@ class SubstitutForm(UserRelatedForm):
 
 
 class SmokeForm(forms.Form):
+    """Class generating a form for user smoking action"""
 
     date_smoke = forms.DateField(
         required=True,
@@ -178,26 +179,27 @@ class SmokeForm(forms.Form):
         TYPE_CHOICES = tuple(TYPE_CHOICES)
         self.fields['type_cig_field'].choices = TYPE_CHOICES
 
-        INDUS_CHOICES = self.config_field('IND')
+        INDUS_CHOICES = self.config_field('indus_pack_field', 'IND')
         self.fields['indus_pack_field'].choices = INDUS_CHOICES
 
-        ROL_CHOICES = self.config_field('ROL')
+        ROL_CHOICES = self.config_field('rol_pack_field', 'ROL')
         self.fields['rol_pack_field'].choices = ROL_CHOICES
 
-        CIGARES_CHOICES = self.config_field('CIGARES')
+        CIGARES_CHOICES = self.config_field('cigares_pack_field', 'CIGARES')
         self.fields['cigares_pack_field'].choices = CIGARES_CHOICES
 
-        PIPE_CHOICES = self.config_field('PIPE')
+        PIPE_CHOICES = self.config_field('pipe_pack_field', 'PIPE')
         self.fields['pipe_pack_field'].choices = PIPE_CHOICES
 
-        NB_CHOICES = self.config_field('NB')
+        NB_CHOICES = self.config_field('nb_pack_field', 'NB')
         self.fields['nb_pack_field'].choices = NB_CHOICES
 
-        GR_CHOICES = self.config_field('GR')
+        GR_CHOICES = self.config_field('gr_pack_field', 'GR')
         self.fields['gr_pack_field'].choices = GR_CHOICES
 
     @property
     def last_smoke(self):
+        """get user last smoke or last created pack"""
         if self.user_conso:
             lastsmoke = self.user_conso.last().paquet
             if lastsmoke:
@@ -209,30 +211,24 @@ class SmokeForm(forms.Form):
                         return conso.paquet
                     else:
                         pass
-                return Paquet.objects.filter(user=self.user, display=True)[0]
+                return Paquet.objects.filter(user=self.user, display=True).last()
         else:
-            return Paquet.objects.filter(user=self.user, display=True)[0]
+            return Paquet.objects.filter(user=self.user, display=True).last()
 
 
-    def config_field(self, type):
-        type_cig_conf_dict = {
-            'IND': 'indus_pack_field',
-            'ROL': 'rol_pack_field',
-            'CIGARES': 'cigares_pack_field',
-            'PIPE': 'pipe_pack_field',
-            'NB': 'nb_pack_field',
-            'GR': 'gr_pack_field',
-        }
+    def config_field(self, field, type):
+        """configurate field depending of type_cig"""
         CHOICES = []
         for pack in self.user_packs.filter(type_cig=type):
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
             CHOICES.append((pack.id, display))
             if pack.brand == self.lastsmoke.brand and pack.qt_paquet == self.lastsmoke.qt_paquet:
-                self.initial[type_cig_conf_dict[type]] = (pack.id, display)
+                self.initial[field] = (pack.id, display)
         return tuple(CHOICES)
 
 
 class HealthForm(forms.Form):
+    """Class generating a form for user healthy action"""
 
     date_health = forms.DateField(
         required=True,
@@ -334,6 +330,7 @@ class HealthForm(forms.Form):
         self.fields['su_field'].choices = SU_FIELD_CHOICES
 
     def last_alternative(self, type_alternative=None, type_activity=None):
+        """get user last healthy action or last created alternative"""
         if type_alternative == 'Su':
             conso = self.user_conso.filter(alternative__type_alternative=type_alternative)
         elif type_alternative == 'Ac':
@@ -355,6 +352,11 @@ class HealthForm(forms.Form):
             return filter.last()
 
     def config_field(self, field_name, type_alternative, type_activity=None):
+        """
+        configurate field depending on:
+            type_activity if type_alternative='Ac' (get one field for each type of activity)
+            type_alternative if type_alternative='Su' (get all substitutes in one field)
+        """
         CHOICES = []
         if type_alternative == 'Ac':
             for alternative in self.user_alternatives.filter(type_activity=type_activity):

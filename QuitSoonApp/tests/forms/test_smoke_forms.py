@@ -80,7 +80,7 @@ class test_SmokeForm(TestCase):
     def test_last_smoke_first_smoke(self):
         """ test last_smoke method first user ConsoCig"""
         form = SmokeForm(self.usertest, self.valid_datas)
-        self.assertEqual(form.last_smoke, self.db_pack_ind)
+        self.assertEqual(form.last_smoke, self.db_pack_nb)
 
     def test_smoke_last_none_first_smoke(self):
         """ test last_smoke method with last smoke given=False smoke """
@@ -88,10 +88,10 @@ class test_SmokeForm(TestCase):
             user=self.usertest,
             date_cig=datetime.date(2020, 6, 17),
             time_cig=datetime.time(13, 15),
-            paquet=None,
+            paquet=self.db_pack_ind2,
             )
         form = SmokeForm(self.usertest, self.valid_datas)
-        self.assertEqual(form.last_smoke, self.db_pack_ind)
+        self.assertEqual(form.last_smoke, self.db_pack_ind2)
 
     def test_smoke_last_none(self):
         """ test last_smoke method with last one given=True, before exists given=False """
@@ -134,19 +134,19 @@ class test_SmokeForm(TestCase):
             user=self.usertest,
             date_cig=datetime.date(2020, 6, 17),
             time_cig=datetime.time(13, 15),
-            paquet=None,
+            given=True,
             )
         db_smoke_3 = ConsoCig.objects.create(
             user=self.usertest,
             date_cig=datetime.date(2020, 6, 17),
             time_cig=datetime.time(13, 15),
-            paquet=None,
+            given=True,
             )
         form = SmokeForm(self.usertest, self.valid_datas)
         pack1 = self.db_pack_ind
         pack2 = self.db_pack_ind2
         self.assertEqual(
-            form.config_field('IND'),
+            form.config_field('indus_pack_field','IND'),
             ((pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)),
               (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)),)
             )
@@ -156,12 +156,12 @@ class test_SmokeForm(TestCase):
             )
         pack3 = self.db_pack_rol
         self.assertEqual(
-            form.config_field('ROL'),
+            form.config_field('rol_pack_field', 'ROL'),
             ((pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)),)
             )
         pack4 = self.db_pack_nb
         self.assertEqual(
-            form.config_field('NB'),
+            form.config_field('nb_pack_field', 'NB'),
             ((pack4.id, "{} /{}{}".format(pack4.brand, pack4.qt_paquet, pack4.unit)),)
         )
-        self.assertEqual(form.config_field('GR'), ())
+        self.assertEqual(form.config_field('gr_pack_field', 'GR'), ())
