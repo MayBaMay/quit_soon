@@ -231,3 +231,114 @@ class SmokeForm(forms.Form):
             if pack.brand == self.lastsmoke.brand and pack.qt_paquet == self.lastsmoke.qt_paquet:
                 self.initial[type_cig_conf_dict[type]] = (pack.id, display)
         return tuple(CHOICES)
+
+class HealthForm(forms.Form):
+
+    date_health = forms.DateField(
+        required=True,
+        label='Date',
+        widget=forms.DateInput(
+            attrs={'class':"form-control currentDate",
+                    'type':'date'},
+    ))
+
+    time_health = forms.TimeField(
+        required=True,
+        label='Heure',
+        widget=forms.DateInput
+            (attrs={'class':"form-control currentTime",
+                    'type':'time'},
+    ))
+
+    duration_hour = forms.IntegerField(
+        required=True,
+        label="Pendant:",
+    )
+
+    type_alternative_field = forms.ChoiceField(
+        required=True,
+        choices=[],
+        widget=forms.Select
+        (attrs={'class':"form-control showtypes"}),
+        label='',
+        )
+
+    def return_select():
+        return forms.ChoiceField(
+            required=False,
+            choices=[],
+            widget=forms.Select
+            (attrs={'class':"form-control hide"}),
+            label='',
+            )
+
+    type_activity_field = return_select()
+    activity = return_select()
+    type_substitut_field = return_select()
+    substitut = return_select()
+
+    def __init__(self, user, *args, **kwargs):
+
+        self.user = user
+        super(HealthForm, self).__init__(*args, **kwargs)
+
+        self.user_alternatives = Alternative.objects.filter(user=self.user, display=True)
+        self.user_conso = ConsoAlternative.objects.filter(user=self.user)
+        self.lastalternative = self.last_alternative
+
+
+        TYPE_CHOICES = [('Ac', 'Activité'), ('Su', 'Substitut')]
+        self.fields['type_alternative_field'].choices = TYPE_CHOICES
+
+        TYPE_ACTIVITY = self.config_field('Sp')
+        self.fields['type_activity_field'].choices = TYPE_ACTIVITY
+
+        ROL_CHOICES = self.config_field('ROL')
+        self.fields['rol_pack_field'].choices = ROL_CHOICES
+
+        CIGARES_CHOICES = self.config_field('CIGARES')
+        self.fields['cigares_pack_field'].choices = CIGARES_CHOICES
+
+        PIPE_CHOICES = self.config_field('PIPE')
+        self.fields['pipe_pack_field'].choices = PIPE_CHOICES
+
+        NB_CHOICES = self.config_field('NB')
+        self.fields['nb_pack_field'].choices = NB_CHOICES
+
+        GR_CHOICES = self.config_field('GR')
+        self.fields['gr_pack_field'].choices = GR_CHOICES
+
+    @property
+    def last_alternative(self):
+        if self.user_conso:
+            lastalternative = self.user_conso.last().alternative
+            if lastalternative:
+                return lastalternative
+            else:
+                # get the last cig not given
+                for conso in self.user_conso.order_by('-date_alter', '-time_alter'):
+                    if conso.alternative:
+                        return conso.alternative
+                    else:
+                        pass
+                return Alternative.objects.filter(user=self.user)[0]
+        else:
+            return Alternative.objects.filter(user=self.user)[0]
+
+
+    def config_field(self, type):
+        type_cig_conf_dict = {
+            'IND': 'indus_pack_field',
+            'ROL': 'rol_pack_field',
+            'CIGARES': 'cigares_pack_field',
+            'PIPE': 'pipe_pack_field',
+            'NB': 'nb_pack_field',
+            'GR': 'gr_pack_field',
+        }
+        CHOICES = []
+        for pack in self.user_packs.filter(type_cig=type):
+            display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
+            CHOICES.append((pack.id, display))
+            if pack.brand == self.lastsmoke.brand and pack.qt_paquet == self.lastsmoke.qt_paquet:
+                self.initial[type_cig_conf_dict[type]] = (pack.id, display)
+        return tuple(CHOICES)

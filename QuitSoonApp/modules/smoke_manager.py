@@ -7,7 +7,7 @@ from django.db.utils import IntegrityError
 from QuitSoonApp.models import Paquet, ConsoCig
 
 
-class SaveSmoke:
+class SmokeManager:
     """Save informations of cigarette consumption"""
 
     def __init__(self, user, datas):
