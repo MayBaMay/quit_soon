@@ -5,4 +5,33 @@
 
 JE TIENS BON
 
+{% if not alternatives %}
+  Vous n'avez enregistré aucune alternative,<br>
+  Veuillez paramétrer vos alternatives
+  <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
+
+{% else %}
+  <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          <div class="fieldWrapper form-group ">
+            {{ field.label }}
+            {{ field }}
+            {{ field.error }}
+          </div>
+        {% endfor %}
+    </div>
+    <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+  </form>
+{% endif %}
+
+  {% for conso in health %}
+    <div class="row">
+        {{ conso.date_alter }} {{ conso.time_alter }} {{ conso.alternative.type_activity }}{{ conso.alternative.substitut }} {{ conso.alternative.activity }}{{ conso.alternative.nicotine }}
+      <a href=""><i class="fa fa-trash " aria-hidden="true"></i></a>
+    </div>
+  {% endfor %}
+
 {% endblock %}

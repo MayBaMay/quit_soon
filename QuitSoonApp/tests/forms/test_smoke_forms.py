@@ -2,9 +2,7 @@
 
 import datetime
 
-from django.test import TransactionTestCase, TestCase
-from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
+from django.test import TestCase
 from django.contrib.auth.models import User
 
 from QuitSoonApp.forms import SmokeForm
@@ -17,6 +15,14 @@ class test_SmokeForm(TestCase):
         """setup tests"""
         self.usertest = User.objects.create_user(
             username="arandomname", email="random@email.com", password="arandompassword")
+        self.db_pack_undisplayed = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='LUCKY',
+            qt_paquet=20,
+            price=10,
+            display=False
+            )
         self.db_pack_ind = Paquet.objects.create(
             user=self.usertest,
             type_cig='IND',

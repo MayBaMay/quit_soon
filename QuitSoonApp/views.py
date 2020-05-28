@@ -24,6 +24,7 @@ from .forms import (
     ActivityForm,
     SubstitutForm,
     SmokeForm,
+    HealthForm,
     )
 from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager
 
@@ -305,11 +306,22 @@ def delete_alternative(request, id_alternative):
 
 def health(request):
     """User do a healthy activity or uses substitutes"""
-    return render(request, 'QuitSoonApp/health.html')
-
-def health_history(request):
-    """User healthy history page"""
-    return render(request, 'QuitSoonApp/health_history.html')
+    # check if packs are in parameters to fill fields with actual packs
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    print(alternatives)
+    context = {'alternatives':alternatives}
+    if alternatives :
+        form = HealthForm(request.user)
+        if request.method == 'POST':
+            form = HealthForm(request.user, request.POST)
+            if form.is_valid():
+                # smoke = SmokeManager(request.user, form.cleaned_data)
+                # smoke.create_conso_cig()
+                form = HealthForm(request.user)
+        context['form'] = form
+    health = ConsoAlternative.objects.filter(user=request.user)
+    context['health'] = health
+    return render(request, 'QuitSoonApp/health.html', context)
 
 def suivi(request):
     """Page with user results, graphs..."""
