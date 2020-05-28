@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User
 
@@ -24,8 +25,9 @@ from .forms import (
     ActivityForm,
     SubstitutForm,
     SmokeForm,
+    HealthForm,
     )
-from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager
+from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager, HealthManager
 
 def index(request):
     """index View"""
@@ -223,6 +225,9 @@ def smoke(request):
     return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
+    """
+    Used when user click on the trash of one of his smocke action
+    """
     if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
         data = {'id_smoke':id_smoke}
         smoke = SmokeManager(request.user, data)
@@ -305,11 +310,50 @@ def delete_alternative(request, id_alternative):
 
 def health(request):
     """User do a healthy activity or uses substitutes"""
-    return render(request, 'QuitSoonApp/health.html')
+    # check if packs are in parameters to fill fields with actual packs
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    context = {'alternatives':alternatives}
+    if alternatives :
+        form = HealthForm(request.user)
+        if request.method == 'POST':
+            form = HealthForm(request.user, request.POST)
+            if form.is_valid():
+                new_health = HealthManager(request.user, form.cleaned_data)
+                new_health.create_conso_alternative()
+                form = HealthForm(request.user)
+        context['form'] = form
+    health = ConsoAlternative.objects.filter(user=request.user)
+    context['health'] = health
+    return render(request, 'QuitSoonApp/health.html', context)
 
-def health_history(request):
-    """User healthy history page"""
-    return render(request, 'QuitSoonApp/health_history.html')
+def su_ecig(request):
+    """Tells if ecig has been selected by user"""
+    if request.is_ajax():
+        try:
+            type_alternative = request.GET['type_alternative_field'].split('=',1)[1]
+            substitut = int(request.GET['su_field'].split('=',1)[1])
+
+            if type_alternative == 'Su':
+                if Alternative.objects.get(id=substitut).substitut == 'ECIG':
+                    return HttpResponse(JsonResponse({'response':'true'}))
+            return HttpResponse(JsonResponse({'response':'false'}))
+        except:
+            return HttpResponse(JsonResponse({'response':'false'}))
+    else:
+        raise Http404()
+
+
+def delete_health(request, id_health):
+    """
+    Used when user click on the trash of one of his healthy action
+    """
+    if ConsoAlternative.objects.filter(user=request.user, id=id_health).exists():
+        data = {'id_health':id_health}
+        health = HealthManager(request.user, data)
+        health.delete_conso_alternative()
+        return redirect('QuitSoonApp:health')
+    else:
+        raise Http404()
 
 def suivi(request):
     """Page with user results, graphs..."""

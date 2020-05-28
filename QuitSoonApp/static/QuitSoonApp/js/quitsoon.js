@@ -248,6 +248,18 @@
     displayPaquetsFields()
   });
 
+  dsplayAlternativeFields()
+  $('#id_type_alternative_field').on('change', function(e) {
+    $('.show').removeClass('show').addClass('hide');
+    $('#id_duration_hour').removeClass('hide').addClass('show');
+    $('#id_duration_min').removeClass('hide').addClass('show');
+    dsplayAlternativeFields()
+  });
+
+  $('#id_su_field').on('change', function(e) {
+    dsplayAlternativeFields()
+  });
+
 })(jQuery); // End of use strict
 
 var dateField = document.querySelector('.currentDate');
@@ -280,4 +292,43 @@ function displayPaquetsFields(){
   else if ($('#id_type_cig_field').val() == 'GR') {
     $('#id_gr_pack_field').removeClass('hide').addClass('show');
   };
+}
+
+function dsplayAlternativeFields(){
+  var su = {
+    'type_alternative_field':$('#id_type_alternative_field').serialize(),
+    'su_field':$('#id_su_field').serialize(),
+  }
+  $.ajax({
+    url: "/su_ecig/", // the file to call
+    type: "GET", // GET or POST
+    data: su, // get the form data
+    })
+    .done(function(data) {
+      var ecig = jQuery.parseJSON(data);
+      if (ecig.response == 'true') {
+          $('#id_ecig_vape_or_start').removeClass('hide').addClass('show');
+          $('#id_ecig_vape_or_start_0').removeClass('hide').addClass('show');
+          $('#id_ecig_vape_or_start_1').removeClass('hide').addClass('show');
+      }
+      else {
+        $('#id_ecig_vape_or_start').removeClass('show').addClass('hide');
+        $('#id_ecig_vape_or_start_0').removeClass('show').addClass('hide');
+        $('#id_ecig_vape_or_start_1').removeClass('show').addClass('hide');
+      }
+    });
+  if ($('#id_type_alternative_field').val() == 'Sp') {
+    $('#id_sp_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_alternative_field').val() == 'So') {
+    $('#id_so_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_alternative_field').val() == 'Lo') {
+    $('#id_lo_field').removeClass('hide').addClass('show');
+  }
+  else if ($('#id_type_alternative_field').val() == 'Su') {
+    $('#id_su_field').removeClass('hide').addClass('show');
+    $('#id_duration_hour').removeClass('show').addClass('hide');
+    $('#id_duration_min').removeClass('show').addClass('hide');
+  }
 }
