@@ -111,35 +111,19 @@ class test_HealthForm_field_config(Test_HealthForm):
 
     def test_choices_type_alternative(self):
         form = HealthForm(self.usertest)
-        self.assertEqual(form.fields['type_alternative_field'].choices[0][0], 'So')
-        self.assertEqual(form.fields['type_alternative_field'].choices[1][0], 'Sp')
-        self.assertEqual(form.fields['type_alternative_field'].choices[2][0], 'Su')
-        try:
-            self.assertTrue(form.fields['type_alternative_field'].choices[3][0])
-        except Exception as err:
-            self.assertRaises(IndexError)
-            self.assertEqual(str(err), 'list index out of range')
+        self.assertEqual(form.initial['type_alternative_field'][0], 'So')
+        self.assertEqual(len(form.fields['type_alternative_field'].choices), 3)
 
     def test_choices_sp_field(self):
         form = HealthForm(self.usertest)
         self.assertEqual(form.initial['sp_field'][0], self.db_alternative_activity_sp.id)
+        self.assertEqual(len(form.fields['sp_field'].choices), 1)
         self.assertEqual(form.fields['sp_field'].choices[0][0], self.db_alternative_activity_sp.id)
-        try:
-            self.assertTrue(form.fields['sp_field'].choices[1][0])
-        except Exception as err:
-            self.assertRaises(IndexError)
-            self.assertEqual(str(err), 'list index out of range')
 
     def test_choices_so_field(self):
         form = HealthForm(self.usertest)
         self.assertEqual(form.initial['so_field'][0], self.db_alternative_activity_so2.id)
-        self.assertEqual(form.fields['so_field'].choices[0], (self.db_alternative_activity_so2.id, 'MASSAGE'))
-        self.assertEqual(form.fields['so_field'].choices[1], (self.db_alternative_activity_so.id, 'TABACOLOGUE'))
-        try:
-            self.assertTrue(form.fields['so_field'].choices[2])
-        except Exception as err:
-            self.assertRaises(IndexError)
-            self.assertEqual(str(err), 'list index out of range')
+        self.assertEqual(len(form.fields['so_field'].choices), 2)
 
     def test_choices_lo_field(self):
         form = HealthForm(self.usertest)
@@ -147,17 +131,12 @@ class test_HealthForm_field_config(Test_HealthForm):
             self.assertTrue(form.initial['lo_field'])
         except Exception:
             self.assertRaises(KeyError)
+        self.assertEqual(len(form.fields['lo_field'].choices), 0)
 
     def test_choices_su_field(self):
         form = HealthForm(self.usertest)
         self.assertEqual(form.initial['su_field'][0], self.db_alternative_substitut_p24.id)
-        self.assertEqual(form.fields['su_field'].choices[0][0], self.db_alternative_substitut_p24.id)
-        self.assertEqual(form.fields['su_field'].choices[1][0], self.db_alternative_substitut_past.id)
-        self.assertEqual(form.fields['su_field'].choices[2][0], self.db_alternative_substitut_ecig.id)
-        try:
-            self.assertTrue(form.fields['su_field'].choices[3])
-        except IndexError as err:
-            self.assertEqual(str(err), 'list index out of range')
+        self.assertEqual(len(form.fields['su_field'].choices), 3)
 
     def test_choices_first_health(self):
         ConsoAlternative.objects.all().delete()
