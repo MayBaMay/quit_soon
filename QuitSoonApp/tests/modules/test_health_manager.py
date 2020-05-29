@@ -36,6 +36,12 @@ class HealthManagerTestCase(TestCase):
             substitut='P24',
             nicotine=2,
             )
+        self.alternative_su_ecig = Alternative.objects.create(
+            user=self.usertest,
+            type_alternative='Su',
+            substitut='ECIG',
+            nicotine=6,
+            )
         self.data_sp = {
             'date_health': datetime.date(2020, 5, 17),
             'time_health': datetime.time(13, 15),
@@ -54,12 +60,21 @@ class HealthManagerTestCase(TestCase):
             'so_field': self.alternative_so.id,
             'su_field':self.alternative_su.id,
             }
+        self.data_su_ecig = {
+            'date_health': datetime.date(2020, 5, 17),
+            'time_health': datetime.time(14, 15),
+            'type_alternative_field':'Su',
+            'sp_field': self.alternative_sp.id,
+            'so_field': self.alternative_so.id,
+            'su_field':self.alternative_su_ecig.id,
+            'ecig_vape_or_start':['V', 'S'],
+            }
         self.health_sp = ConsoAlternative.objects.create(
             user=self.usertest,
             date_alter=datetime.date(2020, 5, 17),
             time_alter=datetime.time(13, 15),
             alternative=self.alternative_sp,
-            duration=90,
+            activity_duration=90,
         )
         self.data_id = {'id_health': self.health_sp.id}
 
@@ -85,15 +100,36 @@ class HealthManagerTestCase(TestCase):
         health = HealthManager(self.usertest, self.data_sp)
         self.assertEqual(health.get_duration, 90)
 
+    def test_get_ecig_data(self):
+        health = HealthManager(self.usertest, self.data_su_ecig)
+        health.delete_conso_alternative()
+        self.assertEqual(health.get_ecig_data, 'VS')
+        self.data_su_ecig['ecig_vape_or_start'] = ['S', 'V']
+        self.assertEqual(health.get_ecig_data, 'VS')
+        self.data_su_ecig['ecig_vape_or_start'] = ['V']
+        self.assertEqual(health.get_ecig_data, 'V')
+        self.data_su_ecig['ecig_vape_or_start'] = ['S']
+        self.assertEqual(health.get_ecig_data, 'S')
+        self.data_su_ecig['ecig_vape_or_start'] = []
+        self.assertEqual(health.get_ecig_data, None)
+        del self.data_su_ecig['ecig_vape_or_start']
+        self.assertEqual(health.get_ecig_data, None)
+
     def test_get_conso_alternative_with_infos(self):
         health = HealthManager(self.usertest, self.data_sp)
         self.assertEqual(health.get_conso_alternative, self.health_sp)
 
-    def create_conso_alternative(self):
+    def test_create_conso_alternative(self):
         new_health = HealthManager(self.usertest, self.data_su)
-        new_health.create_conso_alternative()
-        self.assertTrue(new_health.exists())
-        self.assertEqual(smoke.get_alternative.id, self.alternative_su.id)
+        new = new_health.create_conso_alternative()
+        self.assertTrue(new)
+        self.assertEqual(new_health.get_alternative.id, self.alternative_su.id)
+
+    def test_create_conso_alternative_ecig(self):
+        new_health = HealthManager(self.usertest, self.data_su_ecig)
+        new = new_health.create_conso_alternative()
+        self.assertTrue(new)
+        self.assertEqual(new.ecig_choice,  'VS')
 
     def test_create_conso_cig_datas_id(self):
         """test HealtheManager.create_conso_alternative method with id_alternative in request"""

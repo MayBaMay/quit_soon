@@ -256,6 +256,10 @@
     dsplayAlternativeFields()
   });
 
+  $('#id_su_field').on('change', function(e) {
+    dsplayAlternativeFields()
+  });
+
 })(jQuery); // End of use strict
 
 var dateField = document.querySelector('.currentDate');
@@ -291,6 +295,28 @@ function displayPaquetsFields(){
 }
 
 function dsplayAlternativeFields(){
+  var su = {
+    'type_alternative_field':$('#id_type_alternative_field').serialize(),
+    'su_field':$('#id_su_field').serialize(),
+  }
+  $.ajax({
+    url: "/su_ecig/", // the file to call
+    type: "GET", // GET or POST
+    data: su, // get the form data
+    })
+    .done(function(data) {
+      var ecig = jQuery.parseJSON(data);
+      if (ecig.response == 'true') {
+          $('#id_ecig_vape_or_start').removeClass('hide').addClass('show');
+          $('#id_ecig_vape_or_start_0').removeClass('hide').addClass('show');
+          $('#id_ecig_vape_or_start_1').removeClass('hide').addClass('show');
+      }
+      else {
+        $('#id_ecig_vape_or_start').removeClass('show').addClass('hide');
+        $('#id_ecig_vape_or_start_0').removeClass('show').addClass('hide');
+        $('#id_ecig_vape_or_start_1').removeClass('show').addClass('hide');
+      }
+    });
   if ($('#id_type_alternative_field').val() == 'Sp') {
     $('#id_sp_field').removeClass('hide').addClass('show');
   }

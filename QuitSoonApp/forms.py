@@ -268,6 +268,16 @@ class HealthForm(forms.Form):
     lo_field = alternative_field()
     su_field = alternative_field()
 
+    ecig_vape_or_start = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+            (attrs={'class':"hide"},
+             ),
+        choices=[('V', "J'ai vapoté aujourd'hui"),
+                 ('S', "J'ai démarré un nouveau flacon")],
+        label='',
+        )
+
     duration_hour = forms.IntegerField(
         required=False,
         label="Pendant:",
@@ -373,3 +383,33 @@ class HealthForm(forms.Form):
             return tuple(CHOICES)
         else:
             return None
+
+    def clean(self):
+        """Clean all_field and specialy make sure total duration in not none for activities"""
+        cleaned_data = super().clean()
+        date_alter = cleaned_data.get('date_alter')
+        duration_hour = cleaned_data.get('duration_hour')
+        duration_min = cleaned_data.get('duration_min')
+        type_alternative = cleaned_data.get('type_alternative_field')
+
+        # check if duration for user activiy
+        if not duration_hour and not duration_min and type_alternative != 'Su':
+            raise forms.ValidationError("Vous n'avez pas renseigné de durée pour cette activité")
+
+        try:
+            ecig_data = cleaned_data.get('ecig_vape_or_start')
+
+            id_subsitut = int(cleaned_data.get('su_field'))
+            if type_alternative == 'Su':
+                # if a Ecig substitut alternative is selected in su_field
+                if id_subsitut:
+                    if Alternative.objects.get(id=id_subsitut).substitut.upper() == 'ECIG':
+                        # check if at least one choice has been selected
+                        if ecig_data == []:
+                            raise forms.ValidationError("""
+                                Vous avez sélectionné la cigarette électronique,
+                                indiquez si vous avez vapoté aujourd'hui et/ou si vous avez démarré un nouveau flacon.
+                                Ceci nous permettra de calculer le dosage quotidien moyen de votre consommation de nicotine
+                                """)
+        except ValueError:
+            pass

@@ -24,10 +24,10 @@ class Test_HealthForm(TestCase):
             activity='DESSIN',
             display=False,
             )
-        self.db_alternative_substitut_gm = Alternative.objects.create(
+        self.db_alternative_substitut_ecig = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
-            substitut='GM',
+            substitut='ecig',
             nicotine=3,
             display=True,
             )
@@ -151,9 +151,9 @@ class test_HealthForm_field_config(Test_HealthForm):
     def test_choices_su_field(self):
         form = HealthForm(self.usertest)
         self.assertEqual(form.initial['su_field'][0], self.db_alternative_substitut_p24.id)
-        self.assertEqual(form.fields['su_field'].choices[0][0], self.db_alternative_substitut_gm.id)
-        self.assertEqual(form.fields['su_field'].choices[1][0], self.db_alternative_substitut_p24.id)
-        self.assertEqual(form.fields['su_field'].choices[2][0], self.db_alternative_substitut_past.id)
+        self.assertEqual(form.fields['su_field'].choices[0][0], self.db_alternative_substitut_p24.id)
+        self.assertEqual(form.fields['su_field'].choices[1][0], self.db_alternative_substitut_past.id)
+        self.assertEqual(form.fields['su_field'].choices[2][0], self.db_alternative_substitut_ecig.id)
         try:
             self.assertTrue(form.fields['su_field'].choices[3])
         except IndexError as err:
@@ -173,7 +173,7 @@ class test_HealthForm_field_config(Test_HealthForm):
         self.assertEqual(form.initial['so_field'][0], self.db_alternative_activity_so2.id)
         self.assertEqual(form.initial['su_field'][0], self.db_alternative_substitut_past.id)
 
-class test_HealthForm_validation_data(Test_HealthForm):
+class Test_HealthForm_validation_data(Test_HealthForm):
 
     def test_valid_data(self):
         data = {
@@ -192,8 +192,62 @@ class test_HealthForm_validation_data(Test_HealthForm):
     def test_required_fields(self):
         form = HealthForm(self.usertest, {})
         self.assertFalse(form.is_valid())
+        self.assertRaises(ValidationError)
         self.assertEqual(form.errors, {
             'date_health': ['Ce champ est obligatoire.'],
             'time_health': ['Ce champ est obligatoire.'],
             'type_alternative_field': ['Ce champ est obligatoire.'],
+            '__all__':["Vous n'avez pas renseigné de durée pour cette activité"],
             })
+
+
+    def test_duration_0(self):
+        data = {
+            'date_health':datetime.date(2020, 5, 26),
+            'time_health':datetime.time(12, 56),
+            'duration_hour':0,
+            'duration_min':0,
+            'type_alternative_field':'So',
+            'sp_field':self.db_alternative_activity_sp.id,
+            'so_field':self.db_alternative_activity_so.id,
+            'su_field':self.db_alternative_substitut_p24.id,
+        }
+        form = HealthForm(self.usertest, data)
+        self.assertFalse(form.is_valid())
+        self.assertRaises(ValidationError)
+        self.assertEqual(form.errors, {
+            '__all__':["Vous n'avez pas renseigné de durée pour cette activité"],
+            })
+
+class Test_HealthForm_ECIG(TestCase):
+
+    def setUp(self):
+        """setup tests"""
+        self.usertest = User.objects.create_user(
+            username="arandomname", email="random@email.com", password="arandompassword")
+        self.db_alternative_undisplayed = Alternative.objects.create(
+            user=self.usertest,
+            type_alternative='Ac',
+            type_activity='Lo',
+            activity='DESSIN',
+            display=False,
+            )
+        self.db_alternative_substitut_ecig = Alternative.objects.create(
+            user=self.usertest,
+            type_alternative='Su',
+            substitut='ecig',
+            nicotine=3,
+            display=True,
+            )
+
+    def test_get_ecig_none(self):
+        data = {
+            'date_health':datetime.date(2020, 5, 26),
+            'time_health':datetime.time(12, 56),
+            'type_alternative_field':'Su',
+            'su_field':self.db_alternative_substitut_ecig.id,
+            'ecig_vape_or_start':[]
+        }
+        form = HealthForm(self.usertest, data)
+        self.assertFalse(form.is_valid())
+        self.assertTrue("Vous avez sélectionné la cigarette électronique" in form.errors['__all__'][0])

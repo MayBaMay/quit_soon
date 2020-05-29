@@ -7,8 +7,8 @@ from QuitSoonApp.views import (
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    paquets, delete_pack, change_g_per_cig, smoke,
-    alternatives, delete_alternative, health,
+    paquets, delete_pack, change_g_per_cig, smoke, delete_smoke,
+    alternatives, delete_alternative, health, su_ecig, delete_health,
 )
 
 class TestUrls(SimpleTestCase):
@@ -92,6 +92,11 @@ class TestUrls(SimpleTestCase):
         url = reverse('QuitSoonApp:smoke')
         self.assertEqual(resolve(url).func, smoke)
 
+    def test_delete_smoke_url_is_resolved(self):
+        """test delete_pack"""
+        url = reverse('QuitSoonApp:delete_smoke', args=['id_smoke'])
+        self.assertEqual(resolve(url).func, delete_smoke)
+
 
     def test_alternatives_url_is_resolved(self):
         """test alternatives"""
@@ -107,3 +112,13 @@ class TestUrls(SimpleTestCase):
         """test health"""
         url = reverse('QuitSoonApp:health')
         self.assertEqual(resolve(url).func, health)
+
+    def test_su_ecig_url_isresolved(self):
+        """test su_ecig"""
+        url = reverse('QuitSoonApp:su_ecig')
+        self.assertEqual(resolve(url).func, su_ecig)
+
+    def test_delete_health_url_is_resolved(self):
+        """test delete_pack"""
+        url = reverse('QuitSoonApp:delete_health', args=['id_health'])
+        self.assertEqual(resolve(url).func, delete_health)

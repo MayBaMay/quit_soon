@@ -22,7 +22,7 @@ class HealthManager:
     def get_request_data(self, data):
         try:
             return self.datas[data]
-        except KeyError:
+        except (KeyError, TypeError):
             return None
 
     @property
@@ -36,7 +36,8 @@ class HealthManager:
                     date_alter=self.date_alter,
                     time_alter=self.time_alter,
                     alternative=self.get_alternative,
-                    duration=self.get_duration,
+                    activity_duration=self.get_duration,
+                    ecig_choice=self.get_ecig_data,
                     )
             return health
         except (ObjectDoesNotExist, ValueError, AttributeError):
@@ -58,9 +59,22 @@ class HealthManager:
 
     @property
     def get_duration(self):
-        hour = self.get_request_data('duration_hour')
-        min = self.get_request_data('duration_min')
-        return hour*60 + min
+        try:
+            hour = self.get_request_data('duration_hour')
+            min = self.get_request_data('duration_min')
+            return hour*60 + min
+        except TypeError:
+            return None
+
+    @property
+    def get_ecig_data(self):
+        ecig_choice = self.get_request_data('ecig_vape_or_start')
+        if ecig_choice == [] or not ecig_choice :
+            return None
+        elif ecig_choice == ['V'] or ecig_choice == ['S']:
+            return ecig_choice[0]
+        elif ecig_choice == ['V', 'S'] or ecig_choice == ['S', 'V']:
+            return 'VS'
 
     def create_conso_alternative(self):
         """Create ConsoAlternative from datas"""
@@ -70,7 +84,8 @@ class HealthManager:
                 date_alter=self.date_alter,
                 time_alter=self.time_alter,
                 alternative=self.get_alternative,
-                duration=self.get_duration,
+                activity_duration=self.get_duration,
+                ecig_choice=self.get_ecig_data,
                 )
             self.id = newconsoalternative.id
             return newconsoalternative
