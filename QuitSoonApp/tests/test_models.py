@@ -75,7 +75,7 @@ class TestModels(TestCase):
             date_alter=datetime.date(2020, 5, 13),
             time_alter=datetime.time(14, 15),
             alternative=self.alternative,
-            duration=75,
+            activity_duration=75,
         )
         self.objectif = Objectif.objects.create(
             user=self.usertest,
