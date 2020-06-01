@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from ..models import Paquet, ConsoCig
 
 class PackManager:
-    """class returning an new DB object paquet or False"""
+    """Manage informations of user packs"""
 
     def __init__(self, user, datas):
         self.datas = datas

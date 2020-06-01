@@ -5,37 +5,53 @@
 
 JE VAIS CRAQUER ...
 
-{% if not packs %}
-  Vous n'avez enregistré aucun paquet,<br>
-  Veuillez paramétrer vos paquets
-  <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
+{% if user.is_authenticated %}
+
+  {% if not packs %}
+    Vous n'avez enregistré aucun paquet,<br>
+    Veuillez paramétrer vos paquets
+    <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
+
+  {% else %}
+    <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
+      {% csrf_token %}
+      <div class="form-group">
+          {{ form.non_field_errors }}
+          {% for field in form %}
+            <div class="fieldWrapper form-group ">
+              {{ field.label }}
+              {{ field }}
+              {{ field.error }}
+            </div>
+          {% endfor %}
+      </div>
+      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+    </form>
+  {% endif %}
+
+    {% for conso in smoke %}
+      <div class="row">
+        {% if conso.given %}
+          {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
+        {% else %}
+          {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
+        {% endif %}
+        <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+      </div>
+    {% endfor %}
 
 {% else %}
-  <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
-    {% csrf_token %}
-    <div class="form-group">
-        {{ form.non_field_errors }}
-        {% for field in form %}
-          <div class="fieldWrapper form-group ">
-            {{ field.label }}
-            {{ field }}
-            {{ field.error }}
-          </div>
-        {% endfor %}
-    </div>
-    <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
-  </form>
-{% endif %}
-
-  {% for conso in smoke %}
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
     <div class="row">
-      {% if conso.given %}
-        {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
-      {% else %}
-        {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
-      {% endif %}
-      <a href="/delete_smoke/{{conso.id}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
     </div>
-  {% endfor %}
+  </div>
+{% endif %}
 
 {% endblock %}

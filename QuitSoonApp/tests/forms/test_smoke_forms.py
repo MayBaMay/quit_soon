@@ -2,9 +2,7 @@
 
 import datetime
 
-from django.test import TransactionTestCase, TestCase
-from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
+from django.test import TestCase
 from django.contrib.auth.models import User
 
 from QuitSoonApp.forms import SmokeForm
@@ -17,6 +15,14 @@ class test_SmokeForm(TestCase):
         """setup tests"""
         self.usertest = User.objects.create_user(
             username="arandomname", email="random@email.com", password="arandompassword")
+        self.db_pack_undisplayed = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='LUCKY',
+            qt_paquet=20,
+            price=10,
+            display=False
+            )
         self.db_pack_ind = Paquet.objects.create(
             user=self.usertest,
             type_cig='IND',
@@ -40,7 +46,7 @@ class test_SmokeForm(TestCase):
             )
         self.db_pack_nb = Paquet.objects.create(
             user=self.usertest,
-            type_cig='NB',
+            type_cig='IND',
             brand='beedies',
             qt_paquet=30,
             price=5,
@@ -49,7 +55,7 @@ class test_SmokeForm(TestCase):
             'date_smoke':datetime.date(2020, 5, 26),
             'time_smoke':datetime.time(12, 56),
             'type_cig_field':'IND',
-            'indus_pack_field':self.db_pack_ind.id,
+            'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field':self.db_pack_rol.id,
             'nb_pack_field':self.db_pack_nb.id,
             'given_field':False,
@@ -74,7 +80,7 @@ class test_SmokeForm(TestCase):
     def test_last_smoke_first_smoke(self):
         """ test last_smoke method first user ConsoCig"""
         form = SmokeForm(self.usertest, self.valid_datas)
-        self.assertEqual(form.last_smoke, self.db_pack_ind)
+        self.assertEqual(form.last_smoke, self.db_pack_nb)
 
     def test_smoke_last_none_first_smoke(self):
         """ test last_smoke method with last smoke given=False smoke """
@@ -82,10 +88,10 @@ class test_SmokeForm(TestCase):
             user=self.usertest,
             date_cig=datetime.date(2020, 6, 17),
             time_cig=datetime.time(13, 15),
-            paquet=None,
+            paquet=self.db_pack_ind2,
             )
         form = SmokeForm(self.usertest, self.valid_datas)
-        self.assertEqual(form.last_smoke, self.db_pack_ind)
+        self.assertEqual(form.last_smoke, self.db_pack_ind2)
 
     def test_smoke_last_none(self):
         """ test last_smoke method with last one given=True, before exists given=False """
@@ -128,34 +134,33 @@ class test_SmokeForm(TestCase):
             user=self.usertest,
             date_cig=datetime.date(2020, 6, 17),
             time_cig=datetime.time(13, 15),
-            paquet=None,
+            given=True,
             )
         db_smoke_3 = ConsoCig.objects.create(
             user=self.usertest,
             date_cig=datetime.date(2020, 6, 17),
             time_cig=datetime.time(13, 15),
-            paquet=None,
+            given=True,
             )
         form = SmokeForm(self.usertest, self.valid_datas)
         pack1 = self.db_pack_ind
         pack2 = self.db_pack_ind2
-        self.assertEqual(
-            form.config_field('IND'),
-            ((pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)),
-              (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)),)
+        pack3 = self.db_pack_nb
+        self.assertTrue(
+            (pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)) in form.config_field('ind_pack_field','IND')
+            )
+        self.assertTrue(
+            (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)) in form.config_field('ind_pack_field','IND')
+            )
+        self.assertTrue(
+            (pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)) in form.config_field('ind_pack_field','IND')
             )
         self.assertEqual(
-            form.initial['indus_pack_field'],
+            form.initial['ind_pack_field'],
             (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit))
             )
         pack3 = self.db_pack_rol
         self.assertEqual(
-            form.config_field('ROL'),
+            form.config_field('rol_pack_field', 'ROL'),
             ((pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)),)
             )
-        pack4 = self.db_pack_nb
-        self.assertEqual(
-            form.config_field('NB'),
-            ((pack4.id, "{} /{}{}".format(pack4.brand, pack4.qt_paquet, pack4.unit)),)
-        )
-        self.assertEqual(form.config_field('GR'), ())

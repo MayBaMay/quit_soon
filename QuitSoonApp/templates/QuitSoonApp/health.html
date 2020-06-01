@@ -5,4 +5,86 @@
 
 JE TIENS BON
 
+{% if user.is_authenticated %}
+  {% if not alternatives %}
+    Vous n'avez enregistré aucune alternative,<br>
+    Veuillez paramétrer vos alternatives
+    <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
+
+  {% else %}
+    <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <div class="container">
+          {{ form.non_field_errors }}
+          <div class="fieldWrapper form-group row">
+            <span>{{ form.date_health.label }}
+            {{ form.date_health }}
+            {{ form.date_health.error }}</span>
+            <span>{{ form.time_health.label }}
+            {{ form.time_health }}
+            {{ form.time_health.error }}</span>
+          </div>
+          <div class="fieldWrapper form-group ">
+            {{ form.type_alternative_field }}
+            {{ form.type_alternative_field.error }}
+            {{ form.sp_field }}
+            {{ form.sp_field.error }}
+            {{ form.so_field }}
+            {{ form.so_field.error }}
+            {{ form.lo_field }}
+            {{ form.lo_field.error }}
+            {{ form.su_field }}
+            {{ form.su_field.error }}
+            {{ form.ecig_vape_or_start }}
+            {{ form.ecig_vape_or_start.error }}
+          </div>
+          <div class="fieldWrapper form-group ">
+            {{ form.duration_hour }}
+            {{ form.duration_hour.error }}
+            {{ form.duration_min }}
+            {{ form.duration_min.error }}
+          </div>
+        </div>
+      </div>
+      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+    </form>
+  {% endif %}
+
+    {% for conso in health %}
+      <div class="row">
+          {{ conso.date_alter }}
+          {{ conso.time_alter }}
+          {% if conso.alternative.type_activity %}
+            {{ conso.alternative.type_activity }}
+            {{ conso.alternative.activity }}
+          {% endif %}
+          {% if conso.alternative.substitut %}
+            {{ conso.alternative.substitut }}
+            {{ conso.alternative.nicotine }}
+          {% endif %}
+          {% if conso.activity_duration %}
+            {{ conso.activity_duration }}min
+          {% endif %}
+          {% if conso.ecig_choice %}
+            {{ conso.get_ecig_choice_display }}
+          {% endif %}
+        <a href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+      </div>
+    {% endfor %}
+
+{% else %}
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
 {% endblock %}

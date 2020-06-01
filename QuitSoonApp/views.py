@@ -6,6 +6,7 @@ from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User
 
@@ -24,8 +25,9 @@ from .forms import (
     ActivityForm,
     SubstitutForm,
     SmokeForm,
+    HealthForm,
     )
-from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager
+from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager, HealthManager
 
 def index(request):
     """index View"""
@@ -154,26 +156,24 @@ def new_parameters(request):
 
 def paquets(request):
     """Smoking parameters, user different packs"""
-    form = PaquetFormCreation(request.user)
-    if request.method == 'POST':
-        # receive smoking habits from user in a
-        form = PaquetFormCreation(request.user, request.POST)
-        if form.is_valid():
-            new_pack = PackManager(request.user, form.cleaned_data)
-            new_pack.create_pack()
-            form = PaquetFormCreation(request.user)
-    # select users packs for display in paquets page
-    paquets = Paquet.objects.filter(user=request.user, display=True)
-    context = {
-        'form':form,
-        # get packs per type
-        'ind':paquets.filter(type_cig='IND'),
-        'rol':paquets.filter(type_cig='ROL'),
-        'cigares':paquets.filter(type_cig='CIGARES'),
-        'pipe':paquets.filter(type_cig='PIPE'),
-        'nb':paquets.filter(type_cig='NB'),
-        'gr':paquets.filter(type_cig='GR'),
-        }
+    context = {}
+    if request.user.is_authenticated:
+        form = PaquetFormCreation(request.user)
+        if request.method == 'POST':
+            # receive smoking habits from user in a
+            form = PaquetFormCreation(request.user, request.POST)
+            if form.is_valid():
+                new_pack = PackManager(request.user, form.cleaned_data)
+                new_pack.create_pack()
+                form = PaquetFormCreation(request.user)
+        # select users packs for display in paquets page
+        paquets = Paquet.objects.filter(user=request.user, display=True)
+        context = {
+            'form':form,
+            # get packs per type
+            'ind':paquets.filter(type_cig='IND'),
+            'rol':paquets.filter(type_cig='ROL'),
+            }
     return render(request, 'QuitSoonApp/paquets.html', context)
 
 def delete_pack(request, id_pack):
@@ -223,6 +223,9 @@ def smoke(request):
     return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
+    """
+    Used when user click on the trash of one of his smocke action
+    """
     if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
         data = {'id_smoke':id_smoke}
         smoke = SmokeManager(request.user, data)
@@ -233,61 +236,63 @@ def delete_smoke(request, id_smoke):
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
-    alternative_form = TypeAlternativeForm(request.user)
-    activity_form = ActivityForm(request.user)
-    substitut_form = SubstitutForm(request.user)
+    context = {}
+    if request.user.is_authenticated:
+        alternative_form = TypeAlternativeForm(request.user)
+        activity_form = ActivityForm(request.user)
+        substitut_form = SubstitutForm(request.user)
 
-    if request.method == 'POST':
-        # rget wich type of alternative
-        form_data = {'type_alternative':request.POST['type_alternative']}
-        alternative_form = TypeAlternativeForm(request.user, form_data)
-        if alternative_form.is_valid():
-            final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
+        if request.method == 'POST':
+            # rget wich type of alternative
+            form_data = {'type_alternative':request.POST['type_alternative']}
+            alternative_form = TypeAlternativeForm(request.user, form_data)
+            if alternative_form.is_valid():
+                final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
 
-            if alternative_form.cleaned_data['type_alternative']== 'Ac' :
-                form_data = {'type_activity':request.POST['type_activity'],
-                             'activity':request.POST['activity']}
-                activity_form = ActivityForm(request.user, form_data)
-                if activity_form.is_valid():
-                    # keep only fields from alternative_form & activity_form
-                    final_data['type_activity'] = activity_form.cleaned_data['type_activity']
-                    final_data['activity'] = activity_form.cleaned_data['activity']
-                    # Create a AlternativeManager object and create a new alternative
-                    new_alternative = AlternativeManager(request.user, final_data)
-                    new_alternative.create_alternative()
+                if alternative_form.cleaned_data['type_alternative']== 'Ac' :
+                    form_data = {'type_activity':request.POST['type_activity'],
+                                 'activity':request.POST['activity']}
+                    activity_form = ActivityForm(request.user, form_data)
+                    if activity_form.is_valid():
+                        # keep only fields from alternative_form & activity_form
+                        final_data['type_activity'] = activity_form.cleaned_data['type_activity']
+                        final_data['activity'] = activity_form.cleaned_data['activity']
+                        # Create a AlternativeManager object and create a new alternative
+                        new_alternative = AlternativeManager(request.user, final_data)
+                        new_alternative.create_alternative()
 
-                    alternative_form = TypeAlternativeForm(request.user)
-                    activity_form = ActivityForm(request.user)
-                    substitut_form = SubstitutForm(request.user)
+                        alternative_form = TypeAlternativeForm(request.user)
+                        activity_form = ActivityForm(request.user)
+                        substitut_form = SubstitutForm(request.user)
 
-            elif alternative_form.cleaned_data['type_alternative'] == 'Su' :
-                form_data = {'substitut':request.POST['substitut'],
-                             'nicotine':request.POST['nicotine']}
-                substitut_form = SubstitutForm(request.user, form_data)
-                if substitut_form.is_valid():
-                    # keep only fields from alternative_form & substitut_form
-                    final_data['substitut'] = substitut_form.cleaned_data['substitut']
-                    final_data['nicotine'] = substitut_form.cleaned_data['nicotine']
-                    # Create a AlternativeManager object and create a new alternative
-                    new_alternative = AlternativeManager(request.user, final_data)
-                    new_alternative.create_alternative()
+                elif alternative_form.cleaned_data['type_alternative'] == 'Su' :
+                    form_data = {'substitut':request.POST['substitut'],
+                                 'nicotine':request.POST['nicotine']}
+                    substitut_form = SubstitutForm(request.user, form_data)
+                    if substitut_form.is_valid():
+                        # keep only fields from alternative_form & substitut_form
+                        final_data['substitut'] = substitut_form.cleaned_data['substitut']
+                        final_data['nicotine'] = substitut_form.cleaned_data['nicotine']
+                        # Create a AlternativeManager object and create a new alternative
+                        new_alternative = AlternativeManager(request.user, final_data)
+                        new_alternative.create_alternative()
 
-                    alternative_form = TypeAlternativeForm(request.user)
-                    activity_form = ActivityForm(request.user)
-                    substitut_form = SubstitutForm(request.user)
+                        alternative_form = TypeAlternativeForm(request.user)
+                        activity_form = ActivityForm(request.user)
+                        substitut_form = SubstitutForm(request.user)
 
-    # select users packs for display in paquets page
-    alternatives = Alternative.objects.filter(user=request.user, display=True)
-    context = {
-        'alternative_form':alternative_form,
-        'activity_form':activity_form,
-        'substitut_form':substitut_form,
-        # get packs per type
-        'Sp':alternatives.filter(type_activity='Sp'),
-        'Lo':alternatives.filter(type_activity='Lo'),
-        'So':alternatives.filter(type_activity='So'),
-        'Su':alternatives.filter(type_alternative='Su'),
-        }
+        # select users packs for display in paquets page
+        alternatives = Alternative.objects.filter(user=request.user, display=True)
+        context = {
+            'alternative_form':alternative_form,
+            'activity_form':activity_form,
+            'substitut_form':substitut_form,
+            # get packs per type
+            'Sp':alternatives.filter(type_activity='Sp'),
+            'Lo':alternatives.filter(type_activity='Lo'),
+            'So':alternatives.filter(type_activity='So'),
+            'Su':alternatives.filter(type_alternative='Su'),
+            }
     return render(request, 'QuitSoonApp/alternatives.html', context)
 
 def delete_alternative(request, id_alternative):
@@ -305,11 +310,52 @@ def delete_alternative(request, id_alternative):
 
 def health(request):
     """User do a healthy activity or uses substitutes"""
-    return render(request, 'QuitSoonApp/health.html')
+    context = {}
+    if request.user.is_authenticated:
+        # check if packs are in parameters to fill fields with actual packs
+        alternatives = Alternative.objects.filter(user=request.user, display=True)
+        context['alternatives'] = alternatives
+        if alternatives :
+            form = HealthForm(request.user)
+            if request.method == 'POST':
+                form = HealthForm(request.user, request.POST)
+                if form.is_valid():
+                    new_health = HealthManager(request.user, form.cleaned_data)
+                    new_health.create_conso_alternative()
+                    form = HealthForm(request.user)
+            context['form'] = form
+        health = ConsoAlternative.objects.filter(user=request.user)
+        context['health'] = health
+    return render(request, 'QuitSoonApp/health.html', context)
 
-def health_history(request):
-    """User healthy history page"""
-    return render(request, 'QuitSoonApp/health_history.html')
+def su_ecig(request):
+    """Tells if ecig has been selected by user"""
+    if request.is_ajax():
+        try:
+            type_alternative = request.GET['type_alternative_field'].split('=',1)[1]
+            substitut = int(request.GET['su_field'].split('=',1)[1])
+
+            if type_alternative == 'Su':
+                if Alternative.objects.get(id=substitut).substitut == 'ECIG':
+                    return HttpResponse(JsonResponse({'response':'true'}))
+            return HttpResponse(JsonResponse({'response':'false'}))
+        except:
+            return HttpResponse(JsonResponse({'response':'false'}))
+    else:
+        raise Http404()
+
+
+def delete_health(request, id_health):
+    """
+    Used when user click on the trash of one of his healthy action
+    """
+    if ConsoAlternative.objects.filter(user=request.user, id=id_health).exists():
+        data = {'id_health':id_health}
+        health = HealthManager(request.user, data)
+        health.delete_conso_alternative()
+        return redirect('QuitSoonApp:health')
+    else:
+        raise Http404()
 
 def suivi(request):
     """Page with user results, graphs..."""

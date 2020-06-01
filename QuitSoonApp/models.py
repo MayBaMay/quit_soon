@@ -12,12 +12,8 @@ class UserProfile(models.Model):
 
 class Paquet(models.Model):
     TYPE_CIG = [
-        ('IND', 'Cigarettes industrielles'),
-        ('ROL', 'Cigarettes roulées'),
-        ('CIGARES', 'Cigares'),
-        ('PIPE', 'Pipe'),
-        ('NB', 'Autres(en nb/paquet)'),
-        ('GR', 'Autres(en g/paquet)'),
+        ('IND', 'Cigarettes'),
+        ('ROL', 'Tabac à rouler'),
     ]
     UNIT = [
         ('U', 'Unités'),
@@ -56,7 +52,11 @@ class ConsoCig(models.Model):
     given = models.BooleanField(default=False)
 
     def __str__(self):
-        return "%s %s-%s" % (self.user, self.date_cig, self.paquet.type_cig)
+        if self.paquet:
+            paquet = self.paquet.type_cig
+        else:
+            paquet = None
+        return "%s %s-%s" % (self.user, self.date_cig, paquet)
 
 
 class Alternative(models.Model):
@@ -81,6 +81,7 @@ class Alternative(models.Model):
         ('CS', 'Comprimés sublinguaux'),
         ('ECIG', 'Cigarette éléctronique'),
     ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     type_alternative = models.CharField(
         max_length=2,
@@ -110,11 +111,21 @@ class Alternative(models.Model):
 
 
 class ConsoAlternative(models.Model):
+    ECIG_CHOICE = [
+        ('V', "J'ai vapoté aujourd'hui"),
+        ('S', "J'ai démarré un nouveau flacon"),
+        ('VS', "J'ai vapoté aujourd'hui et démarré un nouveau flacon"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_alter = models.DateField()
     time_alter = models.TimeField()
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
-    duration = models.IntegerField(null=True)
+    activity_duration = models.IntegerField(null=True)
+    ecig_choice = models.CharField(
+        max_length=2,
+        choices=ECIG_CHOICE,
+        null=True,
+    )
 
 
 class Objectif(models.Model):

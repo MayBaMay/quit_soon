@@ -42,7 +42,7 @@ class SmokeManagerTestCase(TestCase):
             'date_smoke': datetime.date(2020, 5, 17),
             'time_smoke': datetime.time(13, 15),
             'type_cig_field':'IND',
-            'indus_pack_field':self.db_pack_ind.id,
+            'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field': self.db_pack_rol.id,
             'given_field':False,
             }
@@ -50,7 +50,7 @@ class SmokeManagerTestCase(TestCase):
             'date_smoke': datetime.date(2020, 5, 17),
             'time_smoke': datetime.time(13, 15),
             'type_cig_field':'ROL',
-            'indus_pack_field':self.db_pack_ind.id,
+            'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field': self.db_pack_rol.id,
             'given_field':False,
             }
@@ -61,32 +61,32 @@ class SmokeManagerTestCase(TestCase):
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_request_data('date_smoke'), datetime.date(2020, 5, 17))
         self.assertEqual(smoke.get_request_data('time_smoke'), datetime.time(13, 15))
-        self.assertEqual(smoke.get_request_data('indus_pack_field'), self.db_pack_ind.id)
+        self.assertEqual(smoke.get_request_data('ind_pack_field'), self.db_pack_ind.id)
 
     def tes_get_pack_ind(self):
         """test SmokeManager.get_pack method with new smoke datas and given_field=False & type_cig_field='IND'"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
-        self.assertEqual(smoke.paquet, self.db_pack_ind)
+        self.assertEqual(smoke.get_pack, self.db_pack_ind)
 
     def test_get_pack_rol(self):
         """test SmokeManager.get_pack method with new smoke datas : given_field=False & type_cig_field='ROL'"""
         smoke = SmokeManager(self.usertest, self.new_datas_rol)
         self.assertEqual(smoke.get_pack, self.db_pack_rol)
-        self.assertEqual(smoke.paquet, self.db_pack_rol)
+        self.assertEqual(smoke.get_pack, self.db_pack_rol)
 
     def test_get_pack__given_cig(self):
         """test SmokeManager.get_pack method with new smoke datas and given_field=True"""
         self.new_datas_ind['given_field'] = True
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_pack, None)
-        self.assertEqual(smoke.paquet, None)
+        self.assertEqual(smoke.get_pack, None)
 
     def test_get_pack_smoke_id(self):
         """test SmokeManager.get_pack method with id_smoke in datas (for delete_smoke view)"""
         smoke = SmokeManager(self.usertest, self.old_smoke_ind_data)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
-        self.assertEqual(smoke.paquet, self.db_pack_ind)
+        self.assertEqual(smoke.get_pack, self.db_pack_ind)
 
     def test_create_conso_cig(self):
         """test SmokeManager.create_conso_cig method with new conso datas"""
@@ -98,7 +98,7 @@ class SmokeManagerTestCase(TestCase):
                              paquet=self.db_pack_ind,
                              given=False)
         self.assertTrue(new_smoke.exists())
-        self.assertEqual(smoke.paquet.id, self.db_pack_ind.id)
+        self.assertEqual(smoke.get_pack.id, self.db_pack_ind.id)
 
     def test_create_conso_cig_datas_id_smoke(self):
         """test SmokeManager.create_conso_cig method with id_smoke in request"""
@@ -110,13 +110,13 @@ class SmokeManagerTestCase(TestCase):
         new_datas_given_cig = {
             'date_smoke': datetime.date(2020, 7, 15),
             'time_smoke': datetime.time(20, 15),
-            'indus_pack_field':self.db_pack_ind.id,
+            'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field': self.db_pack_rol.id,
             'given_field':True,
             }
         smoke = SmokeManager(self.usertest, new_datas_given_cig)
         smoke.create_conso_cig()
-        self.assertEqual(smoke.paquet, None)
+        self.assertEqual(smoke.get_pack, None)
         new_given_smoke = ConsoCig.objects.filter(user=self.usertest,
                              date_cig=datetime.date(2020, 7, 15),
                              time_cig=datetime.time(20, 15),
@@ -138,7 +138,7 @@ class SmokeManagerTestCase(TestCase):
             user=self.usertest,
             date_cig=smoke.date_cig,
             time_cig=smoke.time_cig,
-            paquet=smoke.paquet,
+            paquet=smoke.get_pack,
             given=smoke.given,
             ))
 
