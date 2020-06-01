@@ -146,12 +146,14 @@ class test_SmokeForm(TestCase):
         pack1 = self.db_pack_ind
         pack2 = self.db_pack_ind2
         pack3 = self.db_pack_nb
-        self.assertEqual(
-            form.config_field('ind_pack_field','IND'),
-            ((pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)),
-              (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)),
-              (pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit))
-              )
+        self.assertTrue(
+            (pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)) in form.config_field('ind_pack_field','IND')
+            )
+        self.assertTrue(
+            (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)) in form.config_field('ind_pack_field','IND')
+            )
+        self.assertTrue(
+            (pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)) in form.config_field('ind_pack_field','IND')
             )
         self.assertEqual(
             form.initial['ind_pack_field'],
