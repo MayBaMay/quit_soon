@@ -57,12 +57,12 @@ class PacksAndSmokeTestCase(TestCase):
         """Test client post a form with invalid datas"""
         brandtest = Paquet.objects.create(
             user=self.user,
-            type_cig='GR',
+            type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
             price=30,
             )
-        datas = {'type_cig':'GR',
+        datas = {'type_cig':'ROL',
                 'brand':'BRANDTEST',
                 'qt_paquet':'50',
                 'price':'30'}
@@ -72,7 +72,7 @@ class PacksAndSmokeTestCase(TestCase):
         self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
         db_pack = Paquet.objects.filter(
             user=self.user,
-            type_cig='GR',
+            type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
             price=30,
@@ -84,7 +84,7 @@ class PacksAndSmokeTestCase(TestCase):
         """Test client post delete_pack view"""
         db_pack = Paquet.objects.create(
             user=self.user,
-            type_cig='GR',
+            type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
             price=30,
@@ -95,7 +95,7 @@ class PacksAndSmokeTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         filter = Paquet.objects.filter(
             user=self.user,
-            type_cig='GR',
+            type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
             price=30,
@@ -106,13 +106,13 @@ class PacksAndSmokeTestCase(TestCase):
         """Test client post hange_g_per_cig view"""
         pack = Paquet.objects.create(
             user=self.user,
-            type_cig='PIPE',
+            type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=40,
             price=100,
             )
         self.assertEqual(pack.g_per_cig, None)
-        data = {'type_cig':'PIPE',
+        data = {'type_cig':'ROL',
                 'brand':'BRANDTEST',
                 'qt_paquet':'40',
                 'price':'100',
@@ -195,20 +195,12 @@ class PacksAndSmokeTestCase(TestCase):
             qt_paquet=30,
             price=12,
             )
-        db_pack_nb = Paquet.objects.create(
-            user=self.user,
-            type_cig='NB',
-            brand='beedies',
-            qt_paquet=30,
-            price=5,
-            )
         data = {
             'date_smoke':datetime.date(2020, 5, 26),
             'time_smoke':datetime.time(12, 56),
             'type_cig_field':'IND',
             'indus_pack_field':db_pack_ind.id,
             'rol_pack_field':db_pack_rol.id,
-            'nb_pack_field':db_pack_nb.id,
             'given_field':False,
             }
         response = self.client.post(reverse('QuitSoonApp:smoke'), data=data)

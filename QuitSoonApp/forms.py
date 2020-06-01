@@ -157,10 +157,6 @@ class SmokeForm(forms.Form):
 
     ind_pack_field = return_select()
     rol_pack_field = return_select()
-    cigares_pack_field = return_select()
-    pipe_pack_field = return_select()
-    nb_pack_field = return_select()
-    gr_pack_field = return_select()
 
     def __init__(self, user, *args, **kwargs):
 
@@ -184,18 +180,6 @@ class SmokeForm(forms.Form):
 
         ROL_CHOICES = self.config_field('rol_pack_field', 'ROL')
         self.fields['rol_pack_field'].choices = ROL_CHOICES
-
-        CIGARES_CHOICES = self.config_field('cigares_pack_field', 'CIGARES')
-        self.fields['cigares_pack_field'].choices = CIGARES_CHOICES
-
-        PIPE_CHOICES = self.config_field('pipe_pack_field', 'PIPE')
-        self.fields['pipe_pack_field'].choices = PIPE_CHOICES
-
-        NB_CHOICES = self.config_field('nb_pack_field', 'NB')
-        self.fields['nb_pack_field'].choices = NB_CHOICES
-
-        GR_CHOICES = self.config_field('gr_pack_field', 'GR')
-        self.fields['gr_pack_field'].choices = GR_CHOICES
 
     @property
     def last_smoke(self):

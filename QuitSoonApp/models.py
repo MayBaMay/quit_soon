@@ -12,12 +12,8 @@ class UserProfile(models.Model):
 
 class Paquet(models.Model):
     TYPE_CIG = [
-        ('IND', 'Cigarettes industrielles'),
-        ('ROL', 'Cigarettes roulées'),
-        ('CIGARES', 'Cigares'),
-        ('PIPE', 'Pipe'),
-        ('NB', 'Autres(en nb/paquet)'),
-        ('GR', 'Autres(en g/paquet)'),
+        ('IND', 'Cigarettes'),
+        ('ROL', 'Tabac à rouler'),
     ]
     UNIT = [
         ('U', 'Unités'),
@@ -56,7 +52,11 @@ class ConsoCig(models.Model):
     given = models.BooleanField(default=False)
 
     def __str__(self):
-        return "%s %s-%s" % (self.user, self.date_cig, self.paquet.type_cig)
+        if self.paquet:
+            paquet = self.paquet.type_cig
+        else:
+            paquet = None
+        return "%s %s-%s" % (self.user, self.date_cig, paquet)
 
 
 class Alternative(models.Model):

@@ -46,7 +46,7 @@ class test_SmokeForm(TestCase):
             )
         self.db_pack_nb = Paquet.objects.create(
             user=self.usertest,
-            type_cig='NB',
+            type_cig='IND',
             brand='beedies',
             qt_paquet=30,
             price=5,
@@ -145,10 +145,13 @@ class test_SmokeForm(TestCase):
         form = SmokeForm(self.usertest, self.valid_datas)
         pack1 = self.db_pack_ind
         pack2 = self.db_pack_ind2
+        pack3 = self.db_pack_nb
         self.assertEqual(
             form.config_field('ind_pack_field','IND'),
             ((pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)),
-              (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)),)
+              (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)),
+              (pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit))
+              )
             )
         self.assertEqual(
             form.initial['ind_pack_field'],
@@ -159,9 +162,3 @@ class test_SmokeForm(TestCase):
             form.config_field('rol_pack_field', 'ROL'),
             ((pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)),)
             )
-        pack4 = self.db_pack_nb
-        self.assertEqual(
-            form.config_field('nb_pack_field', 'NB'),
-            ((pack4.id, "{} /{}{}".format(pack4.brand, pack4.qt_paquet, pack4.unit)),)
-        )
-        self.assertEqual(form.config_field('gr_pack_field', 'GR'), ())

@@ -203,7 +203,7 @@ class PackManagerTestCase(TestCase):
         """test PackManager.delete_pack method with used pack"""
         db_pack = Paquet.objects.create(
             user=self.usertest,
-            type_cig='CIGARES',
+            type_cig='IND',
             brand='ELPASO',
             qt_paquet=5,
             price=10,
@@ -219,7 +219,7 @@ class PackManagerTestCase(TestCase):
         pack.delete_pack()
         filter_pack = Paquet.objects.filter(
             user=self.usertest,
-            type_cig='CIGARES',
+            type_cig='IND',
             brand='ELPASO',
             qt_paquet=5,
             price=10,
