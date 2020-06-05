@@ -42,16 +42,16 @@ class SmokeStats:
         return self.nb_jour_since_start - self.count_smoking_day
 
     @property
-    def no_smoking_day(self):
-        no_smoking_day = []
+    def no_smoking_day_list_dates(self):
+        no_smoking_day_list_dates = []
         start = datetime.combine(self.date_start, datetime.min.time())
         lastday = datetime.combine(self.lastday, datetime.min.time())
         delta =  lastday - start
         for i in range(delta.days + 1):
             day = start + timedelta(days=i)
             if not self.user_conso.filter(date_cig=day).exists():
-                no_smoking_day.append(day.date())
-        return no_smoking_day
+                no_smoking_day_list_dates.append(day.date())
+        return no_smoking_day_list_dates
 
     @property
     def total_money_smoked(self):

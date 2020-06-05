@@ -8,6 +8,7 @@ from QuitSoonApp.forms import (
     RegistrationForm,
     ParametersForm,
     )
+from QuitSoonApp.models import Paquet
 
 
 class test_registration(TestCase):
@@ -73,9 +74,66 @@ class test_ParametersForm(TestCase):
         """setup tests"""
         self.user = User.objects.create_user(
             username="arandomname", email="random@email.com", password="arandompassword")
+        self.pack = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.pack2 = Paquet.objects.create(
+            user=self.user,
+            type_cig='ROL',
+            brand='1637',
+            qt_paquet=30,
+            unit='G',
+            price=12,
+            )
 
-    def test_form(self):
-        """test ParametersForm"""
-        data = {'user':self.user, 'date_start':'2020-05-17', 'starting_nb_cig':'4'}
-        form = ParametersForm(data=data)
+    def test_form_get(self):
+        """test get form with choices field"""
+        form = ParametersForm(self.user)
+        self.assertEqual(len(form.fields['ref_pack'].choices), 2)
+        print(form.fields['ref_pack'].choices)
+        self.assertTrue((self.pack.id, 'CAMEL /20U') in form.fields['ref_pack'].choices)
+        self.assertTrue((self.pack2.id, '1637 /30G') in form.fields['ref_pack'].choices)
+
+    def test_form_post_first_connection(self):
+        """test ParametersForm while request.POST include newpack creation"""
+        newpack = Paquet.objects.create(
+            user=self.user,
+            type_cig='ROL',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            first=True,
+            )
+        data = {
+            'date_start': '2020-05-17',
+            'starting_nb_cig': 20,
+            'type_cig':'ROL',
+            'brand':'BRANDTEST',
+            'qt_paquet':'50',
+            'price':'30',
+            'ref_pack': newpack.id
+            }
+        form = ParametersForm(self.user, data)
         self.assertTrue(form.is_valid())
+
+    def test_form_post(self):
+        """test ParametersForm"""
+        data = {
+            'date_start': '2020-06-04',
+            'starting_nb_cig': '20',
+            'packs': str(self.pack.id)
+            }
+        form = ParametersForm(self.user, data)
+        self.assertTrue(form.is_valid())
+
+    def test_form_post_missing_data(self):
+        """test form with no data required fields"""
+        form = ParametersForm(self.user, {})
+        self.assertEqual(form.errors, {
+            'date_start': ['Ce champ est obligatoire.'],
+            'starting_nb_cig': ['Ce champ est obligatoire.'],
+            })

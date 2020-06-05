@@ -47,7 +47,7 @@ def register_view(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('QuitSoonApp:index')
+            return redirect('QuitSoonApp:profile')
     return render(request, 'registration/register.html', {'form': form})
 
 def login_view(request):
@@ -70,15 +70,61 @@ def today(request):
 
 def profile(request):
     """User profile page with authentication infos and smoking habits"""
-    context = {'userprofile':None}
+    context = {
+        'userprofile':None,
+        'user_packs':None,
+        }
     if request.user.is_authenticated:
-        userprofile = UserProfile.objects.filter(user=request.user)
-        if userprofile:
+        parameter_form = ParametersForm(request.user, request.POST)
+        paquet_form = PaquetFormCreation(request.user)
+        context['parameter_form'] = parameter_form
+        context['paquet_form'] = paquet_form
+        try:
             userprofile = UserProfile.objects.get(user=request.user)
-        else:
-            userprofile = 'undefined'
-        context = { 'userprofile':userprofile}
+        except ObjectDoesNotExist:
+            userprofile = None
+        try:
+            paquet_ref = Paquet.objects.get(user=request.user, first=True)
+        except ObjectDoesNotExist:
+            paquet_ref = None
+            userprofile = None
+            print('packs', Paquet.objects.filter(user=request.user))
+        # !!!!!!!!! to do!!!!!!!!!except pb more then one first? should not happened but in case
+        if userprofile:
+            context['userprofile'] = userprofile
+            context['paquet_ref'] = paquet_ref
+        packs = Paquet.objects.filter(user=request.user, display=True)
+        if packs.exists:
+            context['user_packs'] = packs
     return render(request, 'QuitSoonApp/profile.html', context)
+
+def new_parameters(request):
+    """View changing user smoking habits when starting using app"""
+    response_data = {'response':None}
+    if request.user.is_authenticated and request.method == 'POST':
+        # make request.POST mutable
+        data = dict(request.POST)
+        for field in data:
+            data[field]=data[field][0]
+        # first connection or user deleted(undisplayed) all its packs
+        if not Paquet.objects.filter(user=request.user, display=True, first=True):
+            paquet_form = PaquetFormCreation(request.user, data)
+            if paquet_form.is_valid():
+                new_pack = PackManager(request.user, paquet_form.cleaned_data)
+                # define new_pack as the first pack (ref to use for stats)
+                new_pack.init_first()
+                # create pack
+                new_db_object = new_pack.create_pack()
+                # include field ref_pack with new pack id in data for ParametersForm
+                data['ref_pack'] = new_db_object.id
+        # reset parameters
+        parameter_form = ParametersForm(request.user, data)
+        if parameter_form.is_valid():
+            reset = ResetProfile(request.user, parameter_form.cleaned_data)
+            reset.new_profile()
+        return redirect('QuitSoonApp:profile')
+    else:
+        raise Http404()
 
 def new_name(request):
     """View changing user name"""
@@ -141,24 +187,13 @@ def new_password(request):
         raise Http404()
     return HttpResponse(JsonResponse(response_data))
 
-def new_parameters(request):
-    """View changing user smoking habits when starting using app"""
-    response_data = {'response':None}
-    if request.method == 'POST':
-        form = ParametersForm(request.POST)
-        if form.is_valid():
-            reset = ResetProfile(request.user, request.POST)
-            userprofile = reset.new_profile()
-            response_data = {'response':'success'}
-    else:
-        raise Http404()
-    return HttpResponse(JsonResponse(response_data))
-
 def paquets(request):
     """Smoking parameters, user different packs"""
-    context = {}
+    context = {'first' : False}
     if request.user.is_authenticated:
         form = PaquetFormCreation(request.user)
+        if not Paquet.objects.filter(user=request.user).exists():
+            context['first'] = True
         if request.method == 'POST':
             # receive smoking habits from user in a
             form = PaquetFormCreation(request.user, request.POST)
@@ -166,14 +201,13 @@ def paquets(request):
                 new_pack = PackManager(request.user, form.cleaned_data)
                 new_pack.create_pack()
                 form = PaquetFormCreation(request.user)
+                context['first'] = False
         # select users packs for display in paquets page
         paquets = Paquet.objects.filter(user=request.user, display=True)
-        context = {
-            'form':form,
-            # get packs per type
-            'ind':paquets.filter(type_cig='IND'),
-            'rol':paquets.filter(type_cig='ROL'),
-            }
+        context['form'] = form
+        # get packs per type
+        context['ind'] = paquets.filter(type_cig='IND')
+        context['rol'] = paquets.filter(type_cig='ROL')
     return render(request, 'QuitSoonApp/paquets.html', context)
 
 def delete_pack(request, id_pack):

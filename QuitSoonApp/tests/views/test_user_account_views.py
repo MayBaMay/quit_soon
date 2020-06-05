@@ -14,7 +14,7 @@ from QuitSoonApp.views import (
     profile, new_name, new_email, new_password, new_parameters,
 )
 from QuitSoonApp.models import (
-    UserProfile,
+    UserProfile, Paquet
 )
 
 class RegisterClientTestCase(TestCase):
@@ -40,7 +40,7 @@ class RegisterClientTestCase(TestCase):
         response = self.client.post(reverse('QuitSoonApp:register'),
                                     data=data,
                                     follow=True)
-        self.assertRedirects(response, '/today/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/profile/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue(User.objects.filter(username='NewUserTest').exists())
         self.assertTrue(User.objects.get(username='NewUserTest').is_authenticated)
 
@@ -162,7 +162,7 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:profile'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/profile.html')
-        self.assertEqual(response.context['userprofile'], 'undefined')
+        self.assertEqual(response.context['userprofile'], None)
 
     def test_profile_get_anonymoususer(self):
         response = self.client.get(reverse('QuitSoonApp:profile'))
@@ -279,20 +279,70 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertEqual(User.objects.get(username="Test").check_password("testpassword"), True)
         self.client.logout()
 
-    def test_new_parameters_get(self):
-        response = self.client.post(reverse('QuitSoonApp:new_parameters'))
-        self.assertEqual(response.status_code, 200)
+    def test_new_parameters_get_anonymous_user(self):
+        response = self.client.get(reverse('QuitSoonApp:new_parameters'))
+        self.assertEqual(response.status_code, 404)
 
-    def test_new_parameters_post(self):
+    def test_new_parameters_known_user(self):
+        self.client.login(username='Test', password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:new_parameters'))
+        self.assertEqual(response.status_code, 404)
+
+    def test_new_parameters_get_anonymous_user(self):
+        response = self.client.post(reverse('QuitSoonApp:new_parameters'))
+        self.assertEqual(response.status_code, 404)
+
+    def test_new_parameters_post_noprofile_nopack(self):
         self.client.login(username='Test', password='testpassword')
         self.assertFalse(UserProfile.objects.filter(user=self.user).exists())
         data = {
             'date_start': '2020-05-17',
             'starting_nb_cig': 20,
+            'type_cig':'ROL',
+            'brand':'BRANDTEST',
+            'qt_paquet':50,
+            'price':30,
             }
-        self.client.post(reverse('QuitSoonApp:new_parameters'),
-                         data=data,
-                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.client.post(reverse('QuitSoonApp:new_parameters'), data=data)
+        # test pack created with first=True
+        self.assertTrue(Paquet.objects.filter(user=self.user, first=True).exists())
+        self.assertEqual(Paquet.objects.get(user=self.user, first=True).brand, 'BRANDTEST')
+        # test userprofile created
+        self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
+        self.assertEqual(UserProfile.objects.get(user=self.user).date_start, datetime.date(2020, 5, 17))
+        self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)
+
+    def test_new_parameters_post_oldprofile_undisplayedpack(self):
+        self.client.login(username='Test', password='testpassword')
+        oldpack = Paquet.objects.create(
+            user=self.user,
+            type_cig='ROL',
+            brand='BRANDTEST',
+            qt_paquet=50,
+            price=30,
+            display=False,
+            )
+        self.assertFalse(Paquet.objects.get(user=self.user, brand='BRANDTEST').display)
+        old_profile = UserProfile.objects.create(
+            user=self.user,
+            date_start=datetime.date(2020, 5, 17),
+            starting_nb_cig=30,
+        )
+        self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
+        data = {
+            'date_start': '2020-05-17',
+            'starting_nb_cig': 20,
+            'type_cig':'ROL',
+            'brand':'BRANDTEST',
+            'qt_paquet':50,
+            'price':30,
+            }
+        self.client.post(reverse('QuitSoonApp:new_parameters'), data=data)
+        # test pack created with first=True
+        self.assertTrue(Paquet.objects.filter(user=self.user, first=True).exists())
+        self.assertEqual(Paquet.objects.get(user=self.user, first=True).brand, 'BRANDTEST')
+        self.assertEqual(Paquet.objects.get(user=self.user, first=True).display, True)
+        # test userprofile created
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
         self.assertEqual(UserProfile.objects.get(user=self.user).date_start, datetime.date(2020, 5, 17))
         self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)

@@ -52,9 +52,9 @@ class SmokeStatsTestCase(TestCase):
     def test_count_no_smoking_day(self):
         self.assertEqual(self.stat.count_no_smoking_day, 5)
 
-    def test_no_smoking_day(self):
+    def test_no_smoking_day_list_dates(self):
         self.assertEqual(
-            self.stat.no_smoking_day,
+            self.stat.no_smoking_day_list_dates,
             [datetime.date(2019, 11, 22),
              datetime.date(2019, 11, 24),
              datetime.date(2019, 11, 26),

@@ -18,6 +18,9 @@ class PackManager:
         self.user = user
         self.id = self.get_request_data('id_pack')
         if not self.id:
+            self.first = False
+            if not Paquet.objects.filter(user=self.user).exists():
+                self.first = True
             self.type_cig = self.get_request_data('type_cig')
             self.brand = self.get_request_data('brand')
             self.qt_paquet = self.get_request_data('qt_paquet')
@@ -28,6 +31,7 @@ class PackManager:
             self.price_per_cig = self.get_price_per_cig
 
     def get_request_data(self, data):
+        """get data from dict passed as argument"""
         try:
             return self.datas[data]
         except KeyError:
@@ -59,6 +63,7 @@ class PackManager:
 
     @property
     def get_pack(self):
+        """get Paquet object from attributs"""
         try:
             if self.id:
                 pack = Paquet.objects.get(id=self.id)
@@ -77,6 +82,7 @@ class PackManager:
 
     @property
     def filter_pack(self):
+        """filter Paquet object from attributs"""
         if self.id:
             pack = Paquet.objects.filter(id=self.id)
         else:
@@ -89,11 +95,18 @@ class PackManager:
                 )
         return pack
 
+    def init_first(self):
+        """method setting pack's as reference pack (col first)"""
+        # make sure all the other user packs are not set as first
+        Paquet.objects.filter(user=self.user).update(first=False)
+        self.first =  True
+
     def create_pack(self):
         """Create pack from datas"""
         if self.get_pack:
-            newpack = self.filter_pack
-            newpack.update(display=True)
+            self.filter_pack.update(display=True, first=self.first)
+            newpack = self.get_pack
+            print(newpack)
         else:
             newpack = Paquet.objects.create(
                 user=self.user,
@@ -103,16 +116,18 @@ class PackManager:
                 unit=self.unit,
                 price=self.price,
                 g_per_cig=self.g_per_cig,
-                price_per_cig=self.price_per_cig
+                price_per_cig=self.price_per_cig,
+                first=self.first,
                 )
         return newpack
 
     def delete_pack(self):
+        """delete pack"""
         if self.id:
             if self.get_pack:
                 pack_filtered = self.filter_pack
                 # check if already smoked by user
-                if ConsoCig.objects.filter(paquet=self.get_pack):
+                if ConsoCig.objects.filter(paquet=self.get_pack) or self.get_pack.first:
                     # if yes: update display to False
                     pack_filtered.update(display=False)
                 else:
@@ -120,6 +135,7 @@ class PackManager:
                     pack_filtered.delete()
 
     def update_pack_g_per_cig(self):
+        """update g_per_cig paquet info"""
         try :
             pack_filtered = self.filter_pack
             pack_filtered.update(

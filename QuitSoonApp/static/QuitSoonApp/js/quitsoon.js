@@ -160,27 +160,13 @@
       });
   });
 
+  var noprofile = $('#noprofile');
+  if (noprofile.length ) {
+    $('#modal_starting_parameters').modal('show');
+  }
+
   $('#NewParametersForm').on('submit', function(e){
-    var form = $(this);
-    var submitBtn = $(this).find('input[type=submit]');
-    $('.newparameters-error').css('display', 'none');
-    e.preventDefault();
-    $.ajax({
-      url: "/new_parameters/", // the file to call
-      type: "POST", // GET or POST
-      data: $(this).serialize(), // get the form data
-      })
-      .done(function(data) {
-        var new_parameters_response = jQuery.parseJSON(data);
-        if (new_parameters_response.response == "success"){
-          document.location.reload(true);
-          $('#modal_starting_parameters').modal('hide');
-        }
-        else {
-          $('.newparameters-error').css('display', 'block');
-          submitBtn.prop('disabled', false);
-        }
-      });
+    document.location.reload(true);
   });
 
   $('.cig-change').on('click', function(e){
@@ -248,16 +234,16 @@
     displayPaquetsFields()
   });
 
-  dsplayAlternativeFields()
+  displayAlternativeFields()
   $('#id_type_alternative_field').on('change', function(e) {
     $('.show').removeClass('show').addClass('hide');
     $('#id_duration_hour').removeClass('hide').addClass('show');
     $('#id_duration_min').removeClass('hide').addClass('show');
-    dsplayAlternativeFields()
+    displayAlternativeFields()
   });
 
   $('#id_su_field').on('change', function(e) {
-    dsplayAlternativeFields()
+    displayAlternativeFields()
   });
 
 })(jQuery); // End of use strict
@@ -267,11 +253,15 @@ var timeField = document.querySelector('.currentTime');
 var date = new Date();
 
 // Set the date & time
-dateField.value = date.getFullYear().toString() + '-' +
-  (date.getMonth() + 1).toString().padStart(2, 0) +
-  '-' + date.getDate().toString().padStart(2, 0);
-timeField.value = date.getHours().toString().padStart(2, 0) + ':' +
-  date.getMinutes().toString().padStart(2, 0);
+if (dateField) {
+  dateField.value = date.getFullYear().toString() + '-' +
+    (date.getMonth() + 1).toString().padStart(2, 0) +
+    '-' + date.getDate().toString().padStart(2, 0);
+}
+if (timeField) {
+  timeField.value = date.getHours().toString().padStart(2, 0) + ':' +
+    date.getMinutes().toString().padStart(2, 0);
+}
 
 function displayPaquetsFields(){
   if ($('#id_type_cig_field').val() == 'IND') {
@@ -292,9 +282,9 @@ function displayPaquetsFields(){
   else if ($('#id_type_cig_field').val() == 'GR') {
     $('#id_gr_pack_field').removeClass('hide').addClass('show');
   };
-}
+};
 
-function dsplayAlternativeFields(){
+function displayAlternativeFields(){
   var su = {
     'type_alternative_field':$('#id_type_alternative_field').serialize(),
     'su_field':$('#id_su_field').serialize(),
@@ -331,4 +321,4 @@ function dsplayAlternativeFields(){
     $('#id_duration_hour').removeClass('show').addClass('hide');
     $('#id_duration_min').removeClass('show').addClass('hide');
   }
-}
+};

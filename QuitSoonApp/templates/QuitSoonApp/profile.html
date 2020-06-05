@@ -22,9 +22,14 @@
       {% if userprofile %}
         <p>Début du suivi : {{ userprofile.date_start }}</p>
         <p>Nb de cigarette moyen/jr en début de suivi : {{ userprofile.starting_nb_cig }}</p>
+        {% if paquet_ref %}
+          <p>Paquet de référence : {{ paquet_ref.brand }}({{ paquet_ref.qt_paquet }}{{ paquet_ref.unit }}). Prix en début de suivi:{{ paquet_ref.price }}€ </p>
+        {% endif %}
       {% else %}
-      <p>Vous n'avez pas encore paramétré vos informations de début de suivi.</p>
-      <p>Pour bénéficier des fonctionnalités de l'application veuillez remédier à celà en cliquant <a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" >ici</a></p>
+        <div class="" id="noprofile">
+          <p>Vous n'avez pas encore paramétré vos informations de début de suivi.</p>
+          <p>Pour bénéficier des fonctionnalités de l'application, veuillez remédier à celà en cliquant <a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" >ici</a></p>
+        </div>
       {% endif %}
    </b>
   </div>
@@ -43,8 +48,6 @@
     </div>
   </div>
   {% endif %}
-
-
 
   <!--  change_username Form Modal -->
   <div id="modal_change_username" class="modal fade" tabindex="-1" role="dialog">
@@ -160,30 +163,60 @@
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
-      <h4 class="modal-title">Changer mes paramètres de suivi</h4>
+      <h4 class="modal-title">Mes paramètres de suivi</h4>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="modal-body">
-      {% if not userprofile %}
-      <p class="">Attention la modification des paramètres de suivi a pour effet de réinitialiser l'intégralité de vos données de suivi.
-      Seules le paramétrage de vos paquets et de vos alternatives seront conservées.</p>
+
+      {% if userprofile %}
+        <p class="">Attention la modification des paramètres de suivi a pour effet de réinitialiser l'intégralité de vos données de suivi.
+        Seules le paramétrage de vos paquets et de vos alternatives seront conservées.</p>
+      {% else %}
+        <p>Veuillez renseigner les paramètres suivants:</p>
       {% endif %}
+
       <form id="NewParametersForm" method="post" action="{% url 'QuitSoonApp:new_parameters' %}">
         {% csrf_token %}
         <div class="form-group">
           <label for="date_start"><b>Début du suivi : </b></label>
-          <input type="date" name="date_start" id="date_start" class="form-control" required="required" />
+          {{ parameter_form.date_start }}
          <div class="text-danger text-center -error" id="" style="display:none;">
+         </div>
         </div>
         <div class="form-group">
           <label for="starting_nb_cig"><b>Nb cigarettes moyen/jour en début de suivi : </b></label>
-          <input type="number" name="starting_nb_cig" id="starting_nb_cig" class="form-control"
-           value="" required="required" />
+          {{ parameter_form.starting_nb_cig }}
          <div class="text-danger text-center -error" id="" style="display:none;">
+         </div>
         </div>
+
+
+        {% if user_packs %}
+          <div class="form-group">
+            <label for="starting_nb_cig"><b>Paquet de réference le plus couramment utilisé au début du suivi : </b></label>
+            {{ parameter_form.ref_pack }}
+             <div class="text-danger text-center -error" id="" style="display:none;">
+             </div>
+          </div>
+        {% endif %}
         <p class="text-danger text-center newparameters-error" style="display:none;">Une erreur est survenue</p>
-        <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+
+        {% if not user_packs %}
+          <p><b>Paquet de cigarette de référence:</b></p>
+          <p>Renseignez les informations demandées concernant le paquet de cigarette que vous consommez le plus régulièrement</p>
+          {% csrf_token %}
+          {{ paquet_form.non_field_errors }}
+          {% for field in paquet_form %}
+            <div class="fieldWrapper form-group ">
+              {{ field.label }}:
+              {{ field }}
+              {{ field.error }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
       </form>
+
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
