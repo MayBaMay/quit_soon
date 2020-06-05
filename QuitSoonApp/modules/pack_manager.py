@@ -106,7 +106,6 @@ class PackManager:
         if self.get_pack:
             self.filter_pack.update(display=True, first=self.first)
             newpack = self.get_pack
-            print(newpack)
         else:
             newpack = Paquet.objects.create(
                 user=self.user,

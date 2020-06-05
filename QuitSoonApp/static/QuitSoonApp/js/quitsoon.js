@@ -169,6 +169,11 @@
     document.location.reload(true);
   });
 
+  $('#create_pack_choice').on('click', function(e){
+    console.log('click');
+    $('.newpackform').removeClass('hide').removeClass('show');
+  });
+
   $('.cig-change').on('click', function(e){
     if ($(this).attr('id') == 'submit'){
       $(this).siblings(".form-cig-change").find('input[type=number]').attr('type', 'hidden');

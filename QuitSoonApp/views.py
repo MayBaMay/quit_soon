@@ -87,8 +87,8 @@ def profile(request):
             paquet_ref = Paquet.objects.get(user=request.user, first=True)
         except ObjectDoesNotExist:
             paquet_ref = None
+            # if nor ref_pack, profile is incomplete
             userprofile = None
-            print('packs', Paquet.objects.filter(user=request.user))
         # !!!!!!!!! to do!!!!!!!!!except pb more then one first? should not happened but in case
         if userprofile:
             context['userprofile'] = userprofile
@@ -233,8 +233,6 @@ def change_g_per_cig(request):
         if form.is_valid():
             change_pack = PackManager(request.user, form.cleaned_data)
             change_pack.update_pack_g_per_cig()
-        else:
-            print(form.errors.as_data())
     return redirect('QuitSoonApp:paquets')
 
 

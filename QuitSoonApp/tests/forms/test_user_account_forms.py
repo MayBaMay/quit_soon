@@ -94,7 +94,6 @@ class test_ParametersForm(TestCase):
         """test get form with choices field"""
         form = ParametersForm(self.user)
         self.assertEqual(len(form.fields['ref_pack'].choices), 2)
-        print(form.fields['ref_pack'].choices)
         self.assertTrue((self.pack.id, 'CAMEL /20U') in form.fields['ref_pack'].choices)
         self.assertTrue((self.pack2.id, '1637 /30G') in form.fields['ref_pack'].choices)
 

@@ -61,7 +61,7 @@ class SmokeStatsTestCase(TestCase):
              datetime.date(2019, 11, 27),
              datetime.date(2019, 11, 28)]
              )
-        print(self.stat.total_money_smoked)
-        print(self.stat.total_money_with_starting_nb_cig)
-        print(self.stat.money_saved)
+        # (self.stat.total_money_smoked)
+        # (self.stat.total_money_with_starting_nb_cig)
+        # (self.stat.money_saved)
         # self.assertEqual(stat.average_per_day, 200)

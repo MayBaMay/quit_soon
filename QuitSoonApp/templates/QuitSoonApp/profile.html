@@ -180,26 +180,30 @@
         <div class="form-group">
           <label for="date_start"><b>Début du suivi : </b></label>
           {{ parameter_form.date_start }}
-         <div class="text-danger text-center -error" id="" style="display:none;">
-         </div>
         </div>
         <div class="form-group">
           <label for="starting_nb_cig"><b>Nb cigarettes moyen/jour en début de suivi : </b></label>
           {{ parameter_form.starting_nb_cig }}
-         <div class="text-danger text-center -error" id="" style="display:none;">
-         </div>
         </div>
-
 
         {% if user_packs %}
           <div class="form-group">
             <label for="starting_nb_cig"><b>Paquet de réference le plus couramment utilisé au début du suivi : </b></label>
             {{ parameter_form.ref_pack }}
-             <div class="text-danger text-center -error" id="" style="display:none;">
-             </div>
+          </div>
+          <p id="create_pack_choice">Choisir un autre paquet</p>
+          <div class="newpackform hide">
+            {% csrf_token %}
+            {{ paquet_form.non_field_errors }}
+            {% for field in paquet_form %}
+              <div class="fieldWrapper form-group ">
+                {{ field.label }}:
+                {{ field }}
+                {{ field.error }}
+              </div>
+            {% endfor %}
           </div>
         {% endif %}
-        <p class="text-danger text-center newparameters-error" style="display:none;">Une erreur est survenue</p>
 
         {% if not user_packs %}
           <p><b>Paquet de cigarette de référence:</b></p>

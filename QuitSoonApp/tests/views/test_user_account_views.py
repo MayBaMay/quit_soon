@@ -180,7 +180,7 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:profile'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/profile.html')
-        self.assertEqual(response.context['userprofile'], userprofile)
+        self.assertEqual(response.context['userprofile'], None)
 
     def test_new_name(self):
         """test change nameview"""

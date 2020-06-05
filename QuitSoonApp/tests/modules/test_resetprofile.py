@@ -19,11 +19,6 @@ class ResetProfileTestCase(TestCase):
         """setup tests"""
         self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
-        UserProfile.objects.create(
-            user=self.usertest,
-            date_start='2012-12-12',
-            starting_nb_cig=3
-        )
         self.paquet = Paquet.objects.create(
             user=self.usertest,
             brand='CAMEL',
@@ -38,7 +33,12 @@ class ResetProfileTestCase(TestCase):
             brand='1637',
             price=11.5,
             g_per_cig=0.8,
-            display=False
+            )
+        self.oldpaquet = Paquet.objects.create(
+            user=self.usertest,
+            brand='CLOPE',
+            price=9.7,
+            display=False,
             )
         self.consocig = ConsoCig.objects.create(
             user=self.usertest,
@@ -62,6 +62,7 @@ class ResetProfileTestCase(TestCase):
             type_alternative='Su',
             substitut='PAST',
             nicotine=2,
+            display=False,
         )
         self.consoalter = ConsoAlternative.objects.create(
             user=self.usertest,
@@ -88,20 +89,42 @@ class ResetProfileTestCase(TestCase):
             nb_jour=3,
         )
 
-    def test_reset_profile(self):
+    def test_clean_old_datas(self):
+        UserProfile.objects.create(
+            user=self.usertest,
+            date_start='2012-12-12',
+            starting_nb_cig=3
+        )
         self.assertTrue(UserProfile.objects.filter(user=self.usertest).exists())
-        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':str(self.paquet2.id)})
+        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
         self.assertFalse(UserProfile.objects.filter(user=self.usertest).exists())
         self.assertTrue(Paquet.objects.filter(user=self.usertest).exists())
+        self.assertFalse(Paquet.objects.filter(user=self.usertest, first=True).exists())
+        self.assertFalse(Paquet.objects.filter(user=self.usertest, display=False).exists())
         self.assertTrue(Alternative.objects.filter(user=self.usertest).exists())
+        self.assertFalse(Alternative.objects.filter(user=self.usertest, display=False).exists())
         self.assertFalse(ConsoCig.objects.filter(user=self.usertest).exists())
         self.assertFalse(ConsoAlternative.objects.filter(user=self.usertest).exists())
         self.assertFalse(Objectif.objects.filter(user=self.usertest).exists())
         self.assertFalse(Trophee.objects.filter(user=self.usertest).exists())
-        self.assertFalse(Paquet.objects.filter(user=self.usertest, first=True).exists())
+
 
     def test_new_profile(self):
-        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':str(self.paquet2.id)})
+        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
+        userprofile.new_profile()
+        self.assertTrue(UserProfile.objects.filter(user=self.usertest).exists())
+        self.assertEqual(UserProfile.objects.get(user=self.usertest).date_start, datetime.date(2020, 5, 15))
+        self.assertEqual(UserProfile.objects.get(user=self.usertest).starting_nb_cig, 20)
+        self.assertTrue(Paquet.objects.get(user=self.usertest, first=True).id, self.paquet2.id)
+        self.assertTrue(Paquet.objects.filter(user=self.usertest, first=True).count(), 1)
+
+    def test_reset_profile(self):
+        UserProfile.objects.create(
+            user=self.usertest,
+            date_start='2012-12-12',
+            starting_nb_cig=3
+        )
+        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
         userprofile.new_profile()
         self.assertTrue(UserProfile.objects.filter(user=self.usertest).exists())
         self.assertEqual(UserProfile.objects.get(user=self.usertest).date_start, datetime.date(2020, 5, 15))

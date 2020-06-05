@@ -37,12 +37,12 @@ class ResetProfile:
         ConsoAlternative.objects.filter(user=self.user).delete()
         Objectif.objects.filter(user=self.user).delete()
         Trophee.objects.filter(user=self.user).delete()
+        # CLEAN COLUMN FIRST, ALL FALSE
+        Paquet.objects.filter(user=self.user, first=True).update(first=False)
         # CLEAN UNDISPLAYED PACKS & ALTERNATIVES
         Paquet.objects.filter(user=self.user, display=False).delete()
         Alternative.objects.filter(user=self.user, display=False).delete()
-        # CLEAN COLUMN FIRST, ALL FALSE
-        Paquet.objects.filter(user=self.user, first=True).update(first=False)
-
+        
     def new_profile(self):
         """
         Create a new profile for user (old profile deleted in __init__)
