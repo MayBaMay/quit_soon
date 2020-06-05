@@ -46,6 +46,8 @@
     e.preventDefault();
   });
 
+  ///////////////////show password//////////////////////
+
   $('.pass-status').on('click', function(e){
     var passwordInput = $('.password-field');
     var passStatus = $('.pass-status');
@@ -65,6 +67,8 @@
     passwordInput.prop('type','password');
     return true;
   });
+
+  ///////////////////profile page//////////////////////
 
   $('#NewNameForm').on('submit', function(e){
     var form = $(this);
@@ -166,13 +170,28 @@
   }
 
   $('#NewParametersForm').on('submit', function(e){
+    // keep only value from form chosen
+    if ($('#choose_existing_pack').hasClass('active')) {
+      $('#id_type_cig').val('');
+      $('#id_brand').val('');
+      $('#id_qt_paquet').val('');
+      $('#id_price').val('');
+    }
+    else if ($('#create_pack_choice').hasClass('active')){
+      $('#id_ref_pack').val('');
+    };
     document.location.reload(true);
   });
 
-  $('#create_pack_choice').on('click', function(e){
-    console.log('click');
-    $('.newpackform').removeClass('hide').removeClass('show');
+  newparameterspackform()
+
+  $('.nav li').on('click', function() {
+    $('.nav li').removeClass('active');
+    $(this).addClass('active');
+    newparameterspackform()
   });
+
+  /////////////////paquet page////////////////////
 
   $('.cig-change').on('click', function(e){
     if ($(this).attr('id') == 'submit'){
@@ -192,6 +211,8 @@
       // $(this).removeClass('cig-change').addclass('id','cig-change')
     }
   });
+
+  /////////////////alternative page////////////////////
 
   $('#id_substitut').prop('required',false);
   $('#id_nicotine').prop('required',false);
@@ -222,6 +243,8 @@
    }
   });
 
+  /////////////////smoke page////////////////////
+
   displayPaquetsFields();
 
   $('#id_given_field').change(function() {
@@ -238,6 +261,8 @@
     $('.show').removeClass('show').addClass('hide');
     displayPaquetsFields()
   });
+
+  /////////////////healthy activity page////////////////////
 
   displayAlternativeFields()
   $('#id_type_alternative_field').on('change', function(e) {
@@ -327,3 +352,26 @@ function displayAlternativeFields(){
     $('#id_duration_min').removeClass('show').addClass('hide');
   }
 };
+
+function newparameterspackform(){
+  if ($('#choose_existing_pack').hasClass('active')) {
+    console.log('choose_existing_pack');
+    $('#existing_packs').removeClass('hide').addClass('show');
+    $('.newpackform').removeClass('show').addClass('hide');
+    $('#id_ref_pack').prop('required',true);
+    $('#id_type_cig').prop('required',false);
+    $('#id_brand').prop('required',false);
+    $('#id_qt_paquet').prop('required',false);
+    $('#id_price').prop('required',false);
+  };
+  if ($('#create_pack_choice').hasClass('active')){
+    console.log('create_pack_choice');
+    $('.newpackform').removeClass('hide').addClass('show');
+    $('#existing_packs').removeClass('show').addClass('hide');
+    $('#id_ref_pack').prop('required',false);
+    $('#id_type_cig').prop('required',true);
+    $('#id_brand').prop('required',true);
+    $('#id_qt_paquet').prop('required',true);
+    $('#id_price').prop('required',true);
+  };
+}
