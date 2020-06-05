@@ -1,0 +1,13 @@
+{
+  "name": "quit_soon",
+  "version": "1.0.0",
+  "description": "Projet #13 Openclassrooms Python",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently  './manage.py runserver'  'cd QuitSoonApp/static/QuitSoonApp && npm run start' "
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0"
+  }
+}
