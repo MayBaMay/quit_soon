@@ -106,8 +106,18 @@ def new_parameters(request):
         data = dict(request.POST)
         for field in data:
             data[field]=data[field][0]
-        # first connection or user deleted(undisplayed) all its packs
-        if not Paquet.objects.filter(user=request.user, display=True, first=True):
+        # check wich form (existing packs or new pack)
+        try:
+            if data['id_ref_pack'] == None:
+                existing_pack = False
+            elif data['id_ref_pack'] == '':
+                existing_pack = False
+            else:
+                existing_pack = True
+        except:
+            existing_pack = False
+        # if new pack createpack with PaquetFormCreation
+        if not existing_pack:
             paquet_form = PaquetFormCreation(request.user, data)
             if paquet_form.is_valid():
                 new_pack = PackManager(request.user, paquet_form.cleaned_data)
