@@ -14,7 +14,7 @@ const sass = require("gulp-sass");
 const uglify = require("gulp-uglify");
 
 // Load package.json for banner
-const pkg = require("./QuitSoonApp/static/QuitSoonApp/package.json");
+const pkg = require("./package.json");
 
 // Set the banner content
 const banner = [
@@ -106,7 +106,7 @@ function css() {
     .pipe(
       sass({
         outputStyle: "expanded",
-        includePaths: "./QuitSoonApp/static/QuitSoonApp/node_modules",
+        includePaths: "./node_modules",
       })
     )
     .on("error", sass.logError)
