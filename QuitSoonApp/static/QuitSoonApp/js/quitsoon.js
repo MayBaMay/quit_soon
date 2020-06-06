@@ -193,6 +193,12 @@
 
   /////////////////paquet page////////////////////
 
+  // properties could have been change in profile page while saving ref_pack
+  $('.fa-smoking').on('click', function() {
+    $('#id_type_cig').prop('required',true).removeClass('hide').addClass('show');
+  });
+
+  // modify g/cig form
   $('.cig-change').on('click', function(e){
     if ($(this).attr('id') == 'submit'){
       $(this).siblings(".form-cig-change").find('input[type=number]').attr('type', 'hidden');
@@ -295,7 +301,7 @@ if (timeField) {
 
 function displayPaquetsFields(){
   if ($('#id_type_cig_field').val() == 'IND') {
-    $('#id_indus_pack_field').removeClass('hide').addClass('show');
+    $('#id_ind_pack_field').removeClass('hide').addClass('show');
   }
   else if ($('#id_type_cig_field').val() == 'ROL') {
     $('#id_rol_pack_field').removeClass('hide').addClass('show');
