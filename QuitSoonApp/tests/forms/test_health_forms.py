@@ -230,3 +230,64 @@ class Test_HealthForm_ECIG(TestCase):
         form = HealthForm(self.usertest, data)
         self.assertFalse(form.is_valid())
         self.assertTrue("Vous avez sélectionné la cigarette électronique" in form.errors['__all__'][0])
+
+    def test_more_than_one_ecig_V_per_day(self):
+        conso = ConsoAlternative.objects.create(
+            user=self.usertest,
+            date_alter=datetime.date(2020, 5, 13),
+            time_alter=datetime.time(13, 55),
+            alternative=self.db_alternative_substitut_ecig,
+            ecig_choice='V',
+        )
+        data = {
+            'date_health':datetime.date(2020, 5, 13),
+            'time_health':datetime.time(14, 56),
+            'type_alternative_field':'Su',
+            'su_field':self.db_alternative_substitut_ecig.id,
+            'ecig_vape_or_start':['V']
+        }
+
+        form = HealthForm(self.usertest, data)
+        self.assertFalse(form.is_valid())
+        self.assertTrue("Vous avez déjà renseigné aujourd'hui avoir vapoté." in form.errors['__all__'][0])
+
+    def test_more_than_one_ecig_per_day(self):
+        conso = ConsoAlternative.objects.create(
+            user=self.usertest,
+            date_alter=datetime.date(2020, 5, 13),
+            time_alter=datetime.time(13, 55),
+            alternative=self.db_alternative_substitut_ecig,
+            ecig_choice='VS',
+        )
+        data = {
+            'date_health':datetime.date(2020, 5, 13),
+            'time_health':datetime.time(14, 56),
+            'type_alternative_field':'Su',
+            'su_field':self.db_alternative_substitut_ecig.id,
+            'ecig_vape_or_start':['V']
+        }
+
+        form = HealthForm(self.usertest, data)
+        self.assertFalse(form.is_valid())
+        self.assertTrue("Vous avez déjà renseigné aujourd'hui avoir vapoté." in form.errors['__all__'][0])
+
+    def test_more_than_one_ecig_VS_per_day(self):
+        conso = ConsoAlternative.objects.create(
+            user=self.usertest,
+            date_alter=datetime.date(2020, 5, 13),
+            time_alter=datetime.time(13, 55),
+            alternative=self.db_alternative_substitut_ecig,
+            ecig_choice='V',
+        )
+        data = {
+            'date_health':datetime.date(2020, 5, 13),
+            'time_health':datetime.time(14, 56),
+            'type_alternative_field':'Su',
+            'su_field':self.db_alternative_substitut_ecig.id,
+            'ecig_vape_or_start':['V', 'S']
+        }
+
+        form = HealthForm(self.usertest, data)
+        self.assertTrue(form.is_valid())
+        print(form.cleaned_data)
+        self.assertEqual(form.cleaned_data.get('ecig_vape_or_start'), ['S'])

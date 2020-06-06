@@ -2,6 +2,7 @@
 
 import unicodedata
 import datetime
+from datetime import date
 
 from django import forms
 from django.contrib.auth import authenticate
@@ -404,7 +405,7 @@ class HealthForm(forms.Form):
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""
         cleaned_data = super().clean()
-        date_alter = cleaned_data.get('date_alter')
+        date_alter = cleaned_data.get('date_health')
         duration_hour = cleaned_data.get('duration_hour')
         duration_min = cleaned_data.get('duration_min')
         type_alternative = cleaned_data.get('type_alternative_field')
@@ -428,5 +429,16 @@ class HealthForm(forms.Form):
                                 indiquez si vous avez vapoté aujourd'hui et/ou si vous avez démarré un nouveau flacon.
                                 Ceci nous permettra de calculer le dosage quotidien moyen de votre consommation de nicotine
                                 """)
+                    filterV = ConsoAlternative.objects.filter(user=self.user, ecig_choice='V', date_alter=date_alter).exists()
+                    filterVS = ConsoAlternative.objects.filter(user=self.user, ecig_choice='VS', date_alter=date_alter).exists()
+                    if filterV or filterVS:
+                        if ecig_data == ['V']:
+                            raise forms.ValidationError("""
+                                Vous avez déjà renseigné aujourd'hui avoir vapoté.
+                                Nous prenons en compte le nombre de jours vapoté et non chaque vapotage.
+                                L'information a donc déjà été renseignée.
+                                """)
+                        if ecig_data == ['V', 'S']:
+                            self.cleaned_data['ecig_vape_or_start'] = ['S']
         except ValueError:
             pass
