@@ -150,6 +150,8 @@ INTERNAL_IPS = ['127.0.0.1']
 
 LOGOUT_REDIRECT_URL = '/'
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
