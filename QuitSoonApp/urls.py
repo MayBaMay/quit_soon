@@ -2,6 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 
 from . import views # import views so we can use them in urls.
+from QuitSoonApp.dash_apps.smoke_apps import simpleexample
 
 app_name = 'QuitSoonApp'
 
