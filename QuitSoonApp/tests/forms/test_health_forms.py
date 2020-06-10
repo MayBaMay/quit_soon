@@ -11,7 +11,7 @@ from QuitSoonApp.forms import HealthForm
 from QuitSoonApp.models import Alternative, ConsoAlternative
 
 
-class Test_HealthForm(TestCase):
+class HealthFormTestCase(TestCase):
 
     def setUp(self):
         """setup tests"""
@@ -99,7 +99,7 @@ class Test_HealthForm(TestCase):
             alternative=self.db_alternative_activity_so2,
         )
 
-class test_HealthForm_field_config(Test_HealthForm):
+class HealthFormTestCase_field_config(HealthFormTestCase):
 
     def test_last_alternative(self):
         form = HealthForm(self.usertest)
@@ -152,7 +152,7 @@ class test_HealthForm_field_config(Test_HealthForm):
         self.assertEqual(form.initial['so_field'][0], self.db_alternative_activity_so2.id)
         self.assertEqual(form.initial['su_field'][0], self.db_alternative_substitut_past.id)
 
-class Test_HealthForm_validation_data(Test_HealthForm):
+class HealthFormTestCase_validation_data(HealthFormTestCase):
 
     def test_valid_data(self):
         data = {
@@ -198,7 +198,7 @@ class Test_HealthForm_validation_data(Test_HealthForm):
             '__all__':["Vous n'avez pas renseigné de durée pour cette activité"],
             })
 
-class Test_HealthForm_ECIG(TestCase):
+class HealthFormTestCase_ECIG(TestCase):
 
     def setUp(self):
         """setup tests"""
@@ -289,5 +289,4 @@ class Test_HealthForm_ECIG(TestCase):
 
         form = HealthForm(self.usertest, data)
         self.assertTrue(form.is_valid())
-        print(form.cleaned_data)
         self.assertEqual(form.cleaned_data.get('ecig_vape_or_start'), ['S'])

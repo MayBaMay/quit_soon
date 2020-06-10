@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
-from QuitSoonApp.dash_apps.smoke_apps import SmokeStats
+from QuitSoonApp.dash_apps.smoke_stats import SmokeStats
 
 from ..MOCK_DATA import (
     Create_test_packs, row_paquet_data,
@@ -61,7 +61,7 @@ class SmokeStatsTestCase(TestCase):
              datetime.date(2019, 11, 27),
              datetime.date(2019, 11, 28)]
              )
-        # (self.stat.total_money_smoked)
-        # (self.stat.total_money_with_starting_nb_cig)
-        # (self.stat.money_saved)
+        print(self.stat.total_money_smoked)
+        print(self.stat.total_money_with_starting_nb_cig)
+        print(self.stat.money_saved)
         # self.assertEqual(stat.average_per_day, 200)

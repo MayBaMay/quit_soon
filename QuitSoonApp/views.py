@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
-from datetime import date
+from datetime import time as t
+from datetime import datetime as dt
+from datetime import date as dtdate
 from decimal import Decimal
+import json
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -27,7 +30,15 @@ from .forms import (
     SmokeForm,
     HealthForm,
     )
-from .modules import ResetProfile, PackManager, SmokeManager, AlternativeManager, HealthManager
+from .modules import (
+    ResetProfile,
+    PackManager,
+    SmokeManager,
+    AlternativeManager,
+    HealthManager
+    )
+from .dash_apps import SmokeStats
+
 
 def index(request):
     """index View"""
@@ -401,6 +412,15 @@ def delete_health(request, id_health):
 
 def suivi(request):
     """Page with user results, graphs..."""
+    smoke = SmokeStats(request.user, dtdate.today())
+    user_dict = {'date': [], 'nb_cig': [], 'activity_duration': [], 'nicotine': []}
+    for date in smoke.list_dates:
+        user_dict['date'].append(str(date))
+        user_dict['nb_cig'].append(smoke.nb_per_day(date))
+        user_dict['activity_duration'].append(0)
+        user_dict['nicotine'].append(0)
+    with open('user_dict.txt', 'w') as outfile:
+        json.dump(user_dict, outfile)
     return render(request, 'QuitSoonApp/suivi.html')
 
 def objectifs(request):

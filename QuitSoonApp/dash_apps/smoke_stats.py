@@ -8,15 +8,18 @@ from django.db.utils import IntegrityError
 
 from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
 
-
-class SmokeStats:
-    """Generate stats reports on user smoke habits"""
-
+class Stats:
     def __init__(self, user, lastday):
         self.user = user
         self.lastday = lastday
         self.date_start = UserProfile.objects.get(user=self.user).date_start
         self.nb_jour_since_start = (self.lastday - self.date_start).days + 1
+
+class SmokeStats(Stats):
+    """Generate stats reports on user smoke habits"""
+
+    def __init__(self, user, lastday):
+        Stats.__init__(self, user, lastday)
         self.user_conso = ConsoCig.objects.filter(user=self.user)
 
     def nb_per_day(self, date):
@@ -40,6 +43,17 @@ class SmokeStats:
     @property
     def count_no_smoking_day(self):
         return self.nb_jour_since_start - self.count_smoking_day
+
+    @property
+    def list_dates(self):
+        list_dates = []
+        start = datetime.combine(self.date_start, datetime.min.time())
+        lastday = datetime.combine(self.lastday, datetime.min.time())
+        delta =  lastday - start
+        for i in range(delta.days + 1):
+            day = start + timedelta(days=i)
+            list_dates.append(day.date())
+        return list_dates
 
     @property
     def no_smoking_day_list_dates(self):
