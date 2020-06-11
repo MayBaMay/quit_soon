@@ -12,6 +12,7 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output
 
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from . import DataFrameDate
 
@@ -41,9 +42,10 @@ app.layout = html.Div([
         options=[{'label': 'Voir mes activités saines', 'value': 'A'},],
         # value=['MTL', 'SF'],
         ),
-    dcc.Graph(id='graph', 
+    dcc.Graph(id='graph',
               animate=False,
-              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'}),
+              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
+              ),
     html.Div(id='updatemode-output-container', style={'margin-top':20})
 ])
 
@@ -60,20 +62,47 @@ def display_value(radio, checkbox):
     elif radio == 'M':
         df = df.month_df
 
-    graph = go.Bar(
-        x=df.index,
-        y=df.nb_cig,
-        name='Manipulate Graph',
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    # Add traces
+    fig.add_trace(
+        go.Bar(x=df.index, y=df.nb_cig, name="Conso cigarette"),
+        secondary_y=False,
     )
-    layout = go.Layout(
+
+    if checkbox :
+        fig.add_trace(
+            go.Scatter(x=df.index, y=df.activity_duration, name="Activités saines", mode='lines'),
+            secondary_y=True,
+        )
+
+    fig.update_layout(
+        title_text="Consommation de cigarettes",
         paper_bgcolor='#27293d',
         plot_bgcolor='rgba(0,0,0,0)',
-        xaxis=dict(range=[min(df.index), max(df.index)]),
-        yaxis=dict(range=[min(df.nb_cig), max(df.nb_cig)], dtick = 1),
         font=dict(color='white'),
-
     )
-    return {'data': [graph], 'layout': layout}, {'data': [graph], 'layout': layout}
+    # Set x-axis title
+    fig.update_xaxes(title_text="Dates")
+
+    # Set y-axes titles
+    fig.update_yaxes(title_text="Cigarettes",
+                     range=[0, max(df.nb_cig)],
+                     secondary_y=False,
+                     dtick=1,
+                     showgrid=False,
+                     zeroline=False,
+                     showline=False,)
+    fig.update_yaxes(title_text="Activités (en minutes)",
+                     range=[0, max(df.activity_duration)],
+                     secondary_y=True,
+                     dtick=15,
+                     showgrid=False,
+                     zeroline=False,
+                     showline=False,)
+
+
+    return fig, fig
 
 if __name__ == '__main__':
     app.run_server(debug=True)
