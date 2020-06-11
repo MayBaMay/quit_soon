@@ -67,6 +67,14 @@ class SmokeStats(Stats):
                 no_smoking_day_list_dates.append(day.date())
         return no_smoking_day_list_dates
 
+    def money_smoked_per_day(self, date):
+        conso_day = self.user_conso.filter(date_cig=date)
+        money_smoked = 0
+        for conso in conso_day:
+            if conso.paquet:
+                money_smoked += conso.paquet.price_per_cig
+        return money_smoked
+
     @property
     def total_money_smoked(self):
         money_smoked = 0

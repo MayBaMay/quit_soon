@@ -412,12 +412,14 @@ def suivi(request):
     """Page with user results, graphs..."""
     smoke = SmokeStats(request.user, dtdate.today())
     healthy = HealthyStats(request.user, dtdate.today())
-    user_dict = {'date': [], 'nb_cig': [], 'activity_duration': [], 'nicotine': []}
+    user_dict = {'date': [], 'nb_cig': [], 'money_smoked': [], 'activity_duration': [], 'nicotine': []}
     for date in smoke.list_dates:
         user_dict['date'].append(str(date))
         user_dict['nb_cig'].append(smoke.nb_per_day(date))
+        user_dict['money_smoked'].append(str(smoke.money_smoked_per_day(date)))
         user_dict['activity_duration'].append(healthy.min_per_day(date))
         user_dict['nicotine'].append(0)
+    print(user_dict)
     with open('user_dict.txt', 'w') as outfile:
         json.dump(user_dict, outfile)
     print(user_dict)

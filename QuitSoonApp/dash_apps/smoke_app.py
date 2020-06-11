@@ -23,6 +23,10 @@ with open('user_dict.txt') as json_file:
     for p in user_dict['date']:
         user_dict['date'][i] = dt.strptime(p, '%Y-%m-%d')
         i += 1
+    i=0
+    for p in user_dict['money_smoked']:
+        user_dict['money_smoked'][i] = float(user_dict['money_smoked'][i])
+        i += 1
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -46,29 +50,21 @@ app.layout = html.Div([
               animate=False,
               style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
               ),
+    dcc.Graph(id='graph2',
+              animate=False,
+              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
+              ),
     html.Div(id='updatemode-output-container', style={'margin-top':20})
 ])
 
-@app.callback(
-    [Output('graph', 'figure'), Output('updatemode-output-container', 'children')],
-    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
-)
-def display_value(radio, checkbox):
-    df = DataFrameDate(user_dict)
-    if radio == 'D':
-        df = df.day_df
-    elif radio == 'W':
-        df = df.week_df
-    elif radio == 'M':
-        df = df.month_df
-
+def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
     # Add traces
     fig.add_trace(
-        go.Bar(x=df.index, y=df.nb_cig, name="Conso cigarette"),
+        go.Bar(x=df.index, y=y_data, name=bar_name),
         secondary_y=False,
-    )
+        )
 
     if checkbox :
         fig.add_trace(
@@ -77,17 +73,17 @@ def display_value(radio, checkbox):
         )
 
     fig.update_layout(
-        title_text="Consommation de cigarettes",
+        title_text=fig_name,
         paper_bgcolor='#27293d',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='white'),
-    )
+        )
     # Set x-axis title
     fig.update_xaxes(title_text="Dates")
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="Cigarettes",
-                     range=[0, max(df.nb_cig)],
+    fig.update_yaxes(title_text=y_name,
+                     range=[0, max(y_data)],
                      secondary_y=False,
                      dtick=1,
                      showgrid=False,
@@ -100,9 +96,25 @@ def display_value(radio, checkbox):
                      showgrid=False,
                      zeroline=False,
                      showline=False,)
+    return fig
 
+@app.callback(
+    [Output('graph', 'figure'), Output('graph2', 'figure'), Output('updatemode-output-container', 'children')],
+    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
+)
+def display_value(radio, checkbox):
+    df = DataFrameDate(user_dict)
+    if radio == 'D':
+        df = df.day_df
+    elif radio == 'W':
+        df = df.week_df
+    elif radio == 'M':
+        df = df.month_df
 
-    return fig, fig
+    fig1 = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettese", df.nb_cig)
+    fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Cigarettes", df.money_smoked)
+
+    return fig1, fig2, fig1
 
 if __name__ == '__main__':
     app.run_server(debug=True)

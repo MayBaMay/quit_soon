@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 from datetime import timedelta
+import json
 
 import pandas as pd
 
@@ -11,7 +12,7 @@ class DataFrameDate:
 
     def init_frame(self):
         # create row DataFrame with data
-        return pd.DataFrame(self.data_dict, columns=['date', 'nb_cig', 'activity_duration']).set_index('date')
+        return pd.DataFrame(self.data_dict, columns=['date', 'nb_cig', 'money_smoked', 'activity_duration']).set_index('date')
 
     @property
     def day_df(self):
@@ -56,7 +57,18 @@ class DataFrameDate:
 
 
 if __name__ == '__main__':
-    df = DataFrameDate(made_dict)
+    with open('user_dict.txt') as json_file:
+        user_dict = json.load(json_file)
+        i=0
+        for p in user_dict['date']:
+            user_dict['date'][i] = dt.strptime(p, '%Y-%m-%d')
+            i += 1
+        i=0
+        for p in user_dict['money_smoked']:
+            user_dict['money_smoked'][i] = float(user_dict['money_smoked'][i])
+            i += 1
+    df = DataFrameDate(user_dict)
+    print(df.init_frame().money_smoked)
     print('day', df.day_df)
     print('week', df.week_df)
     print('month', df.month_df)
