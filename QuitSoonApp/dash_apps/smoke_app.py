@@ -13,7 +13,7 @@ from dash.dependencies import Input, Output
 
 import plotly.graph_objects as go
 
-from . import SmokeStats, DataFrameDate
+from . import DataFrameDate
 
 
 with open('user_dict.txt') as json_file:
@@ -33,7 +33,6 @@ app.layout = html.Div([
                     {'label': 'Jour', 'value':'D'},
                     {'label': 'Semaine', 'value':'W'},
                     {'label': 'Mois', 'value':'M'},
-                    {'label': 'Année', 'value':'Y'},
                  ],
                  value='D',
                  labelStyle={'display': 'inline-block'}
@@ -54,8 +53,6 @@ def display_value(value):
         df = df.week_df
     elif value == 'M':
         df = df.month_df
-    elif value == 'Y':
-        df = df.year_df
 
     graph = go.Bar(
         x=df.index,

@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
-from QuitSoonApp.dash_apps.smoke_stats import SmokeStats
+from QuitSoonApp.modules import SmokeStats
 
 from ..MOCK_DATA import (
     Create_test_packs, row_paquet_data,

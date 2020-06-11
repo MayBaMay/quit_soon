@@ -35,9 +35,9 @@ from .modules import (
     PackManager,
     SmokeManager,
     AlternativeManager,
-    HealthManager
+    HealthManager,
+    SmokeStats
     )
-from .dash_apps import SmokeStats
 
 
 def index(request):
