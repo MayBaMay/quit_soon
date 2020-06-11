@@ -37,21 +37,27 @@ app.layout = html.Div([
                  value='D',
                  labelStyle={'display': 'inline-block'}
                  ),
-    dcc.Graph(id='graph', animate=False, style={"backgroundColor": "#1a2d46", 'color': '#ffffff'}),
+    dcc.Checklist(id='my-checkbox',
+        options=[{'label': 'Voir mes activités saines', 'value': 'A'},],
+        # value=['MTL', 'SF'],
+        ),
+    dcc.Graph(id='graph', 
+              animate=False,
+              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'}),
     html.Div(id='updatemode-output-container', style={'margin-top':20})
 ])
 
 @app.callback(
     [Output('graph', 'figure'), Output('updatemode-output-container', 'children')],
-    [Input('my-radio', 'value')]
+    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
 )
-def display_value(value):
+def display_value(radio, checkbox):
     df = DataFrameDate(user_dict)
-    if value == 'D':
+    if radio == 'D':
         df = df.day_df
-    elif value == 'W':
+    elif radio == 'W':
         df = df.week_df
-    elif value == 'M':
+    elif radio == 'M':
         df = df.month_df
 
     graph = go.Bar(
@@ -63,7 +69,7 @@ def display_value(value):
         paper_bgcolor='#27293d',
         plot_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(range=[min(df.index), max(df.index)]),
-        yaxis=dict(range=[min(df.nb_cig), max(df.nb_cig)]),
+        yaxis=dict(range=[min(df.nb_cig), max(df.nb_cig)], dtick = 1),
         font=dict(color='white'),
 
     )

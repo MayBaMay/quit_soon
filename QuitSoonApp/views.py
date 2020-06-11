@@ -32,11 +32,9 @@ from .forms import (
     )
 from .modules import (
     ResetProfile,
-    PackManager,
-    SmokeManager,
-    AlternativeManager,
-    HealthManager,
-    SmokeStats
+    PackManager, SmokeManager,
+    AlternativeManager, HealthManager,
+    SmokeStats, HealthyStats
     )
 
 
@@ -271,7 +269,7 @@ def smoke(request):
                 smoke.create_conso_cig()
                 form = SmokeForm(request.user)
         context['form'] = form
-    smoke = ConsoCig.objects.filter(user=request.user)
+    smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
     context['smoke'] = smoke
     return render(request, 'QuitSoonApp/smoke.html', context)
 
@@ -377,7 +375,7 @@ def health(request):
                     new_health.create_conso_alternative()
                     form = HealthForm(request.user)
             context['form'] = form
-        health = ConsoAlternative.objects.filter(user=request.user)
+        health = ConsoAlternative.objects.filter(user=request.user).order_by('date_alter', 'time_alter')
         context['health'] = health
     return render(request, 'QuitSoonApp/health.html', context)
 
@@ -413,14 +411,16 @@ def delete_health(request, id_health):
 def suivi(request):
     """Page with user results, graphs..."""
     smoke = SmokeStats(request.user, dtdate.today())
+    healthy = HealthyStats(request.user, dtdate.today())
     user_dict = {'date': [], 'nb_cig': [], 'activity_duration': [], 'nicotine': []}
     for date in smoke.list_dates:
         user_dict['date'].append(str(date))
         user_dict['nb_cig'].append(smoke.nb_per_day(date))
-        user_dict['activity_duration'].append(0)
+        user_dict['activity_duration'].append(healthy.min_per_day(date))
         user_dict['nicotine'].append(0)
     with open('user_dict.txt', 'w') as outfile:
         json.dump(user_dict, outfile)
+    print(user_dict)
     return render(request, 'QuitSoonApp/suivi.html')
 
 def objectifs(request):

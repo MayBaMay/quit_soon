@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 
-from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
+from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, ConsoAlternative
 
 class Stats:
     def __init__(self, user, lastday):
@@ -87,3 +87,20 @@ class SmokeStats(Stats):
     @property
     def money_saved(self):
         return self.total_money_with_starting_nb_cig - self.total_money_smoked
+
+
+class HealthyStats(Stats):
+    """Generate stats reports on user healthy habits"""
+
+    def __init__(self, user, lastday):
+        Stats.__init__(self, user, lastday)
+        self.user_conso = ConsoAlternative.objects.filter(user=self.user)
+
+    def min_per_day(self, date):
+        # time in min spend this date for healthy activities
+        user_activities = self.user_conso.exclude(alternative__type_alternative='Su')
+        activity_day = user_activities.filter(date_alter=date)
+        min_activity = 0
+        for activity in activity_day:
+            min_activity += activity.activity_duration
+        return min_activity
