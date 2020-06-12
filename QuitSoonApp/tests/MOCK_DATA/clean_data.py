@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Clean tests data and populate test database
+"""
+
 from decimal import Decimal
 from random import randint
 
@@ -7,7 +11,9 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from QuitSoonApp.models import Paquet, ConsoCig
 
+
 class Create_test_packs:
+    """Parse, complete and use data to populate table Paquet in test database"""
 
     def __init__(self, user, paquet_data):
         self.user = user
@@ -16,6 +22,7 @@ class Create_test_packs:
             data = self.get_missing_datas(data)
 
     def get_missing_datas(self, data):
+        """complete row_data with expected info"""
         # unit, g_per_cig, price_per_cig
         if data['type_cig'] == 'ROL':
             data['unit'] = 'G'
@@ -30,6 +37,7 @@ class Create_test_packs:
             return data
 
     def populate_test_db(self):
+        """populate database with clean data"""
         for data in self.clean_data:
             Paquet.objects.create(
                 user=self.user,
@@ -42,8 +50,12 @@ class Create_test_packs:
                 price_per_cig=data['price_per_cig'],
                 display=data['display'],
                 )
+        # update first pack with first=True
+        first_pack_id = Paquet.objects.all()[0].id
+        Paquet.objects.filter(id=first_pack_id).update(first=True)
 
 class Create_test_smoke:
+    """Parse, complete and use data to populate table ConsoCig in test database"""
 
     def __init__(self, user, conso_cig_data):
         self.user = user
@@ -52,10 +64,12 @@ class Create_test_smoke:
             data = self.get_missing_datas(data)
 
     def get_missing_datas(self, data):
+        """complete row_data with expected info"""
         try:
             if data['given'] == True:
                 data['paquet'] = None
             else:
+                # data['given'] = False
                 data = self.get_pack(data)
         except KeyError:
             # data['given'] not specified so default False
@@ -66,14 +80,16 @@ class Create_test_smoke:
     def get_pack(data):
         data['given'] = False
         try:
+            # id pack specified in data['paquet']
             pack = Paquet.objects.get(id=data['paquet'])
             data['paquet'] = pack
         except (ObjectDoesNotExist, KeyError, TypeError):
-            # id not in Paquet's ids or not indicated or function called twice, paquet already filled
+            # id not in Paquet's ids or not indicated or function called twice(paquet already filled)
             ids = []
+            # get a random pack for ConsoCig
             for pack in Paquet.objects.all():
                 ids.append(pack.id)
-            id = randint(ids[0], ids[-1])
+            id = randint(min(ids), max(ids))
             pack = Paquet.objects.get(id=id)
             data['paquet'] = pack
         return data

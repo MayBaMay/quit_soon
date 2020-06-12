@@ -410,8 +410,13 @@ def delete_health(request, id_health):
 
 def suivi(request):
     """Page with user results, graphs..."""
+    context = {}
+
+    # create stats objects
     smoke = SmokeStats(request.user, dtdate.today())
     healthy = HealthyStats(request.user, dtdate.today())
+
+    # generate data for graphs
     user_dict = {'date': [], 'nb_cig': [], 'money_smoked': [], 'activity_duration': [], 'nicotine': []}
     for date in smoke.list_dates:
         user_dict['date'].append(str(date))
@@ -419,11 +424,19 @@ def suivi(request):
         user_dict['money_smoked'].append(str(smoke.money_smoked_per_day(date)))
         user_dict['activity_duration'].append(healthy.min_per_day(date))
         user_dict['nicotine'].append(0)
-    print(user_dict)
     with open('user_dict.txt', 'w') as outfile:
         json.dump(user_dict, outfile)
-    print(user_dict)
-    return render(request, 'QuitSoonApp/suivi.html')
+
+    # generate context
+    context['total_number'] = smoke.total_smoke
+    context['total_money'] = round(smoke.total_money_smoked, 2)
+    context['average_number'] = round(smoke.average_per_day)
+    context['average_money'] = round(smoke.average_money_per_day, 2)
+    context['non_smoked'] = smoke.nb_not_smoked_cig
+    context['saved_money'] = round(smoke.money_saved, 2)
+
+
+    return render(request, 'QuitSoonApp/suivi.html', context)
 
 def objectifs(request):
     """Page with user trophees and goals"""

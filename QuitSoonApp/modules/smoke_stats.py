@@ -45,6 +45,15 @@ class SmokeStats(Stats):
         return self.nb_jour_since_start - self.count_smoking_day
 
     @property
+    def total_cig_with_old_habbits(self):
+        starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
+        return starting_nb_cig * self.nb_jour_since_start
+
+    @property
+    def nb_not_smoked_cig(self):
+        return self.total_cig_with_old_habbits - self.total_smoke
+
+    @property
     def list_dates(self):
         list_dates = []
         start = datetime.combine(self.date_start, datetime.min.time())
@@ -76,6 +85,10 @@ class SmokeStats(Stats):
         return money_smoked
 
     @property
+    def average_money_per_day(self):
+        return self.total_money_smoked / self.nb_jour_since_start
+
+    @property
     def total_money_smoked(self):
         money_smoked = 0
         for conso in self.user_conso:
@@ -88,7 +101,7 @@ class SmokeStats(Stats):
         money = 0
         #get first pack created
         starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
-        first_pack = Paquet.objects.all()[0]
+        first_pack = Paquet.objects.get(user=self.user, first=True)
         money += self.nb_jour_since_start * first_pack.price_per_cig * starting_nb_cig
         return money
 

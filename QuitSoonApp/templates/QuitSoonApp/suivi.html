@@ -4,7 +4,44 @@
 
 {% block content %}
 
-MON SUIVI
+MON SUIVI <br>
+ <br>
+<!--
+<div> circle button hyperlink toward graph ConsoCigGraph
+infos:
+  Cumul total smoked
+  Average per days
+  Didn't smoke (compared to old habbit)
+</div>
+ -->
+ CONSO :<br>
+total_number : {{ total_number }} <br>
+ average_number : {{ average_number }} <br>
+ non_smoked : {{ non_smoked }} <br>
+  <br>
+<!--
+<div> circle button hyperlink toward graph MoneyGraph
+infos:
+  Cumul total smoked
+  Average per days
+  Didn't smoke (compared to old habbit)
+</div>
+ -->
+ MONEY:<br>
+ total_money : {{ total_money }}€ <br>
+ average_money : {{ average_money }}€ <br>
+ saved_money : {{ saved_money }}€ <br>
+ <br>
+<!--
+<div> circle button hyperlink toward graph NicotineGraph
+infos:
+  Cumul total smoked
+  Average per days
+  Didn't smoke (compared to old habbit)
+</div>
+ -->
+
+
 <div id='consociggraph' class="{% plotly_class name='ConsoCigGraph' %} card=" style="height:100%; width: 100%">
     {% plotly_app name='ConsoCigGraph' ratio=0.65 %}
 </div>
