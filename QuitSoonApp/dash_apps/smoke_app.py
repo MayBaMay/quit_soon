@@ -54,7 +54,6 @@ app.layout = html.Div([
               animate=False,
               style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
               ),
-    html.Div(id='updatemode-output-container', style={'margin-top':20})
 ])
 
 def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
@@ -98,11 +97,7 @@ def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
                      showline=False,)
     return fig
 
-@app.callback(
-    [Output('graph', 'figure'), Output('graph2', 'figure'), Output('updatemode-output-container', 'children')],
-    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
-)
-def display_value(radio, checkbox):
+def dataframe(radio):
     df = DataFrameDate(user_dict)
     if radio == 'D':
         df = df.day_df
@@ -110,11 +105,25 @@ def display_value(radio, checkbox):
         df = df.week_df
     elif radio == 'M':
         df = df.month_df
+    return df
 
-    fig1 = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettese", df.nb_cig)
+@app.callback(
+    Output('graph', 'figure'),
+    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
+)
+def display_value(radio, checkbox):
+    df = dataframe(radio)
+    fig1 = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
+    return fig1
+
+@app.callback(
+    Output('graph2', 'figure'),
+    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
+)
+def display_value(radio, checkbox):
+    df = dataframe(radio)
     fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Cigarettes", df.money_smoked)
-
-    return fig1, fig2, fig1
+    return fig2
 
 if __name__ == '__main__':
     app.run_server(debug=True)
