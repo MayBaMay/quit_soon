@@ -269,7 +269,7 @@ def smoke(request):
                 smoke.create_conso_cig()
                 smoke_form = SmokeForm(request.user)
         context['smoke_form'] = smoke_form
-    smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
+    smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
     context['smoke'] = smoke
     return render(request, 'QuitSoonApp/smoke.html', context)
 
@@ -402,7 +402,7 @@ def health(request):
                     new_health.create_conso_alternative()
                     form = HealthForm(request.user)
             context['form'] = form
-        health = ConsoAlternative.objects.filter(user=request.user).order_by('date_alter', 'time_alter')
+        health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
     return render(request, 'QuitSoonApp/health.html', context)
 
