@@ -305,18 +305,6 @@ function displayPaquetsFields(){
   }
   else if ($('#id_type_cig_field').val() == 'ROL') {
     $('#id_rol_pack_field').removeClass('hide').addClass('show');
-  }
-  else if ($('#id_type_cig_field').val() == 'CIGARES') {
-    $('#id_cigares_pack_field').removeClass('hide').addClass('show');
-  }
-  else if ($('#id_type_cig_field').val() == 'PIPE') {
-      $('#id_pipe_pack_field').removeClass('hide').addClass('show');
-  }
-  else if ($('#id_type_cig_field').val() == 'NB') {
-    $('#id_nb_pack_field').removeClass('hide').addClass('show');
-  }
-  else if ($('#id_type_cig_field').val() == 'GR') {
-    $('#id_gr_pack_field').removeClass('hide').addClass('show');
   };
 };
 

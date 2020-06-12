@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+MES CRAQUAGES :
+
+{% if user.is_authenticated %}
+
+  {% if not packs %}
+    Vous n'avez enregistré aucun paquet,<br>
+    Veuillez paramétrer vos paquets
+    <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
+
+  {% else %}
+    {% if smoke %}
+    <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke_list' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ smoke_form.non_field_errors }}
+        <div class="fieldWrapper form-group ">
+          {{ pack_form.type_cig_field.label }}
+          {{ pack_form.type_cig_field }}
+          {{ pack_form.type_cig_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ pack_form.ind_pack_field.label }}
+          {{ pack_form.ind_pack_field }}
+          {{ pack_form.ind_pack_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ pack_form.rol_pack_field.label }}
+          {{ pack_form.rol_pack_field }}
+          {{ pack_form.rol_pack_field.error }}
+        </div>
+        <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
+      </div>
+    </form>
+
+      {% for conso in smoke %}
+        <div class="row">
+          {% if conso.given %}
+            {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
+          {% else %}
+            {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
+          {% endif %}
+          <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+        </div>
+      {% endfor %}
+
+    {% else %}
+      Vous n'avez pas encore enregistré de craquage, félicitation!
+    {% endif %}
+  {% endif %}
+
+{% else %}
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

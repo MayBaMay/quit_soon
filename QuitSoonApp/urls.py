@@ -23,6 +23,7 @@ urlpatterns = [
     path('change_g_per_cig/', views.change_g_per_cig, name='change_g_per_cig'),
     path('smoke/', views.smoke, name='smoke'),
     path('delete_smoke/<id_smoke>/', views.delete_smoke, name='delete_smoke'),
+    path('smoke_list/', views.smoke_list, name='smoke_list'),
 
     path('alternatives/', views.alternatives, name='alternatives'),
     path('delete_alternative/<id_alternative>/',

@@ -16,18 +16,42 @@ JE VAIS CRAQUER ...
     <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
       {% csrf_token %}
       <div class="form-group">
-          {{ form.non_field_errors }}
-          {% for field in form %}
-            <div class="fieldWrapper form-group ">
-              {{ field.label }}
-              {{ field }}
-              {{ field.error }}
-            </div>
-          {% endfor %}
+        {{ smoke_form.non_field_errors }}
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.date_smoke.label }}
+          {{ smoke_form.date_smoke }}
+          {{ smoke_form.date_smoke.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.time_smoke.label }}
+          {{ smoke_form.time_smoke }}
+          {{ smoke_form.time_smoke.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.given_field.label }}
+          {{ smoke_form.given_field }}
+          {{ smoke_form.given_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.type_cig_field.label }}
+          {{ smoke_form.type_cig_field }}
+          {{ smoke_form.type_cig_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.ind_pack_field.label }}
+          {{ smoke_form.ind_pack_field }}
+          {{ smoke_form.ind_pack_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.rol_pack_field.label }}
+          {{ smoke_form.rol_pack_field }}
+          {{ smoke_form.rol_pack_field.error }}
+        </div>
       </div>
       <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
     </form>
   {% endif %}
+  <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
 
     {% for conso in smoke %}
       <div class="row">

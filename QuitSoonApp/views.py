@@ -27,7 +27,7 @@ from .forms import (
     TypeAlternativeForm,
     ActivityForm,
     SubstitutForm,
-    SmokeForm,
+    ChoosePackFormWithEmptyFields, SmokeForm,
     HealthForm,
     )
 from .modules import (
@@ -261,14 +261,14 @@ def smoke(request):
     packs = Paquet.objects.filter(user=request.user, display=True)
     context = {'packs':packs}
     if packs :
-        form = SmokeForm(request.user)
+        smoke_form = SmokeForm(request.user)
         if request.method == 'POST':
-            form = SmokeForm(request.user, request.POST)
-            if form.is_valid():
-                smoke = SmokeManager(request.user, form.cleaned_data)
+            smoke_form = SmokeForm(request.user, request.POST)
+            if smoke_form.is_valid():
+                smoke = SmokeManager(request.user, smoke_form.cleaned_data)
                 smoke.create_conso_cig()
-                form = SmokeForm(request.user)
-        context['form'] = form
+                smoke_form = SmokeForm(request.user)
+        context['smoke_form'] = smoke_form
     smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
     context['smoke'] = smoke
     return render(request, 'QuitSoonApp/smoke.html', context)
@@ -284,6 +284,33 @@ def delete_smoke(request, id_smoke):
         return redirect('QuitSoonApp:smoke')
     else:
         raise Http404()
+
+def smoke_list(request):
+    """list conso cig"""
+    packs = Paquet.objects.filter(user=request.user, display=True)
+    context = {'packs':packs}
+    smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
+
+    if packs :
+        pack_form = ChoosePackFormWithEmptyFields(request.user)
+        if request.method == 'POST':
+            pack_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
+            if pack_form.is_valid():
+                print(pack_form.cleaned_data)
+                data = pack_form.cleaned_data
+                if data['type_cig_field'] != 'empty':
+                    smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
+                    for s in smoke:
+                        print(s.paquet.type_cig)
+                    if data['ind_pack_field'] != 'empty':
+                        smoke = smoke.filter(paquet__type_cig=data['ind_pack_field'])
+                    elif data['rol_pack_field'] != 'empty':
+                        smoke = smoke.filter(paquet__type_cig=data['rol_pack_field'])
+                if not smoke.exists():
+                    smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
+        context['pack_form'] = pack_form
+        context['smoke'] = smoke
+    return render(request, 'QuitSoonApp/smoke_list.html', context)
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""

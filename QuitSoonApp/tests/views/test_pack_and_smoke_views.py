@@ -146,7 +146,7 @@ class PacksAndSmokeTestCase(TestCase):
         response = self.client.get(reverse('QuitSoonApp:smoke'))
         self.assertTrue(response.context['packs'].exists())
         self.assertFalse(response.context['smoke'].exists())
-        self.assertTrue('form' in response.context)
+        self.assertTrue('smoke_form' in response.context)
 
     def test_smoke_post_validform_given_true(self):
         """ test post smoke view with given=True """
