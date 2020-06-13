@@ -32,6 +32,7 @@ urlpatterns = [
     path('health/', views.health, name='health'),
     path('su_ecig/', views.su_ecig, name='su_ecig'),
     path('delete_health/<id_health>/', views.delete_health, name='delete_health'),
+    path('health_list/', views.health_list, name='health_list'),
 
     path('profile/', views.profile, name='profile'),
     path('new_name/', views.new_name, name='new_name'),

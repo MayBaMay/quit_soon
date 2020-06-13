@@ -33,24 +33,7 @@ class SubstitutForm(UserRelatedModelForm):
         fields = ['substitut', 'nicotine']
 
 
-class HealthForm(forms.Form):
-    """Class generating a form for user healthy action"""
-
-    date_health = forms.DateField(
-        required=True,
-        label='Date',
-        widget=forms.DateInput(
-            attrs={'class':"form-control currentDate",
-                    'type':'date'},
-    ))
-
-    time_health = forms.TimeField(
-        required=True,
-        label='Heure',
-        widget=forms.DateInput
-            (attrs={'class':"form-control currentTime",
-                    'type':'time'},
-    ))
+class ChooseAlternativeForm(forms.Form):
 
     type_alternative_field = forms.ChoiceField(
         required=True,
@@ -74,37 +57,10 @@ class HealthForm(forms.Form):
     lo_field = alternative_field()
     su_field = alternative_field()
 
-    ecig_vape_or_start = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple
-            (attrs={'class':"hide"},
-             ),
-        choices=[('V', "J'ai vapoté aujourd'hui"),
-                 ('S', "J'ai démarré un nouveau flacon")],
-        label='',
-        )
-
-    duration_hour = forms.IntegerField(
-        required=False,
-        label="Pendant:",
-        widget=forms.Select
-            (attrs={'class':"form-control show"},
-             choices= [tuple([x,x]) for x in range(25)]),
-    )
-
-    duration_min = forms.IntegerField(
-        required=False,
-        label='',
-        widget=forms.Select
-            (attrs={'class':"form-control show"},
-             choices= [tuple([x,x]) for x in range(0, 60, 5)]),
-    )
-
-
     def __init__(self, user, *args, **kwargs):
 
         self.user = user
-        super(HealthForm, self).__init__(*args, **kwargs)
+        super(ChooseAlternativeForm, self).__init__(*args, **kwargs)
 
         self.user_alternatives = Alternative.objects.filter(user=self.user, display=True)
         self.user_conso = ConsoAlternative.objects.filter(user=self.user)
@@ -189,6 +145,117 @@ class HealthForm(forms.Form):
             return tuple(CHOICES)
         else:
             return None
+
+
+class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
+    """
+    Form displaying packs already used by user in order to filter consCig displayed in smoke_list
+    """
+    def __init__(self, user, *args, **kwargs):
+        ChooseAlternativeForm.__init__(self, user)
+        super(ChooseAlternativeFormWithEmptyFields, self).__init__(user, *args, **kwargs)
+
+        #########################################################################################
+        # define type alternative configuration (choices + initial)
+        # choices = Sport, Loisir, Soin, Substitut (if alternatives of this types saved by user)
+        # initial = last alternative type_activity or last alternative type_alternative(if =='Su')
+        #########################################################################################
+        TYPE_ALTERNATIVE_CHOICES = []
+        for conso in self.user_conso.filter(alternative__type_alternative='Ac').order_by('alternative__type_activity').distinct('alternative__type_activity'):
+            # include user activity types
+            TYPE_ALTERNATIVE_CHOICES.append((conso.alternative.type_activity, conso.alternative.get_type_activity_display))
+        # if user has substituts, choice substitut
+        if self.user_conso.filter(alternative__type_alternative='Su'):
+            TYPE_ALTERNATIVE_CHOICES.append(('Su', 'Substitut'))
+        TYPE_ALTERNATIVE_CHOICES.insert(0, ('empty', '------------------'))
+        self.initial['type_alternative_field'] = ('empty', '------------------')
+        # define type_alternative_choices
+        TYPE_ALTERNATIVE_CHOICES = tuple(TYPE_ALTERNATIVE_CHOICES)
+        self.fields['type_alternative_field'].choices = TYPE_ALTERNATIVE_CHOICES
+
+        #########################################################################################
+        # define type fields configuration (choices + initial)
+        #########################################################################################
+
+        SP_FIELD_CHOICES = self.config_field('sp_field', 'Ac', 'Sp')
+        self.fields['sp_field'].choices = SP_FIELD_CHOICES
+
+        SO_FIELD_CHOICES = self.config_field('so_field', 'Ac', 'So')
+        self.fields['so_field'].choices = SO_FIELD_CHOICES
+
+        LO_FIELD_CHOICES = self.config_field('lo_field', 'Ac', 'Lo')
+        self.fields['lo_field'].choices = LO_FIELD_CHOICES
+
+        SU_FIELD_CHOICES = self.config_field('su_field', 'Su')
+        self.fields['su_field'].choices = SU_FIELD_CHOICES
+
+    def config_field(self, field_name, type_alternative, type_activity=None):
+        """
+        configurate field depending on:
+            type_activity if type_alternative='Ac' (get one field for each type of activity)
+            type_alternative if type_alternative='Su' (get all substitutes in one field)
+        """
+        CHOICES = []
+        if type_alternative == 'Ac':
+            for conso in self.user_conso.filter(alternative__type_activity=type_activity):
+                CHOICES.append((conso.alternative.id, conso.alternative.activity))
+                CHOICES.insert(0, ('empty', '------------------'))
+                self.initial[field_name] = ('empty', '------------------')
+            return tuple(CHOICES)
+        elif type_alternative == 'Su':
+            for conso in self.user_conso.filter(alternative__type_alternative=type_alternative):
+                display = "{} ({}mg)".format(conso.alternative.get_substitut_display(), conso.alternative.nicotine)
+                CHOICES.append((conso.alternative.id, display))
+                CHOICES.insert(0, ('empty', '------------------'))
+                self.initial[field_name] = ('empty', '------------------')
+            return tuple(CHOICES)
+        else:
+            return None
+
+class HealthForm(ChooseAlternativeForm):
+    """Class generating a form for user healthy action"""
+
+    date_health = forms.DateField(
+        required=True,
+        label='Date',
+        widget=forms.DateInput(
+            attrs={'class':"form-control currentDate",
+                    'type':'date'},
+    ))
+
+    time_health = forms.TimeField(
+        required=True,
+        label='Heure',
+        widget=forms.DateInput
+            (attrs={'class':"form-control currentTime",
+                    'type':'time'},
+    ))
+
+    ecig_vape_or_start = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+            (attrs={'class':"hide"},
+             ),
+        choices=[('V', "J'ai vapoté aujourd'hui"),
+                 ('S', "J'ai démarré un nouveau flacon")],
+        label='',
+        )
+
+    duration_hour = forms.IntegerField(
+        required=False,
+        label="Pendant:",
+        widget=forms.Select
+            (attrs={'class':"form-control show"},
+             choices= [tuple([x,x]) for x in range(25)]),
+    )
+
+    duration_min = forms.IntegerField(
+        required=False,
+        label='',
+        widget=forms.Select
+            (attrs={'class':"form-control show"},
+             choices= [tuple([x,x]) for x in range(0, 60, 5)]),
+    )
 
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""

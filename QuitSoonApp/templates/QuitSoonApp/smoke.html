@@ -53,17 +53,6 @@ JE VAIS CRAQUER ...
   {% endif %}
   <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
 
-    {% for conso in smoke %}
-      <div class="row">
-        {% if conso.given %}
-          {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
-        {% else %}
-          {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
-        {% endif %}
-        <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-      </div>
-    {% endfor %}
-
 {% else %}
   <div class="container text-center">
     VOUS N'ÊTES PAS CONNECTÉ <br>

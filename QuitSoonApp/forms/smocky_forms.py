@@ -115,6 +115,10 @@ class ChoosePackForm(forms.Form):
         return tuple(CHOICES)
 
 class ChoosePackFormWithEmptyFields(ChoosePackForm):
+    """
+    Form displaying packs already used by user in order to filter consCig displayed in smoke_list
+    """
+
     def __init__(self, user, *args, **kwargs):
         ChoosePackForm.__init__(self, user)
         super(ChoosePackFormWithEmptyFields, self).__init__(user, *args, **kwargs)

@@ -14,7 +14,7 @@ MES CRAQUAGES :
 
   {% else %}
     {% if smoke %}
-    <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke_list' %}">
+    <form id="smokefilterform" method='post' action="{% url 'QuitSoonApp:smoke_list' %}">
       {% csrf_token %}
       <div class="form-group">
         {{ smoke_form.non_field_errors }}

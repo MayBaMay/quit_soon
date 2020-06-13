@@ -5,11 +5,13 @@ from .healthy_forms import (
     TypeAlternativeForm,
     ActivityForm,
     SubstitutForm,
-    HealthForm
+    HealthForm,
+    ChooseAlternativeFormWithEmptyFields,
 )
 from .smocky_forms import (
     PaquetForm,
     PaquetFormCreation,
     PaquetFormCustomGInCig,
-    ChoosePackFormWithEmptyFields, SmokeForm,
+    SmokeForm,
+    ChoosePackFormWithEmptyFields,
 )

@@ -220,33 +220,41 @@
 
   /////////////////alternative page////////////////////
 
-  $('#id_substitut').prop('required',false);
-  $('#id_nicotine').prop('required',false);
-  $('#id_type_activity').prop('required',true);
-  $('#id_activity').prop('required',true);
+  $("#healthform select[id=id_substitut]").prop('required',false);
+  $("#healthform select[id=id_nicotine]").prop('required',false);
+  $("#healthform select[id=id_type_activity]").prop('required',true);
+  $("#healthform select[id=id_activity]").prop('required',true);
   $('.activity_form').removeClass('hide').addClass('show');
   $('.substitut_form').removeClass('show').addClass('hide');
 
-  $('#id_type_alternative').on('change', function(e) {
-
+  $("#healthform select[id=id_type_alternative]").on('change', function(e) {
     // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
    if ($(this).val() == 'Su') {
-     $('#id_type_activity').prop('required',false).val('');
-     $('#id_activity').prop('required',false).val('');
-     $('#id_substitut').prop('required',true);
-     $('#id_nicotine').prop('required',true);
-     $('.activity_form').removeClass('show').addClass('hide');
-     $('.substitut_form').removeClass('hide').addClass('show');
+    $("#healthform select[id=id_type_activity]").prop('required',false).val('');
+    $("#healthform select[id=id_activity]").prop('required',false).val('');
+    $("#healthform select[id=id_substitut]").prop('required',true);
+    $("#healthform select[id=id_nicotine]").prop('required',true);
     }
    // ELSE   --->    SHOW ACTIVITY FORM
    else {
-     $('#id_substitut').prop('required',false).val('');
-     $('#id_nicotine').prop('required',false).val('');
-     $('#id_type_activity').prop('required',true);
-     $('#id_activity').prop('required',true);
+    $("#healthform select[id=id_substitut]").prop('required',false).val('');
+    $("#healthform select[id=id_nicotine]").prop('required',false).val('');
+    $("#healthform select[id=id_type_activity]").prop('required',true);
+    $("#healthform select[id=id_activity]").prop('required',true);
+    }
+  });
+
+  $('#id_type_alternative').on('change', function(e) {
+    // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
+    if ($(this).val() == 'Su') {
+      $('.activity_form').removeClass('show').addClass('hide');
+      $('.substitut_form').removeClass('hide').addClass('show');
+    }
+   // ELSE   --->    SHOW ACTIVITY FORM
+   else {
      $('.activity_form').removeClass('hide').addClass('show');
      $('.substitut_form').removeClass('show').addClass('hide');
-   }
+    }
   });
 
   /////////////////smoke page////////////////////
@@ -277,8 +285,7 @@
     $('#id_duration_min').removeClass('hide').addClass('show');
     displayAlternativeFields()
   });
-
-  $('#id_su_field').on('change', function(e) {
+  $("#healthform select[id=id_su_field]").on('change', function(e) {
     displayAlternativeFields()
   });
 
@@ -310,8 +317,8 @@ function displayPaquetsFields(){
 
 function displayAlternativeFields(){
   var su = {
-    'type_alternative_field':$('#id_type_alternative_field').serialize(),
-    'su_field':$('#id_su_field').serialize(),
+    'type_alternative_field':$("#healthform select[name=type_alternative_field]").serialize(),
+    'su_field':$("#healthform select[name=su_field]").serialize(),
   }
   $.ajax({
     url: "/su_ecig/", // the file to call
