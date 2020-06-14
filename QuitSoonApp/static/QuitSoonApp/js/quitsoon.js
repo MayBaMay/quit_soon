@@ -220,41 +220,33 @@
 
   /////////////////alternative page////////////////////
 
-  $("#healthform select[id=id_substitut]").prop('required',false);
-  $("#healthform select[id=id_nicotine]").prop('required',false);
-  $("#healthform select[id=id_type_activity]").prop('required',true);
-  $("#healthform select[id=id_activity]").prop('required',true);
+  $("#alternativeform select[id=id_substitut]").prop('required',false);
+  $("#alternativeform input[id=id_nicotine]").prop('required',false);
+  $("#alternativeform select[id=id_type_activity]").prop('required',true);
+  $("#alternativeform input[id=id_activity]").prop('required',true);
   $('.activity_form').removeClass('hide').addClass('show');
   $('.substitut_form').removeClass('show').addClass('hide');
 
-  $("#healthform select[id=id_type_alternative]").on('change', function(e) {
-    // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
-   if ($(this).val() == 'Su') {
-    $("#healthform select[id=id_type_activity]").prop('required',false).val('');
-    $("#healthform select[id=id_activity]").prop('required',false).val('');
-    $("#healthform select[id=id_substitut]").prop('required',true);
-    $("#healthform select[id=id_nicotine]").prop('required',true);
-    }
-   // ELSE   --->    SHOW ACTIVITY FORM
-   else {
-    $("#healthform select[id=id_substitut]").prop('required',false).val('');
-    $("#healthform select[id=id_nicotine]").prop('required',false).val('');
-    $("#healthform select[id=id_type_activity]").prop('required',true);
-    $("#healthform select[id=id_activity]").prop('required',true);
-    }
-  });
 
-  $('#id_type_alternative').on('change', function(e) {
+  $('#alternativeform select[id=id_type_alternative]').on('change', function(e) {
+    console.log($(this).val());
     // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
     if ($(this).val() == 'Su') {
       $('.activity_form').removeClass('show').addClass('hide');
       $('.substitut_form').removeClass('hide').addClass('show');
+      $("#alternativeform input[id=id_activity]").prop('required',false).val('');
+      $("#alternativeform select[id=id_substitut]").prop('required',true);
+      $("#alternativeform input[id=id_nicotine]").prop('required',true);
     }
    // ELSE   --->    SHOW ACTIVITY FORM
    else {
      $('.activity_form').removeClass('hide').addClass('show');
      $('.substitut_form').removeClass('show').addClass('hide');
-    }
+     $("#alternativeform select[id=id_substitut]").prop('required',false).val('');
+     $("#alternativeform input[id=id_nicotine]").prop('required',false).val('');
+     $("#alternativeform select[id=id_type_activity]").prop('required',true);
+     $("#alternativeform input[id=id_activity]").prop('required',true);
+   };
   });
 
   /////////////////smoke page////////////////////

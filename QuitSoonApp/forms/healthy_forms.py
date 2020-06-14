@@ -197,17 +197,17 @@ class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
         """
         CHOICES = []
         if type_alternative == 'Ac':
-            for conso in self.user_conso.filter(alternative__type_activity=type_activity):
+            CHOICES.insert(0, ('empty', '------------------'))
+            self.initial[field_name] = ('empty', '------------------')
+            for conso in self.user_conso.filter(alternative__type_activity=type_activity).order_by('alternative__activity').distinct('alternative__activity'):
                 CHOICES.append((conso.alternative.id, conso.alternative.activity))
-                CHOICES.insert(0, ('empty', '------------------'))
-                self.initial[field_name] = ('empty', '------------------')
             return tuple(CHOICES)
         elif type_alternative == 'Su':
-            for conso in self.user_conso.filter(alternative__type_alternative=type_alternative):
+            CHOICES.insert(0, ('empty', '------------------'))
+            self.initial[field_name] = ('empty', '------------------')
+            for conso in self.user_conso.filter(alternative__type_alternative=type_alternative).order_by('alternative__substitut').distinct('alternative__substitut'):
                 display = "{} ({}mg)".format(conso.alternative.get_substitut_display(), conso.alternative.nicotine)
                 CHOICES.append((conso.alternative.id, display))
-                CHOICES.insert(0, ('empty', '------------------'))
-                self.initial[field_name] = ('empty', '------------------')
             return tuple(CHOICES)
         else:
             return None

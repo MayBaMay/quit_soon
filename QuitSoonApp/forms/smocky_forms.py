@@ -125,7 +125,12 @@ class ChoosePackFormWithEmptyFields(ChoosePackForm):
 
         TYPE_CHOICES = []
         for conso in self.user_conso.order_by('paquet__type_cig').distinct('paquet__type_cig'):
-            TYPE_CHOICES.append((conso.paquet.type_cig, conso.paquet.get_type_cig_display))
+            # if conso not given cig (none pack)
+            if conso.paquet:
+                TYPE_CHOICES.append((conso.paquet.type_cig, conso.paquet.get_type_cig_display))
+            else:
+                if ('given', 'Clopes taxées') not in TYPE_CHOICES:
+                    TYPE_CHOICES.append(('given', 'Clopes taxées'))
         TYPE_CHOICES.insert(0, ('empty', '------------------'))
         self.initial['type_cig_field'] = ('empty', '------------------')
         self.fields['type_cig_field'].choices = TYPE_CHOICES
@@ -141,9 +146,10 @@ class ChoosePackFormWithEmptyFields(ChoosePackForm):
         CHOICES = []
         used_pack = self.user_conso.order_by('paquet').distinct('paquet')
         for conso in used_pack:
-            if conso.paquet.type_cig == type:
-                display = "{} /{}{}".format(conso.paquet.brand, conso.paquet.qt_paquet, conso.paquet.unit)
-                CHOICES.append((conso.paquet.id, display))
+            if not conso.given:
+                if conso.paquet.type_cig == type:
+                    display = "{} /{}{}".format(conso.paquet.brand, conso.paquet.qt_paquet, conso.paquet.unit)
+                    CHOICES.append((conso.paquet.id, display))
         CHOICES.insert(0, ('empty', '------------------'))
         self.initial[field] = ('empty', '------------------')
         return tuple(CHOICES)

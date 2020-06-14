@@ -107,6 +107,7 @@ def dataframe(radio):
         df = df.month_df
     return df
 
+
 @app.callback(
     Output('graph', 'figure'),
     [Input('my-radio', 'value'), Input('my-checkbox', 'value')],

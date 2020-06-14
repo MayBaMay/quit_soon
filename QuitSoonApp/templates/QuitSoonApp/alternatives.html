@@ -18,7 +18,7 @@
         <div class="card-body">
             <p><b>Nouvelle alternative :</b></p>
             <p>{{ error }}</p>
-            <form class="user form-with-password" id="alternativeform" action="{% url 'QuitSoonApp:alternatives' %}" method="POST">
+            <form class="" id="alternativeform" action="{% url 'QuitSoonApp:alternatives' %}" method="POST">
               {% csrf_token %}
 
               {{ alternative_form.non_field_errors }}
@@ -56,7 +56,6 @@
                       {{ field.error }}
                     </div>
                   {% endfor %}
-
                 </div>
 
               <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">

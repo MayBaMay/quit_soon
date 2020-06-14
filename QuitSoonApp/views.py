@@ -287,24 +287,29 @@ def delete_smoke(request, id_smoke):
 
 def smoke_list(request):
     """list conso cig"""
-    constext = {}
+    context = {}
     if request.user.is_authenticated:
         packs = Paquet.objects.filter(user=request.user, display=True)
         context['packs'] = packs
         smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
         if smoke :
-            pack_form = ChoosePackFormWithEmptyFields(request.user)
+            smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
             if request.method == 'POST':
-                pack_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
-                if pack_form.is_valid():
-                    data = pack_form.cleaned_data
+                smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
+                if smoke_list_form.is_valid():
+                    data = smoke_list_form.cleaned_data
                     if data['type_cig_field'] != 'empty':
-                        smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
-                        if data['ind_pack_field'] != 'empty':
-                            smoke = smoke.filter(paquet__type_cig=data['ind_pack_field'])
-                        elif data['rol_pack_field'] != 'empty':
-                            smoke = smoke.filter(paquet__type_cig=data['rol_pack_field'])
-            context['pack_form'] = pack_form
+                        if data['type_cig_field'] == 'given':
+                            smoke = smoke.filter(given=True)
+                        else:
+                            smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
+                            if data['ind_pack_field'] != 'empty':
+                                pack = Paquet.objects.get(id=int(data['ind_pack_field']))
+                                smoke = smoke.filter(paquet__brand=pack.brand)
+                            elif data['rol_pack_field'] != 'empty':
+                                pack = Paquet.objects.get(id=int(data['rol_pack_field']))
+                                smoke = smoke.filter(paquet__brand=pack.brand)
+            context['smoke_list_form'] = smoke_list_form
             context['smoke'] = smoke
     return render(request, 'QuitSoonApp/smoke_list.html', context)
 
@@ -317,10 +322,12 @@ def alternatives(request):
         substitut_form = SubstitutForm(request.user)
 
         if request.method == 'POST':
-            # rget wich type of alternative
+            print(request.POST)
+            # get wich type of alternative
             form_data = {'type_alternative':request.POST['type_alternative']}
             alternative_form = TypeAlternativeForm(request.user, form_data)
             if alternative_form.is_valid():
+                print('valid')
                 final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
 
                 if alternative_form.cleaned_data['type_alternative']== 'Ac' :
@@ -444,54 +451,66 @@ def health_list(request):
                 health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
                 if health_form.is_valid():
                     data = health_form.cleaned_data
-                    print(data)
                     if data['type_alternative_field'] != 'empty':
                         if data['type_alternative_field'] == 'Su':
                             health = health.filter(alternative__type_alternative=data['type_alternative_field'])
                             if data['su_field'] != 'empty':
-                                health = health.filter(alternative__substitut=data['su_field'])
+                                alt = Alternative.objects.get(id=int(data['su_field']))
+                                health = health.filter(alternative__substitut=alt.substitut)
                         else:
-                            print('before filter', health)
                             health = health.filter(alternative__type_activity=data['type_alternative_field'])
-                            print('after filter', health)
-                            if data['sp_field'] != 'empty' and '':
-                                health = health.filter(alternative__activity=data['sp_field'])
-                            elif data['so_field'] != 'empty' and '':
-                                health = health.filter(alternative__activity=data['so_field'])
-                            elif data['lo_field'] != 'empty' and '':
-                                health = health.filter(alternative__activity=data['lo_field'])
+                            if data['sp_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['sp_field']))
+                                health = health.filter(alternative__activity=alt.activity)
+                            elif data['so_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['so_field']))
+                                health = health.filter(alternative__activity=alt.activity)
+                            elif data['lo_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['lo_field']))
+                                health = health.filter(alternative__activity=alt.activity)
 
-        context['health_form'] = health_form
+            context['health_form'] = health_form
         context['health'] = health
     return render(request, 'QuitSoonApp/health_list.html', context)
 
 def suivi(request):
     """Page with user results, graphs..."""
     context = {}
-
     if request.user.is_authenticated:
-        # create stats objects
-        smoke = SmokeStats(request.user, dtdate.today())
-        healthy = HealthyStats(request.user, dtdate.today())
 
-        # generate data for graphs
-        user_dict = {'date': [], 'nb_cig': [], 'money_smoked': [], 'activity_duration': [], 'nicotine': []}
-        for date in smoke.list_dates:
-            user_dict['date'].append(str(date))
-            user_dict['nb_cig'].append(smoke.nb_per_day(date))
-            user_dict['money_smoked'].append(str(smoke.money_smoked_per_day(date)))
-            user_dict['activity_duration'].append(healthy.min_per_day(date))
-            user_dict['nicotine'].append(0)
-        with open('user_dict.txt', 'w') as outfile:
-            json.dump(user_dict, outfile)
+        profile = UserProfile.objects.filter(user=request.user).exists()
+        if profile:
+            # create stats objects
+            smoke = SmokeStats(request.user, dtdate.today())
+            healthy = HealthyStats(request.user, dtdate.today())
 
-        # generate context
-        context['total_number'] = smoke.total_smoke
-        context['total_money'] = round(smoke.total_money_smoked, 2)
-        context['average_number'] = round(smoke.average_per_day)
-        context['average_money'] = round(smoke.average_money_per_day, 2)
-        context['non_smoked'] = smoke.nb_not_smoked_cig
-        context['saved_money'] = round(smoke.money_saved, 2)
+            # generate data for graphs
+            user_dict = {
+                'user':request.user.id,
+                'date': [],
+                'nb_cig': [],
+                'money_smoked': [],
+                'activity_duration': [],
+                'nicotine': []
+                }
+            for date in smoke.list_dates:
+                user_dict['date'].append(str(date))
+                user_dict['nb_cig'].append(smoke.nb_per_day(date))
+                user_dict['money_smoked'].append(str(smoke.money_smoked_per_day(date)))
+                user_dict['activity_duration'].append(healthy.min_per_day(date))
+                user_dict['nicotine'].append(0)
+            with open('user_dict.txt', 'w') as outfile:
+                json.dump(user_dict, outfile)
+
+            # generate context
+            context['total_number'] = smoke.total_smoke
+            context['total_money'] = round(smoke.total_money_smoked, 2)
+            context['average_number'] = round(smoke.average_per_day)
+            context['average_money'] = round(smoke.average_money_per_day, 2)
+            context['non_smoked'] = smoke.nb_not_smoked_cig
+            context['saved_money'] = round(smoke.money_saved, 2)
+        else:
+            return redirect('QuitSoonApp:profile')
 
     return render(request, 'QuitSoonApp/suivi.html', context)
 
