@@ -15,18 +15,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from . import DataFrameDate
+from QuitSoonApp.modules import (
+    SmokeStats, HealthyStats
+    )
+from QuitSoonApp.models import UserProfile
 
-
-with open('user_dict.txt') as json_file:
-    user_dict = json.load(json_file)
-    i=0
-    for p in user_dict['date']:
-        user_dict['date'][i] = dt.strptime(p, '%Y-%m-%d')
-        i += 1
-    i=0
-    for p in user_dict['money_smoked']:
-        user_dict['money_smoked'][i] = float(user_dict['money_smoked'][i])
-        i += 1
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -97,7 +90,28 @@ def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
                      showline=False,)
     return fig
 
-def dataframe(radio):
+def dataframe(radio, user):
+    print(user)
+    print(UserProfile.objects.filter(user=user))
+    # create stats objects
+    smoke = SmokeStats(user, dtdate.today())
+    healthy = HealthyStats(user, dtdate.today())
+
+    # generate data for graphs
+    user_dict = {
+        'date': [],
+        'nb_cig': [],
+        'money_smoked': [],
+        'activity_duration': [],
+        'nicotine': []
+        }
+    for date in smoke.list_dates:
+        user_dict['date'].append(dt.combine(date, dt.min.time()))
+        user_dict['nb_cig'].append(smoke.nb_per_day(date))
+        user_dict['money_smoked'].append(float(smoke.money_smoked_per_day(date)))
+        user_dict['activity_duration'].append(healthy.min_per_day(date))
+        user_dict['nicotine'].append(0)
+
     df = DataFrameDate(user_dict)
     if radio == 'D':
         df = df.day_df
@@ -108,21 +122,22 @@ def dataframe(radio):
     return df
 
 
-@app.callback(
-    Output('graph', 'figure'),
-    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
+@app.expanded_callback(
+    dash.dependencies.Output('graph', 'figure'),
+    [dash.dependencies.Input('my-radio', 'value'), Input('my-checkbox', 'value')],
 )
-def display_value(radio, checkbox):
-    df = dataframe(radio)
+def display_value(radio, checkbox, request, **kwargs):
+    df = dataframe(radio, request.user)
     fig1 = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
     return fig1
 
-@app.callback(
-    Output('graph2', 'figure'),
-    [Input('my-radio', 'value'), Input('my-checkbox', 'value')],
+@app.expanded_callback(
+    dash.dependencies.Output('graph2', 'figure'),
+    [dash.dependencies.Input('my-radio', 'value'),
+     dash.dependencies.Input('my-checkbox', 'value')],
 )
-def display_value(radio, checkbox):
-    df = dataframe(radio)
+def display_value(radio, checkbox, request, **kwargs):
+    df = dataframe(radio, request.user)
     fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Cigarettes", df.money_smoked)
     return fig2
 

@@ -322,12 +322,10 @@ def alternatives(request):
         substitut_form = SubstitutForm(request.user)
 
         if request.method == 'POST':
-            print(request.POST)
             # get wich type of alternative
             form_data = {'type_alternative':request.POST['type_alternative']}
             alternative_form = TypeAlternativeForm(request.user, form_data)
             if alternative_form.is_valid():
-                print('valid')
                 final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
 
                 if alternative_form.cleaned_data['type_alternative']== 'Ac' :
@@ -473,34 +471,15 @@ def health_list(request):
         context['health'] = health
     return render(request, 'QuitSoonApp/health_list.html', context)
 
-def suivi(request):
+def suivi(request, **kwargs):
     """Page with user results, graphs..."""
     context = {}
     if request.user.is_authenticated:
 
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            # create stats objects
             smoke = SmokeStats(request.user, dtdate.today())
             healthy = HealthyStats(request.user, dtdate.today())
-
-            # generate data for graphs
-            user_dict = {
-                'user':request.user.id,
-                'date': [],
-                'nb_cig': [],
-                'money_smoked': [],
-                'activity_duration': [],
-                'nicotine': []
-                }
-            for date in smoke.list_dates:
-                user_dict['date'].append(str(date))
-                user_dict['nb_cig'].append(smoke.nb_per_day(date))
-                user_dict['money_smoked'].append(str(smoke.money_smoked_per_day(date)))
-                user_dict['activity_duration'].append(healthy.min_per_day(date))
-                user_dict['nicotine'].append(0)
-            with open('user_dict.txt', 'w') as outfile:
-                json.dump(user_dict, outfile)
 
             # generate context
             context['total_number'] = smoke.total_smoke
@@ -509,6 +488,7 @@ def suivi(request):
             context['average_money'] = round(smoke.average_money_per_day, 2)
             context['non_smoked'] = smoke.nb_not_smoked_cig
             context['saved_money'] = round(smoke.money_saved, 2)
+
         else:
             return redirect('QuitSoonApp:profile')
 
