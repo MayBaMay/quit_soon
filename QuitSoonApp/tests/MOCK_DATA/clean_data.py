@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from QuitSoonApp.models import Paquet, ConsoCig
 
 
-class Create_test_packs:
+class Create_packs:
     """Parse, complete and use data to populate table Paquet in test database"""
 
     def __init__(self, user, paquet_data):
@@ -36,7 +36,7 @@ class Create_test_packs:
             data['price_per_cig'] = Decimal(data['price'])/data['qt_paquet']
             return data
 
-    def populate_test_db(self):
+    def populate_db(self):
         """populate database with clean data"""
         for data in self.clean_data:
             Paquet.objects.create(
@@ -54,7 +54,7 @@ class Create_test_packs:
         first_pack_id = Paquet.objects.all()[0].id
         Paquet.objects.filter(id=first_pack_id).update(first=True)
 
-class Create_test_smoke:
+class Create_smoke:
     """Parse, complete and use data to populate table ConsoCig in test database"""
 
     def __init__(self, user, conso_cig_data):
@@ -94,7 +94,7 @@ class Create_test_smoke:
             data['paquet'] = pack
         return data
 
-    def populate_test_db(self):
+    def populate_db(self):
         for data in self.clean_data:
             ConsoCig.objects.create(
                 user=self.user,

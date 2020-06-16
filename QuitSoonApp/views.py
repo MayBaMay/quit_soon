@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User
 
-from .models import (
+from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,

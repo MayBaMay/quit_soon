@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_nose',
     'debug_toolbar',
     'django.contrib.postgres',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
@@ -126,6 +127,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+NOSE_ARGS = [
+    '--cover-erase',
+    '--cover-package=QuitSoonApp', 
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/

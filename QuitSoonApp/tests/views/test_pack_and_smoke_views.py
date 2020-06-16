@@ -242,17 +242,17 @@ class PacksAndSmokeTestCase(TestCase):
             qt_paquet=20,
             price=10,
             )
-        db_smoke_given = ConsoCig.objects.create(
+        db_smoke = ConsoCig.objects.create(
             user=self.user,
             date_cig=datetime.date(2020, 5, 17),
             time_cig=datetime.time(13, 15),
             paquet=db_pack,
             given=False,
             )
-        id = db_smoke_given.id
+        id = db_smoke.id
         response = self.client.post(reverse(
             'QuitSoonApp:delete_smoke',
-            args=[db_smoke_given.id]))
+            args=[db_smoke.id]))
         self.assertEqual(response.status_code, 302)
         filter_conso = ConsoCig.objects.filter(user=self.user, id=id)
         self.assertFalse(filter_conso.exists())

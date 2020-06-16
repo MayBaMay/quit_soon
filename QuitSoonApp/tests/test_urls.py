@@ -2,13 +2,15 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
+from QuitSoonApp.urls import smoke_app
+
 from QuitSoonApp.views import (
     index, today,
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     suivi, objectifs,
-    paquets, delete_pack, change_g_per_cig, smoke, delete_smoke,
-    alternatives, delete_alternative, health, su_ecig, delete_health,
+    paquets, delete_pack, change_g_per_cig, smoke, delete_smoke, smoke_list,
+    alternatives, delete_alternative, health, su_ecig, delete_health, health_list,
 )
 
 class TestUrls(SimpleTestCase):
@@ -97,6 +99,11 @@ class TestUrls(SimpleTestCase):
         url = reverse('QuitSoonApp:delete_smoke', args=['id_smoke'])
         self.assertEqual(resolve(url).func, delete_smoke)
 
+    def test_smoke_list_url_is_resolved(self):
+        """test smoke_list"""
+        url = reverse('QuitSoonApp:smoke_list')
+        self.assertEqual(resolve(url).func, smoke_list)
+
 
     def test_alternatives_url_is_resolved(self):
         """test alternatives"""
@@ -122,3 +129,8 @@ class TestUrls(SimpleTestCase):
         """test delete_pack"""
         url = reverse('QuitSoonApp:delete_health', args=['id_health'])
         self.assertEqual(resolve(url).func, delete_health)
+
+    def test_health_list_url_is_resolved(self):
+        """test health_list"""
+        url = reverse('QuitSoonApp:health_list')
+        self.assertEqual(resolve(url).func, health_list)

@@ -135,11 +135,8 @@ class PackManager:
 
     def update_pack_g_per_cig(self):
         """update g_per_cig paquet info"""
-        try :
-            pack_filtered = self.filter_pack
-            pack_filtered.update(
-                g_per_cig=self.g_per_cig,
-                price_per_cig=self.get_price_per_cig
-                )
-        except ObjectDoesNotExist:
-            pass
+        pack_filtered = self.filter_pack
+        pack_filtered.update(
+            g_per_cig=self.g_per_cig,
+            price_per_cig=self.get_price_per_cig
+            )

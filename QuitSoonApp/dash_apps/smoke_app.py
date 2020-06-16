@@ -91,8 +91,6 @@ def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
     return fig
 
 def dataframe(radio, user):
-    print(user)
-    print(UserProfile.objects.filter(user=user))
     # create stats objects
     smoke = SmokeStats(user, dtdate.today())
     healthy = HealthyStats(user, dtdate.today())
@@ -138,7 +136,7 @@ def display_value(radio, checkbox, request, **kwargs):
 )
 def display_value(radio, checkbox, request, **kwargs):
     df = dataframe(radio, request.user)
-    fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Cigarettes", df.money_smoked)
+    fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Mes sous", df.money_smoked)
     return fig2
 
 if __name__ == '__main__':
