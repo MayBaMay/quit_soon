@@ -46,7 +46,7 @@
           <p><b>Consommation : </b></p>
           <p><b>Moyenne / jour : </b></p>
           <p><b>Dernière cigarette il y a </b></p>
-          <a href="#">Voir mes craquages</a>
+            <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
       </div>
     </div>
   </div>
@@ -58,7 +58,7 @@
           <p><b>Soins :  auj   cette semaine</b></p>
           <p><b>Substituts : </b></p>
           <p><b>- nb substituts utilisé aujourd'hui</b></p>
-          <a href="#">Voir actions saines</a>
+          <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
       </div>
     </div>
   </div>

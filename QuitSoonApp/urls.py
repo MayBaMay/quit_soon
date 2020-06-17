@@ -2,6 +2,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 
 from . import views # import views so we can use them in urls.
+from QuitSoonApp.dash_apps import smoke_app
 
 app_name = 'QuitSoonApp'
 
@@ -22,6 +23,7 @@ urlpatterns = [
     path('change_g_per_cig/', views.change_g_per_cig, name='change_g_per_cig'),
     path('smoke/', views.smoke, name='smoke'),
     path('delete_smoke/<id_smoke>/', views.delete_smoke, name='delete_smoke'),
+    path('smoke_list/', views.smoke_list, name='smoke_list'),
 
     path('alternatives/', views.alternatives, name='alternatives'),
     path('delete_alternative/<id_alternative>/',
@@ -30,6 +32,7 @@ urlpatterns = [
     path('health/', views.health, name='health'),
     path('su_ecig/', views.su_ecig, name='su_ecig'),
     path('delete_health/<id_health>/', views.delete_health, name='delete_health'),
+    path('health_list/', views.health_list, name='health_list'),
 
     path('profile/', views.profile, name='profile'),
     path('new_name/', views.new_name, name='new_name'),

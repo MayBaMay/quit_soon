@@ -7,8 +7,8 @@ import datetime
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
-from QuitSoonApp.modules import SmokeStats
+from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, Alternative, ConsoAlternative
+from QuitSoonApp.modules import SmokeStats, HealthyStats
 
 from ..MOCK_DATA import (
     Create_test_packs, row_paquet_data,
@@ -33,9 +33,12 @@ class SmokeStatsTestCase(TestCase):
         self.smoke.populate_test_db()
         self.stat = SmokeStats(self.user, datetime.date(2019, 11, 28))
 
-    def test_get_missing_datas_smoke(self):
+    def test_get_nb_per_day_smoke(self):
         self.assertEqual(self.stat.nb_per_day("2019-09-28"), 12)
         self.assertEqual(self.stat.nb_per_day("2019-09-22"), 0)
+
+    def test_money_smoked_per_day(self):
+        print(self.stat.money_smoked_per_day("2019-09-28"))
 
     def test_total_smoke(self):
         self.assertEqual(self.stat.total_smoke, 329)
@@ -61,7 +64,62 @@ class SmokeStatsTestCase(TestCase):
              datetime.date(2019, 11, 27),
              datetime.date(2019, 11, 28)]
              )
-        # (self.stat.total_money_smoked)
-        # (self.stat.total_money_with_starting_nb_cig)
-        # (self.stat.money_saved)
+        print(self.stat.total_money_smoked)
+        print(self.stat.total_money_with_starting_nb_cig)
+        print(self.stat.money_saved)
         # self.assertEqual(stat.average_per_day, 200)
+
+class HealthyStatsTestCase(TestCase):
+    """class testing HealthyStats """
+
+    def setUp(self):
+        """setup tests"""
+        self.user = User.objects.create_user(
+            'NewUserTest', 'test@test.com', 'testpassword')
+        self.profile = UserProfile.objects.create(
+            user=self.user,
+            date_start="2019-09-28",
+            starting_nb_cig=20
+        )
+        self.alternative_Ac = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='So',
+            activity='Tabacologue',
+            )
+        self.alternative_Ac2 = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='Sp',
+            activity='Course',
+            )
+        self.alternative_Su = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Su',
+            substitut='P24',
+            nicotine=3,
+            )
+        self.conso_Ac = ConsoAlternative.objects.create(
+            user=self.user,
+            date_alter=datetime.date(2020, 5, 17),
+            time_alter=datetime.time(10, 15),
+            alternative=self.alternative_Ac,
+            activity_duration=75,
+            )
+        self.conso_Ac2 = ConsoAlternative.objects.create(
+            user=self.user,
+            date_alter=datetime.date(2020, 5, 17),
+            time_alter=datetime.time(10, 15),
+            alternative=self.alternative_Ac2,
+            activity_duration=30,
+            )
+        self.conso_Su = ConsoAlternative.objects.create(
+            user=self.user,
+            date_alter=datetime.date(2020, 5, 17),
+            time_alter=datetime.time(13, 15),
+            alternative=self.alternative_Su,
+            )
+        self.stat = HealthyStats(self.user, datetime.date(2020, 5, 18))
+
+    def test_min_per_day(self):
+        self.assertEqual(self.stat.min_per_day("2020-05-17"), 105)

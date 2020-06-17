@@ -1,15 +1,14 @@
+#!/usr/bin/env python
+
+"""
+Test data
+"""
 
 row_paquet_data = [
 {"type_cig":"IND","brand":"CAMEL","qt_paquet":20,"price":9.7, "display":True},
 {"type_cig":"IND","brand":"PHILIP MORIS","qt_paquet":20,"price":9.8, "display":True},
 {"type_cig":"IND","brand":"LUCKY STRIKE","qt_paquet":20,"price":9.5, "display":True},
 {"type_cig":"ROL","brand":"1637","qt_paquet":30,"price":12, "display":False},
-# {"type_cig":"NB","brand":"Multi Symptom Cold Relief CF","qt_paquet":30,"price":9.7, "display":False},
-# {"type_cig":"NB","brand":"Viva CT","qt_paquet":30,"price":9.8, "display":True},
-# {"type_cig":"PIPE","brand":"Hydrochlorothiazide","qt_paquet":50,"price":11, "display":True},
-# {"type_cig":"NB","brand":"Anastrozole","qt_paquet":20,"price":7, "display":True},
-# {"type_cig":"GR","brand":"Tryptophan","qt_paquet":40,"price":10, "display":False, "display":True},
-# {"type_cig":"NB","brand":"equaline pain relief pm","qt_paquet":30,"price":9.7, "display":True}
 ]
 
 row_conso_cig_data = [

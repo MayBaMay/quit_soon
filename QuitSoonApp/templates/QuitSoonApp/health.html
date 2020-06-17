@@ -50,28 +50,7 @@ JE TIENS BON
       <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
     </form>
   {% endif %}
-
-    {% for conso in health %}
-      <div class="row">
-          {{ conso.date_alter }}
-          {{ conso.time_alter }}
-          {% if conso.alternative.type_activity %}
-            {{ conso.alternative.type_activity }}
-            {{ conso.alternative.activity }}
-          {% endif %}
-          {% if conso.alternative.substitut %}
-            {{ conso.alternative.substitut }}
-            {{ conso.alternative.nicotine }}
-          {% endif %}
-          {% if conso.activity_duration %}
-            {{ conso.activity_duration }}min
-          {% endif %}
-          {% if conso.ecig_choice %}
-            {{ conso.get_ecig_choice_display }}
-          {% endif %}
-        <a href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-      </div>
-    {% endfor %}
+  <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
 
 {% else %}
   <div class="container text-center">
