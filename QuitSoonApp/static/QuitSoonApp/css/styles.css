@@ -787,7 +787,14 @@ body {
   font-size: 1.2em;
 }
 
-.form-container form label,
+.form-container form .fieldWrapper {
+  width: 100%;
+}
+
+.form-container form h1,
+.form-container form h2,
+.form-container form h3,
+.form-container form h4 label,
 .form-container form select,
 .form-container form input,
 .form-container form textarea {

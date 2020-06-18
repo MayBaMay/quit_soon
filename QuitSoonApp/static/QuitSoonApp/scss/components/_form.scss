@@ -11,7 +11,15 @@
     h2 {
       font-size: 1.2em;
     }
-    label,
+
+    .fieldWrapper {
+      width: 100%;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 label,
     select,
     input,
     textarea {
