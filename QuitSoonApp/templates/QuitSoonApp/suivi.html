@@ -1,21 +1,23 @@
-<!-- {% extends 'base.html' %}
+<!-- example page that extends base.html      -->
+
+{% extends 'base.html' %}
 {% load static %}
 {% load plotly_dash %}
-
 {% block content %}
 
-MON SUIVI <br>
- <br>
+<!-- Main content -->
 
- {% if user.is_authenticated %}
-  <!--
-  <div> circle button hyperlink toward graph ConsoCigGraph
-  infos:
-    Cumul total smoked
-    Average per days
-    Didn't smoke (compared to old habbit)
-  </div>
-   -->
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fa-calendar-day"></i>
+  <h1>mon suivi</h1>
+  <h2>data data data!</h2>
+</div>
+<!-- End page heading -->
+
+<!-- Panel content -->
+<main id="suivi" class="content">
+  <section class="panel p1 pc1">
     {% if total_number %}
       CONSO :<br>
       total_number : {{ total_number }} <br>
@@ -24,16 +26,11 @@ MON SUIVI <br>
         <br>
     {% else %}
       <p>Vous n'avez pas encore enregistré de cigarette fumée</p>
-    {% endif %}
-  <!--
-  <div> circle button hyperlink toward graph MoneyGraph
-  infos:
-    Cumul total smoked
-    Average per days
-    Didn't smoke (compared to old habbit)
-  </div>
-   -->
-  {% if total_money %}
+    {% endif %}   
+  </section>            
+
+   <section class="panel p2 pc1">
+     {% if total_money %}
     MONEY:<br>
     total_money : {{ total_money }}€ <br>
     average_money : {{ average_money }}€ <br>
@@ -41,32 +38,17 @@ MON SUIVI <br>
     <br>
   {% else %}
     <p>Vous n'avez pas encore enregistré d'action saine'</p>
-  {% endif %}
-  <!--
-  <div> circle button hyperlink toward graph NicotineGraph
-  infos:
-    Cumul total smoked
-    Average per days
-    Didn't smoke (compared to old habbit)
-  </div>
-   -->
+  {% endif %}  
+  </section>  
 
-
-  <div id='consociggraph' class="{% plotly_class name='ConsoCigGraph' %} card=" style="height:100%; width: 100%">
-      {% plotly_app name='ConsoCigGraph' ratio=0.65 %}
-  </div>
-
-{% else %}
-  <div class="container text-center">
-    VOUS N'ÊTES PAS CONNECTÉ <br>
-    <div class="row">
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </div>
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
-      </div>
+  <section class="panel p3 pc1">
+    <div id='consociggraph' class="{% plotly_class name='ConsoCigGraph' %} card=" style="height:100%; width: 100%">
+        {% plotly_app name='ConsoCigGraph' ratio=0.65 %}
     </div>
-  </div>
-{% endif %}
-  {% endblock %} -->
+  </section> 
+ 
+</main>
+<!-- End panel content -->
+
+<!-- End of main content -->
+{% endblock %}
