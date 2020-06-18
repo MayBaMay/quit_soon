@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -42,18 +44,18 @@
                     >
                   </li>
 
-                  <li></li>
+                  <li>
                     <a
                       href="{% url 'QuitSoonApp:objectifs' %}"
                       class="menu-item"
                     >
-                      <i class="fas fa-chart-bar"></i> <span>Objectifs</span></a
+                      <i class="fas fa-trophy"></i> <span>Objectifs</span></a
                     >
                   </li>
 
                   <li>
                     <a href="{% url 'QuitSoonApp:paquets' %}" class="menu-item">
-                      <i class="fas fa-chart-bar"></i> <span>Paquets</span></a
+                      <i class="fas fa-smoking"></i> <span>Paquets</span></a
                     >
                   </li>
 
@@ -62,7 +64,7 @@
                       href="{% url 'QuitSoonApp:alternatives' %}"
                       class="menu-item"
                     >
-                      <i class="fas fa-chart-bar"></i>
+                      <i class="fas fa-heartbeat"></i>
                       <span>Alternatives</span></a
                     >
                   </li>
@@ -100,7 +102,6 @@
           <!-- Page content -->
           {% block content %}{% endblock %}
           <!-- End page content -->
-
         </div>
         <!-- End grid container -->
 
@@ -130,7 +131,7 @@
       </div>
     </div>
 
-    <script src="/static/vendor/jquery/jquery.min.js"></script>
-    <script src="/static/js/index.min.js"></script>
+    <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
   </body>
 </html>

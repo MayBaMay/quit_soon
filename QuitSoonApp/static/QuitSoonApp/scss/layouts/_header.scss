@@ -9,7 +9,7 @@ header {
   position: fixed;
   top: 0;
   left: 0;
-  height: $header-height;
+  height: $header-height-mob;
   color: $header-colour;
   opacity: 1;
 
@@ -35,8 +35,9 @@ header {
     display: flex;
     // align-items: center;
     padding-left: 1rem;
+    display: none;
     span {
-        min-width: 4rem;
+      min-width: 4rem;
     }
     a {
       font-size: 1.4rem;
@@ -58,7 +59,7 @@ header {
       height: 100%;
       position: relative;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       list-style: none;
       li {
@@ -156,6 +157,21 @@ header {
 }
 
 @include min-break("mobile") {
+  header {
+    height: $header-height;
+    .header-content {
+      .logo {
+        display: block;
+      }
+      nav > ul {
+        justify-content: flex-end;
+
+        li {
+          margin-left: 0rem;
+        }
+      }
+    }
+  }
   &#username-nav {
     margin-left: 0.25em;
     display: inline-block;

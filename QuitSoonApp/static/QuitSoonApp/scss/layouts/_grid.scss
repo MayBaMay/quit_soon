@@ -4,7 +4,7 @@ $heading-height: 4rem;
   position: relative;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: $header-height $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
+  grid-template-rows: $header-height-mob $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
   // row-gap: 1rem;
 }
 
@@ -24,4 +24,11 @@ header {
   grid-template-columns: repeat(12, 1fr);
   grid-auto-rows: minmax(50px, auto);
   grid-gap: 0.8rem;
+}
+
+@include min-break("mobile"){
+  .grid-container{
+  grid-template-rows: $header-height $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
+
+  }
 }
