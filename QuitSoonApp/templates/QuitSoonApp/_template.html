@@ -1,0 +1,84 @@
+<!-- example page that extends base.html      -->
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Main content -->
+
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fa-calendar-day"></i>
+  <h1>home page</h1>
+</div>
+<!-- End page heading -->
+
+<!-- Panel content -->
+<main id="home" class="content">
+  <section class="panel p1 pc1">
+    <p>panel content</p>
+  </section>
+  <section class="panel p2 pc-1"></section>
+</main>
+<!-- End panel content -->
+
+<!-- Page modals -->
+<div class="modal-container page-modals">
+  <div class="modal">
+    <span class="btn close-modal-btn">close</span>
+    <div id="modal-1" class="modal-content">
+      <section>
+        <h4>Modal 1</h4>
+        <p>
+          reiciendis, a beatae similique dolorum quo, nihil dolore animi est!
+          Numquam ipsa odit labore tempora fuga vitae aliquid reprehenderit qui
+          repudiandae, quisquam nostrum maxime, illo veritatis quos impedit
+          dolores doloremque quod suscipit?
+        </p>
+      </section>
+    </div>
+    <div id="modal-2" class="modal-content">
+      <section>
+        <h4>Modal 2</h4>
+        <p>
+          Lorem ipsum dolor sit
+        </p>
+      </section>
+    </div>
+    <div id="modal-3" class="modal-content">
+      <section>
+        <h4>Modal 3</h4>
+        <div class="form-container">
+          <!-- <form action="#" method="POST">
+                      <h2>Form</h2>
+                      <label for="name">
+                        Your Name:
+                      </label>
+                      <input id="name" type="text" name="name" />
+                      <label for="dd">
+                        Your Age:
+                      </label>
+                      <select name="age" id="dd">
+                        <option value="u30">0-30</option>
+                        <option value="o30">30+</option>
+                      </select>
+                      <label for="email">
+                        Your Email:
+                      </label>
+                      <input id="email" type="email" name="_replyto" />
+                      <label for="message">
+                        Message:
+                      </label>
+                      <textarea id="message" name="message"></textarea>
+                      <input type="submit" value="Send" class="btn-cta" />
+                    </form> -->
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<!-- End page modals -->
+<!-- End of main content -->
+
+{% endblock %}
+

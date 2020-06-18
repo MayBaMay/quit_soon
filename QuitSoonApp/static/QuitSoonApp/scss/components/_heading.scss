@@ -1,0 +1,17 @@
+.page-heading {
+  // position: absolute;
+  // top: 0.2rem;
+  display: flex;
+  align-items: center;
+  padding-left: 0.4rem;
+  h1 {
+    font-weight: 400;
+    font-size: 2.2rem;
+    letter-spacing: 0.05em;
+    margin-left: 0.8rem;
+  }
+  h2{
+    margin-left: 1rem;
+
+  }
+}

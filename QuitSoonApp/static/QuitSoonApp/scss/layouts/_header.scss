@@ -1,0 +1,195 @@
+$menu-transition-open: 0.2s;
+$menu-transition-close: 0.2s;
+
+header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: $header-height;
+  color: $header-colour;
+  opacity: 1;
+
+  transition: 0.35s ease-in;
+
+  .header-content {
+    transition: 0.3s ease-in;
+
+    background-color: transparent;
+    background-color: $body-bg-colour;
+    border-radius: $container-radius;
+
+    margin: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    opacity: $header-opacity;
+    position: relative;
+    width: 100%;
+  }
+
+  .logo {
+    height: 100%;
+    display: flex;
+    // align-items: center;
+    padding-left: 1rem;
+    span {
+        min-width: 4rem;
+    }
+    a {
+      font-size: 1.4rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      // padding:4rem;
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  nav {
+    width: 100%;
+    // height: 100%;
+
+    > ul {
+      height: 100%;
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      list-style: none;
+      li {
+        height: 100%;
+        margin-left: 0rem;
+        position: relative;
+        padding: 0.2em;
+
+        .menu-item {
+          border-radius: $container-radius;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-weight: 100;
+          text-decoration: none;
+          font-size: 1rem;
+          line-height: 1.6;
+          //   font-weight: 200;
+          width: 100%;
+          height: 100%;
+          padding: 0 1rem;
+          transition: 0.2s;
+          &:hover,
+          &:active {
+            transition: 0.2s;
+            opacity: 1;
+            background-color: white;
+          }
+          span {
+            display: none;
+            color: $header-colour;
+            // &#username-nav {
+            //   margin-left: 0.25em;
+            //   display: inline-block;
+            // }
+          }
+
+          i {
+            color: $header-colour;
+          }
+        }
+
+        //dropdown sub-menu
+        &.dropdown-menu {
+          z-index: 2;
+
+          cursor: pointer;
+          span {
+            // border: 1px solid red;
+          }
+          .sub-menu {
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-3rem) translateX(1.8rem) scale(0.3);
+            transition: $menu-transition-close;
+            margin-top: 0.2rem;
+            position: absolute;
+            right: 0;
+
+            li {
+              overflow: hidden;
+              border-radius: $container-radius;
+              background-color: $header-bg-colour;
+              margin-top: 0.4rem;
+              padding: 0em;
+
+              color: $header-colour;
+              a {
+                display: inline-block;
+                white-space: nowrap;
+                padding: 0.8rem 1rem;
+              }
+            }
+            &.sub-menu-open {
+              z-index: -1;
+
+              visibility: visible;
+              opacity: 1;
+              transform: translateY(0);
+              transition: $menu-transition-open;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.header-scroll {
+    .header-content {
+      transition: 1s ease-in;
+      box-shadow: rgba(0, 0, 0, 0.514) 2px 4px 12px;
+      // background-color: $header-bg-colour;
+    }
+  }
+}
+
+@include min-break("mobile") {
+  &#username-nav {
+    margin-left: 0.25em;
+    display: inline-block;
+  }
+}
+@include min-break("tablet") {
+  header {
+    position: relative;
+    .header-content {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+    }
+    .nav-toggle {
+      display: none;
+    }
+
+    nav {
+      // padding: 0rem 0rem 0;
+      > ul {
+        li {
+          margin-left: 0.2rem;
+          // margin-right: 0.4rem;
+          border-bottom: none;
+
+          .menu-item {
+            padding: 0.4em;
+            span {
+              margin-left: 0.6rem;
+              display: inline;
+            }
+          }
+        }
+      }
+    }
+  }
+}

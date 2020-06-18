@@ -1,0 +1,9 @@
+.tabbed-content-container{
+    margin: 2em 0;
+    .tabbed-content{
+        display: none;
+        &.active{
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,198 @@
+//MIXINS
+
+@mixin button-type(
+  $col,
+  $bgcol,
+  $hovercol,
+  $hoverbgcol,
+  $outline-button: false
+) {
+  transition: 0.15s ease-in-out;
+  @if $outline-button {
+    color: $bgcol; //not $col -->using same variables as for non-outline buttons for syntactical ease (same variables for outline/nonoutline button)
+    &:hover {
+      color: $col;
+      background-color: $bgcol;
+      border-color: transparent;
+    }
+  } @else {
+    color: $col;
+    background-color: $bgcol;
+    &:hover {
+      color: $hovercol;
+      background-color: $hoverbgcol;
+    }
+  }
+}
+
+//STYLES
+
+[class^="btn"] {
+  //DEFAULTS
+  font-size: 0.7em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.5em 0.7em;
+  margin: 0.2em 0;
+  border-radius: 4px;
+  border: none;
+  border-color: none;
+  color: $b-primary-col;
+  background-color: $b-primary-bgcol;
+
+  transition: 0.1s ease-in-out;
+
+  &:hover {
+    color: $b-primary-hov-col;
+    background-color: $b-primary-hov-bgcol;
+  }
+
+  //COLOURS (note: repeated below for outline buttons)
+  &[class*="-secondary"] {
+    @include button-type(
+      $b-secondary-col,
+      $b-secondary-bgcol,
+      $b-secondary-hov-col,
+      $b-secondary-hov-bgcol,
+      false
+    );
+  }
+  &[class*="-error"] {
+    @include button-type(
+      $b-error-col,
+      $b-error-bgcol,
+      $b-error-hov-col,
+      $b-error-hov-bgcol,
+      false
+    );
+  }
+  &[class*="-success"] {
+    @include button-type(
+      $b-success-col,
+      $b-success-bgcol,
+      $b-success-hov-col,
+      $b-success-hov-bgcol,
+      false
+    );
+  }
+
+  //TYPES
+  //just the text
+  &[class*="-text"] {
+    background-color: transparent;
+  }
+
+  //call to action
+  &[class*="-cta"] {
+    margin: 0.6em 0;
+    min-width: 5em;
+    font-size: 0.9em;
+    padding: 0.6em 0.7em;
+    letter-spacing: 0em;
+    border-radius: 100px;
+    box-shadow: rgba(0, 0, 0, 0.414) 2px 4px 6px;
+  }
+
+  //floating action button // circular -
+  //contains an icon/symbol for an action
+  &[class*="-fab"] {
+    margin: 0.6em 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    //   padding: 0.6em;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 6px;
+    i {
+      //icon styling?
+    }
+  }
+
+  //simple outline
+  &[class*="-outline"] {
+    background-color: transparent;
+    border: 1px solid;
+
+    //!!---------------COLOURS
+    //overwrite colours using mixin (outline:true) [outline colour is determined by text colour not background colour]
+    &[class*="-secondary"] {
+      @include button-type(
+        $b-secondary-col,
+        $b-secondary-bgcol,
+        $b-secondary-hov-col,
+        $b-secondary-hov-bgcol,
+        true
+      );
+    }
+    &[class*="-error"] {
+      @include button-type(
+        $b-error-col,
+        $b-error-bgcol,
+        $b-error-hov-col,
+        $b-error-hov-bgcol,
+        true
+      );
+    }
+    &[class*="-success"] {
+      @include button-type(
+        $b-success-col,
+        $b-success-bgcol,
+        $b-success-hov-col,
+        $b-success-hov-bgcol,
+        true
+      );
+    }
+  }
+
+  //tab
+  &[class*="-tab"] {
+    margin: 0.2em 0 0 0;
+    min-width: 5em;
+    font-size: 0.9em;
+    padding: 0.6em 0.7em;
+    letter-spacing: 0em;
+    border: none;
+    border-radius: initial;
+    box-shadow: 0 0 rgba(0, 0, 0, 0);
+    background-color: transparent;
+    color: white;
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 rgba($color: #000000, $alpha: 0);
+    }
+    &.active {
+      box-shadow: 0 0 rgba(0, 0, 0, 0);
+      border: 1px solid white;
+    }
+  }
+
+  //overrides
+
+  //focus
+  &:focus {
+    outline: none;
+    box-shadow: rgba(0, 0, 0, 0.814) 4px 4px 5px;
+  }
+  &[class*="-text"] {
+    &:focus {
+      outline: none;
+      color: white;
+      box-shadow: none;
+    }
+  }
+
+  //disabled
+  &:disabled {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+}
+
+//fixed floating button (container)
+.fixed-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+}
