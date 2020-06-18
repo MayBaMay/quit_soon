@@ -784,6 +784,7 @@ body {
 }
 
 .form-container form h2 {
+  box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
   font-size: 1.2em;
 }
 
@@ -1134,9 +1135,10 @@ header nav > ul li.dropdown-menu .sub-menu {
 header nav > ul li.dropdown-menu .sub-menu li {
   overflow: hidden;
   border-radius: 10px;
-  background-color: white;
+  background-color: #e6e6e6;
   margin-top: 0.4rem;
   padding: 0em;
+  box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
   color: #292929;
 }
 
