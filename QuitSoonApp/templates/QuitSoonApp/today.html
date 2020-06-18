@@ -1,67 +1,88 @@
-{% extends 'base.html' %}
-{% load static %}
+<!-- example page that extends base.html      -->
 
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<!-- Main content -->
+
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fa-calendar-day"></i>
+  <h1>TODAY</h1>
+  <h2>À CHAQUE JOUR SUFFIT SA PEINE, ET AUJOURD'HUI?</h2>
+</div>
+<!-- End page heading -->
+
+<!-- Panel content -->
+<main id="today" class="content">
+  {% if user.is_authenticated %}
+
+  <section class="panel p1 pc-0 panel-big-btn">
+    <a class="big-btn-container" href="#">
+      <div class="btn-success big-btn">
+        <i class="fas fa-heart"></i>
+        <div class="tablet-content">
+          <span class="tablet-content">Je me fais</span>
+          <span class="tablet-content">du bien</span>
+        </div>
+      </div>
+      <span class="mobile-content success-label">Je me fais</span>
+      <span class="mobile-content success-label">du bien</span>
+    </a>
+  </section>
+  <section class="panel p2 pc-0 panel-big-btn">
+    <a class="big-btn-container" href="#">
+      <div class="btn-error big-btn">
+        <i class="fas fa-skull"></i>
+        <div class="tablet-content">
+          <span class="tablet-content">Je me fais</span>
+          <span class="tablet-content">du mal</span>
+        </div>
+      </div>
+      <span class="mobile-content error-label">Je me fais</span>
+      <span class="mobile-content error-label">du mal</span>
+    </a>
+  </section>
+  <section class="panel p3">
+    <p><b>Consommation : </b></p>
+    <p><b>Moyenne / jour : </b></p>
+    <p><b>Dernière cigarette il y a </b></p>
+    <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+  </section>
+  <section class="panel p4">
+    <p><b>Sport : auj cette semaine</b></p>
+    <p><b>Loisirs : auj cette semaine</b></p>
+    <p><b>Soins : auj cette semaine</b></p>
+    <p><b>Substituts : </b></p>
+    <p><b>- nb substituts utilisé aujourd'hui</b></p>
+    <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
+  </section>
+
+  {% endif %}
+</main>
+<!-- End panel content -->
 
 {% if user.is_authenticated %}
-
-  À CHAQUE JOUR SUFFIT SA PEINE,
-  ET AUJOURD'HUI?
-    <div class="row">
-      <div class="col-lg-6 mb-4">
-        <div class="card bg-danger text-white shadow">
-          <div class="card-body">
-            <button class="button button5"><a href="{% url 'QuitSoonApp:smoke' %}"><i class="fas fa-skull mr-3"></i>
-            JE ME FAIS DU MAL
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6 mb-4">
-        <div class="card bg-success text-white shadow">
-          <div class="card-body">
-            <button class="button button5"><a href="{% url 'QuitSoonApp:health' %}"><i class="fas fa-skull mr-3"></i>
-            JE ME FAIS DU BIEN
-          </div>
-        </div>
-      </div>
-  </div>
-
+<!-- Page modals -->
+<div id="today-modals" class="modal-container page-modals"></div>
 {% else %}
-  <div class="container text-center">
-    VOUS N'ÊTES PAS CONNECTÉ <br>
-    <div class="row">
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </div>
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
-      </div>
+<!-- Static modal -->
+<div class="modal-container modal-static">
+  <div class="modal">
+    <div id="modal-1" class="modal-content">
+      <h1>VOUS N'ÊTES PAS CONNECTÉ</h1>
+      <button class="btn-cta">
+        <a href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </button>
+      <button class="btn-cta">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}"
+          >Créer un compte</a
+        >
+      </button>
     </div>
   </div>
+</div>
 {% endif %}
 
-  <div class="row">
-    <div class="card bg-danger text-white shadow mb-4">
-      <div class="card-body">
-          <p><b>Consommation : </b></p>
-          <p><b>Moyenne / jour : </b></p>
-          <p><b>Dernière cigarette il y a </b></p>
-            <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="card bg-success text-white shadow mb-4">
-      <div class="card-body">
-          <p><b>Sport :  auj   cette semaine</b></p>
-          <p><b>Loisirs :  auj   cette semaine</b></p>
-          <p><b>Soins :  auj   cette semaine</b></p>
-          <p><b>Substituts : </b></p>
-          <p><b>- nb substituts utilisé aujourd'hui</b></p>
-          <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
-      </div>
-    </div>
-  </div>
-
-
+<!-- End page modals -->
+<!-- End of main content -->
 {% endblock %}

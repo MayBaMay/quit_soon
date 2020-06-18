@@ -26,9 +26,45 @@ header {
   grid-gap: 0.8rem;
 }
 
-@include min-break("mobile"){
-  .grid-container{
-  grid-template-rows: $header-height $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
+@include min-break("mobile") {
+  .grid-container {
+    grid-template-rows: $header-height $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
+  }
+}
 
+//grid layout DEFAULTS (override in page specific style sheets)
+.content {
+  grid-template-areas:
+    "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
+    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
+    "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3"
+    "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4"
+    "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5"
+    "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6";
+
+  .p1 {
+    grid-area: p1;
+  }
+  .p2 {
+    grid-area: p2;
+  }
+  .p3 {
+    grid-area: p3;
+  }
+  .p4 {
+    grid-area: p4;
+  }
+  .p5 {
+    grid-area: p5;
+  }
+  .p6 {
+    grid-area: p6;
+  }
+
+  @include min-break("mobile") {
+    grid-template-areas:
+      "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2"
+      "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4"
+      "p5 p5 p5 p5 p5 p5 p6 p6 p6 p6 p6 p6";
   }
 }

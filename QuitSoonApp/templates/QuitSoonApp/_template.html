@@ -7,12 +7,13 @@
 <!-- Page heading -->
 <div class="page-heading">
   <i class="fa-calendar-day"></i>
-  <h1>home page</h1>
+  <h1>page heading</h1>
+  <h2>sub heading</h2>
 </div>
 <!-- End page heading -->
 
 <!-- Panel content -->
-<main id="pagename" class="content">
+<main id="PAGENAME" class="content">
   <section class="panel p1 pc1">
     <p>panel content</p>
   </section>
@@ -25,7 +26,7 @@
 <!-- End panel content -->
 
 <!-- Page modals -->
-<div id="pagename-modals" class="modal-container page-modals">
+<div id="PAGENAME-modals" class="modal-container page-modals">
   <div class="modal">
     <span class="btn close-modal-btn">close</span>
     <div id="modal-1" class="modal-content">
@@ -79,6 +80,23 @@
     </div>
   </div>
 </div>
+  <!-- Static modal -->
+  <div class="modal-container modal-static">
+    <div class="modal">
+      <div id="modal-1" class="modal-content">
+        <h1>Static</h1>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla
+          deleniti impedit quibusdam architecto alias repellat, magni
+          sapiente voluptas aspernatur, sunt cum explicabo nobis earum
+          officiis incidunt beatae quisquam iste numquam?
+        </p>
+
+        <button class="btn-cta">login</button>
+        <button class="btn-cta">create account</button>
+      </div>
+    </div>
+  </div>
 <!-- End page modals -->
 <!-- End of main content -->
 {% endblock %}

@@ -21,3 +21,13 @@
     background-color: $panel-bg-colour3;
   }
 }
+
+//panels for 1 big button
+.panel-big-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  height: 100%;
+}
