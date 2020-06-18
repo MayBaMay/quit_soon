@@ -14,8 +14,6 @@
 
 <!-- Panel content -->
 <main id="today" class="content">
-  {% if user.is_authenticated %}
-
   <section class="panel p1 pc-0 panel-big-btn">
     <a class="big-btn-container" href="#">
       <div class="btn-success big-btn">
@@ -56,32 +54,11 @@
     <p><b>- nb substituts utilisé aujourd'hui</b></p>
     <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
   </section>
-
-  {% endif %}
 </main>
 <!-- End panel content -->
 
-{% if user.is_authenticated %}
 <!-- Page modals -->
 <div id="today-modals" class="modal-container page-modals"></div>
-{% else %}
-<!-- Static modal -->
-<div class="modal-container modal-static">
-  <div class="modal">
-    <div id="modal-1" class="modal-content">
-      <h1>VOUS N'ÊTES PAS CONNECTÉ</h1>
-      <button class="btn-cta">
-        <a href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </button>
-      <button class="btn-cta">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}"
-          >Créer un compte</a
-        >
-      </button>
-    </div>
-  </div>
-</div>
-{% endif %}
 
 <!-- End page modals -->
 <!-- End of main content -->

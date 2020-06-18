@@ -98,9 +98,10 @@
             </div>
           </header>
           <!-- End of header -->
+          {% if user.is_authenticated %}
 
           <!-- Page content -->
-          {% block content %}{% endblock %}
+          {% block content %}{% endblock %} {% endif %}
           <!-- End page content -->
         </div>
         <!-- End grid container -->
@@ -116,7 +117,7 @@
                   {{user.username}}, êtes-vous sûr de vouloir vous déconnecter?
                 </p>
                 <div class="modal-buttons">
-                  <span class="btn">Valider</span>
+                  <span class="btn"> <a href="{% url 'logout' %}"> Valider </a></span>
 
                   <span class="btn close-modal-btn">Annuler</span>
                 </div>
@@ -125,6 +126,27 @@
           </div>
         </div>
         <!-- End logout modal -->
+
+        {% if not user.is_authenticated %}
+
+        <!-- Static modal -->
+        <div class="modal-container modal-static">
+          <div class="modal">
+            <div id="modal-1" class="modal-content">
+              <h1>VOUS N'ÊTES PAS CONNECTÉ</h1>
+              <button class="btn-cta">
+                <a href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+              </button>
+              <button class="btn-cta">
+                <a class="small" href="{% url 'QuitSoonApp:register' %}"
+                  >Créer un compte</a
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         <!-- Footer -->
         <footer>Footer content</footer>
         <!-- End of footer -->
@@ -133,5 +155,7 @@
 
     <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
+    <script src="{% static 'QuitSoonApp/js/index.min.js' %}"></script>
+
   </body>
 </html>
