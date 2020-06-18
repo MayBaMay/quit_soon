@@ -2,10 +2,12 @@
 """Make dictionnary into panda dataframe with period treatment properties """
 
 from datetime import datetime as dt
-from datetime import timedelta
+from datetime import timedelta, date
 import json
 
 import pandas as pd
+
+from QuitSoonApp.models import UserProfile
 
 
 class DataFrameDate:
@@ -14,8 +16,36 @@ class DataFrameDate:
     and giving property periods of this dataframe
     """
 
-    def __init__(self, data_dict):
-        self.df = pd.DataFrame(data_dict, columns=['date', 'nb_cig', 'money_smoked', 'activity_duration']).set_index('date')
+    def __init__(self, data_dict, user):
+        self.data_dict = data_dict
+        self.user = user
+        self.df = self.user_data_df
+
+    @property
+    def user_data_df(self):
+        """create a dataframe with all user data including unused dates"""
+        all_data = pd.DataFrame(self.data_dict, columns=['date', 'nb_cig', 'money_smoked', 'activity_duration']).set_index('date')
+        return self.concat_df_with_all_dates(all_data, self.all_user_dates_in_df)
+
+    @staticmethod
+    def daterange(start_date, end_date):
+        """generate all dates from start_date to end_date """
+        for n in range(int ((end_date - start_date).days)):
+            yield start_date + timedelta(n)
+
+    @property
+    def all_user_dates_in_df(self):
+        """create a dataframe with dates since user start app"""
+        start_date = UserProfile.objects.get(user=self.user).date_start
+        end_date = date.today()
+        dates = []
+        for single_date in self.daterange(start_date, end_date):
+            dates.append({'date':pd.to_datetime(single_date)})
+        return pd.DataFrame(dates, columns=['date']).set_index('date')
+
+    def concat_df_with_all_dates(self, user_data, all_dates):
+        """concat user data df with all_dates df"""
+        return pd.concat([user_data, all_dates], axis=1).rename(columns={"date_cig":"nb_cig"})
 
     @property
     def day_df(self):

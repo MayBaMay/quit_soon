@@ -110,7 +110,7 @@ def dataframe(radio, user):
         user_dict['activity_duration'].append(healthy.min_per_day(date))
         user_dict['nicotine'].append(0)
 
-    df = DataFrameDate(user_dict)
+    df = DataFrameDate(user_dict, user)
     if radio == 'D':
         df = df.day_df
     elif radio == 'W':
