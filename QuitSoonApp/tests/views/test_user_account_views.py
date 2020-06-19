@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+"""tests views related to user connexion, account or profile """
+
+
 import datetime
 
 from django.test import TransactionTestCase, TestCase
@@ -16,6 +19,14 @@ from QuitSoonApp.views import (
 from QuitSoonApp.models import (
     UserProfile, Paquet
 )
+
+
+class AnonymousUserTestCase(TestCase):
+
+    def test_index_with_anonymous_user(self):
+        response = self.client.get(reverse('QuitSoonApp:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'index.html')
 
 class RegisterClientTestCase(TestCase):
     """
@@ -136,6 +147,17 @@ class LoginClientTestCase(TransactionTestCase):
         self.assertTrue(auth.get_user(self.client), 'AnonymousUser')
         self.assertRaises(ValidationError)
 
+    def test_login_wrong_name(self):
+        """Test client login failing wrong email"""
+        self.assertTrue(auth.get_user(self.client), 'AnonymousUser')
+        data = {'username':'awrongname',
+                'password':'testpassword'}
+        response = self.client.post(reverse('QuitSoonApp:login'),
+                         data=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(email='awrongname').exists())
+        self.assertTrue(auth.get_user(self.client), 'AnonymousUser')
+        self.assertRaises(ValidationError)
 
     def test_login_wrong_password(self):
         """Test client login failing wrong email"""
@@ -170,7 +192,7 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertTemplateUsed(response, 'QuitSoonApp/profile.html')
         self.assertEqual(response.context['userprofile'], None)
 
-    def test_profile_get_existing_profile_user(self):
+    def test_profile_get_existing_profile_user_no_ref_pack(self):
         userprofile = UserProfile.objects.create(
             user=self.user,
             date_start='2012-12-12',
@@ -181,6 +203,33 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/profile.html')
         self.assertEqual(response.context['userprofile'], None)
+
+    def test_profile_get_existing_profile_user_no_ref_pack(self):
+        db_pack_ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            first=True
+            )
+        userprofile = UserProfile.objects.create(
+            user=self.user,
+            date_start='2012-12-12',
+            starting_nb_cig=3
+        )
+        self.client.login(username=self.user.username, password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:profile'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'QuitSoonApp/profile.html')
+        self.assertEqual(response.context['userprofile'], userprofile)
+        self.assertEqual(response.context['paquet_ref'], db_pack_ind)
+
+
+    def test_new_name_anonymoususer(self):
+        """test change nameview"""
+        response = self.client.get(reverse('QuitSoonApp:new_name'))
+        self.assertEqual(response.status_code, 404)
 
     def test_new_name(self):
         """test change nameview"""
@@ -203,22 +252,35 @@ class UserProfileTestCase(TransactionTestCase):
         user_id = self.user.id
         username = self.user.username
         data = {'username':'userinDB'}
-        self.client.post(reverse('QuitSoonApp:new_name'),
+        response = self.client.post(reverse('QuitSoonApp:new_name'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.get(id=user_id).username, username)
         self.assertTrue(User.objects.get(username='userinDB').id != user_id)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"name already in db", 'name':self.user.username}
+        )
         self.client.logout()
+
+    def test_new_email_anonymoususer(self):
+        """test change nameview"""
+        response = self.client.get(reverse('QuitSoonApp:new_email'))
+        self.assertEqual(response.status_code, 404)
 
     def test_new_email(self):
         """test change nameview"""
         user_id = self.user.id
         self.client.login(username=self.user.username, password='testpassword')
         data = {'email':'New@email.test'}
-        self.client.post(reverse('QuitSoonApp:new_email'),
+        response = self.client.post(reverse('QuitSoonApp:new_email'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.get(id=user_id).email, 'New@email.test')
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"success"}
+        )
         self.client.logout()
 
     def test_new_email_already_in_db(self):
@@ -229,11 +291,20 @@ class UserProfileTestCase(TransactionTestCase):
         email = self.user.email
         self.client.login(username=self.user.username, password='testpassword')
         data = {'email':'emailalreadyindb@test.com'}
-        self.client.post(reverse('QuitSoonApp:new_email'),
+        response = self.client.post(reverse('QuitSoonApp:new_email'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.get(id=user_id).email, email)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"email already in DB"}
+        )
         self.client.logout()
+
+    def test_new_password_anonymoususer(self):
+        """test change nameview"""
+        response = self.client.get(reverse('QuitSoonApp:new_password'))
+        self.assertEqual(response.status_code, 404)
 
     def test_new_password_success(self):
         """test userpage view in post method"""
@@ -243,10 +314,33 @@ class UserProfileTestCase(TransactionTestCase):
             'new_password1': 'mynewpassword',
             'new_password2': 'mynewpassword',
         }
-        self.client.post(reverse('QuitSoonApp:new_password'),
+        response = self.client.post(reverse('QuitSoonApp:new_password'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.get(username="Test").check_password("mynewpassword"), True)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"success"}
+        )
+        self.client.logout()
+
+    def test_new_password_fail_incorrect_old_password(self):
+        """test userpage view in post method"""
+        self.client.login(username='Test', password='testpassword')
+        data = {
+            'old_password': 'sdvfgsDGzdg',
+            'new_password1': 'mynewpassword',
+            'new_password2': 'newpassword',
+            }
+        response = self.client.post(reverse('QuitSoonApp:new_password'),
+                         data=data,
+                         HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(User.objects.get(username="Test").check_password("mynewpassword"), False)
+        self.assertEqual(User.objects.get(username="Test").check_password("testpassword"), True)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"incorrect old password"}
+        )
         self.client.logout()
 
     def test_new_password_fail_no_confirmed(self):
@@ -257,11 +351,15 @@ class UserProfileTestCase(TransactionTestCase):
             'new_password1': 'mynewpassword',
             'new_password2': 'newpassword',
             }
-        self.client.post(reverse('QuitSoonApp:new_password'),
+        response = self.client.post(reverse('QuitSoonApp:new_password'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.get(username="Test").check_password("mynewpassword"), False)
         self.assertEqual(User.objects.get(username="Test").check_password("testpassword"), True)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"new password not confirmed"}
+        )
         self.client.logout()
 
     def test_new_password_fail_too_short(self):
@@ -272,11 +370,15 @@ class UserProfileTestCase(TransactionTestCase):
             'new_password1': 'secret',
             'new_password2': 'secret',
             }
-        self.client.post(reverse('QuitSoonApp:new_password'),
+        response = self.client.post(reverse('QuitSoonApp:new_password'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.get(username="Test").check_password("secret"), False)
         self.assertEqual(User.objects.get(username="Test").check_password("testpassword"), True)
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'response':"incorrect newpassword"}
+        )
         self.client.logout()
 
     def test_new_parameters_get_anonymous_user(self):

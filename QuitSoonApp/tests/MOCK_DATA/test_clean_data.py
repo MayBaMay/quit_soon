@@ -59,17 +59,12 @@ class CreateTestSmokeTestCase(TestCase):
         self.assertEqual(len(self.packs.clean_data), 4)
         self.assertEqual(len(self.smoke.clean_data),329)
         # given not specified, id ok
-        data = {"date_cig":"2020-10-09","time_cig":"9:35"}
+        data = {"date_cig":"2020-10-09","time_cig":"9:35", "paquet":1001}
         clean_data = self.smoke.get_missing_datas(data)
         self.assertEqual(clean_data['given'], False)
         self.assertTrue(clean_data['paquet'])
-        #test pack_id already in data
-        pack = Paquet.objects.all()[0]
-        data = {"date_cig":"2020-10-09","time_cig":"9:35", "paquet":pack.id}
-        clean_data = self.smoke.get_missing_datas(data)
-        self.assertEqual(clean_data['paquet'], pack)
         # given False, ObjectDoesNotExist, random
-        data = {"date_cig":"2020-10-09","time_cig":"9:35","paquet":100, 'given': False}
+        data = {"date_cig":"2020-10-09","time_cig":"9:35", "paquet":1001, 'given': False}
         clean_data = self.smoke.get_missing_datas(data)
         self.assertTrue(clean_data['paquet'] is not None)
         #call function twice

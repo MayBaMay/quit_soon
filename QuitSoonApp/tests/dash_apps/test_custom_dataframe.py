@@ -41,5 +41,14 @@ class DataFrameDateTestCase(TestCase):
     def test_df_creation(self):
         assert_frame_equal(self.custom_df.df, self.custom_df.df)
 
-    def test_dayly_dataframe(self):
+    def test_daily_dataframe(self):
         assert_frame_equal(self.custom_df.day_df, self.custom_df.day_df)
+        self.assertEqual(self.custom_df.day_df.loc['05/06/20', 'nb_cig'], 9)
+
+    def test_weekly_dataframe(self):
+        assert_frame_equal(self.custom_df.week_df, self.custom_df.week_df)
+        self.assertEqual(self.custom_df.week_df.loc['08/06/20-14/06/20', 'nb_cig'], 7)
+
+    def test_monthly_dataframe(self):
+        assert_frame_equal(self.custom_df.month_df, self.custom_df.month_df)
+        self.assertEqual(self.custom_df.month_df.loc['06/20', 'nb_cig'], 21)

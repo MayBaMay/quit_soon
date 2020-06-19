@@ -1,6 +1,7 @@
+import datetime
 from datetime import time as t
 from datetime import datetime as dt
-from datetime import date as dtdate
+from datetime import date as real_date
 import json
 
 from django.contrib.auth.models import User
@@ -90,11 +91,13 @@ def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
                      showline=False,)
     return fig
 
-def dataframe(radio, user):
+def stats(user):
     # create stats objects
-    smoke = SmokeStats(user, dtdate.today())
-    healthy = HealthyStats(user, dtdate.today())
+    smoke = SmokeStats(user, datetime.date.today())
+    healthy = HealthyStats(user, datetime.date.today())
+    return smoke, healthy
 
+def get_user_infos_from_stats(smoke_stats, healthy_stats):
     # generate data for graphs
     user_dict = {
         'date': [],
@@ -103,14 +106,16 @@ def dataframe(radio, user):
         'activity_duration': [],
         'nicotine': []
         }
-    for date in smoke.list_dates:
+    for date in smoke_stats.list_dates:
         user_dict['date'].append(dt.combine(date, dt.min.time()))
-        user_dict['nb_cig'].append(smoke.nb_per_day(date))
-        user_dict['money_smoked'].append(float(smoke.money_smoked_per_day(date)))
-        user_dict['activity_duration'].append(healthy.min_per_day(date))
+        user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
+        user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
+        user_dict['activity_duration'].append(healthy_stats.min_per_day(date))
         user_dict['nicotine'].append(0)
+    return user_dict
 
-    df = DataFrameDate(user_dict, user)
+def dataframe(radio, user_dict):
+    df = DataFrameDate(user_dict)
     if radio == 'D':
         df = df.day_df
     elif radio == 'W':
@@ -125,7 +130,9 @@ def dataframe(radio, user):
     [dash.dependencies.Input('my-radio', 'value'), Input('my-checkbox', 'value')],
 )
 def display_value(radio, checkbox, request, **kwargs):
-    df = dataframe(radio, request.user)
+    smoke, healthy = stats(request.user)
+    user_dict = get_user_infos_from_stats(smoke, healthy)
+    df = dataframe(radio, user_dict)
     fig1 = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
     return fig1
 
@@ -135,7 +142,9 @@ def display_value(radio, checkbox, request, **kwargs):
      dash.dependencies.Input('my-checkbox', 'value')],
 )
 def display_value(radio, checkbox, request, **kwargs):
-    df = dataframe(radio, request.user)
+    smoke, healthy = stats(request.user)
+    user_dict = get_user_infos_from_stats(smoke, healthy)
+    df = dataframe(radio, user_dict)
     fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Mes sous", df.money_smoked)
     return fig2
 

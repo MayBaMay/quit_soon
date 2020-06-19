@@ -115,6 +115,7 @@ class HealthFormTestCase(TestCase):
             alternative=self.db_alternative_activity_so2,
         )
 
+
 class HealthFormTestCase_field_configTestCase(HealthFormTestCase):
 
     def test_last_alternative(self):

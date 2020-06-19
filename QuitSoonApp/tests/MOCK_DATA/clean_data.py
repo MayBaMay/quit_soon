@@ -40,6 +40,7 @@ class Create_packs:
         """populate database with clean data"""
         for data in self.clean_data:
             Paquet.objects.create(
+                id=data['id'],
                 user=self.user,
                 type_cig=data['type_cig'],
                 brand=data['brand'],
@@ -49,10 +50,8 @@ class Create_packs:
                 g_per_cig=data['g_per_cig'],
                 price_per_cig=data['price_per_cig'],
                 display=data['display'],
+                first=data['first']
                 )
-        # update first pack with first=True
-        first_pack_id = Paquet.objects.all()[0].id
-        Paquet.objects.filter(id=first_pack_id).update(first=True)
 
 class Create_smoke:
     """Parse, complete and use data to populate table ConsoCig in test database"""
@@ -69,7 +68,7 @@ class Create_smoke:
             if data['given'] == True:
                 data['paquet'] = None
             else:
-                # data['given'] = False
+                # => data['given'] = False
                 data = self.get_pack(data)
         except KeyError:
             # data['given'] not specified so default False
@@ -80,18 +79,11 @@ class Create_smoke:
     def get_pack(data):
         data['given'] = False
         try:
-            # id pack specified in data['paquet']
             pack = Paquet.objects.get(id=data['paquet'])
             data['paquet'] = pack
-        except (ObjectDoesNotExist, KeyError, TypeError):
-            # id not in Paquet's ids or not indicated or function called twice(paquet already filled)
-            ids = []
-            # get a random pack for ConsoCig
-            for pack in Paquet.objects.all():
-                ids.append(pack.id)
-            id = randint(min(ids), max(ids))
-            pack = Paquet.objects.get(id=id)
-            data['paquet'] = pack
+        except TypeError: #(ObjectDoesNotExist, KeyError, ):
+            # function called twice(paquet already filled)
+            pass
         return data
 
     def populate_db(self):
