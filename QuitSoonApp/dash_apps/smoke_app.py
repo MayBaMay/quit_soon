@@ -48,6 +48,10 @@ app.layout = html.Div([
               animate=False,
               style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
               ),
+    dcc.Graph(id='graph3',
+              animate=False,
+              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
+              ),
 ])
 
 def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
@@ -111,7 +115,7 @@ def get_user_infos_from_stats(smoke_stats, healthy_stats):
         user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
         user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
         user_dict['activity_duration'].append(healthy_stats.min_per_day(date))
-        user_dict['nicotine'].append(0)
+        user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
     return user_dict
 
 def dataframe(radio, user_dict):
@@ -133,8 +137,8 @@ def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
     user_dict = get_user_infos_from_stats(smoke, healthy)
     df = dataframe(radio, user_dict)
-    fig1 = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
-    return fig1
+    figure = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
+    return figure
 
 @app.expanded_callback(
     dash.dependencies.Output('graph2', 'figure'),
@@ -145,8 +149,17 @@ def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
     user_dict = get_user_infos_from_stats(smoke, healthy)
     df = dataframe(radio, user_dict)
-    fig2 = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en€)", "Mes sous", df.money_smoked)
-    return fig2
+    figure = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en €)", "Mes sous", df.money_smoked)
+    return figure
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+@app.expanded_callback(
+    dash.dependencies.Output('graph3', 'figure'),
+    [dash.dependencies.Input('my-radio', 'value'),
+     dash.dependencies.Input('my-checkbox', 'value')],
+)
+def display_value(radio, checkbox, request, **kwargs):
+    smoke, healthy = stats(request.user)
+    user_dict = get_user_infos_from_stats(smoke, healthy)
+    df = dataframe(radio, user_dict)
+    figure = fig(df, checkbox, "Consomation de substitut nicotinique", "Nicotine (en mg)", "Nicotine", df.nicotine)
+    return figure

@@ -9,19 +9,22 @@ from random import randint
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from QuitSoonApp.models import Paquet, ConsoCig
+from QuitSoonApp.models import Paquet, ConsoCig, Alternative, ConsoAlternative
 
 
-class Create_packs:
+class CreateDataInDatabase:
+
+    def __init__(self, user, row_data):
+        self.user = user
+        self.clean_data = row_data
+        for data in self.clean_data:
+            data = self.get_missing_data(data)
+
+
+class Create_packs(CreateDataInDatabase):
     """Parse, complete and use data to populate table Paquet in test database"""
 
-    def __init__(self, user, paquet_data):
-        self.user = user
-        self.clean_data = paquet_data
-        for data in self.clean_data:
-            data = self.get_missing_datas(data)
-
-    def get_missing_datas(self, data):
+    def get_missing_data(self, data):
         """complete row_data with expected info"""
         # unit, g_per_cig, price_per_cig
         if data['type_cig'] == 'ROL':
@@ -53,16 +56,10 @@ class Create_packs:
                 first=data['first']
                 )
 
-class Create_smoke:
+class Create_smoke(CreateDataInDatabase):
     """Parse, complete and use data to populate table ConsoCig in test database"""
 
-    def __init__(self, user, conso_cig_data):
-        self.user = user
-        self.clean_data = conso_cig_data
-        for data in self.clean_data:
-            data = self.get_missing_datas(data)
-
-    def get_missing_datas(self, data):
+    def get_missing_data(self, data):
         """complete row_data with expected info"""
         try:
             if data['given'] == True:
@@ -94,4 +91,64 @@ class Create_smoke:
                 time_cig=data['time_cig'],
                 paquet=data['paquet'],
                 given=data['given'],
+                )
+
+
+class CreateAlternative(CreateDataInDatabase):
+    """Parse, complete and use data to populate table Alternative in test database"""
+
+    def get_missing_data(self, data):
+        """complete row_data with expected info"""
+        try:
+            if data['type_activity']:
+                data['substitut'] = None
+                data['nicotine'] = None
+        except KeyError:
+            data['type_activity'] = None
+            data['activity'] = None
+        return data
+
+    def populate_db(self):
+        for data in self.clean_data:
+            Alternative.objects.create(
+                id=data['id'],
+                user=self.user,
+                type_alternative=data['type_alternative'],
+                type_activity=data['type_activity'],
+                activity=data['activity'],
+                substitut=data['substitut'],
+                nicotine=data['nicotine'],
+                )
+
+
+class CreateConsoAlternative(CreateDataInDatabase):
+    """Parse, complete and use data to populate table ConsoCig in test database"""
+
+    def get_missing_data(self, data):
+        """complete row_data with expected info"""
+        try:
+            data['activity_duration']
+        except KeyError:
+            data['activity_duration'] = None
+        data['alternative'] = self.get_alternative(data)
+        return data
+
+    @staticmethod
+    def get_alternative(data):
+        try:
+            alt = Alternative.objects.get(id=data['alternative'])
+            data['alternative'] = alt
+        except TypeError: #(ObjectDoesNotExist, KeyError, ):
+            # function called twice(paquet already filled)
+            pass
+        return data['alternative']
+
+    def populate_db(self):
+        for data in self.clean_data:
+            ConsoAlternative.objects.create(
+                user=self.user,
+                date_alter=data['date_alter'],
+                time_alter=data['time_alter'],
+                alternative=data['alternative'],
+                activity_duration=data['activity_duration'],
                 )

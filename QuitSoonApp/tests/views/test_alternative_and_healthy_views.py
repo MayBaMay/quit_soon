@@ -47,7 +47,7 @@ class AlternativeAndHealthyTestCase(TestCase):
     def test_alternatives_view_post_succes_subs(self):
         """Test client post a form with alternatives with success"""
         data = {'type_alternative':'Su',
-                'substitut':'P24',
+                'substitut':'P',
                 'nicotine':'2',
                 }
         response = self.client.post(reverse('QuitSoonApp:alternatives'),
@@ -57,7 +57,7 @@ class AlternativeAndHealthyTestCase(TestCase):
         db_alternative = Alternative.objects.filter(
             user=self.user,
             type_alternative='Su',
-            substitut='P24',
+            substitut='P',
             nicotine='2',
             )
         self.assertTrue(db_alternative.exists())
@@ -89,9 +89,9 @@ class AlternativeAndHealthyTestCase(TestCase):
     def test_alternatives_view_post_get_only_relevant_form(self):
         """Test client post a form with alternatives with success"""
         data = {'type_alternative':'Su',
-                'type_activity':'P16',
+                'type_activity':'P',
                 'activity':'Course',
-                'substitut':'P16',
+                'substitut':'P',
                 'nicotine':'2',
                 }
         response = self.client.post(reverse('QuitSoonApp:alternatives'),
@@ -101,7 +101,7 @@ class AlternativeAndHealthyTestCase(TestCase):
         db_alternative = Alternative.objects.filter(
             user=self.user,
             type_alternative='Su',
-            substitut='P16',
+            substitut='P',
             nicotine='2',
             )
         self.assertTrue(db_alternative.exists())
@@ -201,7 +201,7 @@ class HealthTestCase(TransactionTestCase):
         self.alternative_su = Alternative.objects.create(
             user=self.user,
             type_alternative='Su',
-            substitut='P24',
+            substitut='P',
             nicotine=2,
             )
         self.alternative_su_ecig = Alternative.objects.create(
@@ -360,7 +360,7 @@ class HealthListTestCase(TestCase):
         self.alternative_su = Alternative.objects.create(
             user=self.user,
             type_alternative='Su',
-            substitut='P24',
+            substitut='P',
             nicotine=2,
             )
         self.alternative_lo2 = Alternative.objects.create(

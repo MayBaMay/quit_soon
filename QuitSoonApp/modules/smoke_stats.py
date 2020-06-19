@@ -150,3 +150,11 @@ class HealthyStats(Stats):
         for activity in activity_day:
             min_activity += activity.activity_duration
         return min_activity
+
+    def nicotine_per_day(self, date):
+        user_conso_subsitut = self.user_conso.filter(alternative__type_alternative='Su')
+        conso_day = user_conso_subsitut.filter(date_alter=date)
+        nicotine = 0
+        for conso in conso_day:
+            nicotine += conso.alternative.nicotine
+        return nicotine

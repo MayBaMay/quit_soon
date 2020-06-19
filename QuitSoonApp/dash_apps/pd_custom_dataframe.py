@@ -15,7 +15,7 @@ class DataFrameDate:
     """
 
     def __init__(self, data_dict):
-        self.df = pd.DataFrame(data_dict, columns=['date', 'nb_cig', 'money_smoked', 'activity_duration']).set_index('date')
+        self.df = pd.DataFrame(data_dict, columns=['date', 'nb_cig', 'money_smoked', 'activity_duration', 'nicotine']).set_index('date')
 
     @property
     def day_df(self):
