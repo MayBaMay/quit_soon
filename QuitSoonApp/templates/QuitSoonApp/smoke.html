@@ -51,7 +51,12 @@ JE VAIS CRAQUER ...
       <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
     </form>
   {% endif %}
-  <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+  {% if lastsmoke %}
+    Dernière cigarette enregistrée: {{ lastsmoke.date_cig }} {{ lastsmoke.time_cig }}
+    <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+  {% else %}
+    Vous n'avez encore enregistré aucune cigarette fumée
+  {% endif %}
 
 {% else %}
   <div class="container text-center">

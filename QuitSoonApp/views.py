@@ -272,6 +272,10 @@ def smoke(request):
         context['smoke_form'] = smoke_form
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
     context['smoke'] = smoke
+    try:
+        context['lastsmoke'] = smoke.latest('date_cig', 'time_cig')
+    except ObjectDoesNotExist:
+        pass
     return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
@@ -407,6 +411,10 @@ def health(request):
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
+        try:
+            context['lasthealth'] = health.latest('date_alter', 'time_alter')
+        except ObjectDoesNotExist:
+            pass
     return render(request, 'QuitSoonApp/health.html', context)
 
 def su_ecig(request):
