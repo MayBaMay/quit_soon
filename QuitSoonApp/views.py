@@ -2,7 +2,7 @@
 
 import datetime
 from datetime import time as t
-# from datetime import date
+from dateutil import relativedelta
 from decimal import Decimal
 import json
 
@@ -34,7 +34,8 @@ from .modules import (
     ResetProfile,
     PackManager, SmokeManager,
     AlternativeManager, HealthManager,
-    SmokeStats, HealthyStats
+    SmokeStats, HealthyStats,
+    get_delta_last_event
     )
 
 
@@ -272,10 +273,10 @@ def smoke(request):
         context['smoke_form'] = smoke_form
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
     context['smoke'] = smoke
-    try:
-        context['lastsmoke'] = smoke.latest('date_cig', 'time_cig')
-    except ObjectDoesNotExist:
-        pass
+    if smoke:
+        last = smoke.latest('date_cig', 'time_cig')
+        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+        context['lastsmoke'] = get_delta_last_event(last_time)
     return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
@@ -411,10 +412,10 @@ def health(request):
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
-        try:
-            context['lasthealth'] = health.latest('date_alter', 'time_alter')
-        except ObjectDoesNotExist:
-            pass
+        if health:
+            last = health.latest('date_alter', 'date_alter')
+            last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
+            context['lasthealth'] = get_delta_last_event(last_time)
     return render(request, 'QuitSoonApp/health.html', context)
 
 def su_ecig(request):
