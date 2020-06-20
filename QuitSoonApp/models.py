@@ -33,8 +33,8 @@ class Paquet(models.Model):
         default='U',
     )
     price = models.DecimalField(max_digits=5, decimal_places=2)
-    g_per_cig = models.DecimalField(max_digits=3, decimal_places=1, null=True)
-    price_per_cig = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+    g_per_cig = models.DecimalField(max_digits=5, decimal_places=3, null=True)
+    price_per_cig = models.DecimalField(max_digits=5, decimal_places=3, null=True)
     display = models.BooleanField(default=True)
     first = models.BooleanField(default=False)
 

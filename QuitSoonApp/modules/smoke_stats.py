@@ -142,10 +142,12 @@ class HealthyStats(Stats):
         Stats.__init__(self, user, lastday)
         self.user_conso = ConsoAlternative.objects.filter(user=self.user)
 
-    def min_per_day(self, date):
+    def min_per_day(self, date, type=None):
         """ time in minutes spent the day in argument for healthy activities """
         user_activities = self.user_conso.exclude(alternative__type_alternative='Su')
         activity_day = user_activities.filter(date_alter=date)
+        if type:
+            activity_day.filter(alternative__type_activity=type)
         min_activity = 0
         for activity in activity_day:
             min_activity += activity.activity_duration

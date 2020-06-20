@@ -97,6 +97,8 @@ def today(request):
                 last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
                 context['lasthealth'] = get_delta_last_event(last_time)
 
+                context['sports'] = healthy_stats.min_per_day(datetime.date.today(), 'Sp')
+
     return render(request, 'QuitSoonApp/today.html', context)
 
 def profile(request):

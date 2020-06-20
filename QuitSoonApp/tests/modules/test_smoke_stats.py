@@ -18,7 +18,7 @@ from ..MOCK_DATA import (
     Create_packs, Create_smoke,
     CreateAlternative, CreateConsoAlternative,
     row_paquet_data, row_conso_cig_data,
-    row_alternative_data, row_conso_alt_data,
+    row_alternative_data, row_conso_alt_data, fake_smoke
     )
 
 
@@ -118,36 +118,19 @@ class SmokeStatsTestCaseSmallData(TestCase):
             'NewUserTest', 'test@test.com', 'testpassword')
         self.profile = UserProfile.objects.create(
             user=self.user,
-            date_start="2019-09-28",
+            date_start="2020-06-19",
             starting_nb_cig=20
-        )
-        self.pack = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            price_per_cig=0.5,
-            first=True,
             )
-
-        self.smoke1 = ConsoCig.objects.create(
-            user=self.user,
-            date_cig=datetime.date(2019, 9, 28),
-            time_cig=datetime.time(10, 15),
-            paquet=self.pack,
-            )
-        self.smoke2 = ConsoCig.objects.create(
-            user=self.user,
-            date_cig=datetime.date(2019, 9, 28),
-            time_cig=datetime.time(13, 15),
-            paquet=self.pack,
-            )
-        self.stats = SmokeStats(self.user, datetime.date(2019, 9, 29))
+        self.packs = Create_packs(self.user, row_paquet_data)
+        self.packs.populate_db()
+        self.smoke = Create_smoke(self.user, fake_smoke)
+        self.smoke.populate_db()
+        self.stats = SmokeStats(self.user, datetime.date(2020, 6, 20))
 
     def test_money_smoked_per_day(self):
         """test method money_smoked_per_day"""
-        self.assertEqual(self.stats.money_smoked_per_day("2019-09-28"), 1)
+        self.assertEqual(self.stats.money_smoked_per_day("2020-06-19"), 9.12)
+        self.assertEqual(self.stats.money_smoked_per_day("2020-06-20"), 6.72)
 
     def test_total_cig_with_old_habits(self):
         """test method total_cig_with_old_habits"""
@@ -155,25 +138,28 @@ class SmokeStatsTestCaseSmallData(TestCase):
 
     def test_nb_not_smoked_cig(self):
         """test method nb_not_smoked_cig"""
-        self.assertEqual(self.stats.nb_not_smoked_cig, 38)
+        self.assertEqual(self.stats.nb_not_smoked_cig, 7)
 
     def test_average_money_per_day(self):
         """test method average_money_per_day"""
-        self.assertEqual(self.stats.average_money_per_day, 0.5)
+        self.assertEqual(self.stats.average_money_per_day, 7.92)
 
     def test_list_dates(self):
         """test method list_dates"""
         self.assertEqual(len(self.stats.list_dates), 2)
         self.assertEqual(
             self.stats.list_dates,
-            [datetime.date(2019, 9, 28), datetime.date(2019, 9, 29)]
+            [datetime.date(2020, 6, 19), datetime.date(2020, 6, 20)]
             )
 
     def test_total_money_smoked(self):
-        self.assertEqual(self.stats.total_money_smoked, 1)
+        self.assertEqual(self.stats.total_money_smoked, 15.84)
 
     def test_total_money_with_starting_nb_cig(self):
-        self.assertEqual(self.stats.total_money_with_starting_nb_cig, 20)
+        self.assertEqual(self.stats.total_money_with_starting_nb_cig, 19.20)
+
+    def test_money_saved(self):
+        self.assertEqual(self.stats.money_saved,3.36)
         # self.assertEqual(stat.average_per_day, 200)
 
 class HealthyStatsTestCase(TestCase):

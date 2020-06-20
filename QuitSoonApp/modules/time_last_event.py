@@ -24,3 +24,7 @@ def get_delta_last_event(last_time):
         if last_event == []:
             last_event.append('0 minute ')
         return last_event
+
+
+def find_last_monday(date):
+    pass

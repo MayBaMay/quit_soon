@@ -53,9 +53,9 @@
                 {% for element in lasthealth %}
                      {{ element }}
                 {% endfor %}</b></p>
-              <p><b>Sport :  auj   cette semaine</b></p>
-              <p><b>Loisirs :  auj   cette semaine</b></p>
-              <p><b>Soins :  auj   cette semaine</b></p>
+              <p><b>Sport : {{ sports }} auj   cette semaine   ce mois-ci</b></p>
+              <p><b>Loisirs :  auj   cette semaine   ce mois-ci</b></p>
+              <p><b>Soins :  auj   cette semainece   mois-ci</b></p>
               <p><b>Substituts : </b></p>
               <p><b>- nb substituts utilisé aujourd'hui</b></p>
               <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>

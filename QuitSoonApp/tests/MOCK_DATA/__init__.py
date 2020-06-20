@@ -4,5 +4,5 @@ from .clean_data import (
     )
 from .row_data import (
     row_paquet_data, row_conso_cig_data,
-    row_alternative_data, row_conso_alt_data
+    row_alternative_data, row_conso_alt_data, fake_smoke
     )
