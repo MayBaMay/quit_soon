@@ -15,6 +15,7 @@ class SavePackTestCase(TestCase):
             'NewUserTest', 'test@test.com', 'testpassword')
 
     def test_get_request_data(self):
+        """test method get_request_data"""
         datas ={
             'type_alternative':'Su',
             'substitut':'P24',
@@ -28,6 +29,7 @@ class SavePackTestCase(TestCase):
         self.assertEqual(alternative.get_request_data('nicotine'), 2)
 
     def test_if_strNone_get_None_or_str(self):
+        """test method if_strNone_get_None_or_str"""
         data = 'None'
         self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), None)
         data = 1637
@@ -35,17 +37,20 @@ class SavePackTestCase(TestCase):
         data = 'Su'
         self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), 'Su')
 
-    def if_strNone_get_None_or_float(self):
+    def test_if_strNone_get_None_or_float(self):
+        """test method if_strNone_get_None_or_float"""
         data = 'None'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), None)
-        data = 2
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), 2.0)
-        data = 2.0
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), 2.0)
+        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), None)
+        data = '2'
+        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), 2.0)
+        data = '2.0'
+        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), 2.0)
         data = 'erreur'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), None)
+        self.assertRaises(ValueError, AlternativeManager.if_strNone_get_None_or_float(data))
+        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), None)
 
     def test_get_alternative(self):
+        """test method get_alternative"""
         old = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',

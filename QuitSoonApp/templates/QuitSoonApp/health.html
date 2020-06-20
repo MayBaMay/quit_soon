@@ -50,7 +50,16 @@ JE TIENS BON
       <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
     </form>
   {% endif %}
-  <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+  {% if health %}
+    Dernière alternative enregistrée il y a :
+    {% for element in lastsmoke %}
+         {{ element }}
+    {% endfor %}
+    <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+  {% else %}
+    Vous n'avez encore enregistré aucune action
+  {% endif %}
+
 
 {% else %}
   <div class="container text-center">

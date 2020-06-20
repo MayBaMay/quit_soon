@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
+import datetime
 from datetime import time as t
-from datetime import datetime as dt
-from datetime import date as dtdate
+from dateutil import relativedelta
 from decimal import Decimal
 import json
 
@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.models import User
 
-from .models import (
+from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
@@ -34,7 +34,8 @@ from .modules import (
     ResetProfile,
     PackManager, SmokeManager,
     AlternativeManager, HealthManager,
-    SmokeStats, HealthyStats
+    SmokeStats, HealthyStats,
+    get_delta_last_event
     )
 
 
@@ -75,7 +76,28 @@ def login_view(request):
 
 def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
-    return render(request, 'QuitSoonApp/today.html')
+    context = {}
+    if request.user.is_authenticated:
+        smoke = ConsoCig.objects.filter(user=request.user)
+        health = ConsoAlternative.objects.filter(user=request.user)
+
+        profile = UserProfile.objects.filter(user=request.user).exists()
+        if profile:
+            context['profile'] = True
+            smoke_stats = SmokeStats(request.user, datetime.date.today())
+            healthy_stats = HealthyStats(request.user, datetime.date.today())
+            if smoke:
+                context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
+                last = smoke.latest('date_cig', 'time_cig')
+                last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+                context['lastsmoke'] = get_delta_last_event(last_time)
+                context['average_number'] = round(smoke_stats.average_per_day)
+            if health:
+                last = health.latest('date_alter', 'date_alter')
+                last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
+                context['lasthealth'] = get_delta_last_event(last_time)
+
+    return render(request, 'QuitSoonApp/today.html', context)
 
 def profile(request):
     """User profile page with authentication infos and smoking habits"""
@@ -240,6 +262,7 @@ def delete_pack(request, id_pack):
         new_pack.delete_pack()
         return redirect('QuitSoonApp:paquets')
     else:
+        # asked out of form so not expected request from user
         raise Http404()
 
 def change_g_per_cig(request):
@@ -271,6 +294,10 @@ def smoke(request):
         context['smoke_form'] = smoke_form
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
     context['smoke'] = smoke
+    if smoke:
+        last = smoke.latest('date_cig', 'time_cig')
+        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+        context['lastsmoke'] = get_delta_last_event(last_time)
     return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
@@ -291,26 +318,27 @@ def smoke_list(request):
     if request.user.is_authenticated:
         packs = Paquet.objects.filter(user=request.user, display=True)
         context['packs'] = packs
-        smoke = ConsoCig.objects.filter(user=request.user).order_by('date_cig', 'time_cig')
-        if smoke :
-            smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
-            if request.method == 'POST':
-                smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
-                if smoke_list_form.is_valid():
-                    data = smoke_list_form.cleaned_data
-                    if data['type_cig_field'] != 'empty':
-                        if data['type_cig_field'] == 'given':
-                            smoke = smoke.filter(given=True)
-                        else:
-                            smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
-                            if data['ind_pack_field'] != 'empty':
-                                pack = Paquet.objects.get(id=int(data['ind_pack_field']))
-                                smoke = smoke.filter(paquet__brand=pack.brand)
-                            elif data['rol_pack_field'] != 'empty':
-                                pack = Paquet.objects.get(id=int(data['rol_pack_field']))
-                                smoke = smoke.filter(paquet__brand=pack.brand)
-            context['smoke_list_form'] = smoke_list_form
-            context['smoke'] = smoke
+        if packs.exists():
+            smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
+            if smoke.exists() :
+                smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
+                if request.method == 'POST':
+                    smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
+                    if smoke_list_form.is_valid():
+                        data = smoke_list_form.cleaned_data
+                        if data['type_cig_field'] != 'empty':
+                            if data['type_cig_field'] == 'given':
+                                smoke = smoke.filter(given=True)
+                            else:
+                                smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
+                                if data['ind_pack_field'] != 'empty':
+                                    pack = Paquet.objects.get(id=int(data['ind_pack_field']))
+                                    smoke = smoke.filter(paquet__brand=pack.brand)
+                                elif data['rol_pack_field'] != 'empty':
+                                    pack = Paquet.objects.get(id=int(data['rol_pack_field']))
+                                    smoke = smoke.filter(paquet__brand=pack.brand)
+                context['smoke'] = smoke
+                context['smoke_list_form'] = smoke_list_form
     return render(request, 'QuitSoonApp/smoke_list.html', context)
 
 def alternatives(request):
@@ -405,6 +433,10 @@ def health(request):
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
+        if health:
+            last = health.latest('date_alter', 'date_alter')
+            last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
+            context['lasthealth'] = get_delta_last_event(last_time)
     return render(request, 'QuitSoonApp/health.html', context)
 
 def su_ecig(request):
@@ -442,57 +474,58 @@ def health_list(request):
         # check if packs are in parameters to fill fields with actual packs
         alternatives = Alternative.objects.filter(user=request.user, display=True)
         context['alternatives'] = alternatives
-        health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
-        if health :
-            health_form = ChooseAlternativeFormWithEmptyFields(request.user)
-            if request.method == 'POST':
-                health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
-                if health_form.is_valid():
-                    data = health_form.cleaned_data
-                    if data['type_alternative_field'] != 'empty':
-                        if data['type_alternative_field'] == 'Su':
-                            health = health.filter(alternative__type_alternative=data['type_alternative_field'])
-                            if data['su_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['su_field']))
-                                health = health.filter(alternative__substitut=alt.substitut)
-                        else:
-                            health = health.filter(alternative__type_activity=data['type_alternative_field'])
-                            if data['sp_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['sp_field']))
-                                health = health.filter(alternative__activity=alt.activity)
-                            elif data['so_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['so_field']))
-                                health = health.filter(alternative__activity=alt.activity)
-                            elif data['lo_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['lo_field']))
-                                health = health.filter(alternative__activity=alt.activity)
+        if alternatives.exists():
+            health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
+            if health.exists():
+                health_form = ChooseAlternativeFormWithEmptyFields(request.user)
+                if request.method == 'POST':
+                    health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
+                    if health_form.is_valid():
+                        data = health_form.cleaned_data
+                        if data['type_alternative_field'] != 'empty':
+                            if data['type_alternative_field'] == 'Su':
+                                health = health.filter(alternative__type_alternative=data['type_alternative_field'])
+                                if data['su_field'] != 'empty':
+                                    alt = Alternative.objects.get(id=int(data['su_field']))
+                                    health = health.filter(alternative__substitut=alt.substitut)
+                            else:
+                                health = health.filter(alternative__type_activity=data['type_alternative_field'])
+                                if data['sp_field'] != 'empty':
+                                    alt = Alternative.objects.get(id=int(data['sp_field']))
+                                    health = health.filter(alternative__activity=alt.activity)
+                                elif data['so_field'] != 'empty':
+                                    alt = Alternative.objects.get(id=int(data['so_field']))
+                                    health = health.filter(alternative__activity=alt.activity)
+                                elif data['lo_field'] != 'empty':
+                                    alt = Alternative.objects.get(id=int(data['lo_field']))
+                                    health = health.filter(alternative__activity=alt.activity)
 
-            context['health_form'] = health_form
-        context['health'] = health
+                context['health_form'] = health_form
+                context['health'] = health
     return render(request, 'QuitSoonApp/health_list.html', context)
 
-def suivi(request, **kwargs):
+def report(request, **kwargs):
     """Page with user results, graphs..."""
     context = {}
     if request.user.is_authenticated:
 
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            smoke = SmokeStats(request.user, dtdate.today())
-            healthy = HealthyStats(request.user, dtdate.today())
+            smoke = SmokeStats(request.user, datetime.date.today())
+            # healthy = HealthyStats(request.user, datetime.date.today())
 
             # generate context
             context['total_number'] = smoke.total_smoke
-            context['total_money'] = round(smoke.total_money_smoked, 2)
             context['average_number'] = round(smoke.average_per_day)
-            context['average_money'] = round(smoke.average_money_per_day, 2)
             context['non_smoked'] = smoke.nb_not_smoked_cig
+            context['total_money'] = round(smoke.total_money_smoked, 2)
             context['saved_money'] = round(smoke.money_saved, 2)
+            context['average_money'] = round(smoke.average_money_per_day, 2)
 
         else:
             return redirect('QuitSoonApp:profile')
-
-    return render(request, 'QuitSoonApp/suivi.html', context)
+    print(context)
+    return render(request, 'QuitSoonApp/report.html', context)
 
 def objectifs(request):
     """Page with user trophees and goals"""

@@ -74,8 +74,7 @@ class Alternative(models.Model):
     ]
 
     SUBSTITUT = [
-        ('P24', 'Patchs(24h)'),
-        ('P16', 'Patchs(16h)'),
+        ('P', 'Patchs'),
         ('PAST', 'Pastilles'),
         ('GM', 'Gommes à mâcher'),
         ('GS', 'Gommes à sucer'),

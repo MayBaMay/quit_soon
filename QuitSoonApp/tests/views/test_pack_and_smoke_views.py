@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+"""tests views related to user paquets or smoking """
+
+
 from decimal import Decimal
 import datetime
 
@@ -101,6 +104,12 @@ class PacksAndSmokeTestCase(TestCase):
             price=30,
             )
         self.assertFalse(filter.exists())
+
+    def test_delete_pack_views_wrong_arg(self):
+        response = self.client.post(reverse(
+            'QuitSoonApp:delete_pack',
+            args=[3453]))
+        self.assertEqual(response.status_code, 404)
 
     def test_change_g_per_cig_view(self):
         """Test client post hange_g_per_cig view"""
@@ -242,17 +251,176 @@ class PacksAndSmokeTestCase(TestCase):
             qt_paquet=20,
             price=10,
             )
-        db_smoke_given = ConsoCig.objects.create(
+        db_smoke = ConsoCig.objects.create(
             user=self.user,
             date_cig=datetime.date(2020, 5, 17),
             time_cig=datetime.time(13, 15),
             paquet=db_pack,
             given=False,
             )
-        id = db_smoke_given.id
+        id = db_smoke.id
         response = self.client.post(reverse(
             'QuitSoonApp:delete_smoke',
-            args=[db_smoke_given.id]))
+            args=[db_smoke.id]))
         self.assertEqual(response.status_code, 302)
         filter_conso = ConsoCig.objects.filter(user=self.user, id=id)
         self.assertFalse(filter_conso.exists())
+
+
+class SmokeListTestCase(TestCase):
+
+    def setUp(self):
+        """setup tests"""
+        self.user = User.objects.create_user(
+            'TestUser', 'test@test.com', 'testpassword')
+        self.client.login(username=self.user.username, password='testpassword')
+
+        self.db_pack_undisplayed = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='LUCKY',
+            qt_paquet=20,
+            price=10,
+            display=False
+            )
+        self.db_pack_ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.db_pack_ind2 = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='PHILIP MORRIS',
+            qt_paquet=20,
+            price=10.2,
+            )
+        self.db_pack_rol = Paquet.objects.create(
+            user=self.user,
+            type_cig='ROL',
+            brand='1637',
+            qt_paquet=30,
+            price=12,
+            )
+        self.db_pack_nb = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='beedies',
+            qt_paquet=30,
+            price=5,
+            )
+
+        self.bd_consocig0 = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 13),
+            time_cig=datetime.time(9, 5),
+            paquet=self.db_pack_rol,
+            given=False,
+        )
+        self.bd_consocig1 = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 13),
+            time_cig=datetime.time(9, 5),
+            paquet=self.db_pack_ind,
+            given=False,
+        )
+        self.bd_consocig2 = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 13),
+            time_cig=datetime.time(11, 5),
+            paquet=self.db_pack_ind,
+            given=False,
+        )
+        self.bd_consocig3 = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 13),
+            time_cig=datetime.time(22, 5),
+            paquet=None,
+            given=True,
+        )
+        self.bd_consocig4 = ConsoCig.objects.create(
+            user=self.user,
+            date_cig=datetime.date(2020, 5, 13),
+            time_cig=datetime.time(22, 35),
+            paquet=self.db_pack_ind2,
+            given=False,
+        )
+
+    def test_smoke_list_anonymous_user(self):
+        self.client.logout()
+        response = self.client.get(reverse('QuitSoonApp:smoke_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context, {})
+
+    def test_smoke_list_no_pack_saved(self):
+        Paquet.objects.filter(user=self.user).delete()
+        response = self.client.get(reverse('QuitSoonApp:smoke_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['packs'].count(), 0)
+        self.assertTrue('smoke' not in response.context.keys())
+        self.assertTrue('smoke_list_form' not in response.context.keys())
+
+    def test_smoke_list_no_smoke_saved(self):
+        ConsoCig.objects.filter(user=self.user).delete()
+        response = self.client.get(reverse('QuitSoonApp:smoke_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['packs'], Paquet.objects.filter(user=self.user, display=True))
+        self.assertTrue('smoke' not in response.context.keys())
+        self.assertTrue('smoke_list_form' not in response.context.keys())
+
+    def test_smoke_list_empty_fields(self):
+        data = {'type_cig_field':'empty',
+                'ind_pack_field':'empty',
+                'rol_pack_field':'empty'}
+        response = self.client.post(reverse('QuitSoonApp:smoke_list'),
+                                    data=data)
+        self.assertTrue(response.context['packs'], Paquet.objects.filter(user=self.user, display=True))
+        self.assertTrue(response.context['smoke'][0], self.bd_consocig4)
+        self.assertTrue(response.context['smoke'][1], self.bd_consocig3)
+        self.assertTrue(response.context['smoke'][2], self.bd_consocig2)
+        self.assertTrue(response.context['smoke'][3], self.bd_consocig1)
+        self.assertTrue(response.context['smoke'][4], self.bd_consocig0)
+        self.assertEqual(len(response.context['smoke']), 5)
+        self.assertTrue('smoke_list_form' in response.context.keys())
+
+    def test_smoke_list_given(self):
+        data = {'type_cig_field':'given'}
+        response = self.client.post(reverse('QuitSoonApp:smoke_list'),
+                                    data=data)
+        self.assertTrue(response.context['smoke'][0], self.bd_consocig3)
+        self.assertTrue(self.bd_consocig2 not in response.context['smoke'])
+        self.assertTrue('smoke_list_form' in response.context.keys())
+
+    def test_only_type_cig_field(self):
+        data = {'type_cig_field':'IND',
+                'ind_pack_field':'empty',
+                'rol_pack_field':'empty'}
+        response = self.client.post(reverse('QuitSoonApp:smoke_list'),
+                                    data=data)
+        self.assertTrue(response.context['smoke'][0], self.bd_consocig4)
+        self.assertTrue(response.context['smoke'][1], self.bd_consocig2)
+        self.assertTrue(response.context['smoke'][2], self.bd_consocig1)
+        self.assertEqual(len(response.context['smoke']), 3)
+        self.assertTrue('smoke_list_form' in response.context.keys())
+
+    def test_only_ind_pack_field(self):
+        data = {'type_cig_field':'IND',
+                'ind_pack_field': self.db_pack_ind2.id,
+                'rol_pack_field':'empty'}
+        response = self.client.post(reverse('QuitSoonApp:smoke_list'),
+                                    data=data)
+        self.assertTrue(response.context['smoke'][0], self.bd_consocig4)
+        self.assertEqual(len(response.context['smoke']), 1)
+        self.assertTrue('smoke_list_form' in response.context.keys())
+
+    def test_only_rol_pack_field(self):
+        data = {'type_cig_field':'ROL',
+                'ind_pack_field': 'empty',
+                'rol_pack_field':self.db_pack_rol.id}
+        response = self.client.post(reverse('QuitSoonApp:smoke_list'),
+                                    data=data)
+        self.assertTrue(response.context['smoke'][0], self.bd_consocig0)
+        self.assertEqual(len(response.context['smoke']), 1)
+        self.assertTrue('smoke_list_form' in response.context.keys())

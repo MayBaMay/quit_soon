@@ -154,6 +154,11 @@ class SmokeManagerTestCase(TestCase):
         filter_conso = ConsoCig.objects.filter(user=self.usertest, paquet=self.db_pack_ind.id)
         self.assertFalse(filter_conso.exists())
 
+    def test_delete_conso_cig(self):
+        """test SmokeManager.delete_conso method"""
+        smoke = SmokeManager(self.usertest, {'id_smoke': 17364})
+        self.assertRaises(AttributeError, smoke.delete_conso_cig())
+
     def test_delete_conso_cig_given_cig(self):
         """test SmokeManager.delete_conso method with cig == given cig"""
         db_smoke_given = ConsoCig.objects.create(

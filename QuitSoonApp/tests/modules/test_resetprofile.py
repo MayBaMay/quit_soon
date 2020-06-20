@@ -89,6 +89,11 @@ class ResetProfileTestCase(TestCase):
             nb_jour=3,
         )
 
+    def test_get_request_data(self):
+        userprofile = ResetProfile(self.usertest, {})
+        self.assertIsNone(userprofile.date_start)
+        self.assertRaises(KeyError, userprofile.get_request_data('date_start'))
+
     def test_clean_old_datas(self):
         UserProfile.objects.create(
             user=self.usertest,

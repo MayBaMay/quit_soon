@@ -6,6 +6,15 @@ import sys
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'quit_soon_project.settings')
+
+    is_testing = 'test' in sys.argv
+    if is_testing:
+        import coverage
+        cov = coverage.coverage()
+        cov.set_option('report:show_missing', True)
+        cov.erase()
+        cov.start()
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -15,6 +24,12 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+
+    if is_testing:
+        cov.stop()
+        cov.save()
+        cov.html_report(directory='covhtml')
+        cov.report()
 
 
 if __name__ == '__main__':

@@ -7,8 +7,24 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
-from QuitSoonApp.forms import HealthForm
+from QuitSoonApp.forms import HealthForm, ChooseAlternativeFormWithEmptyFields, ActivityForm
 from QuitSoonApp.models import Alternative, ConsoAlternative
+
+
+class ActivityFormTestCase(TestCase):
+    def setUp(self):
+        """setup tests"""
+        self.usertest = User.objects.create_user(
+            username="arandomname", email="random@email.com", password="arandompassword")
+
+    def test_clean_activity(self):
+        data = {
+            'type_activity':'Sp',
+            'activity':'course',
+        }
+        form = ActivityForm(self.usertest, data)
+        self.assertTrue(form.is_valid())
+        self.assertTrue(form.cleaned_data.get('activity'), 'COURSE')
 
 
 class HealthFormTestCase(TestCase):
@@ -99,7 +115,8 @@ class HealthFormTestCase(TestCase):
             alternative=self.db_alternative_activity_so2,
         )
 
-class HealthFormTestCase_field_config(HealthFormTestCase):
+
+class HealthFormTestCase_field_configTestCase(HealthFormTestCase):
 
     def test_last_alternative(self):
         form = HealthForm(self.usertest)
@@ -198,7 +215,23 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
             '__all__':["Vous n'avez pas renseigné de durée pour cette activité"],
             })
 
-class HealthFormTestCase_ECIG(TestCase):
+        def test_ecig(self):
+            data = {
+                'date_health':datetime.date(2020, 5, 26),
+                'time_health':datetime.time(12, 56),
+                'duration_hour':0,
+                'duration_min':30,
+                'type_alternative_field':'So',
+                'sp_field':self.db_alternative_activity_sp.id,
+                'so_field':self.db_alternative_activity_so.id,
+                'su_field':self.db_alternative_substitut_p24.id,
+            }
+            form = HealthForm(self.usertest, data)
+            self.assertFalse(form.is_valid())
+            self.assertRaises(ValueError)
+
+
+class HealthFormTestCase_ECIGTestCase(TestCase):
 
     def setUp(self):
         """setup tests"""
@@ -290,3 +323,21 @@ class HealthFormTestCase_ECIG(TestCase):
         form = HealthForm(self.usertest, data)
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data.get('ecig_vape_or_start'), ['S'])
+
+
+class ChooseAlternativeFormWithEmptyFieldsTestCase(HealthFormTestCase):
+
+    def test_valid_empty_data(self):
+        data = {'type_alternative_field':'empty'}
+        form = ChooseAlternativeFormWithEmptyFields(self.usertest, data)
+        self.assertTrue(form.is_valid())
+
+        data = {
+            'type_alternative_field':'empty',
+            'sp_field':'empty',
+            'so_field':'empty',
+            'lo_field':'empty',
+            'su_field':'empty',
+            }
+        form = ChooseAlternativeFormWithEmptyFields(self.usertest, data)
+        self.assertTrue(form.is_valid())

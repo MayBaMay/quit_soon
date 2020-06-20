@@ -47,7 +47,7 @@ class HealthManager:
     def get_alternative(self):
         try:
             if self.id:
-            # when user wants to delete a heath action, ConsoAlternative id is returned in request
+            # when user wants to delete a heath action, ConsoAlternative.alternative is returned in request
                 return self.get_conso_alternative.alternative
             else:
                 type = self.get_request_data('type_alternative_field')

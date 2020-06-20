@@ -143,8 +143,6 @@ class ChooseAlternativeForm(forms.Form):
                 if alternative.substitut == self.last_alternative(type_alternative).substitut and alternative.nicotine == self.last_alternative(type_alternative).nicotine:
                     self.initial[field_name] = (alternative.id, display)
             return tuple(CHOICES)
-        else:
-            return None
 
 
 class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
@@ -158,7 +156,7 @@ class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
         #########################################################################################
         # define type alternative configuration (choices + initial)
         # choices = Sport, Loisir, Soin, Substitut (if alternatives of this types saved by user)
-        # initial = last alternative type_activity or last alternative type_alternative(if =='Su')
+        # initial = empty '------------------'
         #########################################################################################
         TYPE_ALTERNATIVE_CHOICES = []
         for conso in self.user_conso.filter(alternative__type_alternative='Ac').order_by('alternative__type_activity').distinct('alternative__type_activity'):
@@ -209,8 +207,6 @@ class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
                 display = "{} ({}mg)".format(conso.alternative.get_substitut_display(), conso.alternative.nicotine)
                 CHOICES.append((conso.alternative.id, display))
             return tuple(CHOICES)
-        else:
-            return None
 
 class HealthForm(ChooseAlternativeForm):
     """Class generating a form for user healthy action"""

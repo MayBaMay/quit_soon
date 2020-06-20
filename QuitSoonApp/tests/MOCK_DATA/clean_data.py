@@ -9,19 +9,22 @@ from random import randint
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from QuitSoonApp.models import Paquet, ConsoCig
+from QuitSoonApp.models import Paquet, ConsoCig, Alternative, ConsoAlternative
 
 
-class Create_test_packs:
+class CreateDataInDatabase:
+
+    def __init__(self, user, row_data):
+        self.user = user
+        self.clean_data = row_data
+        for data in self.clean_data:
+            data = self.get_missing_data(data)
+
+
+class Create_packs(CreateDataInDatabase):
     """Parse, complete and use data to populate table Paquet in test database"""
 
-    def __init__(self, user, paquet_data):
-        self.user = user
-        self.clean_data = paquet_data
-        for data in self.clean_data:
-            data = self.get_missing_datas(data)
-
-    def get_missing_datas(self, data):
+    def get_missing_data(self, data):
         """complete row_data with expected info"""
         # unit, g_per_cig, price_per_cig
         if data['type_cig'] == 'ROL':
@@ -36,10 +39,11 @@ class Create_test_packs:
             data['price_per_cig'] = Decimal(data['price'])/data['qt_paquet']
             return data
 
-    def populate_test_db(self):
+    def populate_db(self):
         """populate database with clean data"""
         for data in self.clean_data:
             Paquet.objects.create(
+                id=data['id'],
                 user=self.user,
                 type_cig=data['type_cig'],
                 brand=data['brand'],
@@ -49,27 +53,19 @@ class Create_test_packs:
                 g_per_cig=data['g_per_cig'],
                 price_per_cig=data['price_per_cig'],
                 display=data['display'],
+                first=data['first']
                 )
-        # update first pack with first=True
-        first_pack_id = Paquet.objects.all()[0].id
-        Paquet.objects.filter(id=first_pack_id).update(first=True)
 
-class Create_test_smoke:
+class Create_smoke(CreateDataInDatabase):
     """Parse, complete and use data to populate table ConsoCig in test database"""
 
-    def __init__(self, user, conso_cig_data):
-        self.user = user
-        self.clean_data = conso_cig_data
-        for data in self.clean_data:
-            data = self.get_missing_datas(data)
-
-    def get_missing_datas(self, data):
+    def get_missing_data(self, data):
         """complete row_data with expected info"""
         try:
             if data['given'] == True:
                 data['paquet'] = None
             else:
-                # data['given'] = False
+                # => data['given'] = False
                 data = self.get_pack(data)
         except KeyError:
             # data['given'] not specified so default False
@@ -80,21 +76,14 @@ class Create_test_smoke:
     def get_pack(data):
         data['given'] = False
         try:
-            # id pack specified in data['paquet']
             pack = Paquet.objects.get(id=data['paquet'])
             data['paquet'] = pack
-        except (ObjectDoesNotExist, KeyError, TypeError):
-            # id not in Paquet's ids or not indicated or function called twice(paquet already filled)
-            ids = []
-            # get a random pack for ConsoCig
-            for pack in Paquet.objects.all():
-                ids.append(pack.id)
-            id = randint(min(ids), max(ids))
-            pack = Paquet.objects.get(id=id)
-            data['paquet'] = pack
+        except TypeError: #(ObjectDoesNotExist, KeyError, ):
+            # function called twice(paquet already filled)
+            pass
         return data
 
-    def populate_test_db(self):
+    def populate_db(self):
         for data in self.clean_data:
             ConsoCig.objects.create(
                 user=self.user,
@@ -102,4 +91,64 @@ class Create_test_smoke:
                 time_cig=data['time_cig'],
                 paquet=data['paquet'],
                 given=data['given'],
+                )
+
+
+class CreateAlternative(CreateDataInDatabase):
+    """Parse, complete and use data to populate table Alternative in test database"""
+
+    def get_missing_data(self, data):
+        """complete row_data with expected info"""
+        try:
+            if data['type_activity']:
+                data['substitut'] = None
+                data['nicotine'] = None
+        except KeyError:
+            data['type_activity'] = None
+            data['activity'] = None
+        return data
+
+    def populate_db(self):
+        for data in self.clean_data:
+            Alternative.objects.create(
+                id=data['id'],
+                user=self.user,
+                type_alternative=data['type_alternative'],
+                type_activity=data['type_activity'],
+                activity=data['activity'],
+                substitut=data['substitut'],
+                nicotine=data['nicotine'],
+                )
+
+
+class CreateConsoAlternative(CreateDataInDatabase):
+    """Parse, complete and use data to populate table ConsoCig in test database"""
+
+    def get_missing_data(self, data):
+        """complete row_data with expected info"""
+        try:
+            data['activity_duration']
+        except KeyError:
+            data['activity_duration'] = None
+        data['alternative'] = self.get_alternative(data)
+        return data
+
+    @staticmethod
+    def get_alternative(data):
+        try:
+            alt = Alternative.objects.get(id=data['alternative'])
+            data['alternative'] = alt
+        except TypeError: #(ObjectDoesNotExist, KeyError, ):
+            # function called twice(paquet already filled)
+            pass
+        return data['alternative']
+
+    def populate_db(self):
+        for data in self.clean_data:
+            ConsoAlternative.objects.create(
+                user=self.user,
+                date_alter=data['date_alter'],
+                time_alter=data['time_alter'],
+                alternative=data['alternative'],
+                activity_duration=data['activity_duration'],
                 )
