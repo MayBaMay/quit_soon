@@ -1,71 +1,78 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block content %}
-JE VAIS CRAQUER ...
-{% if user.is_authenticated %}
-  {% if not packs %}
-    Vous n'avez enregistré aucun paquet,<br>
-    Veuillez paramétrer vos paquets
-    <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
-  {% else %}
-    <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        {{ smoke_form.non_field_errors }}
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.date_smoke.label }}
-          {{ smoke_form.date_smoke }}
-          {{ smoke_form.date_smoke.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.time_smoke.label }}
-          {{ smoke_form.time_smoke }}
-          {{ smoke_form.time_smoke.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.given_field.label }}
-          {{ smoke_form.given_field }}
-          {{ smoke_form.given_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.type_cig_field.label }}
-          {{ smoke_form.type_cig_field }}
-          {{ smoke_form.type_cig_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.ind_pack_field.label }}
-          {{ smoke_form.ind_pack_field }}
-          {{ smoke_form.ind_pack_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.rol_pack_field.label }}
-          {{ smoke_form.rol_pack_field }}
-          {{ smoke_form.rol_pack_field.error }}
-        </div>
-      </div>
-      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
-    </form>
-  {% endif %}
-  {% if smoke %}
-    Vous avez fumé votre dernière cigarette il y a :
-    {% for element in lastsmoke %}
-         {{ element }}
-    {% endfor %}
-    <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
-  {% else %}
-    Vous n'avez encore enregistré aucune cigarette fumée
-  {% endif %}
-{% else %}
-  <div class="container text-center">
-    VOUS N'ÊTES PAS CONNECTÉ <br>
-    <div class="row">
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </div>
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
-      </div>
-    </div>
-  </div>
-{% endif %}
-{% endblock %}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+JE VAIS CRAQUER ...
+
+{% if user.is_authenticated %}
+
+  {% if not packs %}
+    Vous n'avez enregistré aucun paquet,<br>
+    Veuillez paramétrer vos paquets
+    <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
+
+  {% else %}
+    <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ smoke_form.non_field_errors }}
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.date_smoke.label }}
+          {{ smoke_form.date_smoke }}
+          {{ smoke_form.date_smoke.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.time_smoke.label }}
+          {{ smoke_form.time_smoke }}
+          {{ smoke_form.time_smoke.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.given_field.label }}
+          {{ smoke_form.given_field }}
+          {{ smoke_form.given_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.type_cig_field.label }}
+          {{ smoke_form.type_cig_field }}
+          {{ smoke_form.type_cig_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.ind_pack_field.label }}
+          {{ smoke_form.ind_pack_field }}
+          {{ smoke_form.ind_pack_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.rol_pack_field.label }}
+          {{ smoke_form.rol_pack_field }}
+          {{ smoke_form.rol_pack_field.error }}
+        </div>
+      </div>
+      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+    </form>
+  {% endif %}
+  {% if smoke %}
+    Vous avez fumé votre dernière cigarette il y a :
+    {% for element in lastsmoke %}
+         {{ element }}
+    {% endfor %}
+    <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+  {% else %}
+    Vous n'avez encore enregistré aucune cigarette fumée
+  {% endif %}
+
+{% else %}
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}
