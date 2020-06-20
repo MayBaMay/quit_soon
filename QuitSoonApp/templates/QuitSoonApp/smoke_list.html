@@ -1,11 +1,19 @@
-{% extends 'base.html' %}
-{% load static %}
-
+{% extends 'base.html' %} {% load static %} {% load l10n %}
 {% block content %}
 
-MES CRAQUAGES :
+<!-- Main content -->
 
-{% if user.is_authenticated %}
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fa-calendar-day"></i>
+  <h1>mes craquages</h1>
+  <h2>du progrès?</h2>
+</div>
+<!-- End page heading -->
+
+<!-- Panel content -->
+<main id="paquets" class="content">
+  <section class="panel p1 pc1">
 
   {% if not packs %}
     Vous n'avez enregistré aucun paquet,<br>
@@ -14,29 +22,30 @@ MES CRAQUAGES :
 
   {% else %}
     {% if smoke %}
-    <form id="smokefilterform" method='post' action="{% url 'QuitSoonApp:smoke_list' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        {{ smoke_form.non_field_errors }}
-        <div class="fieldWrapper form-group ">
-          {{ smoke_list_form.type_cig_field.label }}
-          {{ smoke_list_form.type_cig_field }}
-          {{ smoke_list_form.type_cig_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_list_form.ind_pack_field.label }}
-          {{ smoke_list_form.ind_pack_field }}
-          {{ smoke_list_form.ind_pack_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_list_form.rol_pack_field.label }}
-          {{ smoke_list_form.rol_pack_field }}
-          {{ smoke_list_form.rol_pack_field.error }}
-        </div>
-        <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
+      <div class="form-container">                
+        <form id="smokefilterform" method='post' action="{% url 'QuitSoonApp:smoke_list' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ smoke_form.non_field_errors }}
+            <div class="fieldWrapper form-group ">
+              {{ smoke_list_form.type_cig_field.label }}
+              {{ smoke_list_form.type_cig_field }}
+              {{ smoke_list_form.type_cig_field.error }}
+            </div>
+            <div class="fieldWrapper form-group ">
+              {{ smoke_list_form.ind_pack_field.label }}
+              {{ smoke_list_form.ind_pack_field }}
+              {{ smoke_list_form.ind_pack_field.error }}
+            </div>
+            <div class="fieldWrapper form-group ">
+              {{ smoke_list_form.rol_pack_field.label }}
+              {{ smoke_list_form.rol_pack_field }}
+              {{ smoke_list_form.rol_pack_field.error }}
+            </div>
+            <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
+          </div>
+        </form>
       </div>
-    </form>
-
       {% for conso in smoke %}
         <div class="row">
           {% if conso.given %}
@@ -47,24 +56,15 @@ MES CRAQUAGES :
           <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
         </div>
       {% endfor %}
-
     {% else %}
       Vous n'avez pas encore enregistré de craquage, félicitation!
     {% endif %}
   {% endif %}
 
-{% else %}
-  <div class="container text-center">
-    VOUS N'ÊTES PAS CONNECTÉ <br>
-    <div class="row">
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </div>
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
-      </div>
-    </div>
-  </div>
-{% endif %}
+  </section>            
 
+</main>
+<!-- End panel content -->
+
+<!-- End of main content -->
 {% endblock %}

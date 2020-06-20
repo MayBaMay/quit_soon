@@ -1,91 +1,93 @@
-{% extends 'base.html' %}
-{% load static %}
+<!-- example page that extends base.html      -->
 
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 
-  {% if user.is_authenticated %}
+<!-- Main content -->
 
-    À CHAQUE JOUR SUFFIT SA PEINE,
-    ET AUJOURD'HUI?
-      <div class="row">
-        <div class="col-lg-6 mb-4">
-          <div class="card bg-danger text-white shadow">
-            <div class="card-body">
-              <button class="button button5"><a href="{% url 'QuitSoonApp:smoke' %}"><i class="fas fa-skull mr-3"></i>
-              JE ME FAIS DU MAL
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-6 mb-4">
-          <div class="card bg-success text-white shadow">
-            <div class="card-body">
-              <button class="button button5"><a href="{% url 'QuitSoonApp:health' %}"><i class="fas fa-skull mr-3"></i>
-              JE ME FAIS DU BIEN
-            </div>
-          </div>
-        </div>
-    </div>
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fas fa-calendar-day"></i>
+  <h1>Today</h1>
+  <h2>À chaque jour suffit sa peine, et aujourd'hui?</h2>
+</div>
+<!-- End page heading -->
 
-    {% if profile %}
-
-      <div class="row">
-        <div class="card bg-danger text-white shadow mb-4">
-          <div class="card-body">
-            {% if lastsmoke %}
-              <p><b>Dernière cigarette il y a
-                {% for element in lastsmoke %}
-                     {{ element }}
-                {% endfor %}</b></p>
-              <p><b>Consommation : {{ smoke_today }}</b></p>
-              <p><b>Moyenne / jour : {{ average_number }}</b></p>
-              <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
-            {% else %}
-              Aucune cigarette fumée enregistrée
-            {% endif %}
-          </div>
+<!-- Panel content -->
+<main id="today" class="content">
+  <section class="panel p1 pc-0 panel-big-btn">
+    <a class="big-btn-container" href="{% url 'QuitSoonApp:health' %}">
+      <div class="btn-success big-btn">
+        <i class="fas fa-heart"></i>
+        <div class="tablet-content">
+          <span class="tablet-content">Je me fais</span>
+          <span class="tablet-content">du bien</span>
         </div>
       </div>
-      <div class="row">
-        <div class="card bg-success text-white shadow mb-4">
-          <div class="card-body">
-            {% if lasthealth %}
-              <p><b>Dernière alternative il y a
-                {% for element in lasthealth %}
-                     {{ element }}
-                {% endfor %}</b></p>
-              <p><b>Sport :  auj   cette semaine</b></p>
-              <p><b>Loisirs :  auj   cette semaine</b></p>
-              <p><b>Soins :  auj   cette semaine</b></p>
-              <p><b>Substituts : </b></p>
-              <p><b>- nb substituts utilisé aujourd'hui</b></p>
-              <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
-            {% else %}
-              Aucune action saine enregistrée
-            {% endif %}
-          </div>
+      <span class="mobile-content success-label">Je me fais</span>
+      <span class="mobile-content success-label">du bien</span>
+    </a>
+  </section>
+  <section class="panel p2 pc-0 panel-big-btn">
+    <a class="big-btn-container" href="{% url 'QuitSoonApp:smoke' %}">
+      <div class="btn-error big-btn">
+        <i class="fas fa-skull"></i>
+        <div class="tablet-content">
+          <span class="tablet-content">Je me fais</span>
+          <span class="tablet-content">du mal</span>
         </div>
       </div>
+      <span class="mobile-content error-label">Je me fais</span>
+      <span class="mobile-content error-label">du mal</span>
+    </a>
+  </section>
 
+  {% if profile %}
 
-    {% else %}
-      Vous n'avez pas paramétré votre profil, nous ne pouvons donc pas fournir de statiqtiques.
-      <a href="{% url 'QuitSoonApp:profile' %}">Paramétrer mon profil</a>
-
-    {% endif %}
+    <section class="panel p3">
+        {% if lastsmoke %}
+          <p><b>Dernière cigarette il y a
+            {% for element in lastsmoke %}
+                  {{ element }}
+            {% endfor %}</b></p>
+          <p><b>Consommation : {{ smoke_today }}</b></p>
+          <p><b>Moyenne / jour : {{ average_number }}</b></p>
+          <a class="btn" href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+        {% else %}
+          Aucune cigarette fumée enregistrée
+        {% endif %}
+    </section>
+    <section class="panel p4">
+        {% if lasthealth %}
+          <p><b>Dernière alternative il y a
+            {% for element in lasthealth %}
+                  {{ element }}
+            {% endfor %}</b></p>
+          <p><b>Sport :  auj   cette semaine</b></p>
+          <p><b>Loisirs :  auj   cette semaine</b></p>
+          <p><b>Soins :  auj   cette semaine</b></p>
+          <p><b>Substituts : </b></p>
+          <p><b>- nb substituts utilisé aujourd'hui</b></p>
+          <a class="btn" href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
+        {% else %}
+          Aucune action saine enregistrée
+        {% endif %}
+    </section>
 
   {% else %}
-    <div class="container text-center">
-      VOUS N'ÊTES PAS CONNECTÉ <br>
-      <div class="row">
-        <div class="col-6">
-          <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-        </div>
-        <div class="col-6">
-          <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
-        </div>
-      </div>
-    </div>
+
+  <section class="panel p3">
+    Vous n'avez pas paramétré votre profil, nous ne pouvons donc pas fournir de statiqtiques.
+    <a class="btn-secondary" href="{% url 'QuitSoonApp:profile' %}">Paramétrer mon profil</a>
+  </section>
 
   {% endif %}
 
+</main>
+<!-- End panel content -->
+
+<!-- Page modals -->
+<div id="today-modals" class="modal-container page-modals"></div>
+
+<!-- End page modals -->
+<!-- End of main content -->
 {% endblock %}

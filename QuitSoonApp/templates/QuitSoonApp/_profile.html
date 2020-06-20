@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{{title}}
+
+  {% if user.is_authenticated %}
+  <div class="container">
+    <b>
+      <p>MES INFORMATIONS PERSONNELLES</p>
+      <p>Nom d'utilisateur : {{ user.username }} <a href="#" id="newName"title="Modfier" data-toggle="modal" data-target="#modal_change_username" ><i class="fas fa-edit ml-1"></i></a></p>
+      <p>Adresse mail : {{ user.email }} <a href="#" id="newemail"title="Modfier" data-toggle="modal" data-target="#modal_change_email" ><i class="fas fa-edit"></i></a></p>
+   </b>
+   <p><a href="#" id="newpassword" title="Modfier" data-toggle="modal" data-target="#modal_change_password">Modifier mon mot de passe<i class="fas fa-edit ml-1"></i></a></p>
+
+  </div>
+
+  <div class="container">
+    <b>
+      <p>MON SUIVI<a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" ><i class="fas fa-edit ml-1"></i></a></p>
+      {% if userprofile %}
+        <p>Début du suivi : {{ userprofile.date_start }}</p>
+        <p>Nb de cigarette moyen/jr en début de suivi : {{ userprofile.starting_nb_cig }}</p>
+        {% if paquet_ref %}
+          <p>Paquet de référence : {{ paquet_ref.brand }}({{ paquet_ref.qt_paquet }}{{ paquet_ref.unit }}). Prix en début de suivi:{{ paquet_ref.price }}€ </p>
+        {% endif %}
+      {% else %}
+        <div class="" id="noprofile">
+          <p>Vous n'avez pas encore paramétré vos informations de début de suivi.</p>
+          <p>Pour bénéficier des fonctionnalités de l'application, veuillez remédier à celà en cliquant <a href="#" id="starting_parameters"title="Modfier" data-toggle="modal" data-target="#modal_starting_parameters" >ici</a></p>
+        </div>
+      {% endif %}
+   </b>
+  </div>
+
+  {% else %}
+
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!--  change_username Form Modal -->
+  <div id="modal_change_username" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Changer de nom d"utilisateur</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form id="NewNameForm" method="post" action="{% url 'QuitSoonApp:new_name' %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <input type="username" name="username" id="new_username" class="form-control"
+               placeholder="Nouveau nom d'utilisateur" required="required" />
+            </div>
+            <div class="text-danger text-center username-error" id="" style="display:none;">
+              <p>Un utilisateur existe déjà à ce nom</p>
+            </div>
+            <p class="text-danger text-center newname-error" style="display:none;">Une erreur est survenue</p>
+            <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End of change_username-->
+
+  <!--  change_password Form Modal -->
+<div id="modal_change_email" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Changer mon adresse email</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <form id="NewEmailForm" method="post" action="{% url 'QuitSoonApp:new_email' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <input type="email" name="email" id="new_email" class="form-control"
+             placeholder="Nouvelle adresse email" required="required" />
+          </div>
+          <div class="text-danger text-center dbemail-error" id="" style="display:none;">
+            <p>Un compte existe déjà avec cette adresse email</p>
+          </div>
+          <p class="text-danger text-center newemail-error" style="display:none;">Une erreur est survenue</p>
+          <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of change_email-->
+
+<!--  change_password Form Modal -->
+<div id="modal_change_password" class="modal fade" tabindex="-1" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Changer mon mot de passe</h4>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+      <form id="NewPasswordForm" method="post" action="{% url 'QuitSoonApp:new_password' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="password" name="old_password" id="old_password" class="form-control"
+           placeholder="Ancien mot de passe" required="required" />
+           <div class="text-danger text-center oldpwd-error" id="" style="display:none;">
+             <p>Cette entrée ne correspond pas à votre ancien mot de passe</p>
+           </div>
+        </div>
+        <div class="form-group">
+          <input type="password" name="new_password1" id="new_password1" class="form-control"
+           placeholder="Nouveau mot de passe" required="required" />
+           <div class="text-danger text-center newpwd-error" id="" style="display:none;">
+             <p>Ce mot de passe ne correspond pas aux critères de sécurité :
+               <ul>
+                <li>Votre mot de passe ne peut pas trop ressembler à vos autres informations personnelles.</li>
+                <li>Votre mot de passe doit contenir au minimum 8 caractères.</li>
+                <li>Votre mot de passe ne peut pas être un mot de passe couramment utilisé.</li>
+                <li>Votre mot de passe ne peut pas être entièrement numérique.</li>
+              </ul>
+             </p>
+           </div>
+          <input type="password" name="new_password2" id="new_password2" class="form-control"
+           placeholder="Confirmation du nouveau mot de passe" required="required" />
+         <div class="text-danger text-center dbpwd-error" id="" style="display:none;">
+           <p>Mots de passe différents, veuillez confirmer votre nouveau mot de passe</p>
+         </div>
+        </div>
+        <p class="text-danger text-center newpassword-error" style="display:none;">Une erreur est survenue</p>
+        <button type="submit" class="btn btn-secondary mt-3">Valider</button>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+    </div>
+  </div>
+</div>
+</div>
+<!-- End of change_password-->
+
+<!--  change_parameters Form Modal -->
+<div id="modal_starting_parameters" class="modal fade" tabindex="-1" role="dialog">
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h4 class="modal-title">Mes paramètres de suivi</h4>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="modal-body">
+
+      {% if userprofile %}
+        <p class="">Attention la modification des paramètres de suivi a pour effet de réinitialiser l'intégralité de vos données de suivi.
+        Seules le paramétrage de vos paquets et de vos alternatives seront conservées.</p>
+      {% else %}
+        <p>Veuillez renseigner les paramètres suivants:</p>
+      {% endif %}
+
+      <form id="NewParametersForm" method="post" action="{% url 'QuitSoonApp:new_parameters' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="date_start"><b>Début du suivi : </b></label>
+          {{ parameter_form.date_start }}
+        </div>
+        <div class="form-group">
+          <label for="starting_nb_cig"><b>Nb cigarettes moyen/jour en début de suivi : </b></label>
+          {{ parameter_form.starting_nb_cig }}
+        </div>
+
+        {% if user_packs %}
+        <div class="container">
+            <ul class="nav nav-tabs">
+              <li id="choose_existing_pack" class="nav-item active"><a class="nav-link" href="#">Paquets existants</a>
+              </li>
+              <li id="create_pack_choice" class="nav-item"><a class="nav-link" href="#">Nouveau paquet</a>
+              </li>
+            </ul>
+        </div>
+
+          <div class="form-group show" id="existing_packs">
+            <label for="starting_nb_cig"><b>Paquet de réference le plus couramment utilisé au début du suivi : </b></label>
+            {{ parameter_form.ref_pack }}
+          </div>
+
+          <div class="newpackform hide">
+            <b><label for="">Enregistrez le paquet que vous utilisez le plus régulièrement</label></b>
+            {% csrf_token %}
+            {{ paquet_form.non_field_errors }}
+            {% for field in paquet_form %}
+              <div class="fieldWrapper form-group ">
+                {{ field.label }}:
+                {{ field }}
+                {{ field.error }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if not user_packs %}
+          <p><b>Paquet de cigarette de référence:</b></p>
+          <p>Renseignez les informations demandées concernant le paquet de cigarette que vous consommez le plus régulièrement</p>
+          {% csrf_token %}
+          {{ paquet_form.non_field_errors }}
+          {% for field in paquet_form %}
+            <div class="fieldWrapper form-group ">
+              {{ field.label }}:
+              {{ field }}
+              {{ field.error }}
+            </div>
+          {% endfor %}
+        {% endif %}
+        <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+      </form>
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+    </div>
+  </div>
+</div>
+</div>
+<!-- End of change_parameters-->
+
+{% endblock %}
