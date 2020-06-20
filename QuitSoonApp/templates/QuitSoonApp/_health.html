@@ -1,30 +1,20 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block content %}
 
+JE TIENS BON
 
-<!-- Page heading -->
-<div class="page-heading">
-  <i class="fas fa-calendar-day"></i>
-  <h1>je tiens bon</h1>
-  <h2>bien bien</h2>
-</div>
-<!-- End page heading -->
-
-<!-- Panel content -->
-<main id="health" class="content">
-  <section class="panel p1 pc1">
+{% if user.is_authenticated %}
   {% if not alternatives %}
-  
-    <p>Vous n'avez enregistré aucune alternative</p>
-    <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>    
-    
+    Vous n'avez enregistré aucune alternative,<br>
+    Veuillez paramétrer vos alternatives
+    <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
+
   {% else %}
-  <div class="form-container">
     <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
       {% csrf_token %}
+      <div class="form-group">
         <div class="container">
           {{ form.non_field_errors }}
           <div class="fieldWrapper form-group row">
@@ -55,34 +45,34 @@
             {{ form.duration_min }}
             {{ form.duration_min.error }}
           </div>
-      <input id="" type="submit" class="btn" value="Sauvergarder">
+        </div>
       </div>
+      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
     </form>
-  </div>
-
   {% endif %}
-
-  {% comment %} <a class="btn-outline-secondary" href ="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>   {% endcomment %}
-  
-
-
-  </section>
-  <section class="panel p2 pc-1">
-        {% if health %}
+  {% if health %}
     Dernière alternative enregistrée il y a :
     {% for element in lastsmoke %}
          {{ element }}
     {% endfor %}
-    <a class="btn-outline-secondary" href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+    <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
   {% else %}
     Vous n'avez encore enregistré aucune action
   {% endif %}
-  </section>
-</main>
-<!-- End panel content -->
 
 
-
-
+{% else %}
+  <div class="container text-center">
+    VOUS N'ÊTES PAS CONNECTÉ <br>
+    <div class="row">
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+      </div>
+      <div class="col-6">
+        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
 
 {% endblock %}
