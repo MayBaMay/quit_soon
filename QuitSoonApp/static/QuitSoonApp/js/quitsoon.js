@@ -237,15 +237,6 @@
   ) {
     console.log($(this).val());
     // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
-<<<<<<< HEAD
-    if ($(this).val() == 'Su') {
-      $('.activity_form').removeClass('show').addClass('hide');
-      $('.substitut_form').removeClass('hide').addClass('show');
-      $("#alternativeform input[id=id_activity]").prop('required',false).val('');
-      $("#alternativeform select[id=id_type_activity]").prop('required',false).val('');
-      $("#alternativeform select[id=id_substitut]").prop('required',true);
-      $("#alternativeform input[id=id_nicotine]").prop('required',true);
-=======
     if ($(this).val() == "Su") {
       $(".activity_form").removeClass("show").addClass("hide");
       $(".substitut_form").removeClass("hide").addClass("show");
@@ -267,7 +258,6 @@
         .val("");
       $("#alternativeform select[id=id_type_activity]").prop("required", true);
       $("#alternativeform input[id=id_activity]").prop("required", true);
->>>>>>> newfrontend
     }
   });
 
