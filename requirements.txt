@@ -29,6 +29,7 @@ django-redis==4.12.1
 dpd-components==0.1.0
 Flask==1.1.2
 Flask-Compress==1.5.0
+freezegun==0.3.15
 future==0.18.2
 hiredis==1.0.1
 hyperlink==19.0.0

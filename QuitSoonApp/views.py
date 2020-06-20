@@ -76,6 +76,10 @@ def login_view(request):
 
 def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
+    if smoke:
+        last = smoke.latest('date_cig', 'time_cig')
+        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+        context['lastsmoke'] = get_delta_last_event(last_time)
     return render(request, 'QuitSoonApp/today.html')
 
 def profile(request):
