@@ -76,11 +76,28 @@ def login_view(request):
 
 def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
-    if smoke:
-        last = smoke.latest('date_cig', 'time_cig')
-        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
-        context['lastsmoke'] = get_delta_last_event(last_time)
-    return render(request, 'QuitSoonApp/today.html')
+    context = {}
+    if request.user.is_authenticated:
+        smoke = ConsoCig.objects.filter(user=request.user)
+        health = ConsoAlternative.objects.filter(user=request.user)
+
+        profile = UserProfile.objects.filter(user=request.user).exists()
+        if profile:
+            context['profile'] = True
+            smoke_stats = SmokeStats(request.user, datetime.date.today())
+            healthy_stats = HealthyStats(request.user, datetime.date.today())
+            if smoke:
+                context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
+                last = smoke.latest('date_cig', 'time_cig')
+                last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+                context['lastsmoke'] = get_delta_last_event(last_time)
+                context['average_number'] = round(smoke_stats.average_per_day)
+            if health:
+                last = health.latest('date_alter', 'date_alter')
+                last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
+                context['lasthealth'] = get_delta_last_event(last_time)
+
+    return render(request, 'QuitSoonApp/today.html', context)
 
 def profile(request):
     """User profile page with authentication infos and smoking habits"""
@@ -495,7 +512,7 @@ def report(request, **kwargs):
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
             smoke = SmokeStats(request.user, datetime.date.today())
-            healthy = HealthyStats(request.user, datetime.date.today())
+            # healthy = HealthyStats(request.user, datetime.date.today())
 
             # generate context
             context['total_number'] = smoke.total_smoke

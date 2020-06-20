@@ -3,65 +3,89 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
+  {% if user.is_authenticated %}
 
-  À CHAQUE JOUR SUFFIT SA PEINE,
-  ET AUJOURD'HUI?
-    <div class="row">
-      <div class="col-lg-6 mb-4">
-        <div class="card bg-danger text-white shadow">
+    À CHAQUE JOUR SUFFIT SA PEINE,
+    ET AUJOURD'HUI?
+      <div class="row">
+        <div class="col-lg-6 mb-4">
+          <div class="card bg-danger text-white shadow">
+            <div class="card-body">
+              <button class="button button5"><a href="{% url 'QuitSoonApp:smoke' %}"><i class="fas fa-skull mr-3"></i>
+              JE ME FAIS DU MAL
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+          <div class="card bg-success text-white shadow">
+            <div class="card-body">
+              <button class="button button5"><a href="{% url 'QuitSoonApp:health' %}"><i class="fas fa-skull mr-3"></i>
+              JE ME FAIS DU BIEN
+            </div>
+          </div>
+        </div>
+    </div>
+
+    {% if profile %}
+
+      <div class="row">
+        <div class="card bg-danger text-white shadow mb-4">
           <div class="card-body">
-            <button class="button button5"><a href="{% url 'QuitSoonApp:smoke' %}"><i class="fas fa-skull mr-3"></i>
-            JE ME FAIS DU MAL
+            {% if lastsmoke %}
+              <p><b>Dernière cigarette il y a
+                {% for element in lastsmoke %}
+                     {{ element }}
+                {% endfor %}</b></p>
+              <p><b>Consommation : {{ smoke_today }}</b></p>
+              <p><b>Moyenne / jour : {{ average_number }}</b></p>
+              <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+            {% else %}
+              Aucune cigarette fumée enregistrée
+            {% endif %}
           </div>
         </div>
       </div>
-      <div class="col-lg-6 mb-4">
-        <div class="card bg-success text-white shadow">
+      <div class="row">
+        <div class="card bg-success text-white shadow mb-4">
           <div class="card-body">
-            <button class="button button5"><a href="{% url 'QuitSoonApp:health' %}"><i class="fas fa-skull mr-3"></i>
-            JE ME FAIS DU BIEN
+            {% if lasthealth %}
+              <p><b>Dernière alternative il y a
+                {% for element in lasthealth %}
+                     {{ element }}
+                {% endfor %}</b></p>
+              <p><b>Sport :  auj   cette semaine</b></p>
+              <p><b>Loisirs :  auj   cette semaine</b></p>
+              <p><b>Soins :  auj   cette semaine</b></p>
+              <p><b>Substituts : </b></p>
+              <p><b>- nb substituts utilisé aujourd'hui</b></p>
+              <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
+            {% else %}
+              Aucune action saine enregistrée
+            {% endif %}
           </div>
         </div>
       </div>
-  </div>
 
-{% else %}
-  <div class="container text-center">
-    VOUS N'ÊTES PAS CONNECTÉ <br>
-    <div class="row">
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </div>
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+
+    {% else %}
+      Vous n'avez pas paramétré votre profil, nous ne pouvons donc pas fournir de statiqtiques.
+      <a href="{% url 'QuitSoonApp:profile' %}">Paramétrer mon profil</a>
+
+    {% endif %}
+
+  {% else %}
+    <div class="container text-center">
+      VOUS N'ÊTES PAS CONNECTÉ <br>
+      <div class="row">
+        <div class="col-6">
+          <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+        </div>
+        <div class="col-6">
+          <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+        </div>
       </div>
     </div>
-  </div>
-{% endif %}
 
-  <div class="row">
-    <div class="card bg-danger text-white shadow mb-4">
-      <div class="card-body">
-          <p><b>Consommation : </b></p>
-          <p><b>Moyenne / jour : </b></p>
-          <p><b>Dernière cigarette il y a </b></p>
-            <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="card bg-success text-white shadow mb-4">
-      <div class="card-body">
-          <p><b>Sport :  auj   cette semaine</b></p>
-          <p><b>Loisirs :  auj   cette semaine</b></p>
-          <p><b>Soins :  auj   cette semaine</b></p>
-          <p><b>Substituts : </b></p>
-          <p><b>- nb substituts utilisé aujourd'hui</b></p>
-          <a href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
-      </div>
-    </div>
-  </div>
-
+  {% endif %}
 
 {% endblock %}
