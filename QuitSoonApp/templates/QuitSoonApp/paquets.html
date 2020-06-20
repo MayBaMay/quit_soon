@@ -40,16 +40,16 @@
   </section>            
 
   <section class="panel p2 pc-0 panel-big-btn">
-    <a class="big-btn-container" href="#">
-      <div class="btn-success big-btn">
-        <i class="fas fa-heart"></i>
+    <a class="big-btn-container" href="{% url 'QuitSoonApp:smoke' %}">
+      <div class="btn-error big-btn">
+        <i class="fas fa-skull"></i>
         <div class="tablet-content">
           <span class="tablet-content">Je me fais</span>
-          <span class="tablet-content">du bien</span>
+          <span class="tablet-content">du mal</span>
         </div>
       </div>
-      <span class="mobile-content success-label">Je me fais</span>
-      <span class="mobile-content success-label">du bien</span>
+      <span class="mobile-content error-label">Je me fais</span>
+      <span class="mobile-content error-label">du mal</span>
     </a>
   </section>
 
@@ -100,17 +100,5 @@
 </main>
 <!-- End panel content -->
 
-<!-- Page modals -->
-<div id="paquets-modals" class="modal-container page-modals">
-  <div class="modal">
-    <span class="btn close-modal-btn">close</span>
-    <div id="modal-1" class="modal-content">
-
-    </div>
-   
-  </div>
-</div>
-
-<!-- End page modals -->
 <!-- End of main content -->
 {% endblock %}
