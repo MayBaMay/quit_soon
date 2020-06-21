@@ -235,13 +235,15 @@
   $("#alternativeform select[id=id_type_alternative]").on("change", function (
     e
   ) {
-    console.log($(this).val());
     // IF VALUE TYPE == SUBSTITUT   --->   SHOW SUBSTITUT FORM
     if ($(this).val() == "Su") {
       $(".activity_form").removeClass("show").addClass("hide");
       $(".substitut_form").removeClass("hide").addClass("show");
-      $("#alternativeform input[id=id_activity]")
+      $("#alternativeform select[id=id_type_activity]")
         .prop("required", false)
+        .val("");
+      $("#alternativeform input[id=id_activity]")
+        .prop("required", false);
         .val("");
       $("#alternativeform select[id=id_substitut]").prop("required", true);
       $("#alternativeform input[id=id_nicotine]").prop("required", true);

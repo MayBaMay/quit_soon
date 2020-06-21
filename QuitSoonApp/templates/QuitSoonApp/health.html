@@ -17,10 +17,10 @@
 <main id="health" class="content">
   <section class="panel p1 pc1">
   {% if not alternatives %}
-  
+
     <p>Vous n'avez enregistré aucune alternative</p>
-    <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>    
-    
+    <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
+
   {% else %}
   <div class="form-container">
     <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
@@ -63,20 +63,20 @@
   {% endif %}
 
   {% comment %} <a class="btn-outline-secondary" href ="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>   {% endcomment %}
-  
+
 
 
   </section>
   <section class="panel p2 pc-1">
-        {% if health %}
-    Dernière alternative enregistrée il y a :
-    {% for element in lastsmoke %}
-         {{ element }}
-    {% endfor %}
-    <a class="btn-outline-secondary" href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
-  {% else %}
-    Vous n'avez encore enregistré aucune action
-  {% endif %}
+    {% if health %}
+      Dernière alternative enregistrée il y a :
+      {% for element in lasthealth %}
+           {{ element }}
+      {% endfor %}
+      <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+    {% else %}
+      Vous n'avez encore enregistré aucune action
+    {% endif %}
   </section>
 </main>
 <!-- End panel content -->

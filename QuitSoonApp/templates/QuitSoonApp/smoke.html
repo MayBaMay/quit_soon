@@ -16,69 +16,69 @@
 <!-- Panel content -->
 <main id="health" class="content">
   <section class="panel p1 pc1">
-  {% if not alternatives %}
-  
-    <p>Vous n'avez enregistré aucune alternative</p>
-    <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>    
-    
+  {% if not packs %}
+
+    <p>Vous n'avez enregistré aucun paquet</p>
+    <p>Veuillez paramétrer vos paquets <a href="{% url 'QuitSoonApp:paquets' %}">ici</a></p>
+
   {% else %}
   <div class="form-container">
-   <form id="smokeform" method='post' action="{% url 'QuitSoonApp:smoke' %}">
-      {% csrf_token %}
+    <form id="smokeform" action="{% url 'QuitSoonApp:smoke' %}" method="post">
+     {% csrf_token %}
       <div class="form-group">
-        {{ smoke_form.non_field_errors }}
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.date_smoke.label }}
-          {{ smoke_form.date_smoke }}
-          {{ smoke_form.date_smoke.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.time_smoke.label }}
-          {{ smoke_form.time_smoke }}
-          {{ smoke_form.time_smoke.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.given_field.label }}
-          {{ smoke_form.given_field }}
-          {{ smoke_form.given_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.type_cig_field.label }}
-          {{ smoke_form.type_cig_field }}
-          {{ smoke_form.type_cig_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.ind_pack_field.label }}
-          {{ smoke_form.ind_pack_field }}
-          {{ smoke_form.ind_pack_field.error }}
-        </div>
-        <div class="fieldWrapper form-group ">
-          {{ smoke_form.rol_pack_field.label }}
-          {{ smoke_form.rol_pack_field }}
-          {{ smoke_form.rol_pack_field.error }}
-        </div>
+        {{ smoke_form.non_field_errors }}
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.date_smoke.label }}
+          {{ smoke_form.date_smoke }}
+          {{ smoke_form.date_smoke.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.time_smoke.label }}
+          {{ smoke_form.time_smoke }}
+          {{ smoke_form.time_smoke.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.given_field.label }}
+          {{ smoke_form.given_field }}
+          {{ smoke_form.given_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.type_cig_field.label }}
+          {{ smoke_form.type_cig_field }}
+          {{ smoke_form.type_cig_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.ind_pack_field.label }}
+          {{ smoke_form.ind_pack_field }}
+          {{ smoke_form.ind_pack_field.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ smoke_form.rol_pack_field.label }}
+          {{ smoke_form.rol_pack_field }}
+          {{ smoke_form.rol_pack_field.error }}
+        </div>
+        <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
       </div>
-      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
-    </form>
+    </form>
   </div>
 
   {% endif %}
 
   {% comment %} <a class="btn-outline-secondary" href ="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>   {% endcomment %}
-  
+
   </section>
   <section class="panel p2 pc-1">
   {% if smoke %}
-<p>Vous avez fumé votre dernière cigarette il y a :</p>
+    <p>Vous avez fumé votre dernière cigarette il y a :</p>
 
-    {% for element in lastsmoke %}
-      {{ element }}
-    {% endfor %}
-    <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
-  {% else %}
-<p>
-    Vous n'avez encore enregistré aucune cigarette fumée
-</p>
+        {% for element in lastsmoke %}
+          {{ element }}
+        {% endfor %}
+        <a href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+  {% else %}
+    <p>
+      Vous n'avez encore enregistré aucune cigarette fumée
+    </p>
   {% endif %}
   </section>
 </main>

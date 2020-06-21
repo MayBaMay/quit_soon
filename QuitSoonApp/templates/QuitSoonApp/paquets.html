@@ -15,16 +15,16 @@
 <main id="paquets" class="content">
   <section class="panel p1 pc1">
 
-    <div class="form-container">                
-      <form class="user form-with-password" id="paquetform" action="{% url 'QuitSoonApp:paquets' %}" method="POST">
-       <h2>Nouveau paquet</h2>        
+    <div class="form-container">
+      <form id="paquetform" action="{% url 'QuitSoonApp:paquets' %}" method="POST">
+       <h2>Nouveau paquet</h2>
        {% if first %}
        <div class="">
         Attention, veillez à renseigner le paquet que vous consommez le plus couramment.
         Cette information servira à calculer les économiser que vous allez bientôt réaliser!
        </div>
         {% endif %}
-        <p>{{ error }}</p>        
+        <p>{{ error }}</p>
         {% csrf_token %}
         {{ form.non_field_errors }}
         {% for field in form %}
@@ -35,9 +35,9 @@
           </div>
         {% endfor %}
         <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
-      </form> 
+      </form>
     </div>
-  </section>            
+  </section>
 
   <section class="panel p2 pc-0 panel-big-btn">
     <a class="big-btn-container" href="{% url 'QuitSoonApp:smoke' %}">
@@ -64,7 +64,6 @@
             {{ paquet.qt_paquet }}/paquet
             {{ paquet.price }}€
             {{ paquet.price_per_cig }}€/cig
-            {{ paquet.first }}
             <a href="/delete_pack/{{paquet.id}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
           </div>
         {% endfor %}
@@ -90,12 +89,11 @@
             <p class="show" type="">{{ paquet.g_per_cig }}g/cigarette</p>
             <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
             {{ paquet.price_per_cig }}€/cig
-            {{ paquet.first }}
             <a href="/delete_pack/{{paquet.id}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
           </div>
         {% endfor %}
       {% endif %}
-    </div>  
+    </div>
   </section>
 </main>
 <!-- End panel content -->

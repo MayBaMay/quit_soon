@@ -1,4 +1,5 @@
-{% extends 'base.html' %} {% load static %} {% block content %}
+{% extends 'base.html' %} {% load static %}
+{% block content %}
 
 <!-- Main content -->
 <!-- <div id="alternatives"> -->
@@ -10,14 +11,154 @@
   </div>
   <!-- End page heading -->
 
+{% if user.is_authenticated %}
 
   <!-- Panel content -->
   <main class="content">
+
     <section class="panel p1 pc1">
-      <p>panel content</p>
+      <div class="form-container">
+        <form id="alternativeform" action="{% url 'QuitSoonApp:alternatives' %}" method="POST">
+         <h2>Nouvelle alternative</h2>
+          {% csrf_token %}
+          <p>{{ error }}</p>
+          {{ alternative_form.non_field_errors }}
+          {% for field in alternative_form %}
+            <div class="fieldWrapper form-group ">
+              {% if not field.is_hidden and field.field.widget.attrs.class != 'hide' %}
+                 <span class="label show">{{ field.label }}:</span>
+              {% endif %}
+              {{ field }}
+              {{ field.error }}
+            </div>
+          {% endfor %}
+          <div class="activity_form">
+            {{ activity_form.non_field_errors }}
+            {% for field in activity_form %}
+              <div class="fieldWrapper form-group ">
+                {% if not field.is_hidden and field.field.widget.attrs.class != 'hide' %}
+                   <span class="label show">{{ field.label }}:</span>
+                {% endif %}
+                {{ field }}
+                {{ field.error }}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="substitut_form">
+            {{ substitut_form.non_field_errors }}
+            {% for field in substitut_form %}
+              <div class="fieldWrapper form-group ">
+                {% if not field.is_hidden and field.field.widget.attrs.class != 'hide' %}
+                   <span class="label show">{{ field.label }}:</span>
+                {% endif %}
+                {{ field }}
+                {{ field.error }}
+              </div>
+            {% endfor %}
+          </div>
+
+          <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
+        </form>
+      </div>
     </section>
-    <section class="panel p2 pc-1"></section>
+
+    <section class="panel p2 pc-0 panel-big-btn">
+      <a class="big-btn-container" href="{% url 'QuitSoonApp:health' %}">
+        <div class="btn-success big-btn">
+          <i class="fas fa-heart"></i>
+          <div class="tablet-content">
+            <span class="tablet-content">Je me fais</span>
+            <span class="tablet-content">du bien</span>
+          </div>
+        </div>
+        <span class="mobile-content success-label">Je me fais</span>
+        <span class="mobile-content success-label">du bien</span>
+      </a>
+    </section>
+
+    <section class="panel p3 pc-1">
+      <div class="row">
+        <div class="card shadow mb-4">
+          <div class="card-body">
+            <p><b>Mes alternatives :</b></p>
+
+            <div class="">
+              {% if Sp %}
+                <p><b>Sports</b></p>
+                {% for activity in Sp %}
+                  <div class="row">
+                    {{ activity.activity }}
+                    <a href="/delete_alternative/{{activity.id}}/"">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if Lo %}
+                <p><b>Loisirs</b></p>
+                {% for activity in Lo %}
+                  <div class="row">
+                    {{ activity.activity }}
+                    <a href="/delete_alternative/{{activity.id}}/"">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>                </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if So %}
+                <p><b>Soins</b></p>
+                {% for activity in So %}
+                  <div class="row">
+                    {{ activity.activity }}
+                      <a href="/delete_alternative/{{activity.id}}/"">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>                </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+            <div class="">
+              {% if Su %}
+                <p><b>Substituts</b></p>
+                {% for substitut in Su %}
+                  <div class="row">
+                    {{ substitut.substitut }}
+                    {{ substitut.nicotine }}
+                    <a href="/delete_alternative/{{substitut.id}}/"">
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {% else %}
+      <div class="container text-center">
+        VOUS N'ÊTES PAS CONNECTÉ <br>
+        <div class="row">
+          <div class="col-6">
+            <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+          </div>
+          <div class="col-6">
+            <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
   </main>
+
+
   <!-- End panel content -->
 
   <!-- Page modals -->

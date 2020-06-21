@@ -74,14 +74,12 @@
         {% if userprofile %}
         <p>Début du suivi : {{ userprofile.date_start }}</p>
         <p>
-          Nb de cigarette moyen/jr en début de suivi : {{
-          userprofile.starting_nb_cig }}
+          Nb de cigarette moyen/jr en début de suivi : {{ userprofile.starting_nb_cig }}
         </p>
         {% if paquet_ref %}
         <p>
-          Paquet de référence : {{ paquet_ref.brand }}({{ paquet_ref.qt_paquet
-          }}{{ paquet_ref.unit }}). Prix en début de suivi:{{ paquet_ref.price
-          }}€
+          Paquet de référence : {{ paquet_ref.brand }}({{ paquet_ref.qt_paquet }}
+          {{ paquet_ref.unit }}). Prix en début de suivi:{{ paquet_ref.price }}€
         </p>
         {% endif %} {% else %}
         <div class="" id="noprofile">
