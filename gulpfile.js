@@ -140,7 +140,7 @@ function js() {
         "./QuitSoonApp/static/QuitSoonApp/js/*.js",
         "!./QuitSoonApp/static/QuitSoonApp/js/*.min.js",
       ])
-      // .pipe(terser())
+      .pipe(terser())
       .pipe(
         header(banner, {
           pkg: pkg,

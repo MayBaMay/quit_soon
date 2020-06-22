@@ -17,6 +17,17 @@
     .form-group {
       display: block;
       width: 100%;
+      &.checkbox-group {
+        display: flex;
+        align-items: center;
+        input {
+          width: auto;
+        }
+        label {
+          width: auto;
+          margin-right: 1rem;
+        }
+      }
     }
 
     h1,

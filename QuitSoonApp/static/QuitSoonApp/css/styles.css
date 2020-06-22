@@ -796,6 +796,23 @@ body {
   width: 100%;
 }
 
+.form-container form .fieldWrapper.checkbox-group,
+.form-container form .form-group.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-container form .fieldWrapper.checkbox-group input,
+.form-container form .form-group.checkbox-group input {
+  width: auto;
+}
+
+.form-container form .fieldWrapper.checkbox-group label,
+.form-container form .form-group.checkbox-group label {
+  width: auto;
+  margin-right: 1rem;
+}
+
 .form-container form h1,
 .form-container form h2,
 .form-container form h3,
@@ -1272,6 +1289,26 @@ form .activity_form,
 form .substitut_form {
   display: block;
   width: 100%;
+}
+
+#smoke {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+}
+
+@media (min-width: 480px) {
+  #smoke {
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  }
+}
+
+#health {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+}
+
+@media (min-width: 480px) {
+  #health {
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  }
 }
 
 #paquets {
