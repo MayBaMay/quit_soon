@@ -776,6 +776,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0.6rem 0;
 }
 
 .form-container form {
@@ -996,7 +997,7 @@ header {
 
 @media (min-width: 480px) {
   .grid-container {
-    grid-template-rows: 4rem 4rem minmax(100vh, auto);
+    grid-template-rows: 4rem 4rem auto;
   }
 }
 
@@ -1247,12 +1248,38 @@ footer {
   }
 }
 
-#suivi {
+#today {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+}
+
+@media (min-width: 480px) {
+  #today {
+    grid-template-areas: ". . . p1 p1 p1 p2 p2 p2 . . ." "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4";
+  }
+}
+
+#report {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6" ". . . . . . . . . . . . " ". p3 p3 p3 p3 p4 p4 p4 p4 p4 p4 .";
+}
+
+@media (min-width: 480px) {
+  #report {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  }
+}
+
+form .activity_form,
+form .substitut_form {
+  display: block;
+  width: 100%;
+}
+
+#paquets {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
 }
 
 @media (min-width: 480px) {
-  #suivi {
-    grid-template-areas: ". p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 ." "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  #paquets {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p2 p2 p2 p2" "p1 p1 p1 p1 p1 p1 p1 p1 . . . ." ". . p3 p3 p3 p3 p3 p3 p3 p3 . .";
   }
 }
