@@ -1157,7 +1157,7 @@ header nav > ul li.dropdown-menu {
 header nav > ul li.dropdown-menu .sub-menu {
   visibility: hidden;
   opacity: 0;
-  transform: translateY(-3rem) translateX(1.8rem) scale(0.3);
+  transform: translateY(-3rem) scale(0.3);
   transition: 0.2s;
   margin-top: 0.2rem;
   position: absolute;

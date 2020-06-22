@@ -105,15 +105,16 @@ header {
         //dropdown sub-menu
         &.dropdown-menu {
           z-index: 2;
-
           cursor: pointer;
+
           span {
             // border: 1px solid red;
+            // width: 100%;
           }
           .sub-menu {
             visibility: hidden;
             opacity: 0;
-            transform: translateY(-3rem) translateX(1.8rem) scale(0.3);
+            transform: translateY(-3rem) scale(0.3);
             transition: $menu-transition-close;
             margin-top: 0.2rem;
             position: absolute;
@@ -135,7 +136,6 @@ header {
             }
             &.sub-menu-open {
               z-index: -1;
-
               visibility: visible;
               opacity: 1;
               transform: translateY(0);

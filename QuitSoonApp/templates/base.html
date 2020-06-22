@@ -53,13 +53,33 @@
                     >
                   </li>
 
-                  <li>
+                  {% comment %} <li>
                     <a href="{% url 'QuitSoonApp:paquets' %}" class="menu-item">
                       <i class="fas fa-smoking"></i> <span>Paquets</span></a
                     >
-                  </li>
+                  </li> {% endcomment %}
 
-                  <li>
+                  <li class="dropdown-menu" data-toggle="smoking-menu">
+                    <span href="#" class="menu-item"><i class="fas fa-smoking"></i><span>Cigarette</span></span>
+                    <span>
+                      <ul id="smoking-menu" class="sub-menu">
+                        <li>
+                          <a href="" class="menu-item"
+                            >mes paquets</a>
+                        </li>
+                        <li>
+                          <a href="" class="menu-item"
+                            >je craque</a>
+                        </li>
+                        <li>
+                          <a href="" class="menu-item"
+                            >mes craquages</a>
+                        </li>
+                      </ul>
+                    </span>
+                  </li>
+                  
+                  {% comment %} <li>
                     <a
                       href="{% url 'QuitSoonApp:alternatives' %}"
                       class="menu-item"
@@ -67,6 +87,26 @@
                       <i class="fas fa-heartbeat"></i>
                       <span>Alternatives</span></a
                     >
+                  </li> {% endcomment %}
+
+                  <li class="dropdown-menu" data-toggle="health-menu">
+                    <span href="#" class="menu-item"><i class="fas fa-heartbeat"></i><span>Health</span></span>
+                    <span>
+                      <ul id="health-menu" class="sub-menu">
+                        <li>
+                          <a href="" class="menu-item"
+                            >mes alternatives</a>
+                        </li>
+                        <li>
+                          <a href="" class="menu-item"
+                            >je tiens bon</a>
+                        </li>
+                        <li>
+                          <a href="" class="menu-item"
+                            >mes actions saines</a>
+                        </li>
+                      </ul>
+                    </span>
                   </li>
 
                   <li class="dropdown-menu" data-toggle="user-menu">

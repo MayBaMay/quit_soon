@@ -168,13 +168,22 @@ $(document).ready(function () {
 
   //dropdown menu
   const dropdownToggles = document.querySelectorAll(".dropdown-menu");
-  dropdownToggles.forEach((toggle) =>
+  dropdownToggles.forEach((toggle) => {
+    let menuId = toggle.dataset.toggle;
+    let menu = document.querySelector(`#${menuId}`);
     toggle.addEventListener("click", () => {
-      let menuId = toggle.dataset.toggle;
-      let menu = document.querySelector(`#${menuId}`);
-      menu.classList.toggle("sub-menu-open");
-    })
-  );
+      menu.classList.add("sub-menu-open");
+    }); //close when mouseleaves toggle or menu
+    menu.addEventListener("mouseleave", () => {
+      menu.classList.remove("sub-menu-open");
+    });
+    toggle.addEventListener("mouseleave", () => {
+      menu.classList.remove("sub-menu-open");
+    });
+    toggle.addEventListener("mouseenter", () => {
+      menu.classList.add("sub-menu-open");
+    });
+  });
 
   //toggle password visibility
 
