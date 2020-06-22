@@ -1,20 +1,30 @@
 {% extends 'base.html' %}
+
 {% load static %}
 
 {% block content %}
 
-JE TIENS BON
 
-{% if user.is_authenticated %}
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fas fa-heartbeat"></i>
+  <h1>je tiens bon</h1>
+  <h2>bien bien</h2>
+</div>
+<!-- End page heading -->
+
+<!-- Panel content -->
+<main id="health" class="content">
+  <section class="panel p1 pc1">
   {% if not alternatives %}
-    Vous n'avez enregistré aucune alternative,<br>
-    Veuillez paramétrer vos alternatives
-    <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
+
+    <p>Vous n'avez enregistré aucune alternative</p>
+    <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
 
   {% else %}
+  <div class="form-container">
     <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
       {% csrf_token %}
-      <div class="form-group">
         <div class="container">
           {{ form.non_field_errors }}
           <div class="fieldWrapper form-group row">
@@ -45,34 +55,34 @@ JE TIENS BON
             {{ form.duration_min }}
             {{ form.duration_min.error }}
           </div>
-        </div>
+      <input id="" type="submit" class="btn" value="Sauvergarder">
       </div>
-      <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
     </form>
-  {% endif %}
-  {% if health %}
-    Dernière alternative enregistrée il y a :
-    {% for element in lastsmoke %}
-         {{ element }}
-    {% endfor %}
-    <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
-  {% else %}
-    Vous n'avez encore enregistré aucune action
-  {% endif %}
-
-
-{% else %}
-  <div class="container text-center">
-    VOUS N'ÊTES PAS CONNECTÉ <br>
-    <div class="row">
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-      </div>
-      <div class="col-6">
-        <a class="small" href="{% url 'QuitSoonApp:register' %}">Créer un compte</a>
-      </div>
-    </div>
   </div>
-{% endif %}
+
+  {% endif %}
+
+  {% comment %} <a class="btn-outline-secondary" href ="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>   {% endcomment %}
+
+
+
+  </section>
+  <section class="panel p2 pc-1">
+    {% if health %}
+      Dernière alternative enregistrée il y a :
+      {% for element in lasthealth %}
+           {{ element }}
+      {% endfor %}
+      <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+    {% else %}
+      Vous n'avez encore enregistré aucune action
+    {% endif %}
+  </section>
+</main>
+<!-- End panel content -->
+
+
+
+
 
 {% endblock %}

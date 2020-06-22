@@ -96,10 +96,9 @@ def today(request):
                 last = health.latest('date_alter', 'date_alter')
                 last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
                 context['lasthealth'] = get_delta_last_event(last_time)
-
-                context['sports'] = healthy_stats.min_per_day(datetime.date.today(), 'Sp')
-
-    return render(request, 'QuitSoonApp/today.html', context)
+        return render(request, 'QuitSoonApp/today.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def profile(request):
     """User profile page with authentication infos and smoking habits"""
@@ -129,7 +128,9 @@ def profile(request):
         packs = Paquet.objects.filter(user=request.user, display=True)
         if packs.exists:
             context['user_packs'] = packs
-    return render(request, 'QuitSoonApp/profile.html', context)
+        return render(request, 'QuitSoonApp/profile.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def new_parameters(request):
     """View changing user smoking habits when starting using app"""
@@ -167,7 +168,7 @@ def new_parameters(request):
             reset.new_profile()
         return redirect('QuitSoonApp:profile')
     else:
-        raise Http404()
+        return redirect('QuitSoonApp:index')
 
 def new_name(request):
     """View changing user name"""
@@ -251,7 +252,9 @@ def paquets(request):
         # get packs per type
         context['ind'] = paquets.filter(type_cig='IND')
         context['rol'] = paquets.filter(type_cig='ROL')
-    return render(request, 'QuitSoonApp/paquets.html', context)
+        return render(request, 'QuitSoonApp/paquets.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def delete_pack(request, id_pack):
     """
@@ -283,24 +286,27 @@ def change_g_per_cig(request):
 def smoke(request):
     """User smokes"""
     # check if packs are in parameters to fill fields with actual packs
-    packs = Paquet.objects.filter(user=request.user, display=True)
-    context = {'packs':packs}
-    if packs :
-        smoke_form = SmokeForm(request.user)
-        if request.method == 'POST':
-            smoke_form = SmokeForm(request.user, request.POST)
-            if smoke_form.is_valid():
-                smoke = SmokeManager(request.user, smoke_form.cleaned_data)
-                smoke.create_conso_cig()
-                smoke_form = SmokeForm(request.user)
-        context['smoke_form'] = smoke_form
-    smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
-    context['smoke'] = smoke
-    if smoke:
-        last = smoke.latest('date_cig', 'time_cig')
-        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
-        context['lastsmoke'] = get_delta_last_event(last_time)
-    return render(request, 'QuitSoonApp/smoke.html', context)
+    if request.user.is_authenticated:
+        packs = Paquet.objects.filter(user=request.user, display=True)
+        context = {'packs':packs}
+        if packs :
+            smoke_form = SmokeForm(request.user)
+            if request.method == 'POST':
+                smoke_form = SmokeForm(request.user, request.POST)
+                if smoke_form.is_valid():
+                    smoke = SmokeManager(request.user, smoke_form.cleaned_data)
+                    smoke.create_conso_cig()
+                    smoke_form = SmokeForm(request.user)
+            context['smoke_form'] = smoke_form
+        smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
+        context['smoke'] = smoke
+        if smoke:
+            last = smoke.latest('date_cig', 'time_cig')
+            last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+            context['lastsmoke'] = get_delta_last_event(last_time)
+        return render(request, 'QuitSoonApp/smoke.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def delete_smoke(request, id_smoke):
     """
@@ -310,7 +316,7 @@ def delete_smoke(request, id_smoke):
         data = {'id_smoke':id_smoke}
         smoke = SmokeManager(request.user, data)
         smoke.delete_conso_cig()
-        return redirect('QuitSoonApp:smoke')
+        return redirect('QuitSoonApp:smoke_list')
     else:
         raise Http404()
 
@@ -341,7 +347,9 @@ def smoke_list(request):
                                     smoke = smoke.filter(paquet__brand=pack.brand)
                 context['smoke'] = smoke
                 context['smoke_list_form'] = smoke_list_form
-    return render(request, 'QuitSoonApp/smoke_list.html', context)
+        return render(request, 'QuitSoonApp/smoke_list.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
@@ -402,7 +410,9 @@ def alternatives(request):
             'So':alternatives.filter(type_activity='So'),
             'Su':alternatives.filter(type_alternative='Su'),
             }
-    return render(request, 'QuitSoonApp/alternatives.html', context)
+        return render(request, 'QuitSoonApp/alternatives.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def delete_alternative(request, id_alternative):
     """
@@ -439,7 +449,9 @@ def health(request):
             last = health.latest('date_alter', 'date_alter')
             last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
             context['lasthealth'] = get_delta_last_event(last_time)
-    return render(request, 'QuitSoonApp/health.html', context)
+        return render(request, 'QuitSoonApp/health.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def su_ecig(request):
     """Tells if ecig has been selected by user"""
@@ -466,7 +478,7 @@ def delete_health(request, id_health):
         data = {'id_health':id_health}
         health = HealthManager(request.user, data)
         health.delete_conso_alternative()
-        return redirect('QuitSoonApp:health')
+        return redirect('QuitSoonApp:health_list')
     else:
         raise Http404()
 
@@ -504,7 +516,9 @@ def health_list(request):
 
                 context['health_form'] = health_form
                 context['health'] = health
-    return render(request, 'QuitSoonApp/health_list.html', context)
+        return render(request, 'QuitSoonApp/health_list.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def report(request, **kwargs):
     """Page with user results, graphs..."""
@@ -526,8 +540,9 @@ def report(request, **kwargs):
 
         else:
             return redirect('QuitSoonApp:profile')
-    print(context)
-    return render(request, 'QuitSoonApp/report.html', context)
+        return render(request, 'QuitSoonApp/report.html', context)
+    else:
+        return redirect('QuitSoonApp:index')
 
 def objectifs(request):
     """Page with user trophees and goals"""
