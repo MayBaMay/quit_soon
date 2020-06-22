@@ -53,57 +53,41 @@
                     >
                   </li>
 
-                  {% comment %} <li>
-                    <a href="{% url 'QuitSoonApp:paquets' %}" class="menu-item">
-                      <i class="fas fa-smoking"></i> <span>Paquets</span></a
-                    >
-                  </li> {% endcomment %}
-
                   <li class="dropdown-menu" data-toggle="smoking-menu">
                     <span href="#" class="menu-item"><i class="fas fa-smoking"></i><span>Cigarette</span></span>
                     <span>
                       <ul id="smoking-menu" class="sub-menu">
                         <li>
-                          <a href="" class="menu-item"
-                            >mes paquets</a>
+                          <a href="{% url 'QuitSoonApp:paquets' %}" class="menu-item"
+                            >Mes paquets</a>
                         </li>
                         <li>
-                          <a href="" class="menu-item"
-                            >je craque</a>
+                          <a href="{% url 'QuitSoonApp:smoke' %}" class="menu-item"
+                            >Je craque</a>
                         </li>
                         <li>
-                          <a href="" class="menu-item"
-                            >mes craquages</a>
+                          <a href="{% url 'QuitSoonApp:smoke_list' %}" class="menu-item"
+                            >Mes craquages</a>
                         </li>
                       </ul>
                     </span>
-                  </li>
-                  
-                  {% comment %} <li>
-                    <a
-                      href="{% url 'QuitSoonApp:alternatives' %}"
-                      class="menu-item"
-                    >
-                      <i class="fas fa-heartbeat"></i>
-                      <span>Alternatives</span></a
-                    >
-                  </li> {% endcomment %}
-
+                  </li>                  
+      
                   <li class="dropdown-menu" data-toggle="health-menu">
                     <span href="#" class="menu-item"><i class="fas fa-heartbeat"></i><span>Health</span></span>
                     <span>
                       <ul id="health-menu" class="sub-menu">
                         <li>
-                          <a href="" class="menu-item"
-                            >mes alternatives</a>
+                          <a href="{% url 'QuitSoonApp:alternatives' %}" class="menu-item"
+                            >Mes alternatives</a>
                         </li>
                         <li>
-                          <a href="" class="menu-item"
-                            >je tiens bon</a>
+                          <a href="{% url 'QuitSoonApp:health' %}" class="menu-item"
+                            >Je tiens bon</a>
                         </li>
                         <li>
-                          <a href="" class="menu-item"
-                            >mes actions saines</a>
+                          <a href="{% url 'QuitSoonApp:health_list' %}" class="menu-item"
+                            >Mes actions saines</a>
                         </li>
                       </ul>
                     </span>
