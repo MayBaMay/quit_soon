@@ -564,7 +564,7 @@ body {
   border-radius: initial;
   box-shadow: 0 0 rgba(0, 0, 0, 0);
   background-color: transparent;
-  color: white;
+  color: inherit;
 }
 
 [class^="btn"][class*="-tab"]:focus {
@@ -574,7 +574,8 @@ body {
 
 [class^="btn"][class*="-tab"].active {
   box-shadow: 0 0 rgba(0, 0, 0, 0);
-  border: 1px solid white;
+  border: 1px solid #666666;
+  border-radius: 5px;
 }
 
 [class^="btn"]:focus {
@@ -715,6 +716,7 @@ body {
 }
 
 .modal-container .modal .modal-content .modal-buttons {
+  width: 100%;
   display: flex;
   justify-content: center;
   margin-top: 2rem;
@@ -787,14 +789,17 @@ body {
   font-size: 1.2em;
 }
 
-.form-container form .fieldWrapper {
+.form-container form .fieldWrapper,
+.form-container form .form-group {
+  display: block;
   width: 100%;
 }
 
 .form-container form h1,
 .form-container form h2,
 .form-container form h3,
-.form-container form h4 label,
+.form-container form h4,
+.form-container form label,
 .form-container form select,
 .form-container form input,
 .form-container form textarea {
@@ -819,8 +824,7 @@ body {
 .form-container form input[type="submit"] {
   cursor: pointer;
   width: auto;
-  margin-top: 0.4em;
-  margin-left: auto;
+  margin-top: 1.4em;
   border-color: transparent;
 }
 

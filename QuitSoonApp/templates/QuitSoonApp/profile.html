@@ -109,7 +109,7 @@
 <!-- Page modals -->
 <div id="profile-modals" class="modal-container page-modals">
   <div class="modal">
-    <span class="btn close-modal-btn">close</span>
+    <span class="btn close-modal-btn"><i class="fas fa-times"></i></span>
 
     <!--  change_username modal -->
     <div id="modal_change_username" class="modal-content">
@@ -191,9 +191,9 @@
             >
               Une erreur est survenue
             </p>
-            <button type="submit" class="btn btn-secondary mt-3">
-              Valider
-            </button>
+              <button type="submit" class="">
+                Valider
+              </button>
           </form>
         </div>
         <div class="modal-buttons">
@@ -326,75 +326,71 @@
           >
             {% csrf_token %}
             <div class="form-group">
-              <label for="date_start"><b>Début du suivi : </b></label>
-              {{ parameter_form.date_start }}
+            <label for="date_start"><b>Début du suivi : </b></label>
+            {{ parameter_form.date_start }}
             </div>
             <div class="form-group">
-              <label for="starting_nb_cig"
-                ><b>Nb cigarettes moyen/jour en début de suivi : </b></label
-              >
-              {{ parameter_form.starting_nb_cig }}
+            <label for="starting_nb_cig"
+              ><b>Nb cigarettes moyen/jour en début de suivi : </b></label
+            >
+            {{ parameter_form.starting_nb_cig }} 
             </div>
 
             {% if user_packs %}
-            <div class="container">
-              <ul class="nav nav-tabs">
-                <li id="choose_existing_pack" class="nav-item active">
-                  <a class="nav-link" href="#">Paquets existants</a>
-                </li>
-                <li id="create_pack_choice" class="nav-item">
-                  <a class="nav-link" href="#">Nouveau paquet</a>
-                </li>
-              </ul>
-            </div>
 
-            <div class="form-group show" id="existing_packs">
-              <label for="starting_nb_cig"
-                ><b
-                  >Paquet de réference le plus couramment utilisé au début du
-                  suivi :
-                </b></label
-              >
-              {{ parameter_form.ref_pack }}
-            </div>
+            <div class="tabbed-content-container">
+              <div class="flex-center">
+                <button class="btn-tab active" data-toggle="tab1">
+                  Paquets existants
+                </button>
+                <button class="btn-tab" data-toggle="tab2">
+                  Nouveau paquet
+                </button>
+              </div>
 
-            <div class="newpackform hide">
-              <b
-                ><label for=""
-                  >Enregistrez le paquet que vous utilisez le plus
-                  régulièrement</label
-                ></b
-              >
-              {% csrf_token %}
-              {{ paquet_form.non_field_errors }}
+              <div class="tabbed-content active" id="tab1">
+                <label for="starting_nb_cig"
+                  ><b
+                    >Paquet de réference le plus couramment utilisé au début du
+                    suivi :
+                  </b></label
+                >
+                {{ parameter_form.ref_pack }}
+              </div>
+              <div class="tabbed-content" id="tab2">
+                <b
+                  ><label for=""
+                    >Enregistrez le paquet que vous utilisez le plus
+                    régulièrement</label
+                  ></b
+                >
+                {% csrf_token %} {{ paquet_form.non_field_errors }}
+                {% for field in paquet_form %}
+                <div class="fieldWrapper form-group">
+                  {{ field.label }}: {{ field }} {{ field.error }}
+                </div>
+                {% endfor %} {% comment %} end {% endcomment %}
+              </div>
+              {% endif %} {% if not user_packs %}
+              <p><b>Paquet de cigarette de référence:</b></p>
+              <p>
+                Renseignez les informations demandées concernant le paquet de
+                cigarette que vous consommez le plus régulièrement
+              </p>
+              {% csrf_token %} {{ paquet_form.non_field_errors }}
               {% for field in paquet_form %}
               <div class="fieldWrapper form-group">
                 {{ field.label }}: {{ field }} {{ field.error }}
               </div>
-              {% endfor %}
+              {% endfor %} {% endif %}
+              <input
+                id=""
+                type="submit"
+                class="btn btn-secondary"
+                value="Sauvergarder"
+              />
             </div>
-            {% endif %} {% if not user_packs %}
-            <p><b>Paquet de cigarette de référence:</b></p>
-            <p>
-              Renseignez les informations demandées concernant le paquet de
-              cigarette que vous consommez le plus régulièrement
-            </p>
-            {% csrf_token %} {{ paquet_form.non_field_errors }}
-            {% for field in paquet_form %}
-            <div class="fieldWrapper form-group">
-              {{ field.label }}: {{ field }} {{ field.error }}
-            </div>
-            {% endfor %} {% endif %}
-            <input
-              id=""
-              type="submit"
-              class="btn btn-primary btn-user btn-block mt-3"
-              value="Sauvergarder"
-            />
           </form>
-        </div>
-        <div class="modal-buttons">
-          <span class="btn close-modal-btn">Annuler</span>
         </div>
       </section>
     </div>

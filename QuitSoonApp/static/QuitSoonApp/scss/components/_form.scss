@@ -12,14 +12,17 @@
       font-size: 1.2em;
     }
 
-    .fieldWrapper {
+    .fieldWrapper,
+    .form-group {
+      display: block;
       width: 100%;
     }
 
     h1,
     h2,
     h3,
-    h4 label,
+    h4,
+    label,
     select,
     input,
     textarea {
@@ -42,8 +45,8 @@
     input[type="submit"] {
       cursor: pointer;
       width: auto;
-      margin-top: 0.4em;
-      margin-left: auto;
+      margin-top: 1.4em;
+      // margin-left: auto;
       border-color: transparent;
     }
 
