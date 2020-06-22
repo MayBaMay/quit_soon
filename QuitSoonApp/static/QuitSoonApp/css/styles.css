@@ -934,7 +934,7 @@ body {
     font-size: 2em;
   }
   .page-heading h2 {
-    font-size: 1.8em;
+    font-size: 1.4em;
   }
 }
 
@@ -1014,7 +1014,7 @@ header {
 
 @media (min-width: 480px) {
   .grid-container {
-    grid-template-rows: 4rem 4rem auto;
+    grid-template-rows: 4rem 4rem minmax(100vh, auto);
   }
 }
 
@@ -1291,6 +1291,16 @@ form .substitut_form {
   width: 100%;
 }
 
+#alternatives {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+}
+
+@media (min-width: 480px) {
+  #alternatives {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p2 p2 p2 p2" ". . p3 p3 p3 p3 p3 p3 p3 p3 . .";
+  }
+}
+
 #smoke {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
 }
@@ -1317,6 +1327,6 @@ form .substitut_form {
 
 @media (min-width: 480px) {
   #paquets {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p2 p2 p2 p2" "p1 p1 p1 p1 p1 p1 p1 p1 . . . ." ". . p3 p3 p3 p3 p3 p3 p3 p3 . .";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p2 p2 p2 p2" ". . p3 p3 p3 p3 p3 p3 p3 p3 . .";
   }
 }
