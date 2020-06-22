@@ -42,10 +42,12 @@
       padding: 0.3em;
     }
     //   select
-    input[type="submit"] {
+    input[type="submit"],
+    button[type="submit"] {
       cursor: pointer;
       width: auto;
-      margin-top: 1.4em;
+      margin: 1.4em 0;
+
       // margin-left: auto;
       border-color: transparent;
     }

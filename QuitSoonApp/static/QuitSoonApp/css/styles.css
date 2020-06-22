@@ -712,7 +712,7 @@ body {
 
 .modal-container .modal .modal-content h4 {
   font-size: 1.4rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .modal-container .modal .modal-content .modal-buttons {
@@ -821,10 +821,11 @@ body {
   padding: 0.3em;
 }
 
-.form-container form input[type="submit"] {
+.form-container form input[type="submit"],
+.form-container form button[type="submit"] {
   cursor: pointer;
   width: auto;
-  margin-top: 1.4em;
+  margin: 1.4em 0;
   border-color: transparent;
 }
 
@@ -936,7 +937,7 @@ tr:nth-child(even) {
 }
 
 .tabbed-content-container {
-  margin: 2em 0;
+  margin: 1em 0;
 }
 
 .tabbed-content-container .tabbed-content {
