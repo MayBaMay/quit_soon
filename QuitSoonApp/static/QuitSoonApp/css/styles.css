@@ -1113,6 +1113,8 @@ header nav > ul {
 }
 
 header nav > ul li {
+  display: flex;
+  align-items: center;
   height: 100%;
   margin-left: 0rem;
   position: relative;
@@ -1128,10 +1130,10 @@ header nav > ul li .menu-item {
   text-decoration: none;
   font-size: 1rem;
   line-height: 1.6;
-  width: 100%;
-  height: 100%;
   padding: 0 1rem;
   transition: 0.2s;
+  width: 3rem;
+  height: 3rem;
 }
 
 header nav > ul li .menu-item:hover, header nav > ul li .menu-item:active {
@@ -1162,6 +1164,7 @@ header nav > ul li.dropdown-menu .sub-menu {
   margin-top: 0.2rem;
   position: absolute;
   right: 0;
+  top: 4.5rem;
 }
 
 header nav > ul li.dropdown-menu .sub-menu li {
@@ -1174,7 +1177,9 @@ header nav > ul li.dropdown-menu .sub-menu li {
   color: #292929;
 }
 
-header nav > ul li.dropdown-menu .sub-menu li a {
+header nav > ul li.dropdown-menu .sub-menu li .menu-item {
+  width: 100%;
+  height: 100%;
   display: inline-block;
   white-space: nowrap;
   padding: 0.8rem 1rem;
@@ -1206,9 +1211,11 @@ header.header-scroll .header-content {
   header .header-content nav > ul li {
     margin-left: 0rem;
   }
+  header .header-content nav > ul li.dropdown-menu .sub-menu {
+    top: 3rem;
+  }
   #username-nav {
     margin-left: 0.25em;
-    display: inline-block;
   }
 }
 
@@ -1229,6 +1236,8 @@ header.header-scroll .header-content {
     border-bottom: none;
   }
   header nav > ul li .menu-item {
+    width: 100%;
+    height: 100%;
     padding: 0.4em;
   }
   header nav > ul li .menu-item span {

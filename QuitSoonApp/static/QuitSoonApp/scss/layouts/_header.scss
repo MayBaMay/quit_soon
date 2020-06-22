@@ -63,6 +63,8 @@ header {
       align-items: center;
       list-style: none;
       li {
+        display: flex;
+        align-items: center;
         height: 100%;
         margin-left: 0rem;
         position: relative;
@@ -78,10 +80,10 @@ header {
           font-size: 1rem;
           line-height: 1.6;
           //   font-weight: 200;
-          width: 100%;
-          height: 100%;
           padding: 0 1rem;
           transition: 0.2s;
+          width: 3rem;
+          height: 3rem;
           &:hover,
           &:active {
             transition: 0.2s;
@@ -108,7 +110,6 @@ header {
           cursor: pointer;
 
           span {
-            // border: 1px solid red;
             // width: 100%;
           }
           .sub-menu {
@@ -119,6 +120,7 @@ header {
             margin-top: 0.2rem;
             position: absolute;
             right: 0;
+            top: 4.5rem;
 
             li {
               overflow: hidden;
@@ -128,7 +130,9 @@ header {
               padding: 0em;
               box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
               color: $header-colour;
-              a {
+              .menu-item {
+                width: 100%;
+                height: 100%;
                 display: inline-block;
                 white-space: nowrap;
                 padding: 0.8rem 1rem;
@@ -168,13 +172,18 @@ header {
 
         li {
           margin-left: 0rem;
+          &.dropdown-menu {
+            .sub-menu {
+              top: 3rem;  
+            }
+          }
         }
       }
     }
   }
   &#username-nav {
     margin-left: 0.25em;
-    display: inline-block;
+    // display: inline-block;
   }
 }
 @include min-break("tablet") {
@@ -198,6 +207,8 @@ header {
           border-bottom: none;
 
           .menu-item {
+            width: 100%;
+            height: 100%;
             padding: 0.4em;
             span {
               margin-left: 0.6rem;
