@@ -32,8 +32,7 @@ class ReportViewTestCase1(TestCase):
         """test report view with anonymous user"""
         self.client.logout()
         response = self.client.get(reverse('QuitSoonApp:report'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context, {})
+        self.assertEqual(response.status_code, 302)
 
     def test_user_no_profile(self):
         """test report view without a user profile"""
@@ -67,10 +66,10 @@ class ReportViewTestCase1(TestCase):
         response = self.client.get(reverse('QuitSoonApp:report'))
         self.assertEqual(response.context['total_number'], 329)
         self.assertEqual(response.context['average_number'], 5)
-        self.assertEqual(response.context['non_smoked'], 911)
-        self.assertEqual(response.context['total_money'], Decimal('157.91'))
-        self.assertEqual(response.context['average_money'], Decimal('2.55'))
-        self.assertEqual(response.context['saved_money'], Decimal('437.29'))
+        self.assertEqual(response.context['non_smoked'], 891)
+        self.assertEqual(response.context['total_money'], Decimal('159.16'))
+        self.assertEqual(response.context['average_money'], Decimal('2.61'))
+        self.assertEqual(response.context['saved_money'], Decimal('432.54'))
 
 
 class objectifsViewTestCase(TestCase):

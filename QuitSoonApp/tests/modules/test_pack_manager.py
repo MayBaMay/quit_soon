@@ -295,4 +295,4 @@ class PackManagerTestCase(TestCase):
             id=paquet.id,
         )
         self.assertEqual(find_pack.g_per_cig, Decimal('0.6'))
-        self.assertEqual(find_pack.price_per_cig, Decimal('0.22'))
+        self.assertEqual(find_pack.price_per_cig, Decimal('0.225'))

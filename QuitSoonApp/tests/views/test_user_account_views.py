@@ -188,9 +188,7 @@ class UserProfileTestCase(TransactionTestCase):
 
     def test_profile_get_anonymoususer(self):
         response = self.client.get(reverse('QuitSoonApp:profile'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'QuitSoonApp/profile.html')
-        self.assertEqual(response.context['userprofile'], None)
+        self.assertEqual(response.status_code, 302)
 
     def test_profile_get_existing_profile_user_no_ref_pack(self):
         userprofile = UserProfile.objects.create(
@@ -388,11 +386,11 @@ class UserProfileTestCase(TransactionTestCase):
     def test_new_parameters_known_user(self):
         self.client.login(username='Test', password='testpassword')
         response = self.client.get(reverse('QuitSoonApp:new_parameters'))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
     def test_new_parameters_get_anonymous_user(self):
         response = self.client.post(reverse('QuitSoonApp:new_parameters'))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 302)
 
     def test_new_parameters_post_noprofile_nopack(self):
         self.client.login(username='Test', password='testpassword')

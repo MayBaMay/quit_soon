@@ -415,8 +415,7 @@ class HealthListTestCase(TestCase):
     def test_health_list_get_anonymoususer(self):
         self.client.logout()
         response = self.client.get(reverse('QuitSoonApp:health_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context, {})
+        self.assertEqual(response.status_code, 302)
 
     def test_health_list_no_alternative_saved(self):
         Alternative.objects.filter(user=self.user).delete()

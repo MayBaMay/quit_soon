@@ -351,8 +351,7 @@ class SmokeListTestCase(TestCase):
     def test_smoke_list_anonymous_user(self):
         self.client.logout()
         response = self.client.get(reverse('QuitSoonApp:smoke_list'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context, {})
+        self.assertEqual(response.status_code, 302)
 
     def test_smoke_list_no_pack_saved(self):
         Paquet.objects.filter(user=self.user).delete()
