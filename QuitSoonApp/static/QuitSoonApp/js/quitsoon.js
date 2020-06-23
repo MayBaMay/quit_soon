@@ -243,7 +243,7 @@
         .prop("required", false)
         .val("");
       $("#alternativeform input[id=id_activity]")
-        .prop("required", false);
+        .prop("required", false)
         .val("");
       $("#alternativeform select[id=id_substitut]").prop("required", true);
       $("#alternativeform input[id=id_nicotine]").prop("required", true);

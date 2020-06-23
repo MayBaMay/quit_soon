@@ -25,7 +25,6 @@
   <div class="form-container">
     <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
       {% csrf_token %}
-        <div class="container">
           {{ form.non_field_errors }}
           <div class="fieldWrapper form-group row">
             <span>{{ form.date_health.label }}
@@ -56,7 +55,6 @@
             {{ form.duration_min.error }}
           </div>
       <input id="" type="submit" class="btn" value="Sauvergarder">
-      </div>
     </form>
   </div>
 

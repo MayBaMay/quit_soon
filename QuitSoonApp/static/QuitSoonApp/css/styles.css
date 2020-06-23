@@ -564,7 +564,7 @@ body {
   border-radius: initial;
   box-shadow: 0 0 rgba(0, 0, 0, 0);
   background-color: transparent;
-  color: white;
+  color: inherit;
 }
 
 [class^="btn"][class*="-tab"]:focus {
@@ -574,7 +574,8 @@ body {
 
 [class^="btn"][class*="-tab"].active {
   box-shadow: 0 0 rgba(0, 0, 0, 0);
-  border: 1px solid white;
+  border: 1px solid #666666;
+  border-radius: 5px;
 }
 
 [class^="btn"]:focus {
@@ -711,10 +712,11 @@ body {
 
 .modal-container .modal .modal-content h4 {
   font-size: 1.4rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .modal-container .modal .modal-content .modal-buttons {
+  width: 100%;
   display: flex;
   justify-content: center;
   margin-top: 2rem;
@@ -774,6 +776,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0.6rem 0;
 }
 
 .form-container form {
@@ -787,14 +790,34 @@ body {
   font-size: 1.2em;
 }
 
-.form-container form .fieldWrapper {
+.form-container form .fieldWrapper,
+.form-container form .form-group {
+  display: block;
   width: 100%;
+}
+
+.form-container form .fieldWrapper.checkbox-group,
+.form-container form .form-group.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-container form .fieldWrapper.checkbox-group input,
+.form-container form .form-group.checkbox-group input {
+  width: auto;
+}
+
+.form-container form .fieldWrapper.checkbox-group label,
+.form-container form .form-group.checkbox-group label {
+  width: auto;
+  margin-right: 1rem;
 }
 
 .form-container form h1,
 .form-container form h2,
 .form-container form h3,
-.form-container form h4 label,
+.form-container form h4,
+.form-container form label,
 .form-container form select,
 .form-container form input,
 .form-container form textarea {
@@ -816,11 +839,11 @@ body {
   padding: 0.3em;
 }
 
-.form-container form input[type="submit"] {
+.form-container form input[type="submit"],
+.form-container form button[type="submit"] {
   cursor: pointer;
   width: auto;
-  margin-top: 0.4em;
-  margin-left: auto;
+  margin: 1.4em 0;
   border-color: transparent;
 }
 
@@ -895,14 +918,24 @@ body {
 }
 
 .page-heading h1 {
+  line-height: 1;
   font-weight: 400;
-  font-size: 2.2rem;
+  font-size: 1.7em;
   letter-spacing: 0.05em;
-  margin-left: 0.8rem;
+  margin-left: 0.8em;
 }
 
 .page-heading h2 {
-  margin-left: 1rem;
+  margin-left: 1em;
+}
+
+@media (min-width: 480px) {
+  .page-heading h1 {
+    font-size: 2em;
+  }
+  .page-heading h2 {
+    font-size: 1.4em;
+  }
 }
 
 table {
@@ -922,7 +955,7 @@ tr:nth-child(even) {
 }
 
 .tabbed-content-container {
-  margin: 2em 0;
+  margin: 1em 0;
 }
 
 .tabbed-content-container .tabbed-content {
@@ -1080,6 +1113,8 @@ header nav > ul {
 }
 
 header nav > ul li {
+  display: flex;
+  align-items: center;
   height: 100%;
   margin-left: 0rem;
   position: relative;
@@ -1095,10 +1130,10 @@ header nav > ul li .menu-item {
   text-decoration: none;
   font-size: 1rem;
   line-height: 1.6;
-  width: 100%;
-  height: 100%;
   padding: 0 1rem;
   transition: 0.2s;
+  width: 3rem;
+  height: 3rem;
 }
 
 header nav > ul li .menu-item:hover, header nav > ul li .menu-item:active {
@@ -1124,11 +1159,12 @@ header nav > ul li.dropdown-menu {
 header nav > ul li.dropdown-menu .sub-menu {
   visibility: hidden;
   opacity: 0;
-  transform: translateY(-3rem) translateX(1.8rem) scale(0.3);
+  transform: translateY(-3rem) scale(0.3);
   transition: 0.2s;
   margin-top: 0.2rem;
   position: absolute;
   right: 0;
+  top: 4.5rem;
 }
 
 header nav > ul li.dropdown-menu .sub-menu li {
@@ -1141,7 +1177,9 @@ header nav > ul li.dropdown-menu .sub-menu li {
   color: #292929;
 }
 
-header nav > ul li.dropdown-menu .sub-menu li a {
+header nav > ul li.dropdown-menu .sub-menu li .menu-item {
+  width: 100%;
+  height: 100%;
   display: inline-block;
   white-space: nowrap;
   padding: 0.8rem 1rem;
@@ -1173,9 +1211,11 @@ header.header-scroll .header-content {
   header .header-content nav > ul li {
     margin-left: 0rem;
   }
+  header .header-content nav > ul li.dropdown-menu .sub-menu {
+    top: 3rem;
+  }
   #username-nav {
     margin-left: 0.25em;
-    display: inline-block;
   }
 }
 
@@ -1196,6 +1236,8 @@ header.header-scroll .header-content {
     border-bottom: none;
   }
   header nav > ul li .menu-item {
+    width: 100%;
+    height: 100%;
     padding: 0.4em;
   }
   header nav > ul li .menu-item span {
@@ -1226,42 +1268,74 @@ footer {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6" ". . . . . . . . . . . . " ". p3 p3 p3 p3 p4 p4 p4 p4 p4 p4 .";
 }
 
-#objectifs .p1 {
-  grid-area: p1;
-}
-
-#objectifs .p2 {
-  grid-area: p2;
-}
-
-#objectifs .p3 {
-  grid-area: p3;
-}
-
-#objectifs .p4 {
-  grid-area: p4;
-}
-
-#objectifs .p5 {
-  grid-area: p5;
-}
-
-#objectifs .p6 {
-  grid-area: p6;
-}
-
 @media (min-width: 480px) {
   #objectifs {
     grid-template-areas: "p1 p1 p1 p1 p4 p4 p4 p4 p3 p3 p3 p3" ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
   }
 }
 
-#suivi {
+#today {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+}
+
+@media (min-width: 480px) {
+  #today {
+    grid-template-areas: ". . . p1 p1 p1 p2 p2 p2 . . ." "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4";
+  }
+}
+
+#report {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6" ". . . . . . . . . . . . " ". p3 p3 p3 p3 p4 p4 p4 p4 p4 p4 .";
+}
+
+@media (min-width: 480px) {
+  #report {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  }
+}
+
+form .activity_form,
+form .substitut_form {
+  display: block;
+  width: 100%;
+}
+
+#alternatives {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
 }
 
 @media (min-width: 480px) {
-  #suivi {
-    grid-template-areas: ". p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 ." "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  #alternatives {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p2 p2 p2 p2" ". . p3 p3 p3 p3 p3 p3 p3 p3 . ." ". . . . . . . . . . . ." ". . . . . . . . . . . .";
+  }
+}
+
+#smoke {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+}
+
+@media (min-width: 480px) {
+  #smoke {
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  }
+}
+
+#health {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+}
+
+@media (min-width: 480px) {
+  #health {
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  }
+}
+
+#paquets {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+}
+
+@media (min-width: 480px) {
+  #paquets {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p2 p2 p2 p2" ". . p3 p3 p3 p3 p3 p3 p3 p3 . ." ". . . . . . . . . . . ." ". . . . . . . . . . . .";
   }
 }

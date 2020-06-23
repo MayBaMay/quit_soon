@@ -2,6 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0.6rem 0;
   form {
     display: flex;
     max-width: 400px;
@@ -12,14 +13,28 @@
       font-size: 1.2em;
     }
 
-    .fieldWrapper {
+    .fieldWrapper,
+    .form-group {
+      display: block;
       width: 100%;
+      &.checkbox-group {
+        display: flex;
+        align-items: center;
+        input {
+          width: auto;
+        }
+        label {
+          width: auto;
+          margin-right: 1rem;
+        }
+      }
     }
 
     h1,
     h2,
     h3,
-    h4 label,
+    h4,
+    label,
     select,
     input,
     textarea {
@@ -39,11 +54,13 @@
       padding: 0.3em;
     }
     //   select
-    input[type="submit"] {
+    input[type="submit"],
+    button[type="submit"] {
       cursor: pointer;
       width: auto;
-      margin-top: 0.4em;
-      margin-left: auto;
+      margin: 1.4em 0;
+
+      // margin-left: auto;
       border-color: transparent;
     }
 
