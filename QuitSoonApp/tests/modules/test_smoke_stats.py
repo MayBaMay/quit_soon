@@ -46,9 +46,9 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(self.stats.nb_per_day(datetime.date(2019, 9, 28)), 12)
         self.assertEqual(self.stats.nb_per_day(datetime.date(2019, 9, 22)), 0)
 
-    def test_total_smoke(self):
-        """test method total_smoke"""
-        self.assertEqual(self.stats.total_smoke, 329)
+    def test_total_smoke_full_days(self):
+        """test method total_smoke_full_days"""
+        self.assertEqual(self.stats.total_smoke_full_days, 329)
 
     def test_average_per_day(self):
         """test method average_per_day"""
@@ -56,7 +56,7 @@ class SmokeStatsTestCaseBigData(TestCase):
 
     def test_nb_jour_since_start(self):
         """test method nb_jour_since_start"""
-        self.assertEqual(self.stats.nb_jour_since_start, 62)
+        self.assertEqual(self.stats.nb_full_days_since_start, 61)
 
     def test_count_smoking_day(self):
         """test method count_smoking_day"""
@@ -64,15 +64,15 @@ class SmokeStatsTestCaseBigData(TestCase):
 
     def test_count_no_smoking_day(self):
         """test method count_no_smoking_day"""
-        self.assertEqual(self.stats.count_no_smoking_day, 5)
+        self.assertEqual(self.stats.count_no_smoking_day, 4)
 
     def test_total_cig_with_old_habits(self):
         """test method total_cig_with_old_habits"""
-        self.assertEqual(self.stats.total_cig_with_old_habits, 1240)
+        self.assertEqual(self.stats.total_cig_with_old_habits, 1220)
 
-    def test_nb_not_smoked_cig(self):
-        """test method nb_not_smoked_cig"""
-        self.assertEqual(self.stats.nb_not_smoked_cig, 911)
+    def test_nb_not_smoked_cig_full_days(self):
+        """test method nb_not_smoked_cig_full_days"""
+        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 891)
 
     def test_list_dates(self):
         """test method list_dates"""
@@ -93,20 +93,20 @@ class SmokeStatsTestCaseBigData(TestCase):
 
     def test_money_smoked_per_day(self):
         """test method money_smoked_per_day"""
-        self.assertEqual(round(self.stats.money_smoked_per_day("2019-09-28"), 2), Decimal('5.61'))
+        self.assertEqual(round(self.stats.money_smoked_per_day("2019-09-28"), 2), Decimal('5.66'))
 
-    def test_average_money_per_day(self):
-        """test method average_money_per_day"""
-        self.assertEqual(round(self.stats.average_money_per_day, 2),  Decimal('2.55'))
+    def test_average_money_per_day_full_days(self):
+        """test method average_money_per_day_full_days"""
+        self.assertEqual(round(self.stats.average_money_per_day_full_days, 2),  Decimal('2.61'))
 
-    def test_total_money_smoked(self):
-        self.assertEqual(self.stats.total_money_smoked, Decimal('157.91'))
+    def test_total_money_smoked_full_days(self):
+        self.assertEqual(self.stats.total_money_smoked_full_days, Decimal('159.155'))
 
     def test_total_money_with_starting_nb_cig(self):
-        self.assertEqual(round(self.stats.total_money_with_starting_nb_cig, 2), Decimal('595.20'))
+        self.assertEqual(round(self.stats.total_money_with_starting_nb_cig, 2), Decimal('591.70'))
 
-    def test_money_saved(self):
-        self.assertEqual(self.stats.money_saved, Decimal('437.29'))
+    def test_money_saved_full_days(self):
+        self.assertEqual(self.stats.money_saved_full_days, Decimal('432.54'))
 
 
 class SmokeStatsTestCaseSmallData(TestCase):
@@ -127,22 +127,28 @@ class SmokeStatsTestCaseSmallData(TestCase):
         self.smoke.populate_db()
         self.stats = SmokeStats(self.user, datetime.date(2020, 6, 20))
 
+    def test_get_nb_per_day_smoke(self):
+        """test method get_nb_per_day_smoke"""
+        self.assertEqual(self.stats.nb_per_day("2020-06-19"), 19)
+        self.assertEqual(self.stats.nb_per_day("2020-06-20"), 14)
+
+
     def test_money_smoked_per_day(self):
         """test method money_smoked_per_day"""
-        self.assertEqual(self.stats.money_smoked_per_day("2020-06-19"), 9.12)
-        self.assertEqual(self.stats.money_smoked_per_day("2020-06-20"), 6.72)
+        self.assertEqual(self.stats.money_smoked_per_day("2020-06-19"), Decimal('9.22'))
+        self.assertEqual(self.stats.money_smoked_per_day("2020-06-20"),  Decimal('6.79'))
 
     def test_total_cig_with_old_habits(self):
         """test method total_cig_with_old_habits"""
-        self.assertEqual(self.stats.total_cig_with_old_habits, 40)
+        self.assertEqual(self.stats.total_cig_with_old_habits, 20)
 
-    def test_nb_not_smoked_cig(self):
-        """test method nb_not_smoked_cig"""
-        self.assertEqual(self.stats.nb_not_smoked_cig, 7)
+    def test_nb_not_smoked_cig_full_days(self):
+        """test method nb_not_smoked_cig_full_days"""
+        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 1)
 
-    def test_average_money_per_day(self):
-        """test method average_money_per_day"""
-        self.assertEqual(self.stats.average_money_per_day, 7.92)
+    def test_average_money_per_day_full_days(self):
+        """test method average_money_per_day_full_days"""
+        self.assertEqual(self.stats.average_money_per_day_full_days, Decimal('9.215'))
 
     def test_list_dates(self):
         """test method list_dates"""
@@ -152,14 +158,14 @@ class SmokeStatsTestCaseSmallData(TestCase):
             [datetime.date(2020, 6, 19), datetime.date(2020, 6, 20)]
             )
 
-    def test_total_money_smoked(self):
-        self.assertEqual(self.stats.total_money_smoked, 15.84)
+    def test_total_money_smoked_full_days(self):
+        self.assertEqual(self.stats.total_money_smoked_full_days, Decimal('9.215'))
 
     def test_total_money_with_starting_nb_cig(self):
-        self.assertEqual(self.stats.total_money_with_starting_nb_cig, 19.20)
+        self.assertEqual(self.stats.total_money_with_starting_nb_cig, Decimal('9.7'))
 
-    def test_money_saved(self):
-        self.assertEqual(self.stats.money_saved,3.36)
+    def test_money_saved_full_days(self):
+        self.assertEqual(self.stats.money_saved_full_days, Decimal('0.48'))
         # self.assertEqual(stat.average_per_day, 200)
 
 class HealthyStatsTestCase(TestCase):

@@ -14,52 +14,55 @@ class Stats:
         self.lastday = lastday
         self.date_start = UserProfile.objects.get(user=self.user).date_start
         self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
-        self.nb_jour_since_start = (self.lastday - self.date_start).days + 1
+        self.nb_full_days_since_start = (self.lastday - self.date_start).days
 
 class SmokeStats(Stats):
-    """Generate stats reports on user smoke habits"""
+    """Generate stats reports on user smoke habits for past days"""
 
     def __init__(self, user, lastday):
         Stats.__init__(self, user, lastday)
-        self.user_conso = ConsoCig.objects.filter(user=self.user)
+        self.user_conso_all_days = ConsoCig.objects.filter(user=self.user)
+        self.user_conso_full_days = self.user_conso_all_days.exclude(date_cig=self.lastday)
 
     def nb_per_day(self, date):
         """ nb smoke per day """
-        conso_day = self.user_conso.filter(date_cig=date)
+        conso_day = self.user_conso_all_days.filter(date_cig=date)
         return conso_day.count()
 
     @property
-    def total_smoke(self):
-        """ total number of cigarette smoked by user"""
-        return self.user_conso.count()
+    def total_smoke_full_days(self):
+        """
+        total number of cigarette smoked by user
+        """
+        return self.user_conso_full_days.count()
 
     @property
     def average_per_day(self):
-        """ smoke average per day """
-        return self.total_smoke / self.nb_jour_since_start
+        """ smoke average per day in full days smoke"""
+        return self.total_smoke_full_days / self.nb_full_days_since_start
 
     @property
     def count_smoking_day(self):
-        """ number of day user smoked """
-        smoking_days = ConsoCig.objects.order_by('date_cig').distinct('date_cig')
-        return smoking_days.count()
+        """ number of days user smoked """
+        distinct_date_cig = ConsoCig.objects.order_by('date_cig').distinct('date_cig')
+        return distinct_date_cig.exclude(date_cig=self.lastday).count()
 
     @property
     def count_no_smoking_day(self):
         """ number of day user didn't smoke """
-        return self.nb_jour_since_start - self.count_smoking_day
+        return self.nb_full_days_since_start - self.count_smoking_day
 
     @property
     def total_cig_with_old_habits(self):
         """
-        total of cigarette user would have smoke with old habit
+        total of cigarette user would have smoke with old habit for past days
         (declared by user in profile in starting_nb_cig)
         """
-        return self.starting_nb_cig * self.nb_jour_since_start
+        return self.starting_nb_cig * self.nb_full_days_since_start
 
     @property
-    def nb_not_smoked_cig(self):
-        return self.total_cig_with_old_habits - self.total_smoke
+    def nb_not_smoked_cig_full_days(self):
+        return self.total_cig_with_old_habits - self.total_smoke_full_days
 
     @staticmethod
     def daterange(start_date, end_date):
@@ -87,32 +90,32 @@ class SmokeStats(Stats):
         delta =  lastday - start
         for i in range(delta.days + 1):
             day = start + timedelta(days=i)
-            if not self.user_conso.filter(date_cig=day).exists():
+            if not self.user_conso_full_days.filter(date_cig=day).exists():
                 no_smoking_day_list_dates.append(day.date())
         return no_smoking_day_list_dates
 
     def money_smoked_per_day(self, date):
         """ total of money user spent the day in argument smoking cigarettes """
-        conso_day = self.user_conso.filter(date_cig=date)
+        conso_day = self.user_conso_all_days.filter(date_cig=date)
         money_smoked = 0
         for conso in conso_day:
             if conso.paquet:
                 money_smoked += conso.paquet.price_per_cig
-        return money_smoked
+        return round(money_smoked, 2)
 
     @property
-    def average_money_per_day(self):
-        """ average money user spend per day smoking cigarettes """
-        return self.total_money_smoked / self.nb_jour_since_start
-
-    @property
-    def total_money_smoked(self):
+    def total_money_smoked_full_days(self):
         """total money since starting day user spent on cigarettes"""
         money_smoked = 0
-        for conso in self.user_conso:
+        for conso in self.user_conso_full_days:
             if conso.paquet:
                 money_smoked += conso.paquet.price_per_cig
         return money_smoked
+
+    @property
+    def average_money_per_day_full_days(self):
+        """ average money user spend per day smoking cigarettes """
+        return self.total_money_smoked_full_days / self.nb_full_days_since_start
 
     @property
     def total_money_with_starting_nb_cig(self):
@@ -123,16 +126,17 @@ class SmokeStats(Stats):
         money = 0
         #get first pack created
         first_pack = Paquet.objects.get(user=self.user, first=True)
-        money += self.nb_jour_since_start * first_pack.price_per_cig * self.starting_nb_cig
+        money += self.nb_full_days_since_start * first_pack.price_per_cig * self.starting_nb_cig
         return money
 
     @property
-    def money_saved(self):
+    def money_saved_full_days(self):
         """
         compare money user would have spent on cigaretteswith old habits
         and money he/she actualy spent
         """
-        return self.total_money_with_starting_nb_cig - self.total_money_smoked
+        money_saved = self.total_money_with_starting_nb_cig - self.total_money_smoked_full_days
+        return round(money_saved, 2)
 
 
 class HealthyStats(Stats):

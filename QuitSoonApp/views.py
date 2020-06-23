@@ -531,12 +531,12 @@ def report(request, **kwargs):
             # healthy = HealthyStats(request.user, datetime.date.today())
 
             # generate context
-            context['total_number'] = smoke.total_smoke
+            context['total_number'] = smoke.total_smoke_full_days
             context['average_number'] = round(smoke.average_per_day)
-            context['non_smoked'] = smoke.nb_not_smoked_cig
-            context['total_money'] = round(smoke.total_money_smoked, 2)
-            context['saved_money'] = round(smoke.money_saved, 2)
-            context['average_money'] = round(smoke.average_money_per_day, 2)
+            context['non_smoked'] = smoke.nb_not_smoked_cig_full_days
+            context['total_money'] = round(smoke.total_money_smoked_full_days, 2)
+            context['saved_money'] = round(smoke.money_saved_full_days, 2)
+            context['average_money'] = round(smoke.average_money_per_day_full_days, 2)
 
         else:
             return redirect('QuitSoonApp:profile')
