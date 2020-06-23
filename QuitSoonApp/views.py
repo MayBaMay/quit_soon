@@ -19,7 +19,7 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
-from .forms import (
+from QuitSoonApp.forms import (
     RegistrationForm,
     ParametersForm,
     PaquetFormCreation,
@@ -30,7 +30,7 @@ from .forms import (
     ChoosePackFormWithEmptyFields, SmokeForm,
     ChooseAlternativeFormWithEmptyFields, HealthForm,
     )
-from .modules import (
+from QuitSoonApp.modules import (
     ResetProfile,
     PackManager, SmokeManager,
     AlternativeManager, HealthManager,
@@ -98,7 +98,7 @@ def today(request):
                 context['lasthealth'] = get_delta_last_event(last_time)
         return render(request, 'QuitSoonApp/today.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def profile(request):
     """User profile page with authentication infos and smoking habits"""
@@ -130,7 +130,7 @@ def profile(request):
             context['user_packs'] = packs
         return render(request, 'QuitSoonApp/profile.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def new_parameters(request):
     """View changing user smoking habits when starting using app"""
@@ -168,7 +168,7 @@ def new_parameters(request):
             reset.new_profile()
         return redirect('QuitSoonApp:profile')
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def new_name(request):
     """View changing user name"""
@@ -254,7 +254,7 @@ def paquets(request):
         context['rol'] = paquets.filter(type_cig='ROL')
         return render(request, 'QuitSoonApp/paquets.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def delete_pack(request, id_pack):
     """
@@ -306,7 +306,7 @@ def smoke(request):
             context['lastsmoke'] = get_delta_last_event(last_time)
         return render(request, 'QuitSoonApp/smoke.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def delete_smoke(request, id_smoke):
     """
@@ -349,7 +349,7 @@ def smoke_list(request):
                 context['smoke_list_form'] = smoke_list_form
         return render(request, 'QuitSoonApp/smoke_list.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
@@ -412,7 +412,7 @@ def alternatives(request):
             }
         return render(request, 'QuitSoonApp/alternatives.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def delete_alternative(request, id_alternative):
     """
@@ -451,7 +451,7 @@ def health(request):
             context['lasthealth'] = get_delta_last_event(last_time)
         return render(request, 'QuitSoonApp/health.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def su_ecig(request):
     """Tells if ecig has been selected by user"""
@@ -518,7 +518,7 @@ def health_list(request):
                 context['health'] = health
         return render(request, 'QuitSoonApp/health_list.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:login')
 
 def report(request, **kwargs):
     """Page with user results, graphs..."""

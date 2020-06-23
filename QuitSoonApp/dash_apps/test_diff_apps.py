@@ -24,35 +24,27 @@ from QuitSoonApp.models import UserProfile
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = DjangoDash('ConsoCigGraph', external_stylesheets=external_stylesheets)
 
-app.layout = html.Div([
-    dcc.RadioItems(id='my-radio',
-                 options=[
-                    {'label': 'Jour', 'value':'D'},
-                    {'label': 'Semaine', 'value':'W'},
-                    {'label': 'Mois', 'value':'M'},
-                 ],
-                 value='D',
-                 labelStyle={'display': 'inline-block'}
-                 ),
-    dcc.Checklist(id='my-checkbox',
-        options=[{'label': 'Voir mes activités saines', 'value': 'A'},],
-        # value=['MTL', 'SF'],
-        ),
-    dcc.Graph(id='graph',
-              animate=False,
-              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
-              ),
-    dcc.Graph(id='graph2',
-              animate=False,
-              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
-              ),
-    dcc.Graph(id='graph3',
-              animate=False,
-              style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
-              ),
-])
+def create_layout(name_graph):
+    return html.Div([
+        dcc.RadioItems(id='my-radio',
+                     options=[
+                        {'label': 'Jour', 'value':'D'},
+                        {'label': 'Semaine', 'value':'W'},
+                        {'label': 'Mois', 'value':'M'},
+                     ],
+                     value='D',
+                     labelStyle={'display': 'inline-block'}
+                     ),
+        dcc.Checklist(id='my-checkbox',
+            options=[{'label': 'Voir mes activités saines', 'value': 'A'},],
+            # value=['MTL', 'SF'],
+            ),
+        dcc.Graph(id=name_graph,
+                  animate=False,
+                  style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
+                  ),
+    ])
 
 def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
@@ -128,9 +120,10 @@ def dataframe(radio, user_dict):
         df = df.month_df
     return df
 
-
-@app.expanded_callback(
-    dash.dependencies.Output('graph', 'figure'),
+app1 = DjangoDash('ConsoCigGraph', external_stylesheets=external_stylesheets)
+app1.layout = create_layout('graph1')
+@app1.expanded_callback(
+    dash.dependencies.Output('graph1', 'figure'),
     [dash.dependencies.Input('my-radio', 'value'),
     dash.dependencies.Input('my-checkbox', 'value')],
 )
@@ -141,10 +134,12 @@ def display_value(radio, checkbox, request, **kwargs):
     figure = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
     return figure
 
-@app.expanded_callback(
+app2 = DjangoDash('MoneyGraph', external_stylesheets=external_stylesheets)
+app2.layout = create_layout('graph2')
+@app2.expanded_callback(
     dash.dependencies.Output('graph2', 'figure'),
     [dash.dependencies.Input('my-radio', 'value'),
-     dash.dependencies.Input('my-checkbox', 'value')],
+    dash.dependencies.Input('my-checkbox', 'value')],
 )
 def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
@@ -153,10 +148,12 @@ def display_value(radio, checkbox, request, **kwargs):
     figure = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en €)", "Mes sous", df.money_smoked)
     return figure
 
-@app.expanded_callback(
+app3 = DjangoDash('NicotineGraph', external_stylesheets=external_stylesheets)
+app3.layout = create_layout('graph3')
+@app3.expanded_callback(
     dash.dependencies.Output('graph3', 'figure'),
     [dash.dependencies.Input('my-radio', 'value'),
-     dash.dependencies.Input('my-checkbox', 'value')],
+    dash.dependencies.Input('my-checkbox', 'value')],
 )
 def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)

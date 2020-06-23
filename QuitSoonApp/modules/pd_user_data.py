@@ -17,7 +17,7 @@ from QuitSoonApp.models import (
 )
 
 ########## À ADAPTER!!! ##########
-user = User.objects.get(id=1)
+user = User.objects.get(username='maykimay')
 ##################################
 
 qs = ConsoCig.objects.filter(user=user).values()
@@ -93,7 +93,6 @@ Trophee.objects.filter(user=user).delete()
 def trophee_no_smoking(nb):
     if nb in nans_occur:
         try:
-            print(nb)
             Trophee.objects.create(user=user, nb_cig=0, nb_jour=nb)
         except IntegrityError:
             pass

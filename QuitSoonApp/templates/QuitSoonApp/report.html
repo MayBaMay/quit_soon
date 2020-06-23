@@ -24,8 +24,8 @@
         <br>
     {% else %}
       <p>Vous n'avez pas encore enregistré de cigarette fumée</p>
-    {% endif %}   
-  </section>            
+    {% endif %}
+  </section>
 
    <section class="panel p2 pc1">
      {% if total_money %}
@@ -36,15 +36,23 @@
     <br>
   {% else %}
     <p>Vous n'avez pas encore enregistré d'action saine'</p>
-  {% endif %}  
-  </section>  
+  {% endif %}
+  </section>
 
   <section class="panel p3 pc1">
     <div id='consociggraph' class="{% plotly_class name='ConsoCigGraph' %} card=" style="height:100%; width: 100%">
-        {% plotly_app name='ConsoCigGraph' ratio=0.65 %}
+        {% plotly_app name='ConsoCigGraph' ratio=1 %}
     </div>
-  </section> 
- 
+    <div id='moneygraph' class="{% plotly_class name='MoneyGraph' %} card=" style="height:100%; width: 100%">
+        {% plotly_app name='MoneyGraph' ratio=1 %}
+    </div>
+    <div id='nicotinegraph' class="{% plotly_class name='NicotineGraph' %} card=" style="height:100%; width: 100%">
+        {% plotly_app name='NicotineGraph' ratio=1 %}
+    </div>
+  </section>
+
+
+
 </main>
 <!-- End panel content -->
 
