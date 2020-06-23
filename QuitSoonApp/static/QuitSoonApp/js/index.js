@@ -168,13 +168,34 @@ $(document).ready(function () {
 
   //dropdown menu
   const dropdownToggles = document.querySelectorAll(".dropdown-menu");
-  dropdownToggles.forEach((toggle) =>
-    toggle.addEventListener("click", () => {
-      let menuId = toggle.dataset.toggle;
-      let menu = document.querySelector(`#${menuId}`);
-      menu.classList.toggle("sub-menu-open");
-    })
-  );
+  dropdownToggles.forEach((toggle) => {
+    let menuId = toggle.dataset.toggle;
+    let menu = document.querySelector(`#${menuId}`);
+    let menus = document.querySelectorAll(".sub-menu");
+    if ("ontouchstart" in window) {
+      //click to open
+      toggle.addEventListener("click", () => {
+        if (menu.classList.contains("sub-menu-open")) {
+          menus.forEach((menu) => menu.classList.remove("sub-menu-open"));
+        } else {
+          menus.forEach((menu) => menu.classList.remove("sub-menu-open"));
+          menu.classList.add("sub-menu-open");
+        }
+      });
+      //close when mouseleaves toggle or menu
+    } else {
+      //hover to open
+      menu.addEventListener("mouseleave", () => {
+        menu.classList.remove("sub-menu-open");
+      });
+      toggle.addEventListener("mouseleave", () => {
+        menu.classList.remove("sub-menu-open");
+      });
+      toggle.addEventListener("mouseenter", () => {
+        menu.classList.add("sub-menu-open");
+      });
+    }
+  });
 
   //toggle password visibility
 

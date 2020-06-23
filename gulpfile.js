@@ -134,24 +134,26 @@ function css() {
 
 // JS task
 function js() {
-  return gulp
-    .src([
-      "./QuitSoonApp/static/QuitSoonApp/js/*.js",
-      "!./QuitSoonApp/static/QuitSoonApp/js/*.min.js",
-    ])
-    .pipe(terser())
-    .pipe(
-      header(banner, {
-        pkg: pkg,
-      })
-    )
-    .pipe(
-      rename({
-        suffix: ".min",
-      })
-    )
-    .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/js"))
-    .pipe(browsersync.stream());
+  return (
+    gulp
+      .src([
+        "./QuitSoonApp/static/QuitSoonApp/js/*.js",
+        "!./QuitSoonApp/static/QuitSoonApp/js/*.min.js",
+      ])
+      .pipe(terser())
+      .pipe(
+        header(banner, {
+          pkg: pkg,
+        })
+      )
+      .pipe(
+        rename({
+          suffix: ".min",
+        })
+      )
+      .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/js"))
+      .pipe(browsersync.stream())
+  );
 }
 
 // Watch files
