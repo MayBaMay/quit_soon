@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from QuitSoonApp.dash_apps.graphs_app import dataframe, get_user_infos_from_stats, stats
 
-from QuitSoonApp.tests import FakeTodayDate
+from QuitSoonApp.tests import FakeTodayDate191128
 from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, Alternative, ConsoAlternative
 from QuitSoonApp.modules import SmokeStats, HealthyStats
 from QuitSoonApp.tests.MOCK_DATA import (
@@ -35,7 +35,7 @@ class DataFrameTestCase(TestCase):
         self.smokes = Create_smoke(self.user, row_conso_cig_data)
         self.smokes.populate_db()
 
-    @mock.patch('datetime.date', FakeTodayDate)
+    @mock.patch('datetime.date', FakeTodayDate191128)
     def test_stats(self):
         value = datetime.date.today()
         smoke, healthy = stats(self.user)

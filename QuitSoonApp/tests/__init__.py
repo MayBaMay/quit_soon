@@ -1,1 +1,1 @@
-from .fake_today import FakeTodayDate, FakeTodayDate2, FakeTodayDate3
+from .fake_today import FakeTodayDate191128, FakeTodayDate200621

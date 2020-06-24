@@ -4,6 +4,7 @@
 from datetime import datetime as dt
 from datetime import timedelta, date
 import calendar
+from itertools import chain
 import pandas as pd
 import matplotlib.pyplot as plt
 from django.contrib.auth.models import User
@@ -15,10 +16,12 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophee
 )
+from QuitSoonApp.modules import SmokeStats
 
 ########## À ADAPTER!!! ##########
 user = User.objects.get(username='maykimay')
 ##################################
+
 
 qs = ConsoCig.objects.filter(user=user).values()
 qs2 = ConsoAlternative.objects.filter(user=user).values()

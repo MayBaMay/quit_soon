@@ -11,7 +11,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from QuitSoonApp.tests import FakeTodayDate
+from QuitSoonApp.tests import FakeTodayDate191128
 from ..MOCK_DATA import (
     Create_packs, row_paquet_data,
     Create_smoke, row_conso_cig_data,
@@ -46,7 +46,7 @@ class ReportViewTestCase1(TestCase):
             fetch_redirect_response=True
             )
 
-    @mock.patch('datetime.date', FakeTodayDate)
+    @mock.patch('datetime.date', FakeTodayDate191128)
     def test__user_with_profile(self):
         """test report view using FakeTodayDate as mock for date.today()"""
         self.profile = UserProfile.objects.create(
@@ -57,8 +57,8 @@ class ReportViewTestCase1(TestCase):
         value = datetime.date.today()
         self.assertEqual(value, datetime.date(2019, 11, 28))
         self.assertIsInstance(value, datetime.date)
-        self.assertIsInstance(value, FakeTodayDate)
-        self.assertIsInstance(datetime.date.today(), FakeTodayDate)
+        self.assertIsInstance(value, FakeTodayDate191128)
+        self.assertIsInstance(datetime.date.today(), FakeTodayDate191128)
         packs = Create_packs(self.user, row_paquet_data)
         packs.populate_db()
         smokes = Create_smoke(self.user, row_conso_cig_data)

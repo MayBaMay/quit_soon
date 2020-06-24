@@ -10,7 +10,7 @@ from unittest import mock
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from QuitSoonApp.tests import FakeTodayDate
+from QuitSoonApp.tests import FakeTodayDate191128
 from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, Alternative, ConsoAlternative
 from QuitSoonApp.modules import SmokeStats, HealthyStats
 
@@ -25,7 +25,7 @@ from ..MOCK_DATA import (
 class SmokeStatsTestCaseBigData(TestCase):
     """class testing Create_smoke """
 
-    @mock.patch('datetime.date', FakeTodayDate)
+    @mock.patch('datetime.date', FakeTodayDate191128)
     def setUp(self):
         """setup tests"""
         self.user = User.objects.create_user(
