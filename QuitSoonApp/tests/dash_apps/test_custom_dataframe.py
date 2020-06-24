@@ -36,19 +36,21 @@ class DataFrameDateTestCase(TestCase):
             'activity_duration': [0, 0, 0, 0, 0, 60, 0, 105, 0, 290, 0, 0],
             'nicotine': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             }
-        self.custom_df = DataFrameDate(self.data_dict)
+        self.custom_df_nb_cig = DataFrameDate(self.data_dict, 'nb_cig')
+        self.custom_df_money_smoked = DataFrameDate(self.data_dict, 'money_smoked')
+        self.custom_df_nicotine = DataFrameDate(self.data_dict, 'nicotine')
 
     def test_df_creation(self):
-        assert_frame_equal(self.custom_df.df, self.custom_df.df)
+        assert_frame_equal(self.custom_df_nb_cig.df, self.custom_df_nb_cig.df)
 
     def test_daily_dataframe(self):
-        assert_frame_equal(self.custom_df.day_df, self.custom_df.day_df)
-        self.assertEqual(self.custom_df.day_df.loc['05/06/20', 'nb_cig'], 9)
+        assert_frame_equal(self.custom_df_nb_cig.day_df, self.custom_df_nb_cig.day_df)
+        self.assertEqual(self.custom_df_nb_cig.day_df.loc['05/06/20', 'nb_cig'], 9)
 
     def test_weekly_dataframe(self):
-        assert_frame_equal(self.custom_df.week_df, self.custom_df.week_df)
-        self.assertEqual(self.custom_df.week_df.loc['08/06/20-14/06/20', 'nb_cig'], 7)
+        assert_frame_equal(self.custom_df_nb_cig.week_df, self.custom_df_nb_cig.week_df)
+        self.assertEqual(self.custom_df_nb_cig.week_df.loc['08/06/20-14/06/20', 'nb_cig'], 7)
 
     def test_monthly_dataframe(self):
-        assert_frame_equal(self.custom_df.month_df, self.custom_df.month_df)
-        self.assertEqual(self.custom_df.month_df.loc['06/20', 'nb_cig'], 21)
+        assert_frame_equal(self.custom_df_nb_cig.month_df, self.custom_df_nb_cig.month_df)
+        self.assertEqual(self.custom_df_nb_cig.month_df.loc['06/20', 'nb_cig'], 21)
