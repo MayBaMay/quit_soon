@@ -526,7 +526,6 @@ def report(request, **kwargs):
     start_time = time.time()
     context = {}
     if request.user.is_authenticated:
-
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
             smoke = SmokeStats(request.user, datetime.date.today())
@@ -538,14 +537,23 @@ def report(request, **kwargs):
             context['total_money'] = round(smoke.total_money_smoked_full_days, 2)
             context['saved_money'] = round(smoke.money_saved_full_days, 2)
             context['average_money'] = round(smoke.average_money_per_day_full_days, 2)
-
+            print("--- %s seconds ---" % (time.time() - start_time))
+            return render(request, 'QuitSoonApp/report.html', context)
         else:
             return redirect('QuitSoonApp:profile')
-        print("--- %s seconds ---" % (time.time() - start_time))
-        return render(request, 'QuitSoonApp/report.html', context)
     else:
         return redirect('QuitSoonApp:index')
 
 def objectifs(request):
     """Page with user trophees and goals"""
-    return render(request, 'QuitSoonApp/objectifs.html')
+    start_time = time.time()
+    context = {}
+    if request.user.is_authenticated:
+        profile = UserProfile.objects.filter(user=request.user).exists()
+        if profile:
+            print("--- %s seconds ---" % (time.time() - start_time))
+            return render(request, 'QuitSoonApp/objectifs.html', context)
+        else:
+            return redirect('QuitSoonApp:profile')
+    else:
+        return redirect('QuitSoonApp:index')
