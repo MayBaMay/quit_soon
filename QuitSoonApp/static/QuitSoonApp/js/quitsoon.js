@@ -283,17 +283,18 @@
   });
 
   /////////////////healthy activity page////////////////////
-
-  displayAlternativeFields();
-  $("#id_type_alternative_field").on("change", function (e) {
-    $(".show").removeClass("show").addClass("hide");
-    $("#id_duration_hour").removeClass("hide").addClass("show");
-    $("#id_duration_min").removeClass("hide").addClass("show");
+  if (top.location.pathname === '/health/'){
     displayAlternativeFields();
-  });
-  $("#healthform select[id=id_su_field]").on("change", function (e) {
-    displayAlternativeFields();
-  });
+    $("#id_type_alternative_field").on("change", function (e) {
+      $(".show").removeClass("show").addClass("hide");
+      $("#id_duration_hour").removeClass("hide").addClass("show");
+      $("#id_duration_min").removeClass("hide").addClass("show");
+      displayAlternativeFields();
+    });
+    $("#healthform select[id=id_su_field]").on("change", function (e) {
+      displayAlternativeFields();
+    });
+  }
 })(jQuery); // End of use strict
 
 var dateField = document.querySelector(".currentDate");
