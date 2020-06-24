@@ -46,6 +46,10 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(self.stats.nb_per_day(datetime.date(2019, 9, 28)), 12)
         self.assertEqual(self.stats.nb_per_day(datetime.date(2019, 9, 22)), 0)
 
+    def test_total_smoke_all_days(self):
+        """test method total_smoke_full_days"""
+        self.assertEqual(self.stats.total_smoke_full_days, 329)
+
     def test_total_smoke_full_days(self):
         """test method total_smoke_full_days"""
         self.assertEqual(self.stats.total_smoke_full_days, 329)

@@ -532,7 +532,7 @@ def report(request, **kwargs):
             smoke = SmokeStats(request.user, datetime.date.today())
 
             # generate context
-            context['total_number'] = smoke.total_smoke_full_days
+            context['total_number'] = smoke.total_smoke_all_days
             context['average_number'] = round(smoke.average_per_day)
             context['non_smoked'] = smoke.nb_not_smoked_cig_full_days
             context['total_money'] = round(smoke.total_money_smoked_full_days, 2)

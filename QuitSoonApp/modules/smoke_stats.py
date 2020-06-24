@@ -30,6 +30,13 @@ class SmokeStats(Stats):
         return conso_day.count()
 
     @property
+    def total_smoke_all_days(self):
+        """
+        total number of cigarette smoked by user
+        """
+        return self.user_conso_all_days.count()
+
+    @property
     def total_smoke_full_days(self):
         """
         total number of cigarette smoked by user
