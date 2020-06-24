@@ -17,20 +17,6 @@ class FakeTodayDate191128(datetime.date):
     def today(cls):
         return cls(2019, 11, 28)
 
-# class FakeTodayDate2(datetime.date):
-#     "Mock out the today method, but return a real date instance."
-#     def __new__(cls, *args, **kwargs):
-#         return real_date.__new__(real_date, *args, **kwargs)
-#
-#     @classmethod
-#     def today(cls):
-#         return cls(2019, 11, 28)
-#
-# class FakeTodayDate3(datetime.date):
-#     "Mock out the today method to return a fixed date."
-#     @classmethod
-#     def today(cls):
-#         return cls(2000, 1, 1)
 
 class FakeTodayDate200621(datetime.date):
     "Override instancecheck so that a mock instance looks like a real date."

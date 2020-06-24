@@ -29,6 +29,10 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = DjangoDash('TimeCigGraph', external_stylesheets=external_stylesheets)
 
 def generate_hour_df(user):
+    """
+    Function generating pandas serie with average cigarettes for hours(0 to 24)
+    total cig_smoked_per_hour / average_cig/day
+    """
     smoke = SmokeStats(user, datetime.date.today())
     nb_full_days = smoke.nb_full_days_since_start
     qs = smoke.user_conso_full_days.values()
@@ -45,8 +49,6 @@ def generate_hour_df(user):
     return parsed_data
 
 def fig(serie):
-    print(serie.index)
-    print(serie.values)
     fig = go.Figure()
     fig.update_layout(
         title_text="Consommation moyenne par heure",

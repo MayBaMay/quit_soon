@@ -22,6 +22,7 @@ from QuitSoonApp.dash_apps.smoke_time_app import generate_hour_df
 
 
 class TimeAppTestCase(TestCase):
+    """Tests smoke_time_app module"""
 
     def setUp(self):
         """setup tests"""
@@ -39,8 +40,8 @@ class TimeAppTestCase(TestCase):
 
     @mock.patch('datetime.date', FakeTodayDate200621)
     def test_generate_hour_df(self):
+        """tests generate_hour_df => get average cig each hour in df """
         hour = generate_hour_df(self.user)
-        print('hour',hour)
         self.assertEqual(round(hour.loc[9], 2), 0.5)
         self.assertEqual(round(hour.loc[14], 2), 1.0)
         self.assertEqual(round(hour.loc[17], 2), 1.5)
