@@ -1,3 +1,4 @@
+import time
 import datetime
 from datetime import time as t
 from datetime import datetime as dt
@@ -93,25 +94,26 @@ def stats(user):
     healthy = HealthyStats(user, datetime.date.today())
     return smoke, healthy
 
-def get_user_infos_from_stats(smoke_stats, healthy_stats):
+def get_user_infos_from_stats(smoke_stats, healthy_stats, focus):
     # generate data for graphs
-    user_dict = {
-        'date': [],
-        'nb_cig': [],
-        'money_smoked': [],
-        'activity_duration': [],
-        'nicotine': []
-        }
+    user_dict = {'date':[],
+                 'activity_duration':[],
+                 'nb_cig':[],
+                 'money_smoked':[],
+                 'nicotine':[]}
     for date in smoke_stats.list_dates:
         user_dict['date'].append(dt.combine(date, dt.min.time()))
-        user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
-        user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
         user_dict['activity_duration'].append(healthy_stats.min_per_day(date))
-        user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
+        if focus == 'nb_cig':
+            user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
+        elif focus == 'money_smoked':
+            user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
+        elif focus == 'nicotine':
+            user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
     return user_dict
 
-def dataframe(radio, user_dict):
-    df = DataFrameDate(user_dict)
+def dataframe(radio, user_dict, focus):
+    df = DataFrameDate(user_dict, focus)
     if radio == 'D':
         df = df.day_df
     elif radio == 'W':
@@ -129,8 +131,8 @@ app1.layout = create_layout('graph1')
 )
 def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
-    user_dict = get_user_infos_from_stats(smoke, healthy)
-    df = dataframe(radio, user_dict)
+    user_dict = get_user_infos_from_stats(smoke, healthy, 'nb_cig')
+    df = dataframe(radio, user_dict, 'nb_cig')
     figure = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
     return figure
 
@@ -143,8 +145,8 @@ app2.layout = create_layout('graph2')
 )
 def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
-    user_dict = get_user_infos_from_stats(smoke, healthy)
-    df = dataframe(radio, user_dict)
+    user_dict = get_user_infos_from_stats(smoke, healthy, 'money_smoked')
+    df = dataframe(radio, user_dict, 'money_smoked')
     figure = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en €)", "Mes sous", df.money_smoked)
     return figure
 
@@ -157,7 +159,7 @@ app3.layout = create_layout('graph3')
 )
 def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
-    user_dict = get_user_infos_from_stats(smoke, healthy)
-    df = dataframe(radio, user_dict)
+    user_dict = get_user_infos_from_stats(smoke, healthy, 'nicotine')
+    df = dataframe(radio, user_dict, 'nicotine')
     figure = fig(df, checkbox, "Consomation de substitut nicotinique", "Nicotine (en mg)", "Nicotine", df.nicotine)
     return figure

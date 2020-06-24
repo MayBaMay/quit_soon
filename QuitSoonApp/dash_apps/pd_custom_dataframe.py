@@ -14,8 +14,13 @@ class DataFrameDate:
     and giving property periods of this dataframe
     """
 
-    def __init__(self, data_dict):
-        self.df = pd.DataFrame(data_dict, columns=['date', 'nb_cig', 'money_smoked', 'activity_duration', 'nicotine']).set_index('date')
+    def __init__(self, data_dict, focus):
+        if focus == 'nb_cig':
+            self.df = pd.DataFrame(data_dict, columns=['date', 'nb_cig', 'activity_duration']).set_index('date')
+        elif focus == 'money_smoked':
+            self.df = pd.DataFrame(data_dict, columns=['date', 'money_smoked', 'activity_duration']).set_index('date')
+        elif focus == 'nicotine':
+            self.df = pd.DataFrame(data_dict, columns=['date', 'activity_duration', 'nicotine']).set_index('date')
 
     @property
     def day_df(self):

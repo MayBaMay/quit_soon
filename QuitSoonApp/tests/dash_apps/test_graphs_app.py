@@ -8,7 +8,7 @@ from unittest import mock
 
 from django.test import TestCase
 from django.contrib.auth.models import User
-from QuitSoonApp.dash_apps.smoke_app import dataframe, get_user_infos_from_stats, stats
+from QuitSoonApp.dash_apps.graphs_app import dataframe, get_user_infos_from_stats, stats
 
 from QuitSoonApp.tests import FakeTodayDate
 from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, Alternative, ConsoAlternative
@@ -47,12 +47,30 @@ class DataFrameTestCase(TestCase):
     def test_get_user_infos_from_stats(self):
         smoke = SmokeStats(self.user, datetime.date(2019, 11, 28))
         healthy = HealthyStats(self.user, datetime.date(2019, 11, 28))
-        user_infos = get_user_infos_from_stats(smoke, healthy)
+        # focus on nb_cig
+        user_infos = get_user_infos_from_stats(smoke, healthy, 'nb_cig')
         self.assertEqual(len(user_infos), 5)
-        for info in user_infos:
-            self.assertEqual(len(user_infos[info]), 62)
+        self.assertEqual(len(user_infos['nb_cig']), 62)
+        self.assertEqual(len(user_infos['money_smoked']), 0)
+        self.assertEqual(len(user_infos['nicotine']), 0)
         self.assertEqual(user_infos['nb_cig'][:20],
                          [12, 11, 10, 12, 1, 14, 8, 9, 6, 7, 7, 5, 6, 5, 8, 7, 6, 7, 6, 4])
+        # focus on money_smoked
+        healthy = HealthyStats(self.user, datetime.date(2019, 11, 28))
+        user_infos = get_user_infos_from_stats(smoke, healthy, 'money_smoked')
+        self.assertEqual(len(user_infos['nb_cig']), 0)
+        self.assertEqual(len(user_infos['money_smoked']), 62)
+        self.assertEqual(len(user_infos['nicotine']), 0)
+        self.assertEqual(user_infos['money_smoked'][:10],
+                         [5.66, 5.34, 4.85, 5.82, 0.48, 6.8, 3.84, 4.4, 2.89, 3.4])
+        # focus on money_smoked
+        healthy = HealthyStats(self.user, datetime.date(2019, 11, 28))
+        user_infos = get_user_infos_from_stats(smoke, healthy, 'nicotine')
+        self.assertEqual(len(user_infos['nb_cig']), 0)
+        self.assertEqual(len(user_infos['money_smoked']), 0)
+        self.assertEqual(len(user_infos['nicotine']), 62)
+        self.assertEqual(user_infos['nicotine'][:10],
+                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     def test_dataframe(self):
         user_dict = {
@@ -71,6 +89,6 @@ class DataFrameTestCase(TestCase):
             'activity_duration': [0, 0, 0, 0, 0, 60, 0, 105, 0, 290, 0, 0, 0, 0, 0],
             'nicotine': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             }
-        self.assertEqual(dataframe('D', user_dict).loc['05/06/20', 'nb_cig'], 9)
-        self.assertEqual(dataframe('W', user_dict).loc['08/06/20-14/06/20', 'nb_cig'], 7)
-        self.assertEqual(dataframe('M', user_dict).loc['06/20', 'nb_cig'], 23)
+        self.assertEqual(dataframe('D', user_dict, 'nb_cig').loc['05/06/20', 'nb_cig'], 9)
+        self.assertEqual(dataframe('W', user_dict, 'nb_cig').loc['08/06/20-14/06/20', 'nb_cig'], 7)
+        self.assertEqual(dataframe('M', user_dict, 'nb_cig').loc['06/20', 'nb_cig'], 23)

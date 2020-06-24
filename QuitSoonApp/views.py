@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import time
 import datetime
 from datetime import time as t
 from dateutil import relativedelta
@@ -522,13 +523,13 @@ def health_list(request):
 
 def report(request, **kwargs):
     """Page with user results, graphs..."""
+    start_time = time.time()
     context = {}
     if request.user.is_authenticated:
 
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
             smoke = SmokeStats(request.user, datetime.date.today())
-            # healthy = HealthyStats(request.user, datetime.date.today())
 
             # generate context
             context['total_number'] = smoke.total_smoke_full_days
@@ -540,6 +541,7 @@ def report(request, **kwargs):
 
         else:
             return redirect('QuitSoonApp:profile')
+        print("--- %s seconds ---" % (time.time() - start_time))
         return render(request, 'QuitSoonApp/report.html', context)
     else:
         return redirect('QuitSoonApp:index')
