@@ -61,80 +61,72 @@
       </div>
     </section>
 
-    <section class="panel p2 pc-0 panel-big-btn">
-      <a class="big-btn-container" href="{% url 'QuitSoonApp:health' %}">
-        <div class="btn-success big-btn">
-          <i class="fas fa-heart"></i>
-          <div class="tablet-content">
-            <span class="tablet-content">Je me fais</span>
-            <span class="tablet-content">du bien</span>
-          </div>
-        </div>
-        <span class="mobile-content success-label">Je me fais</span>
-        <span class="mobile-content success-label">du bien</span>
-      </a>
-    </section>
-
-    <section class="panel p3 pc-1">
+    <section class="panel p2 pc-1">
       <div class="row">
         <div class="card shadow mb-4">
           <div class="card-body">
             <p><b>Mes alternatives :</b></p>
 
-            <div class="">
-              {% if Sp %}
-                <p><b>Sports</b></p>
-                {% for activity in Sp %}
-                  <div class="row">
-                    {{ activity.activity }}
-                    <a href="/delete_alternative/{{activity.id}}/"">
-                      <i class="fa fa-trash" aria-hidden="true"></i>
-                    </a>
-                  </div>
-                {% endfor %}
-              {% endif %}
-            </div>
+            {% if Sp or Lo or So or Su %}
 
-            <div class="">
-              {% if Lo %}
-                <p><b>Loisirs</b></p>
-                {% for activity in Lo %}
-                  <div class="row">
-                    {{ activity.activity }}
-                    <a href="/delete_alternative/{{activity.id}}/"">
-                      <i class="fa fa-trash" aria-hidden="true"></i>
-                    </a>                </div>
-                {% endfor %}
-              {% endif %}
-            </div>
-
-            <div class="">
-              {% if So %}
-                <p><b>Soins</b></p>
-                {% for activity in So %}
-                  <div class="row">
-                    {{ activity.activity }}
+              <div class="">
+                {% if Sp %}
+                  <p><b>Sports</b></p>
+                  {% for activity in Sp %}
+                    <div class="row">
+                      {{ activity.activity }}
                       <a href="/delete_alternative/{{activity.id}}/"">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                    </a>                </div>
-                {% endfor %}
-              {% endif %}
-            </div>
+                      </a>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
 
-            <div class="">
-              {% if Su %}
-                <p><b>Substituts</b></p>
-                {% for substitut in Su %}
-                  <div class="row">
-                    {{ substitut.substitut }}
-                    {{ substitut.nicotine }}
-                    <a href="/delete_alternative/{{substitut.id}}/"">
-                      <i class="fa fa-trash" aria-hidden="true"></i>
-                    </a>
-                  </div>
-                {% endfor %}
-              {% endif %}
-            </div>
+              <div class="">
+                {% if Lo %}
+                  <p><b>Loisirs</b></p>
+                  {% for activity in Lo %}
+                    <div class="row">
+                      {{ activity.activity }}
+                      <a href="/delete_alternative/{{activity.id}}/"">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                      </a>                </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+
+              <div class="">
+                {% if So %}
+                  <p><b>Soins</b></p>
+                  {% for activity in So %}
+                    <div class="row">
+                      {{ activity.activity }}
+                        <a href="/delete_alternative/{{activity.id}}/"">
+                          <i class="fa fa-trash" aria-hidden="true"></i>
+                      </a>                </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+
+              <div class="">
+                {% if Su %}
+                  <p><b>Substituts</b></p>
+                  {% for substitut in Su %}
+                    <div class="row">
+                      {{ substitut.substitut }}
+                      {{ substitut.nicotine }}
+                      <a href="/delete_alternative/{{substitut.id}}/"">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                      </a>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+
+            {% else %}
+              <p>Vous n'avez pas encore enregistré d'alternative</p>
+            {% endif %}
 
           </div>
         </div>
