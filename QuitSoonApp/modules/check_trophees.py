@@ -20,8 +20,9 @@ class Trophee_checking:
         self.df = self.smoking_values_per_dates_with_all_dates_df(self.all_dates, self.values_per_dates)
         self.challenges_days = [1, 2, 3, 4, 7, 10, 15, 20, 25]
         self.challenges_months = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
-        self.user_futur_month_trophees = self.check_trophees_to_be_completed(self.challenges_months )
         self.user_futur_days_trophees = self.check_trophees_to_be_completed(self.challenges_days)
+        self.user_futur_month_trophees = self.check_trophees_to_be_completed(self.challenges_months)
+        self.challenge_conso_per_day = None
         self.trophees_to_create = self.check_days_trophees + self.check_month_trophees
 
     @property
@@ -63,6 +64,14 @@ class Trophee_checking:
 
     ##### consecutive dates without smoking #####
 
+    def get_conso_occurence(self, challenge):
+        """get occurence conso lower than challenge"""
+        self.df['lower'] = self.df['nb_cig'].apply(lambda x: False if x > challenge else True)
+        lower = self.df.lower
+        self.df['upper'] = self.df['nb_cig'].apply(lambda x: True if x > challenge else False)
+        upper = self.df.upper
+        return lower.groupby(upper.cumsum()).sum()
+
     @property
     def get_nans_occurence(self):
         """ get NaNs occurence in dataframe """
@@ -79,13 +88,16 @@ class Trophee_checking:
         return final_list
 
     @property
-    def check_days_trophees(self):
+    def check_days_trophees(self, nb_cig):
         """
         ##################### non smoking days trophees ######################################
         for element in occurence de NaNs, check if >= element in trophee to succeed list
         break it as soon as list completly checked
+        parameter nb_cig can be zero(default) or conso (challenge conso per day)
         """
         trophee_to_create = []
+        if challenge_type == conso:
+
         while True:
             if self.user_futur_days_trophees:
                 for element in self.get_nans_occurence:

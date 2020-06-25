@@ -44,14 +44,14 @@ class CheckTropheeTestCase(TestCase):
         self.smoke = Create_smoke(self.user, fake_smoke_for_trophees)
         self.smoke.populate_db()
         stats = SmokeStats(self.user, datetime.date(2020, 12, 31))
-        self.check_prophee = Trophee_checking(stats)
+        self.check_trophee = Trophee_checking(stats)
 
     def test_values_per_dates(self):
         """
         test method values_per_dates
         get count cig smoked (col nb_cig) per dates(index) in DataFrame
         """
-        df = self.check_prophee.values_per_dates
+        df = self.check_trophee.values_per_dates
         self.assertEqual(df.columns.values.tolist(), ['nb_cig'])
         self.assertEqual(df.shape, (7, 1))
         self.assertEqual(df.loc['2020-06-19', 'nb_cig'], 19)
@@ -70,7 +70,7 @@ class CheckTropheeTestCase(TestCase):
         test method all_dates
         get all passed dates, index of empty dataframe
         """
-        df = self.check_prophee.all_dates
+        df = self.check_trophee.all_dates
         self.assertEqual(df.columns.values.tolist(), [])
         sum_days = 12+31+31+30+31+30+30
         self.assertEqual(df.shape, (sum_days, 0))
@@ -89,9 +89,9 @@ class CheckTropheeTestCase(TestCase):
         test method smoking_values_per_dates_with_all_dates_df
         get dataframe with all passed dates(index) and count cig per dates (col nb_cig)
         """
-        all_days_df = self.check_prophee.all_dates
-        nb_cig_per_date_df = self.check_prophee.values_per_dates
-        df = self.check_prophee.smoking_values_per_dates_with_all_dates_df(all_days_df, nb_cig_per_date_df)
+        all_days_df = self.check_trophee.all_dates
+        nb_cig_per_date_df = self.check_trophee.values_per_dates
+        df = self.check_trophee.smoking_values_per_dates_with_all_dates_df(all_days_df, nb_cig_per_date_df)
 
         self.assertEqual(df.columns.values.tolist(), ['date', 'nb_cig'])
         sum_days = 12+31+31+30+31+30+30
@@ -110,12 +110,20 @@ class CheckTropheeTestCase(TestCase):
         # only 2 days smoke so NaNs nb_cig = count rows - days smoke
         self.assertEqual(pd.isna(df.nb_cig).sum(), sum_days-7)
 
+    def test_get_conso_occurence(self):
+        s = self.check_trophee.get_conso_occurence(10)
+        # from 2020-06-21 to 2020-12-31 = occurence less then 10 cigarettes smoke
+        self.assertTrue(193.0 in s.values)
+        # sum occurence in s = sum less than 10 cig a month
+        self.assertEqual(s.sum(), 193)
+
+
     def test_get_nans_occurence(self):
         """
         test method get_nans_occurence
         get NaNs occurence in dataframe
         """
-        s = self.check_prophee.get_nans_occurence
+        s = self.check_trophee.get_nans_occurence
         print(s)
         # 2020-06-21 = 1 days non smoke
         self.assertTrue(1.0 in s.values)
@@ -139,12 +147,12 @@ class CheckTropheeTestCase(TestCase):
         """
         # trophee checking never done
         unparsed_list = [1, 2, 3, 4, 5, 7, 10, 15, 30, 60]
-        trophees = self.check_prophee.check_trophees_to_be_completed(unparsed_list)
+        trophees = self.check_trophee.check_trophees_to_be_completed(unparsed_list)
         self.assertEqual(trophees, [1, 2, 3, 4, 5, 7, 10, 15, 30, 60])
         # trophee checking already done ones and Trophees exits in Trophee table
         Trophee.objects.create(user=self.user, nb_cig=0, nb_jour=1)
         Trophee.objects.create(user=self.user, nb_cig=0, nb_jour=2)
-        trophees = self.check_prophee.check_trophees_to_be_completed(unparsed_list)
+        trophees = self.check_trophee.check_trophees_to_be_completed(unparsed_list)
         self.assertEqual(trophees, [3, 4, 5, 7, 10, 15, 30, 60])
 
     def test_check_days_trophees(self):
@@ -154,7 +162,7 @@ class CheckTropheeTestCase(TestCase):
         return list of trophees to create
         """
         # first checking
-        trophees_to_create = self.check_prophee.check_days_trophees
+        trophees_to_create = self.check_trophee.check_days_trophees
         self.assertEqual(trophees_to_create, [1, 2, 3, 4, 7, 10, 15, 20, 25])
 
     def test_parse_smoking_month(self):
@@ -162,7 +170,7 @@ class CheckTropheeTestCase(TestCase):
         test method parse_smoking_month
         for each month check if full and not smoking (True), else False
         """
-        month_parsed = self.check_prophee.parse_smoking_month
+        month_parsed = self.check_trophee.parse_smoking_month
         self.assertEqual(month_parsed, [False, False, True, True, False, True, False])
 
     def test_check_month_trophees(self):
@@ -170,7 +178,7 @@ class CheckTropheeTestCase(TestCase):
         test method check_month_trophees
         check if completed trophees months without smoking
         """
-        trophees_to_create = self.check_prophee.check_month_trophees
+        trophees_to_create = self.check_trophee.check_month_trophees
         self.assertEqual(trophees_to_create, [30, 60])
 
     def test_trophee_to_create(self):
@@ -178,17 +186,17 @@ class CheckTropheeTestCase(TestCase):
         test attribute trophees_to_create
         get all trophees completed during checking
         """
-        self.assertEqual(self.check_prophee.trophees_to_create, [1, 2, 3, 4, 7, 10, 15, 20, 25, 30, 60])
+        self.assertEqual(self.check_trophee.trophees_to_create, [1, 2, 3, 4, 7, 10, 15, 20, 25, 30, 60])
 
     def test_create_trophees_no_smoking(self):
         """
         test method create_trophees_no_smoking
         With list trophees to create, create trophees in database
         """
-        self.check_prophee.create_trophees_no_smoking()
+        self.check_trophee.create_trophees_no_smoking()
         trophees = Trophee.objects.filter(user=self.user, nb_cig=0)
         self.assertTrue(trophees.exists())
-        self.assertTrue(trophees.count(), len(self.check_prophee.trophees_to_create))
+        self.assertTrue(trophees.count(), len(self.check_trophee.trophees_to_create))
         self.assertTrue(trophees.get(nb_jour=1))
         self.assertTrue(trophees.get(nb_jour=2))
         self.assertTrue(trophees.get(nb_jour=3))
@@ -200,6 +208,6 @@ class CheckTropheeTestCase(TestCase):
         self.assertTrue(trophees.get(nb_jour=25))
         self.assertTrue(trophees.get(nb_jour=30))
         self.assertTrue(trophees.get(nb_jour=60))
-        self.check_prophee.create_trophees_no_smoking()
+        self.check_trophee.create_trophees_no_smoking()
         trophees = Trophee.objects.filter(user=self.user, nb_cig=0)
         self.assertTrue(trophees.get(nb_jour=1))
