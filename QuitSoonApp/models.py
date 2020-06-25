@@ -142,4 +142,4 @@ class Trophee(models.Model):
     nb_jour = models.IntegerField()
 
     class Meta:
-        unique_together = ('nb_cig', 'nb_jour',)
+        unique_together = ('user', 'nb_cig', 'nb_jour',)
