@@ -1,8 +1,9 @@
 $(document).ready(function () {
-  console.log("jquery loaded");
+  // console.log("jquery loaded");
 });
 
 (function () {
+  console.log("IIFE");
   // const a = 4;
   const header = document.querySelector("header");
   const content = document.querySelector(".content");
@@ -13,7 +14,7 @@ $(document).ready(function () {
   const modalContents = document.querySelectorAll(".modal-content");
   // const closeModalBtn = document.querySelector("#close-modal");
   // const closeModalBtnLogout = document.querySelector("#close-modal-logout");
-  closeModalBtns = document.querySelectorAll(".close-modal-btn");
+  let closeModalBtns = document.querySelectorAll(".close-modal-btn");
 
   const body = document.querySelector("body");
 
@@ -237,4 +238,77 @@ $(document).ready(function () {
   });
 
   //TO DO close dropdown on esc key AND click anywhere else (anywhere)
+
+  //Graphs - ploty dash
+
+  let graphConts = document.querySelectorAll(".django-plotly-dash");
+  let iframes = Array.from(graphConts).map((c) => {
+    return c.firstElementChild.firstElementChild;
+  });
+
+  const inputs = {};
+  console.log(iframes);
+  let loadedFrames = 0;
+  iframes.forEach((f) =>
+    f.addEventListener("load", () => {
+      loadedFrames++;
+      console.log(loadedFrames);
+      loadedFrames == iframes.length
+        ? setTimeout(() => collectInputs(), 300)
+        : null;
+    })
+  );
+
+  function collectInputs() {
+    console.log("collecting");
+    iframes.forEach((f) => {
+      let doc = f.contentWindow.document;
+      let labels = doc.querySelectorAll("label");
+      labels.forEach((label) => {
+        inputs[label.innerText] ? null : (inputs[label.innerText] = []);
+        inputs[label.innerText].push(label.firstElementChild);
+        label.addEventListener("click", (e) => {
+          globalToggle(e);
+        });
+      });
+    });
+  }
+
+  function globalToggle(e) {
+    e.preventDefault();
+    let val, target;
+    if (e.target.nodeName == "INPUT") {
+      val = e.target.parentNode.innerText;
+      target = e.target;
+    } else {
+      val = e.target.innerText;
+      target = e.target.firstElementChild;
+    }
+    console.log(val, target);
+    let index = inputs[val].indexOf(target);
+    //uncheck all
+    let keys = Object.keys(inputs);
+    // keys.forEach((key) => {
+    // if (key !== val) {
+    //   inputs[key].forEach((i) => {
+    //     i.checked = false;
+    //     i.removeAttribute("checked");
+    //   });
+    // }
+    // inputs[key].forEach((i) => i.click());
+    // inputs[key].forEach((i) => i.dispatchEvent(click_event));
+    // });
+    //check clicked
+    inputs[val].forEach((i) => {
+      console.log("el", i);
+      i.click();
+      // i.checked = true;
+      // i.checked = true;
+      // i.setAttribute("checked", "");
+      // let click_event = new CustomEvent("click", {
+      //   bubbles: false,
+      // });
+      // i.dispatchEvent(click_event);
+    });
+  }
 })();
