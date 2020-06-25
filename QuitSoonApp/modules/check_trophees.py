@@ -18,8 +18,10 @@ class Trophee_checking:
     def __init__(self, stats):
         self.stats = stats
         self.df = self.smoking_values_per_dates_with_all_dates_df(self.all_dates, self.values_per_dates)
-        self.user_futur_month_trophees = self.check_trophees_to_be_completed([30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330])
-        self.user_futur_days_trophees = self.check_trophees_to_be_completed([1, 2, 3, 4, 7, 10, 15, 20, 25])
+        self.challenges_days = [1, 2, 3, 4, 7, 10, 15, 20, 25]
+        self.challenges_months = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+        self.user_futur_month_trophees = self.check_trophees_to_be_completed(self.challenges_months )
+        self.user_futur_days_trophees = self.check_trophees_to_be_completed(self.challenges_days)
         self.trophees_to_create = self.check_days_trophees + self.check_month_trophees
 
     @property

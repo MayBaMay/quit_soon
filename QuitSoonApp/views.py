@@ -36,7 +36,8 @@ from QuitSoonApp.modules import (
     PackManager, SmokeManager,
     AlternativeManager, HealthManager,
     SmokeStats, HealthyStats,
-    get_delta_last_event
+    get_delta_last_event,
+    Trophee_checking
     )
 
 
@@ -523,21 +524,19 @@ def health_list(request):
 
 def report(request, **kwargs):
     """Page with user results, graphs..."""
-    start_time = time.time()
     context = {}
     if request.user.is_authenticated:
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            smoke = SmokeStats(request.user, datetime.date.today())
+            stats = SmokeStats(request.user, datetime.date.today())
 
             # generate context
-            context['total_number'] = smoke.total_smoke_all_days
-            context['average_number'] = round(smoke.average_per_day)
-            context['non_smoked'] = smoke.nb_not_smoked_cig_full_days
-            context['total_money'] = round(smoke.total_money_smoked_full_days, 2)
-            context['saved_money'] = round(smoke.money_saved_full_days, 2)
-            context['average_money'] = round(smoke.average_money_per_day_full_days, 2)
-            print("--- %s seconds ---" % (time.time() - start_time))
+            context['total_number'] = stats.total_smoke_all_days
+            context['average_number'] = round(stats.average_per_day)
+            context['non_smoked'] = stats.nb_not_smoked_cig_full_days
+            context['total_money'] = round(stats.total_money_smoked_full_days, 2)
+            context['saved_money'] = round(stats.money_saved_full_days, 2)
+            context['average_money'] = round(stats.average_money_per_day_full_days, 2)
             return render(request, 'QuitSoonApp/report.html', context)
         else:
             return redirect('QuitSoonApp:profile')
@@ -546,12 +545,20 @@ def report(request, **kwargs):
 
 def objectifs(request):
     """Page with user trophees and goals"""
-    start_time = time.time()
     context = {}
     if request.user.is_authenticated:
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            print("--- %s seconds ---" % (time.time() - start_time))
+            stats = SmokeStats(request.user, datetime.date.today())
+            trophee = Trophee_checking(stats)
+            trophee.create_trophees_no_smoking()
+            challenge_dict = {}
+            for challenge in (trophee.challenges_days + trophee.challenges_months):
+                challenge_dict[challenge] = False
+                if Trophee.objects.filter(user=request.user, nb_cig=0, nb_jour=challenge).exists():
+                    challenge_dict[challenge] = True
+
+            context['challenge'] = challenge_dict
             return render(request, 'QuitSoonApp/objectifs.html', context)
         else:
             return redirect('QuitSoonApp:profile')
