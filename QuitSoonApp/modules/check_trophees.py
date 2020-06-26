@@ -18,12 +18,16 @@ class Trophee_checking:
     def __init__(self, stats):
         self.stats = stats
         self.df = self.smoking_values_per_dates_with_all_dates_df(self.all_dates, self.values_per_dates)
-        self.challenges_days = [1, 2, 3, 4, 7, 10, 15, 20, 25]
-        self.challenges_months = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
-        self.user_futur_days_trophees = self.check_trophees_to_be_completed(self.challenges_days)
-        self.user_futur_month_trophees = self.check_trophees_to_be_completed(self.challenges_months)
-        self.challenge_conso_per_day = None
-        self.trophees_to_create = self.check_days_trophees + self.check_month_trophees
+        self.challenges = {
+            'conso' : {
+                'nb_cig': [20, 15, 10, 5, 4, 3, 2, 1],
+                'nb_days' : [3, 7]
+                },
+            'zero_cig': {
+                'nb_cig': [0],
+                'nb_days': [1, 2, 3, 4, 7, 10, 15, 20, 25, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+                },
+            }
 
     @property
     def values_per_dates(self):
@@ -72,107 +76,114 @@ class Trophee_checking:
         upper = self.df.upper
         return lower.groupby(upper.cumsum()).sum()
 
-    @property
     def get_nans_occurence(self):
         """ get NaNs occurence in dataframe """
         return self.df.nb_cig.isnull().groupby(self.df.nb_cig.notnull().cumsum()).sum()
 
-
-    def check_trophees_to_be_completed(self, list_trophees):
-        """get trophees user didn't completed yet in a list"""
-        # check if trophee already exists and get trophee not yet succeeded in a list
-        final_list = []
-        for trophee in list_trophees:
-            if not Trophee.objects.filter(user=self.stats.user, nb_cig=0, nb_jour=trophee).exists():
-                final_list.append(trophee)
-        return final_list
+    @property
+    def list_user_challenges(self):
+        """
+        get challenges in a list of tupples (nb_cig, nb_consecutive_days)
+        take only relevant challenge to check
+        """
+        challenges_list = []
+        for type, challenge in self.challenges.items():
+            for cig in challenge['nb_cig']:
+                # only challenges with less cig then usual user conso
+                if cig < self.stats.starting_nb_cig:
+                    for days in challenge['nb_days']:
+                        # only challenges if enough days in user history
+                        if days <= self.stats.nb_full_days_since_start:
+                            # only if challenge not already saved as trophee in db
+                            if not Trophee.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():
+                                challenges_list.append((cig, days))
+        return challenges_list
 
     @property
-    def check_days_trophees(self, nb_cig):
-        """
-        ##################### non smoking days trophees ######################################
-        for element in occurence de NaNs, check if >= element in trophee to succeed list
-        break it as soon as list completly checked
-        parameter nb_cig can be zero(default) or conso (challenge conso per day)
-        """
+    def trophees_accomplished(self):
+        """ get list of trophees accomplished by user and to be created in DB """
         trophee_to_create = []
-        if challenge_type == conso:
-
-        while True:
-            if self.user_futur_days_trophees:
-                for element in self.get_nans_occurence:
-                    for trophee in self.user_futur_days_trophees:
-                        if not trophee in trophee_to_create:
-                            if element >= trophee:
-                                trophee_to_create.append(trophee)
-                                if trophee == self.user_futur_days_trophees[-1]:
-                                    break
-            break
+        for challenge in self.list_user_challenges:
+            if challenge[1] < 30:
+                if self.check_days_trophees(challenge):
+                    trophee_to_create.append(challenge)
+            else:
+                if self.check_month_trophees(challenge[1]):
+                    trophee_to_create.append(challenge)
         return trophee_to_create
+
+    def check_days_trophees(self, challenge):
+        """
+        ##################### non smoking days trophees #########################
+        for element in occurence, check if >= element in trophee to succeed
+        """
+        if challenge[0] > 0:
+            occurence = self.get_conso_occurence(challenge[0])
+        else:
+            occurence = self.get_nans_occurence()
+        for element in occurence:
+            if element >= challenge[1]:
+                return True
+        return False
+
+    def check_month_trophees(self, challenge):
+        """
+        ##################### non smoking month trophees #####################
+        check if completed trophees months without smoking
+        """
+        non_smoking_month = self.parse_smoking_month
+        compared_month = range(int((challenge / 30) - 1))
+        # for each bool non_smoking_month => True if full month and no smoking
+        # compare with following bool
+        while True:
+            for i in range(len(non_smoking_month)):
+                compare = [non_smoking_month[i]]
+                n = 0
+                # based on trophee compared following data would be different size
+                for month in compared_month:
+                    try:
+                        n+=1
+                        compare.append(non_smoking_month[i+n])
+                    except IndexError:
+                        # comparing data out of list index, pass next trophee checking
+                        break
+                if not False in compare:
+                    # only full month and non smoked, break to pass next trophee checking
+                    return True
+            # end index in non_smoking_month, pass next trophee checking
+            break
+        return False
+
 
     @property
     def parse_smoking_month(self):
         """
-        ##################### non smoking month trophees ######################################
         for each month check if full and not smoking (True), else False
         """
-        if self.user_futur_month_trophees:
-            non_smoking_month = []
-            # proceed year after year to get appropriate calendar
-            for year in self.df.date.dt.year.drop_duplicates().tolist():
-                df_year = self.df[self.df.date.dt.year == year]
-                for index, value in df_year.date.dt.month.value_counts().sort_index().items():
-                    # if full month
-                    if value == calendar.monthrange(year, index)[1]:
-                        # Get True if all data in this month are NaNs
-                        nb_Nans_in_month = df_year[(df_year.date.dt.month == index)].isnull().sum().nb_cig
-                        total_rows_in_month = df_year[(df_year.date.dt.month == index)].shape[0]
-                        if nb_Nans_in_month == total_rows_in_month:
-                            ## one month without smoking
-                            non_smoking_month.append(True)
-                        else:
-                            non_smoking_month.append(False)
+        non_smoking_month = []
+        # proceed year after year to get appropriate calendar
+        for year in self.df.date.dt.year.drop_duplicates().tolist():
+            df_year = self.df[self.df.date.dt.year == year]
+            for index, value in df_year.date.dt.month.value_counts().sort_index().items():
+                # if full month
+                if value == calendar.monthrange(year, index)[1]:
+                    # Get True if all data in this month are NaNs
+                    nb_Nans_in_month = df_year[(df_year.date.dt.month == index)].isnull().sum().nb_cig
+                    total_rows_in_month = df_year[(df_year.date.dt.month == index)].shape[0]
+                    if nb_Nans_in_month == total_rows_in_month:
+                        ## one month without smoking
+                        non_smoking_month.append(True)
                     else:
                         non_smoking_month.append(False)
-            return non_smoking_month
+                else:
+                    non_smoking_month.append(False)
+        return non_smoking_month
 
-    @property
-    def check_month_trophees(self):
-        """check if completed trophees months without smoking"""
-        trophee_to_create = []
-        non_smoking_month = self.parse_smoking_month
-        # follow only if user still have trophees to complete
-        if self.user_futur_month_trophees:
-            for trophee in self.user_futur_month_trophees:
-                while True:
-                    # month trophees are %30
-                    compared_month = range(int((trophee / 30) - 1))
-                    # for each bool non_smoking_month => True if full month and no smoking
-                    # compare with following bool
-                    for i in range(len(non_smoking_month)):
-                        compare = [non_smoking_month[i]]
-                        n = 0
-                        # based on trophee compared following data would be different size
-                        for month in compared_month:
-                            try:
-                                n+=1
-                                compare.append(non_smoking_month[i+n])
-                            except IndexError:
-                                # comparing data out of list index, pass next trophee checking
-                                break
-                        if not False in compare:
-                            # only full month and non smoked, break to pass next trophee checking
-                            trophee_to_create.append(trophee)
-                            break
-                    # end index in non_smoking_month, pass next trophee checking
-                    break
-        return trophee_to_create
-
-    def create_trophees_no_smoking(self):
-        for trophee in self.trophees_to_create:
+    def create_trophees(self):
+        for trophee in self.trophees_accomplished:
             try:
                 with transaction.atomic():
-                    Trophee.objects.create(user=self.stats.user, nb_cig=0, nb_jour=trophee)
+                    Trophee.objects.create(user=self.stats.user, nb_cig=trophee[0], nb_jour=trophee[1])
             except IntegrityError:
                 # method already called
                 pass
