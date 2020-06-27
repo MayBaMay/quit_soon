@@ -24,7 +24,6 @@
         Cette information servira à calculer les économiser que vous allez bientôt réaliser!
        </div>
         {% endif %}
-        <p>{{ error }}</p>
         {% csrf_token %}
         {{ form.non_field_errors }}
         {% for field in form %}
@@ -44,7 +43,7 @@
     <div class="">
 
       {% if rol or ind %}
-      
+
         {% if ind %}
           <p><b>Cigarettes industrielles</b></p>
           {% for paquet in ind %}
