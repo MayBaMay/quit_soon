@@ -299,7 +299,7 @@ def smoke(request):
                 if smoke_form.is_valid():
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
                     smoke.create_conso_cig()
-                    smoke_form = SmokeForm(request.user)
+                    return redirect('QuitSoonApp:today')
             context['smoke_form'] = smoke_form
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
         context['smoke'] = smoke
@@ -447,8 +447,7 @@ def health(request):
                 if form.is_valid():
                     new_health = HealthManager(request.user, form.cleaned_data)
                     new_health.create_conso_alternative()
-                    form = HealthForm(request.user)
-                print(form.errors)
+                    return redirect('QuitSoonApp:today')
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
