@@ -168,7 +168,7 @@ class SmokeForm(ChoosePackForm):
     time_smoke = forms.TimeField(
         required=True,
         label='Heure',
-        widget=forms.DateInput
+        widget=forms.TimeInput
             (attrs={'class':"form-control currentTime",
                     'type':'time'},
     ))

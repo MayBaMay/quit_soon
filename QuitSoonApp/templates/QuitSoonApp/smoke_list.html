@@ -22,7 +22,7 @@
 
   {% else %}
     {% if smoke %}
-      <div class="form-container">                
+      <div class="form-container">
         <form id="smokefilterform" method='post' action="{% url 'QuitSoonApp:smoke_list' %}">
           {% csrf_token %}
           <div class="form-group">
@@ -56,12 +56,30 @@
           <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
         </div>
       {% endfor %}
+
+      <div class="pagination">
+        <span class="step-links">
+          {% if smoke.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ smoke.previous_page_number }}">previous</a>
+          {% endif %}
+
+          <span class="current">
+            Page {{ smoke.number }} of {{ smoke.paginator.num_pages }}.
+          </span>
+
+          {% if smoke.has_next %}
+              <a href="?page={{ smoke.next_page_number }}">next</a>
+              <a href="?page={{ smoke.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
     {% else %}
       Vous n'avez pas encore enregistré de craquage, félicitation!
     {% endif %}
   {% endif %}
 
-  </section>            
+  </section>
 
 </main>
 <!-- End panel content -->
