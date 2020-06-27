@@ -448,6 +448,7 @@ def health(request):
                     new_health = HealthManager(request.user, form.cleaned_data)
                     new_health.create_conso_alternative()
                     form = HealthForm(request.user)
+                print(form.errors)
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
