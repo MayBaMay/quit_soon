@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 
 from QuitSoonApp.models import (
@@ -347,7 +348,10 @@ def smoke_list(request):
                                 elif data['rol_pack_field'] != 'empty':
                                     pack = Paquet.objects.get(id=int(data['rol_pack_field']))
                                     smoke = smoke.filter(paquet__brand=pack.brand)
-                context['smoke'] = smoke
+                paginator = Paginator(smoke, 20)
+                page = request.GET.get('page')
+                page_smoke = paginator.get_page(page)
+                context['smoke'] = page_smoke
                 context['smoke_list_form'] = smoke_list_form
         return render(request, 'QuitSoonApp/smoke_list.html', context)
     else:
@@ -515,9 +519,11 @@ def health_list(request):
                                 elif data['lo_field'] != 'empty':
                                     alt = Alternative.objects.get(id=int(data['lo_field']))
                                     health = health.filter(alternative__activity=alt.activity)
-
+                paginator = Paginator(health, 20)
+                page = request.GET.get('page')
+                page_health = paginator.get_page(page)
+                context['health'] = page_health
                 context['health_form'] = health_form
-                context['health'] = health
         return render(request, 'QuitSoonApp/health_list.html', context)
     else:
         return redirect('QuitSoonApp:login')
