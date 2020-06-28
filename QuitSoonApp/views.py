@@ -83,9 +83,7 @@ def today(request):
     if request.user.is_authenticated:
         smoke = ConsoCig.objects.filter(user=request.user)
         health = ConsoAlternative.objects.filter(user=request.user)
-
-        profile = UserProfile.objects.filter(user=request.user).exists()
-        if profile:
+        if UserProfile.objects.filter(user=request.user).exists():
             context['profile'] = True
             smoke_stats = SmokeStats(request.user, datetime.date.today())
             healthy_stats = HealthyStats(request.user, datetime.date.today())
@@ -99,6 +97,28 @@ def today(request):
                 last = health.latest('date_alter', 'date_alter')
                 last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
                 context['lasthealth'] = get_delta_last_event(last_time)
+                activity_stats = {}
+                for type in Alternative.TYPE_ACTIVITY:
+                    activity_stats[type[0]] = {}
+                    if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
+                        activity_stats[type[0]]['exists'] = True
+                    activity_stats[type[0]]['name'] = type[1]
+                    for period in ['day', 'week', 'month']:
+                        minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
+                        activity_stats[type[0]][period] = minutes
+                context['activity_stats'] = activity_stats
+                substitut_stats = {}
+                for type in Alternative.SUBSTITUT:
+                    substitut_stats[type[0]] = {}
+                    if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
+                        substitut_stats[type[0]]['exists'] = True
+                    substitut_stats[type[0]]['name'] = type[1]
+                    for period in ['day', 'week', 'month']:
+                        nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
+                        substitut_stats[type[0]][period] = nicotine
+                context['substitut_stats'] = substitut_stats
+
+
         return render(request, 'QuitSoonApp/today.html', context)
     else:
         return redirect('QuitSoonApp:login')

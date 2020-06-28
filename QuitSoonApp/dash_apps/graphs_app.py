@@ -103,7 +103,7 @@ def get_user_infos_from_stats(smoke_stats, healthy_stats, focus):
                  'nicotine':[]}
     for date in smoke_stats.list_dates:
         user_dict['date'].append(dt.combine(date, dt.min.time()))
-        user_dict['activity_duration'].append(healthy_stats.min_per_day(date))
+        user_dict['activity_duration'].append(healthy_stats.report_substitut_per_period(date))
         if focus == 'nb_cig':
             user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
         elif focus == 'money_smoked':

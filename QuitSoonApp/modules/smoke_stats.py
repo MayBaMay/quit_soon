@@ -5,8 +5,13 @@ from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
+from django.db.models import Sum
 
-from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, ConsoAlternative
+from QuitSoonApp.models import (
+    UserProfile,
+    Paquet, ConsoCig,
+    Alternative, ConsoAlternative
+    )
 
 class Stats:
     def __init__(self, user, lastday):
@@ -151,22 +156,54 @@ class HealthyStats(Stats):
 
     def __init__(self, user, lastday):
         Stats.__init__(self, user, lastday)
-        self.user_conso = ConsoAlternative.objects.filter(user=self.user)
+        self.user_conso_all_days = ConsoAlternative.objects.filter(user=self.user)
+        self.user_conso_full_days = self.user_conso_all_days.exclude(date_alter=self.lastday)
+        self.user_activities = self.user_conso_all_days.exclude(alternative__type_alternative='Su')
+        self.user_conso_subsitut = self.user_conso_all_days.filter(alternative__type_alternative='Su')
 
-    def min_per_day(self, date, type=None):
-        """ time in minutes spent the day in argument for healthy activities """
-        user_activities = self.user_conso.exclude(alternative__type_alternative='Su')
-        activity_day = user_activities.filter(date_alter=date)
-        if type:
-            activity_day.filter(alternative__type_activity=type)
-        min_activity = 0
-        for activity in activity_day:
-            min_activity += activity.activity_duration
-        return min_activity
+    def filter_by_period(self, date, period, queryset):
+        # filter by period
+        if period == 'day':
+            return queryset.filter(date_alter=date)
+        elif period == 'week':
+            week_number = date.isocalendar()[1]
+            return queryset.filter(date_alter__week=week_number)
+        elif period == 'month':
+            return queryset.filter(date_alter__month=date.month)
+
+    def report_substitut_per_period(self, date, category='Ac', period='day', type=None):
+        """
+        For date, return for the period:
+        time activities in minutes
+        count substituts
+        """
+        # get based queryset
+        if category == 'Ac':
+            queryset = self.filter_by_period(date, period, self.user_activities)
+            if type:
+                queryset = queryset.filter(alternative__type_activity=type)
+            minutes = queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
+            return self.convert_minutes_to_hours_min_str(minutes)
+        elif category == 'Su':
+            queryset = self.filter_by_period(date, period, self.user_conso_subsitut)
+            if type:
+                queryset = queryset.filter(alternative__substitut=type)
+            return queryset.count()
+        else:
+            return None
+
+    @staticmethod
+    def convert_minutes_to_hours_min_str(minutes):
+        """convert minutes type int into formated str"""
+        if minutes:
+            if minutes < 60:
+                return str(minutes) + ' minutes'
+            return str(timedelta(minutes=minutes))[:-3].replace(':', 'h')
+        return None
 
     def nicotine_per_day(self, date):
-        user_conso_subsitut = self.user_conso.filter(alternative__type_alternative='Su')
-        conso_day = user_conso_subsitut.filter(date_alter=date)
+        """ nicotine in mg took the the day in argument """
+        conso_day = self.user_conso_subsitut.filter(date_alter=date)
         nicotine = 0
         for conso in conso_day:
             nicotine += conso.alternative.nicotine

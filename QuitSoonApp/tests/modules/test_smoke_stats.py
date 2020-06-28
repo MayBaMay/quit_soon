@@ -190,8 +190,30 @@ class HealthyStatsTestCase(TestCase):
         self.healthy.populate_db()
         self.stats = HealthyStats(self.user, datetime.date(2019, 11, 28))
 
-    def test_min_per_day(self):
-        self.assertEqual(self.stats.min_per_day(datetime.date(2019, 10, 19)), 155)
+    def test_report_substitut_per_period(self):
+        """test method report_substitut_per_period """
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19)), '2h35')
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), type='Lo'), '2h05')
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='week'), '3h35')
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='week', type='Sp'), '1h00')
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='month'), '13h28')
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='month', type='Sp'), '6h53')
+
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su'), 2)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', type='PAST'), 1)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='week'), 3)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='week', type='PAST'), 2)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='month', type='PAST'), 10)
+
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Adfqsfc', period='weekdgfa', type='Pdsf'), None)
+
+    def test_convert_minutes_to_hours_min_str(self):
+        """test method inutes_to_hours_min_str """
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(50), '50 minutes')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(60), '1h00')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(90), '1h30')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(120), '2h00')
 
     def test_nicotine_per_day(self):
+        """test method nicotine_per_day """
         self.assertEqual(self.stats.nicotine_per_day(datetime.date(2019, 10, 19)), 9)
