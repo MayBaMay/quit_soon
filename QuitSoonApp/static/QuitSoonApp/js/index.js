@@ -239,76 +239,67 @@ $(document).ready(function () {
 
   //TO DO close dropdown on esc key AND click anywhere else (anywhere)
 
-  //Graphs - ploty dash
+  // -------- Graphs - ploty dash
 
   let graphConts = document.querySelectorAll(".django-plotly-dash");
   let iframes = Array.from(graphConts).map((c) => {
     return c.firstElementChild.firstElementChild;
   });
 
-  const inputs = {};
-  console.log(iframes);
   let loadedFrames = 0;
   iframes.forEach((f) =>
     f.addEventListener("load", () => {
       loadedFrames++;
       console.log(loadedFrames);
+      //only add globalToggle when all graphs have loaded
       loadedFrames == iframes.length
-        ? setTimeout(() => collectInputs(), 300)
+        ? setTimeout(() => {
+            addGlobalToggle();
+            hideControls();
+          }, 100)
         : null;
     })
   );
 
-  function collectInputs() {
-    console.log("collecting");
-    iframes.forEach((f) => {
+  const inputs = {};
+  //collect all inputs and add global toggle
+  function addGlobalToggle() {
+    iframes.forEach((f, i) => {
       let doc = f.contentWindow.document;
       let labels = doc.querySelectorAll("label");
       labels.forEach((label) => {
         inputs[label.innerText] ? null : (inputs[label.innerText] = []);
         inputs[label.innerText].push(label.firstElementChild);
-        label.addEventListener("click", (e) => {
-          globalToggle(e);
-        });
+        //first graph radio buttons control add graphs
+        if (i == 0) {
+          label.querySelector("input").addEventListener("click", (e) => {
+            globalToggle(e);
+          });
+        } else {
+          //hide other controls
+          let controls = doc.querySelector(".graph-controls");
+          controls.style.display = "none";
+        }
       });
+      //
     });
   }
 
+  //first graph controls can toggles all graph inputs (providing they have the same label name e.g. "Mois")
   function globalToggle(e) {
-    e.preventDefault();
     let val, target;
     if (e.target.nodeName == "INPUT") {
-      val = e.target.parentNode.innerText;
+      val = e.target.parentNode.innerText; //label value
       target = e.target;
     } else {
       val = e.target.innerText;
       target = e.target.firstElementChild;
     }
-    console.log(val, target);
-    let index = inputs[val].indexOf(target);
-    //uncheck all
-    let keys = Object.keys(inputs);
-    // keys.forEach((key) => {
-    // if (key !== val) {
-    //   inputs[key].forEach((i) => {
-    //     i.checked = false;
-    //     i.removeAttribute("checked");
-    //   });
-    // }
-    // inputs[key].forEach((i) => i.click());
-    // inputs[key].forEach((i) => i.dispatchEvent(click_event));
-    // });
-    //check clicked
-    inputs[val].forEach((i) => {
-      console.log("el", i);
-      i.click();
-      // i.checked = true;
-      // i.checked = true;
-      // i.setAttribute("checked", "");
-      // let click_event = new CustomEvent("click", {
-      //   bubbles: false,
-      // });
-      // i.dispatchEvent(click_event);
+    inputs[val].forEach((input, i) => {
+      if (i !== 0) {
+        console.log("el", input);
+        input.click();
+      }
     });
   }
 })();

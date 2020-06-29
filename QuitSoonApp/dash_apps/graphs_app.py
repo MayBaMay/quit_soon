@@ -28,8 +28,9 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 def create_layout(name_graph):
     return html.Div([
-        dcc.RadioItems(id='my-radio',
-                     options=[
+        html.Div([    
+            dcc.RadioItems(id='my-radio',
+                options=[
                         {'label': 'Jour', 'value':'D'},
                         {'label': 'Semaine', 'value':'W'},
                         {'label': 'Mois', 'value':'M'},
@@ -37,10 +38,10 @@ def create_layout(name_graph):
                      value='D',
                      labelStyle={'display': 'inline-block'}
                      ),
-        dcc.Checklist(id='my-checkbox',
-            options=[{'label': 'Voir mes activités saines', 'value': 'A'},],
+            dcc.Checklist(id='my-checkbox',
+                options=[{'label': 'Voir mes activités saines', 'value': 'A'},],
             # value=['MTL', 'SF'],
-            ),
+            )],className='graph-controls'),
         dcc.Graph(id=name_graph,
                   animate=False,
                   style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
