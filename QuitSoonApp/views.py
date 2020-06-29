@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 
 from QuitSoonApp.models import (
@@ -36,7 +37,8 @@ from QuitSoonApp.modules import (
     PackManager, SmokeManager,
     AlternativeManager, HealthManager,
     SmokeStats, HealthyStats,
-    get_delta_last_event
+    get_delta_last_event,
+    Trophee_checking
     )
 
 
@@ -297,7 +299,7 @@ def smoke(request):
                 if smoke_form.is_valid():
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
                     smoke.create_conso_cig()
-                    smoke_form = SmokeForm(request.user)
+                    return redirect('QuitSoonApp:today')
             context['smoke_form'] = smoke_form
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
         context['smoke'] = smoke
@@ -346,7 +348,10 @@ def smoke_list(request):
                                 elif data['rol_pack_field'] != 'empty':
                                     pack = Paquet.objects.get(id=int(data['rol_pack_field']))
                                     smoke = smoke.filter(paquet__brand=pack.brand)
-                context['smoke'] = smoke
+                paginator = Paginator(smoke, 20)
+                page = request.GET.get('page')
+                page_smoke = paginator.get_page(page)
+                context['smoke'] = page_smoke
                 context['smoke_list_form'] = smoke_list_form
         return render(request, 'QuitSoonApp/smoke_list.html', context)
     else:
@@ -442,7 +447,7 @@ def health(request):
                 if form.is_valid():
                     new_health = HealthManager(request.user, form.cleaned_data)
                     new_health.create_conso_alternative()
-                    form = HealthForm(request.user)
+                    return redirect('QuitSoonApp:today')
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
@@ -514,38 +519,53 @@ def health_list(request):
                                 elif data['lo_field'] != 'empty':
                                     alt = Alternative.objects.get(id=int(data['lo_field']))
                                     health = health.filter(alternative__activity=alt.activity)
-
+                paginator = Paginator(health, 20)
+                page = request.GET.get('page')
+                page_health = paginator.get_page(page)
+                context['health'] = page_health
                 context['health_form'] = health_form
-                context['health'] = health
         return render(request, 'QuitSoonApp/health_list.html', context)
     else:
         return redirect('QuitSoonApp:login')
 
 def report(request, **kwargs):
     """Page with user results, graphs..."""
-    start_time = time.time()
     context = {}
     if request.user.is_authenticated:
-
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            smoke = SmokeStats(request.user, datetime.date.today())
+            stats = SmokeStats(request.user, datetime.date.today())
 
             # generate context
-            context['total_number'] = smoke.total_smoke_all_days
-            context['average_number'] = round(smoke.average_per_day)
-            context['non_smoked'] = smoke.nb_not_smoked_cig_full_days
-            context['total_money'] = round(smoke.total_money_smoked_full_days, 2)
-            context['saved_money'] = round(smoke.money_saved_full_days, 2)
-            context['average_money'] = round(smoke.average_money_per_day_full_days, 2)
-
+            context['total_number'] = stats.total_smoke_all_days
+            context['average_number'] = round(stats.average_per_day)
+            context['non_smoked'] = stats.nb_not_smoked_cig_full_days
+            context['total_money'] = round(stats.total_money_smoked_full_days, 2)
+            context['saved_money'] = round(stats.money_saved_full_days, 2)
+            context['average_money'] = round(stats.average_money_per_day_full_days, 2)
+            return render(request, 'QuitSoonApp/report.html', context)
         else:
             return redirect('QuitSoonApp:profile')
-        print("--- %s seconds ---" % (time.time() - start_time))
-        return render(request, 'QuitSoonApp/report.html', context)
     else:
         return redirect('QuitSoonApp:index')
 
 def objectifs(request):
     """Page with user trophees and goals"""
-    return render(request, 'QuitSoonApp/objectifs.html')
+    context = {}
+    if request.user.is_authenticated:
+        profile = UserProfile.objects.filter(user=request.user).exists()
+        if profile:
+            stats = SmokeStats(request.user, datetime.date.today())
+            trophee = Trophee_checking(stats)
+            trophee.create_trophees()
+            challenge_dict = {}
+            for challenge in trophee.list_user_challenges:
+                challenge_dict[challenge] = False
+                if Trophee.objects.filter(user=request.user, nb_cig=challenge[0], nb_jour=challenge[1]).exists():
+                    challenge_dict[challenge] = True
+            context['challenges'] = challenge_dict
+            return render(request, 'QuitSoonApp/objectifs.html', context)
+        else:
+            return redirect('QuitSoonApp:profile')
+    else:
+        return redirect('QuitSoonApp:index')

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load mathfilters %}
 
 {% block content %}
 
@@ -17,9 +18,31 @@
   <!-- Panel content -->
   <main id="objectifs" class="content">
     <section class="panel p1 pc1">
-      <p>panel content</p>
+      <p>Trophées Sans tabac : </p>
+      {% for challenge, success in challenges.items %}
+          {% if challenge.0  == 0 %}
+
+            {% if challenge.1 == 1 %}
+             {{challenge.1}} Jour sans tabac {{success}}<br>
+            {% else %}
+              {% if nb_jour >= 30 %}
+                {{ challenge.1|intdiv:30 }} Mois sans tabac {{success}}<br>
+              {% else %}
+                {{challenge.1}} Jours sans tabac {{success}}<br>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+
+      {% endfor %}
     </section>
-    <section class="panel p2 pc-1"></section>
+    <section class="panel p2 pc-1">
+      <p>Baisse de consommation : </p>
+      {% for challenge, success in challenges.items %}
+        {% if challenge.0  != 0 %}
+          {{challenge.1}} à moins de {{challenge.0 }} par jour {{success}}<br>
+        {% endif %}
+      {% endfor %}
+    </section>
   </main>
   <!-- End panel content -->
 

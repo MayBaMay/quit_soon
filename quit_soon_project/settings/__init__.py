@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'channels',
     'channels_redis',
+    'mathfilters'
 ]
 
 MIDDLEWARE = [
@@ -131,7 +132,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 NOSE_ARGS = [
     '--cover-erase',
-    '--cover-package=QuitSoonApp', 
+    '--cover-package=QuitSoonApp',
 ]
 
 # Internationalization

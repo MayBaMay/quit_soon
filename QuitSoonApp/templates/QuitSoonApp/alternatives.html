@@ -20,7 +20,6 @@
         <form id="alternativeform" action="{% url 'QuitSoonApp:alternatives' %}" method="POST">
          <h2>Nouvelle alternative</h2>
           {% csrf_token %}
-          <p>{{ error }}</p>
           {{ alternative_form.non_field_errors }}
           {% for field in alternative_form %}
             <div class="fieldWrapper form-group ">
