@@ -258,6 +258,7 @@ class HealthForm(ChooseAlternativeForm):
         data = self.cleaned_data['date_health']
         if data > datetime.date.today():
             raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
+        return data
 
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""
