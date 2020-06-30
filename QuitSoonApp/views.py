@@ -322,7 +322,9 @@ def smoke(request):
             if request.method == 'POST':
                 smoke_form = SmokeForm(request.user, request.POST)
                 if smoke_form.is_valid():
+
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
+                    print(smoke_form.cleaned_data.get('date_cig'))
                     smoke.create_conso_cig()
                     return redirect('QuitSoonApp:today')
             context['smoke_form'] = smoke_form

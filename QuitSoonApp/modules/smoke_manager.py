@@ -71,7 +71,8 @@ class SmokeManager:
                 )
             self.id = newconsocig.id
             return newconsocig
-        except (IntegrityError, AttributeError):
+        except (IntegrityError, AttributeError) as e:
+            print(e)
             return None
 
     def delete_conso_cig(self):
