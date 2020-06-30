@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import datetime
+
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -179,3 +181,9 @@ class SmokeForm(ChoosePackForm):
         label="J'ai taxé ma clope",
         widget=forms.CheckboxInput()
     )
+
+    def clean_date_smoke(self):
+        data = self.cleaned_data['date_smoke']
+        if data > datetime.date.today():
+            raise forms.ValidationError("Vous ne pouvez pas enregistrer de craquage pour les jours à venir")
+        return data

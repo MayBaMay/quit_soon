@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import datetime
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -252,6 +253,12 @@ class HealthForm(ChooseAlternativeForm):
             (attrs={'class':"form-control show"},
              choices= [tuple([x,x]) for x in range(0, 60, 5)]),
     )
+
+    def clean_date_health(self):
+        data = self.cleaned_data['date_health']
+        if data > datetime.date.today():
+            raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
+        return data
 
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""

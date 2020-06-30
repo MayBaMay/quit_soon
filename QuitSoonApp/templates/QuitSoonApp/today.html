@@ -62,11 +62,45 @@
             {% for element in lasthealth %}
                   {{ element }}
             {% endfor %}</b></p>
-          <p><b>Sport :  auj   cette semaine</b></p>
-          <p><b>Loisirs :  auj   cette semaine</b></p>
-          <p><b>Soins :  auj   cette semaine</b></p>
+
+          <p><b>
+            {% for type, values in activity_stats.items %}
+              {% if values.exists %}
+                {{ values.name }}:
+                {% if values.day %}
+                  {{ values.day }} aujourd'hui,
+                {% endif %}
+                {% if values.week %}
+                  {{ values.week }} cette semaine,
+                {% endif %}
+                {% if values.month %}
+                  {{ values.month }} ce mois-ci,
+                {% else %}
+                  Aucune activité ce mois-ci
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </b></p>
+
           <p><b>Substituts : </b></p>
-          <p><b>- nb substituts utilisé aujourd'hui</b></p>
+          <p><b>
+            {% for type, values in substitut_stats.items %}
+              {% if values.exists %}
+                {{ values.name }}:
+                {% if values.day %}
+                  {{ values.day }} aujourd'hui,
+                {% endif %}
+                {% if values.week %}
+                  {{ values.week }} cette semaine,
+                {% endif %}
+                {% if values.month %}
+                  {{ values.month }} ce mois-ci,
+                {% else %}
+                  Aucune consommation de substitut enregistrée ce mois-ci
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </b></p>
           <a class="btn" href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
         {% else %}
           Aucune action saine enregistrée

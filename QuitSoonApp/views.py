@@ -83,9 +83,7 @@ def today(request):
     if request.user.is_authenticated:
         smoke = ConsoCig.objects.filter(user=request.user)
         health = ConsoAlternative.objects.filter(user=request.user)
-
-        profile = UserProfile.objects.filter(user=request.user).exists()
-        if profile:
+        if UserProfile.objects.filter(user=request.user).exists():
             context['profile'] = True
             smoke_stats = SmokeStats(request.user, datetime.date.today())
             healthy_stats = HealthyStats(request.user, datetime.date.today())
@@ -94,11 +92,38 @@ def today(request):
                 last = smoke.latest('date_cig', 'time_cig')
                 last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
                 context['lastsmoke'] = get_delta_last_event(last_time)
-                context['average_number'] = round(smoke_stats.average_per_day)
+                try:
+                    context['average_number'] = round(smoke_stats.average_per_day)
+                except (ZeroDivisionError, TypeError):
+                    # 1st day so no full day, average return None
+                    context['average_number'] = """C'est votre 1er jour, les données sont insuffisantes aujourd'hui.
+                                                   Retrouvez votre moyenne dès demain."""
             if health:
                 last = health.latest('date_alter', 'date_alter')
                 last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
                 context['lasthealth'] = get_delta_last_event(last_time)
+                activity_stats = {}
+                for type in Alternative.TYPE_ACTIVITY:
+                    activity_stats[type[0]] = {}
+                    if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
+                        activity_stats[type[0]]['exists'] = True
+                    activity_stats[type[0]]['name'] = type[1]
+                    for period in ['day', 'week', 'month']:
+                        minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
+                        activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
+                context['activity_stats'] = activity_stats
+                substitut_stats = {}
+                for type in Alternative.SUBSTITUT:
+                    substitut_stats[type[0]] = {}
+                    if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
+                        substitut_stats[type[0]]['exists'] = True
+                    substitut_stats[type[0]]['name'] = type[1]
+                    for period in ['day', 'week', 'month']:
+                        nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
+                        substitut_stats[type[0]][period] = nicotine
+                context['substitut_stats'] = substitut_stats
+
+
         return render(request, 'QuitSoonApp/today.html', context)
     else:
         return redirect('QuitSoonApp:login')
@@ -297,7 +322,9 @@ def smoke(request):
             if request.method == 'POST':
                 smoke_form = SmokeForm(request.user, request.POST)
                 if smoke_form.is_valid():
+
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
+                    print(smoke_form.cleaned_data.get('date_cig'))
                     smoke.create_conso_cig()
                     return redirect('QuitSoonApp:today')
             context['smoke_form'] = smoke_form
@@ -534,16 +561,31 @@ def report(request, **kwargs):
     if request.user.is_authenticated:
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            stats = SmokeStats(request.user, datetime.date.today())
+            smoke_stats = SmokeStats(request.user, datetime.date.today())
+            health_stats = HealthyStats(request.user, datetime.date.today())
 
-            # generate context
-            context['total_number'] = stats.total_smoke_all_days
-            context['average_number'] = round(stats.average_per_day)
-            context['non_smoked'] = stats.nb_not_smoked_cig_full_days
-            context['total_money'] = round(stats.total_money_smoked_full_days, 2)
-            context['saved_money'] = round(stats.money_saved_full_days, 2)
-            context['average_money'] = round(stats.average_money_per_day_full_days, 2)
-            return render(request, 'QuitSoonApp/report.html', context)
+            # graphs with smoke and health activities
+            if smoke_stats.user_conso_all_days or health_stats.user_conso_all_days:
+
+                context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days.exists()
+                # generate context
+                try:
+                    context['total_number'] = smoke_stats.total_smoke_all_days
+                    context['average_number'] = round(smoke_stats.average_per_day)
+                    context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
+                    context['total_money'] = round(smoke_stats.total_money_smoked_full_days, 2)
+                    context['saved_money'] = round(smoke_stats.money_saved_full_days, 2)
+                    context['average_money'] = round(smoke_stats.average_money_per_day_full_days, 2)
+                except (ZeroDivisionError, TypeError):
+                    # 1st day so no full day, average return None
+                    context['first_day'] = True
+
+                context['user_conso_subsitut'] = health_stats.user_conso_subsitut.exists()
+
+                return render(request, 'QuitSoonApp/report.html', context)
+            else:
+                context['no_data'] = True
+                return render(request, 'QuitSoonApp/report.html', context)
         else:
             return redirect('QuitSoonApp:profile')
     else:

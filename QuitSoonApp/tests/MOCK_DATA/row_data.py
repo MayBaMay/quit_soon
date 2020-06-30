@@ -371,7 +371,7 @@ row_conso_alt_data = [
 {'date_alter': '2019-10-14', 'time_alter': '18:35', 'alternative': 1005},
 {'date_alter': '2019-10-16', 'time_alter': '21:51', 'alternative': 1003, 'activity_duration': 30},
 {'date_alter': '2019-10-19', 'time_alter': '13:36', 'alternative': 1001, 'activity_duration': 30},
-{'date_alter': '2019-10-19', 'time_alter': '13:08', 'alternative': 1001, 'activity_duration': 125},
+{'date_alter': '2019-10-19', 'time_alter': '13:08', 'alternative': 1002, 'activity_duration': 125},
 {'date_alter': '2019-10-19', 'time_alter': '17:36', 'alternative': 1004},
 {'date_alter': '2019-10-19', 'time_alter': '20:07', 'alternative': 1005},
 {'date_alter': '2019-10-22', 'time_alter': '13:23', 'alternative': 1001, 'activity_duration': 30},

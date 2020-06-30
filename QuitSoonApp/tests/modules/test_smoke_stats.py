@@ -190,8 +190,53 @@ class HealthyStatsTestCase(TestCase):
         self.healthy.populate_db()
         self.stats = HealthyStats(self.user, datetime.date(2019, 11, 28))
 
-    def test_min_per_day(self):
-        self.assertEqual(self.stats.min_per_day(datetime.date(2019, 10, 19)), 155)
+    def test_filter_queryset_for_report(self):
+        self.assertEqual(self.stats.filter_queryset_for_report().count(), 35)
+        self.assertEqual(self.stats.filter_queryset_for_report(type='Sp').count(), 16)
+        self.assertEqual(self.stats.filter_queryset_for_report('Su').count(), 23)
+        self.assertEqual(self.stats.filter_queryset_for_report('Su', type='P').count(), 9)
+
+    def test_report_substitut_per_period(self):
+        """test method report_substitut_per_period """
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19)), 155)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), type='Lo'), 125)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='week'), 215)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='week', type='Sp'), 60)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='month'), 808)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='month', type='Sp'), 413)
+
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su'), 2)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', type='PAST'), 1)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='week'), 3)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='week', type='PAST'), 2)
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='month', type='PAST'), 10)
+
+        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Adfqsfc', period='weekdgfa', type='Pdsf'), None)
+
+    def test_report_substitut_average_per_period(self):
+        # create ConsoAlternative on lastday to test lastday excluded from average calculation
+        ConsoAlternative.objects.create(
+            user=self.user,
+            date_alter=datetime.date(2019, 11, 28),
+            time_alter=datetime.time(11, 55),
+            alternative=Alternative.objects.get(id=1001),
+            activity_duration=40
+            )
+        ConsoAlternative.objects.create(
+            user=self.user,
+            date_alter=datetime.date(2019, 11, 28),
+            time_alter=datetime.time(13, 30),
+            alternative=Alternative.objects.get(id=1004),
+            )
+        self.assertEqual(self.stats.report_substitut_average_per_period(datetime.date(2019, 10, 19)), 73.4)
+
+    def test_convert_minutes_to_hours_min_str(self):
+        """test method inutes_to_hours_min_str """
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(50), '50 minutes')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(60), '1h00')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(90), '1h30')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(120), '2h00')
 
     def test_nicotine_per_day(self):
+        """test method nicotine_per_day """
         self.assertEqual(self.stats.nicotine_per_day(datetime.date(2019, 10, 19)), 9)
