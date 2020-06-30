@@ -1,0 +1,16 @@
+#report {
+  grid-template-areas:
+    "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
+    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
+    "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3"
+    "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4"
+    "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5"
+    "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6";
+
+  @include min-break("tablet") {
+    grid-template-areas:
+      "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2"
+      "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4"
+      "p5 p5 p5 p5 p5 p5 p6 p6 p6 p6 p6 p6";
+  }
+}

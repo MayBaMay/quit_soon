@@ -1,0 +1,18 @@
+#objectifs {
+  grid-template-areas:
+    "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
+    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
+    "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5"
+    "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6"
+    ". . . . . . . . . . . . "
+    ". p3 p3 p3 p3 p4 p4 p4 p4 p4 p4 .";
+
+  @include min-break("mobile") {
+    grid-template-areas:
+      "p1 p1 p1 p1 p4 p4 p4 p4 p3 p3 p3 p3"
+      ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
+  }
+}
+
+// #objectifs-modals {
+// }
