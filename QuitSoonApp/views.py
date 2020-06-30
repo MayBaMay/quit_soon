@@ -92,7 +92,12 @@ def today(request):
                 last = smoke.latest('date_cig', 'time_cig')
                 last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
                 context['lastsmoke'] = get_delta_last_event(last_time)
-                context['average_number'] = round(smoke_stats.average_per_day)
+                try:
+                    context['average_number'] = round(smoke_stats.average_per_day)
+                except (ZeroDivisionError, TypeError):
+                    # 1st day so no full day, average return None
+                    context['average_number'] = """C'est votre 1er jour, les données sont insuffisantes aujourd'hui.
+                                                   Retrouvez votre moyenne dès demain."""
             if health:
                 last = health.latest('date_alter', 'date_alter')
                 last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
@@ -554,16 +559,31 @@ def report(request, **kwargs):
     if request.user.is_authenticated:
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
-            stats = SmokeStats(request.user, datetime.date.today())
+            smoke_stats = SmokeStats(request.user, datetime.date.today())
+            health_stats = HealthyStats(request.user, datetime.date.today())
 
-            # generate context
-            context['total_number'] = stats.total_smoke_all_days
-            context['average_number'] = round(stats.average_per_day)
-            context['non_smoked'] = stats.nb_not_smoked_cig_full_days
-            context['total_money'] = round(stats.total_money_smoked_full_days, 2)
-            context['saved_money'] = round(stats.money_saved_full_days, 2)
-            context['average_money'] = round(stats.average_money_per_day_full_days, 2)
-            return render(request, 'QuitSoonApp/report.html', context)
+            # graphs with smoke and health activities
+            if smoke_stats.user_conso_all_days or health_stats.user_conso_all_days:
+
+                context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days.exists()
+                # generate context
+                try:
+                    context['total_number'] = smoke_stats.total_smoke_all_days
+                    context['average_number'] = round(smoke_stats.average_per_day)
+                    context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
+                    context['total_money'] = round(smoke_stats.total_money_smoked_full_days, 2)
+                    context['saved_money'] = round(smoke_stats.money_saved_full_days, 2)
+                    context['average_money'] = round(smoke_stats.average_money_per_day_full_days, 2)
+                except (ZeroDivisionError, TypeError):
+                    # 1st day so no full day, average return None
+                    context['first_day'] = True
+
+                context['user_conso_subsitut'] = health_stats.user_conso_subsitut.exists()
+
+                return render(request, 'QuitSoonApp/report.html', context)
+            else:
+                context['no_data'] = True
+                return render(request, 'QuitSoonApp/report.html', context)
         else:
             return redirect('QuitSoonApp:profile')
     else:

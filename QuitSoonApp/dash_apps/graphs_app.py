@@ -28,7 +28,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 def create_layout(name_graph):
     return html.Div([
-        html.Div([    
+        html.Div([
             dcc.RadioItems(id='my-radio',
                 options=[
                         {'label': 'Jour', 'value':'D'},
@@ -80,13 +80,17 @@ def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
                      showgrid=False,
                      zeroline=False,
                      showline=False,)
-    fig.update_yaxes(title_text="Activités (en minutes)",
-                     range=[0, max(df.activity_duration)],
-                     secondary_y=True,
-                     dtick=15,
-                     showgrid=False,
-                     zeroline=False,
-                     showline=False,)
+    try:
+        fig.update_yaxes(title_text="Activités (en minutes)",
+                         range=[0, max(df.activity_duration)],
+                         secondary_y=True,
+                         dtick=15,
+                         showgrid=False,
+                         zeroline=False,
+                         showline=False,)
+    except AttributeError:
+        # no activities so no activity activity_duration
+        pass
     return fig
 
 def stats(user):
@@ -148,7 +152,7 @@ def display_value(radio, checkbox, request, **kwargs):
     smoke, healthy = stats(request.user)
     user_dict = get_user_infos_from_stats(smoke, healthy, 'money_smoked')
     df = dataframe(radio, user_dict, 'money_smoked')
-    figure = fig(df, checkbox, "Agent parti en fumée", "Argent dépensé (en €)", "Mes sous", df.money_smoked)
+    figure = fig(df, checkbox, "Argent parti en fumée", "Argent dépensé (en €)", "Mes sous", df.money_smoked)
     return figure
 
 app3 = DjangoDash('NicotineGraph', external_stylesheets=external_stylesheets)

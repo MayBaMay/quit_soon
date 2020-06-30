@@ -51,7 +51,11 @@ class SmokeStats(Stats):
     @property
     def average_per_day(self):
         """ smoke average per day in full days smoke"""
-        return self.total_smoke_full_days / self.nb_full_days_since_start
+        try:
+            return self.total_smoke_full_days / self.nb_full_days_since_start
+        except ZeroDivisionError:
+            # 1st day so no full days
+            return None
 
     @property
     def count_smoking_day(self):
@@ -127,7 +131,11 @@ class SmokeStats(Stats):
     @property
     def average_money_per_day_full_days(self):
         """ average money user spend per day smoking cigarettes """
-        return self.total_money_smoked_full_days / self.nb_full_days_since_start
+        try:
+            return self.total_money_smoked_full_days / self.nb_full_days_since_start
+        except ZeroDivisionError:
+            # 1st day so no full days
+            return None
 
     @property
     def total_money_with_starting_nb_cig(self):
@@ -195,13 +203,17 @@ class HealthyStats(Stats):
     def report_substitut_average_per_period(self, date, category='Ac', period='day', type=None):
         # get only full days data so exclude today
         queryset = self.filter_queryset_for_report(category, type).exclude(date_alter=date)
-        if category == 'Ac':
-            sum = queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
-            return sum / self.nb_full_period_for_average(date, period)
-        elif category == 'Su':
-            count = queryset.count()
-            return count / self.nb_full_period_for_average(date, period)
-        else:
+        try:
+            if category == 'Ac':
+                sum = queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
+                return sum / self.nb_full_period_for_average(date, period)
+            elif category == 'Su':
+                count = queryset.count()
+                return count / self.nb_full_period_for_average(date, period)
+            else:
+                return None
+        except ZeroDivisionError:
+            # 1st day so no full days
             return None
 
     def filter_by_period(self, date, period, queryset):
