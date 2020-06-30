@@ -222,7 +222,7 @@ class HealthForm(ChooseAlternativeForm):
     time_health = forms.TimeField(
         required=True,
         label='Heure',
-        widget=forms.DateInput
+        widget=forms.TimeInput
             (attrs={'class':"form-control currentTime",
                     'type':'time'},
     ))
@@ -255,7 +255,7 @@ class HealthForm(ChooseAlternativeForm):
 
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""
-        cleaned_data = super().clean()
+        cleaned_data = super(HealthForm, self).clean()
         date_alter = cleaned_data.get('date_health')
         duration_hour = cleaned_data.get('duration_hour')
         duration_min = cleaned_data.get('duration_min')

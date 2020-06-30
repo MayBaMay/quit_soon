@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
+from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 
 from QuitSoonApp.models import (
@@ -298,7 +299,7 @@ def smoke(request):
                 if smoke_form.is_valid():
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
                     smoke.create_conso_cig()
-                    smoke_form = SmokeForm(request.user)
+                    return redirect('QuitSoonApp:today')
             context['smoke_form'] = smoke_form
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
         context['smoke'] = smoke
@@ -347,7 +348,10 @@ def smoke_list(request):
                                 elif data['rol_pack_field'] != 'empty':
                                     pack = Paquet.objects.get(id=int(data['rol_pack_field']))
                                     smoke = smoke.filter(paquet__brand=pack.brand)
-                context['smoke'] = smoke
+                paginator = Paginator(smoke, 20)
+                page = request.GET.get('page')
+                page_smoke = paginator.get_page(page)
+                context['smoke'] = page_smoke
                 context['smoke_list_form'] = smoke_list_form
         return render(request, 'QuitSoonApp/smoke_list.html', context)
     else:
@@ -443,7 +447,7 @@ def health(request):
                 if form.is_valid():
                     new_health = HealthManager(request.user, form.cleaned_data)
                     new_health.create_conso_alternative()
-                    form = HealthForm(request.user)
+                    return redirect('QuitSoonApp:today')
             context['form'] = form
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
         context['health'] = health
@@ -515,9 +519,11 @@ def health_list(request):
                                 elif data['lo_field'] != 'empty':
                                     alt = Alternative.objects.get(id=int(data['lo_field']))
                                     health = health.filter(alternative__activity=alt.activity)
-
+                paginator = Paginator(health, 20)
+                page = request.GET.get('page')
+                page_health = paginator.get_page(page)
+                context['health'] = page_health
                 context['health_form'] = health_form
-                context['health'] = health
         return render(request, 'QuitSoonApp/health_list.html', context)
     else:
         return redirect('QuitSoonApp:login')

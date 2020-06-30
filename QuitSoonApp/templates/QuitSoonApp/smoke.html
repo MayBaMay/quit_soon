@@ -25,36 +25,39 @@
     <div class="form-container">
       <form id="smokeform" action="{% url 'QuitSoonApp:smoke' %}" method="post">
         {% csrf_token %}
+        {% if smoke_form.errors %}
+          {% for field in smoke_form %}
+            {% for error in field.errors %}
+                <div class="error">
+                  <p> {{ error }} </p>
+                </div>
+            {% endfor %}
+          {% endfor %}
           {{ smoke_form.non_field_errors }}
+        {% endif %}
           <div class="fieldWrapper form-group ">
             <label for="id_date_smoke">  {{ smoke_form.date_smoke.label }}</label>
             {{ smoke_form.date_smoke }}
-            {{ smoke_form.date_smoke.error }}
           </div>
           <div class="fieldWrapper form-group ">
             <label for="id_time_smoke">  {{ smoke_form.time_smoke.label }}</label>
             {{ smoke_form.time_smoke }}
-            {{ smoke_form.time_smoke.error }}
           </div>
           <div class="fieldWrapper form-group checkbox-group">
             <label for="id_given_field">  {{ smoke_form.given_field.label }}</label>
             {{ smoke_form.given_field }}
-            {{ smoke_form.given_field.error }}
           </div>
           <div class="fieldWrapper form-group ">
           <label for="id_type_cig_field">  {{ smoke_form.type_cig_field.label }}</label>
             {{ smoke_form.type_cig_field }}
-            {{ smoke_form.type_cig_field.error }}
           </div>
           <div class="fieldWrapper form-group ">
             <label for="id_ind_pack_field">  {{ smoke_form.ind_pack_field.label }}</label>
             {{ smoke_form.ind_pack_field }}
-            {{ smoke_form.ind_pack_field.error }}
           </div>
           <div class="fieldWrapper form-group ">
             <label for="id_rol_pack_field">  {{ smoke_form.rol_pack_field.label }}</label>
             {{ smoke_form.rol_pack_field }}
-            {{ smoke_form.rol_pack_field.error }}
           </div>
           <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
       </form>
