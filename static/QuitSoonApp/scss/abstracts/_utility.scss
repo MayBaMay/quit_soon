@@ -1,0 +1,27 @@
+.hide {
+  display: none !important;
+}
+.show {
+  display: block !important;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mobile-content {
+  display: block;
+}
+.tablet-content {
+  display: none;
+}
+@include min-break("mobile") {
+  .mobile-content {
+    display: none;
+  }
+  .tablet-content {
+    display: block;
+  }
+}
