@@ -105,7 +105,7 @@ def today(request):
                     activity_stats[type[0]]['name'] = type[1]
                     for period in ['day', 'week', 'month']:
                         minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
-                        activity_stats[type[0]][period] = minutes
+                        activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
                 context['activity_stats'] = activity_stats
                 substitut_stats = {}
                 for type in Alternative.SUBSTITUT:
