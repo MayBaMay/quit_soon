@@ -255,7 +255,6 @@ $(document).ready(function () {
       loadedFrames == iframes.length
         ? setTimeout(() => {
             addGlobalToggle();
-            hideControls();
           }, 100)
         : null;
     })
