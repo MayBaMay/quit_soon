@@ -161,6 +161,38 @@ header {
   }
 }
 
+//reg pages
+
+#reg {
+  header {
+    .header-content {
+      .logo {
+        display: flex;
+      }
+    }
+  }
+}
+
+#index {
+  header {
+    .header-content {
+      .logo {
+        display: flex;
+      }
+      nav > ul {
+        justify-content: flex-end;
+        .menu-item {
+          width: 100%;
+          span {
+            margin-left: 0.6rem;
+            display: inline;
+          }
+        }
+      }
+    }
+  }
+}
+
 @include min-break("mobile") {
   header {
     height: $header-height;

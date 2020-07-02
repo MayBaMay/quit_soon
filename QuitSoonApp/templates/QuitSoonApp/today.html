@@ -43,7 +43,7 @@
 
   {% if profile %}
 
-    <section class="panel p3">
+    <section class="panel p3 pc-1">
         {% if lastsmoke %}
           <p><b>Dernière cigarette il y a
             {% for element in lastsmoke %}
@@ -56,7 +56,7 @@
           Aucune cigarette fumée enregistrée
         {% endif %}
     </section>
-    <section class="panel p4">
+    <section class="panel p4 pc-1">
         {% if lasthealth %}
           <p><b>Dernière alternative il y a
             {% for element in lasthealth %}
@@ -109,7 +109,7 @@
 
   {% else %}
 
-  <section class="panel p3">
+  <section class="panel p3 pc-1">
     Vous n'avez pas paramétré votre profil, nous ne pouvons donc pas fournir de statiqtiques.
     <a class="btn-secondary" href="{% url 'QuitSoonApp:profile' %}">Paramétrer mon profil</a>
   </section>

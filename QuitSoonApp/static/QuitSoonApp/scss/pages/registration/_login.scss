@@ -1,0 +1,10 @@
+#login {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1";
+  grid-template-areas: "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
+
+  @include min-break("mobile") {
+    grid-template-areas:
+      ". . . p1 p1 p1 p1 p1 p1 . . ."
+      ". . . p2 p2 p2 p2 p2 p2 . . .";
+  }
+}

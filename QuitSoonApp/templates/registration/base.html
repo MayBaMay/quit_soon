@@ -29,129 +29,18 @@
               <div class="logo">
                 <span><a href="{% url 'QuitSoonApp:today' %}">QS</a></span>
               </div>
-
-              <nav>
-                <ul>
-                  <li>
-                    <a href="{% url 'QuitSoonApp:today' %}" class="menu-item">
-                      <i class="fas fa-calendar-day"></i> <span>Today</span></a
-                    >
-                  </li>
-
-                  <li>
-                    <a href="{% url 'QuitSoonApp:report' %}" class="menu-item">
-                      <i class="fas fa-chart-bar"></i> <span>Report</span></a
-                    >
-                  </li>
-
-                  <li>
-                    <a
-                      href="{% url 'QuitSoonApp:objectifs' %}"
-                      class="menu-item"
-                    >
-                      <i class="fas fa-trophy"></i> <span>Objectifs</span></a
-                    >
-                  </li>
-
-                  <li class="dropdown-menu" data-toggle="smoking-menu">
-                    <span href="#" class="menu-item"><i class="fas fa-smoking"></i><span>Cigarette</span></span>
-                    <span>
-                      <ul id="smoking-menu" class="sub-menu">
-                        <li>
-                          <a href="{% url 'QuitSoonApp:paquets' %}" class="menu-item"
-                            >Mes paquets</a>
-                        </li>
-                        <li>
-                          <a href="{% url 'QuitSoonApp:smoke' %}" class="menu-item"
-                            >Je craque</a>
-                        </li>
-                        <li>
-                          <a href="{% url 'QuitSoonApp:smoke_list' %}" class="menu-item"
-                            >Mes craquages</a>
-                        </li>
-                      </ul>
-                    </span>
-                  </li>
-
-                  <li class="dropdown-menu" data-toggle="health-menu">
-                    <span href="#" class="menu-item"><i class="fas fa-heartbeat"></i><span>Health</span></span>
-                    <span>
-                      <ul id="health-menu" class="sub-menu">
-                        <li>
-                          <a href="{% url 'QuitSoonApp:alternatives' %}" class="menu-item"
-                            >Mes alternatives</a>
-                        </li>
-                        <li>
-                          <a href="{% url 'QuitSoonApp:health' %}" class="menu-item"
-                            >Je tiens bon</a>
-                        </li>
-                        <li>
-                          <a href="{% url 'QuitSoonApp:health_list' %}" class="menu-item"
-                            >Mes actions saines</a>
-                        </li>
-                      </ul>
-                    </span>
-                  </li>
-
-                  <li class="dropdown-menu" data-toggle="user-menu">
-                    <span href="#" class="menu-item"
-                      ><i class="fas fa-user"></i
-                      ><span id="username-nav">{{ user.username }}</span></span
-                    >
-
-                    <span>
-                      <ul id="user-menu" class="sub-menu">
-                        <li>
-                          <a href="{% url 'QuitSoonApp:profile' %}" class="menu-item"
-                            >Mes informations personelles</a
-                          >
-                        </li>
-                        <li>
-                          <a
-                            href="#"
-                            class="menu-item toggle-modal"
-                            data-modal="modal-logout"
-                            >Logout</a
-                          >
-                        </li>
-                      </ul></span
-                    >
-                  </li>
-                </ul>
-              </nav>
             </div>
           </header>
           <!-- End of header -->
-          {% if user.is_authenticated %}
 
           <!-- Page content -->
-          {% block content %}{% endblock %} {% endif %}
+          {% block content %}
+          {% endblock %}
           <!-- End page content -->
         </div>
         <!-- End grid container -->
 
-        <!-- Logout modal -->
-        <div class="modal-container logout-modal">
-          <div class="modal">
-            <span class="btn close-modal-btn"><i class="fas fa-times"></i></span>
-            <div id="modal-logout" class="modal-content">
-              <section>
-                <h4>Logout</h4>
-                <p>
-                  {{user.username}}, êtes-vous sûr de vouloir vous déconnecter?
-                </p>
-                <div class="modal-buttons">
-                  <span class="btn"> <a href="{% url 'logout' %}"> Valider </a></span>
-
-                  <span class="btn close-modal-btn">Annuler</span>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-        <!-- End logout modal -->
-
-        <!-- Static modal -->
+           <!-- Static modal -->
         <!-- {% if not user.is_authenticated %}
         <div class="modal-container modal-static">
           <div class="modal">
