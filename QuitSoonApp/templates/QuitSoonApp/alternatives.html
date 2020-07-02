@@ -1,4 +1,5 @@
-{% extends 'base.html' %} {% load static %}
+{% extends 'QuitSoonApp/base.html' %}
+{% load static %}
 {% block content %}
 
 <!-- Main content -->
@@ -15,7 +16,7 @@
   <!-- Panel content -->
   <main id="alternatives" class="content">
 
-    <section class="panel p1 pc1">
+    <section class="panel p1 pc-1">
       <div class="form-container">
         <form id="alternativeform" action="{% url 'QuitSoonApp:alternatives' %}" method="POST">
          <h2>Nouvelle alternative</h2>
