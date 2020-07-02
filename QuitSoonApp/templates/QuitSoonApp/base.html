@@ -1,0 +1,184 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link
+      rel="stylesheet"
+      href="{% static 'QuitSoonApp/vendor/fontawesome-free/css/all.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'QuitSoonApp/css/styles.min.css' %}"
+    />
+    <title>Quit Soon</title>
+  </head>
+
+  <body id="app">
+    <div class="wrapper">
+      <div class="content-wrapper">
+        <!-- Grid container -->
+        <div class="grid-container">
+          <!-- Header -->
+          <header>
+            <div class="header-content">
+              <div class="logo">
+                <span><a href="{% url 'QuitSoonApp:today' %}">QS</a></span>
+              </div>
+
+              <nav>
+                <ul>
+                  <li>
+                    <a href="{% url 'QuitSoonApp:today' %}" class="menu-item">
+                      <i class="fas fa-calendar-day"></i> <span>Today</span></a
+                    >
+                  </li>
+
+                  <li>
+                    <a href="{% url 'QuitSoonApp:report' %}" class="menu-item">
+                      <i class="fas fa-chart-bar"></i> <span>Report</span></a
+                    >
+                  </li>
+
+                  <li>
+                    <a
+                      href="{% url 'QuitSoonApp:objectifs' %}"
+                      class="menu-item"
+                    >
+                      <i class="fas fa-trophy"></i> <span>Objectifs</span></a
+                    >
+                  </li>
+
+                  <li class="dropdown-menu" data-toggle="smoking-menu">
+                    <span href="#" class="menu-item"><i class="fas fa-smoking"></i><span>Cigarette</span></span>
+                    <span>
+                      <ul id="smoking-menu" class="sub-menu">
+                        <li>
+                          <a href="{% url 'QuitSoonApp:paquets' %}" class="menu-item"
+                            >Mes paquets</a>
+                        </li>
+                        <li>
+                          <a href="{% url 'QuitSoonApp:smoke' %}" class="menu-item"
+                            >Je craque</a>
+                        </li>
+                        <li>
+                          <a href="{% url 'QuitSoonApp:smoke_list' %}" class="menu-item"
+                            >Mes craquages</a>
+                        </li>
+                      </ul>
+                    </span>
+                  </li>
+
+                  <li class="dropdown-menu" data-toggle="health-menu">
+                    <span href="#" class="menu-item"><i class="fas fa-heartbeat"></i><span>Health</span></span>
+                    <span>
+                      <ul id="health-menu" class="sub-menu">
+                        <li>
+                          <a href="{% url 'QuitSoonApp:alternatives' %}" class="menu-item"
+                            >Mes alternatives</a>
+                        </li>
+                        <li>
+                          <a href="{% url 'QuitSoonApp:health' %}" class="menu-item"
+                            >Je tiens bon</a>
+                        </li>
+                        <li>
+                          <a href="{% url 'QuitSoonApp:health_list' %}" class="menu-item"
+                            >Mes actions saines</a>
+                        </li>
+                      </ul>
+                    </span>
+                  </li>
+
+                  <li class="dropdown-menu" data-toggle="user-menu">
+                    <span href="#" class="menu-item"
+                      ><i class="fas fa-user"></i
+                      ><span id="username-nav">{{ user.username }}</span></span
+                    >
+
+                    <span>
+                      <ul id="user-menu" class="sub-menu">
+                        <li>
+                          <a href="{% url 'QuitSoonApp:profile' %}" class="menu-item"
+                            >Mes informations personelles</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            href="#"
+                            class="menu-item toggle-modal"
+                            data-modal="modal-logout"
+                            >Logout</a
+                          >
+                        </li>
+                      </ul></span
+                    >
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </header>
+          <!-- End of header -->
+          {% if user.is_authenticated %}
+
+          <!-- Page content -->
+          {% block content %}{% endblock %} {% endif %}
+          <!-- End page content -->
+        </div>
+        <!-- End grid container -->
+
+        <!-- Logout modal -->
+        <div class="modal-container logout-modal">
+          <div class="modal">
+            <span class="btn close-modal-btn"><i class="fas fa-times"></i></span>
+            <div id="modal-logout" class="modal-content">
+              <section>
+                <h4>Logout</h4>
+                <p>
+                  {{user.username}}, êtes-vous sûr de vouloir vous déconnecter?
+                </p>
+                <div class="modal-buttons">
+                  <span class="btn"> <a href="{% url 'logout' %}"> Valider </a></span>
+
+                  <span class="btn close-modal-btn">Annuler</span>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+        <!-- End logout modal -->
+
+        <!-- Static modal -->
+        <!-- {% if not user.is_authenticated %}
+        <div class="modal-container modal-static">
+          <div class="modal">
+            <div id="modal-1" class="modal-content">
+              <h1>VOUS N'ÊTES PAS CONNECTÉ</h1>
+              <button class="btn-cta">
+                <a href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
+              </button>
+              <button class="btn-cta">
+                <a class="small" href="{% url 'QuitSoonApp:register' %}"
+                  >Créer un compte</a
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endif %} -->
+
+        <!-- Footer -->
+        <footer>Footer content</footer>
+        <!-- End of footer -->
+      </div>
+    </div>
+
+    <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
+    <script src="{% static 'QuitSoonApp/js/index.min.js' %}"></script>
+
+  </body>
+</html>
