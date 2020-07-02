@@ -1,3 +1,77 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+{% block content %} 
+
+<!-- Page heading -->
+<div class="page-heading">
+  <i class="fas fa-key"></i>
+  <h1>Créer un compte</h1>
+</div>
+<!-- End page heading -->
+
+<!-- Panel content -->
+<main id="register" class="content">
+  	<section class="panel p1 pc-0">
+      <div class="form-container">
+        <form class="user form-with-password" id="registerForm" method="POST" action="{% url 'QuitSoonApp:register' %}">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <div class="fieldWrapper form-group">
+            {{ form.username.errors }}
+              <input type="text" class="form-control form-control-user" name="username" id="signUp-username" placeholder="Pseudo">
+          </div>
+          <div class="fieldWrapper form-group">
+            {{ form.email.errors }}
+            <input type="email" class="form-control form-control-user" name="email" id="signUp-email" placeholder="Adresse email">
+          </div>
+          <div class="password_restrictions">
+            <ul>
+              <li>Votre mot de passe doit contenir au minimum 8 caractères.</li>
+              <li>Votre mot de passe doit différer de vos autres informations personnelles.</li>
+              <li>Votre mot de passe ne peut pas être un mot de passe couramment utilisé.</li>
+              <li>Votre mot de passe ne peut pas être entièrement numérique.</li>
+            </ul>
+          </div>
+          <div class="form-group row">
+            {{ form.password1.errors }}
+            {{ form.password2.errors }}
+            <div class="col-11">
+              <div class="row">
+                <div class="fieldWrapper col-sm-6 mb-3 mb-sm-0">
+                  <input type="password" class="form-control form-control-user password-field" name="password1" id="signUp-Password1" placeholder="Mot de passe">
+                </div>
+                <div class="fieldWrapper col-sm-6">
+                    <input type="password" class="form-control form-control-user password-field" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
+                </div>
+            </div>
+
+            </div>
+            <div class="col-1">
+              <i class="fa fa-eye pass-status" aria-hidden="true"></i>
+            </div>
+          </div>
+
+          <input id="signup-btn" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Valider">
+
+        </form>
+      </div>
+ 	</section>
+  <section class="panel p2 pc-0">
+    <a
+      class="btn-primary-text-dark"
+      href="{% url 'QuitSoonApp:password_reset' %}"
+      >Mot de passe oublié?</a
+    >
+
+  </section>
+
+</main>
+
+  <!-- End panel content-->
+
+{% endblock %}
+
+
 {% comment %} {% extends 'registration/base.html' %}
 {% load static %}
 {% block content %} {% endcomment %}
