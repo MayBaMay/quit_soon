@@ -2,214 +2,134 @@
 
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link
+      rel="stylesheet"
+      href="{% static 'QuitSoonApp/vendor/fontawesome-free/css/all.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'QuitSoonApp/css/styles.min.css' %}"
+    />
+    <title>Quit Soon</title>
+  </head>
 
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>SB Admin 2 - Dashboard</title>
-
-  <!-- Icons-->
-  <link rel="icon" href="{% static 'QuitSoonApp/favicon/favicon.ico' %}">
-
-  <!-- Custom fonts for this template-->
-  <link href="{% static 'QuitSoonApp/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-  <!-- Custom styles for this template-->
-  <link href="{% static 'QuitSoonApp/css/quitsoon.min.css' %}" rel="stylesheet">
-
-</head>
-
-<body id="page-top">
-
-  <!-- Page Wrapper -->
-  <div id="wrapper">
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
-      <!-- Main Content -->
-      <div id="content">
-
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-          <!-- Sidebar Toggle (Topbar) -->
-          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-            <i class="fa fa-bars"></i>
-          </button>
-
-          <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto">
-
-            <div class="topbar-divider d-none d-sm-block"></div>
-
-            <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <!-- <span class="mr-2 d-none d-lg-inline text-gray-600 small">Se connecter</span> -->
-                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                Connexion
-              </a>
-              <!-- Dropdown - User Information -->
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="{% url 'QuitSoonApp:login' %}">
-                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Me connecter à mon compte
-                </a>
-                <a class="dropdown-item" href="{% url 'QuitSoonApp:register' %}">
-                  <i class="fas fa-user-circle fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Créer un compte
-                </a>
+  <body id="index">
+    <div class="wrapper">
+      <div class="content-wrapper">
+        <!-- Grid container -->
+        <div class="grid-container">
+          <!-- Header -->
+          <header>
+            <div class="header-content">
+              <div class="logo">
+                <span><a href="{% url 'QuitSoonApp:today' %}">QS</a></span>
               </div>
-            </li>
 
-          </ul>
+              <nav>
+                <ul>
+                  <li class="dropdown-menu" data-toggle="user-menu">
+                    <span href="#" class="menu-item"
+                      ><i class="fas fa-user"></i><span>Connection</span></span
+                    >
 
-        </nav>
-        <!-- End of Topbar -->
-
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-
-          <!-- Page Heading -->
-          <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Tabayarriver!</h1>
-          </div>
-
-          <!-- Content Row -->
-          <div class="row">
-            <div class="card shadow mb-4">
-              <div class="card-body">
-                <div class="">
-                  Présentation de l'application, c'est cool, pratique et motivant!<br>
-                  <br>
-                  Avant de craquer, j'appuie sur le bouton rouge avec la méchante tête de mort,
-                  ça fait réfléchir...<br>
-                  J'ai un retour sur :<br>
-                    - le nombre de cigarette fumé dans la journée<br>
-                    - la moyenne de cigarette par jour<br>
-                    - l'argent dépensé pour ce poison et surtout l'argent que j'éconnomise en baissant ma consommation<br>
-                    ...<br>
-                    <br>
-                  Pour me motiver à avoir des comportements plus sains, j'enregistre ces activités.<br>
-                  Que ce soit du sport, des soins ou des loisirs, j'appuie sur le bouton vert sympas qui fait du bien.<br>
-                  Je peux également y surveiller ma consommation de substitut nicotinique qui me permette de lentement écrabouiller ma dépendance.<br>
-                  Je peux donc constater les effets bénéfiques de mes activités saines et substitut sur ma consommation en baisse
-                  et me donner encore plus envie de choisir d'autres alternative à : "Je m'ennuie, allez, une petite clope...".
-                  Et ben non, je vais faire autre chose!<br>
-                </div>
-              </div>
+                    <span>
+                      <ul id="user-menu" class="sub-menu">
+                        <li>
+                          <a
+                            class="menu-item"
+                            href="{% url 'QuitSoonApp:login' %}"
+                          >
+                            Me connecter à mon compte
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            class="menu-item"
+                            href="{% url 'QuitSoonApp:register' %}"
+                          >
+                            Créer un compte
+                          </a>
+                        </li>
+                      </ul></span
+                    >
+                  </li>
+                </ul>
+              </nav>
             </div>
+          </header>
+          <!-- End of header -->
+
+          <!-- Page content -->
+
+          <!-- Page heading -->
+          <div class="page-heading">
+            <i class="fas fa-heart"></i>
+            <h1>Tabayarriver!</h1>
           </div>
+          <!-- End page heading -->
 
-          <!-- Content Row -->
-
-          <div class="row">
-
-            <!-- Area Chart -->
-            <div class="col-xl-8 col-lg-6">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Je décide</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                  <div class="chart-area">
-                    Visuel profile day avec choix bouton rouge ou bouton vert
-                  </div>
-                </div>
+          <!-- Panel content -->
+          <main id="index" class="content">
+            <section class="panel p1 pc-1">
+              <div class="">
+                Présentation de l'application, c'est cool, pratique et
+                motivant!<br />
+                <br />
+                Avant de craquer, j'appuie sur le bouton rouge avec la méchante
+                tête de mort, ça fait réfléchir...<br />
+                J'ai un retour sur :<br />
+                - le nombre de cigarette fumé dans la journée<br />
+                - la moyenne de cigarette par jour<br />
+                - l'argent dépensé pour ce poison et surtout l'argent que
+                j'éconnomise en baissant ma consommation<br />
+                ...<br />
+                <br />
+                Pour me motiver à avoir des comportements plus sains,
+                j'enregistre ces activités.<br />
+                Que ce soit du sport, des soins ou des loisirs, j'appuie sur le
+                bouton vert sympas qui fait du bien.<br />
+                Je peux également y surveiller ma consommation de substitut
+                nicotinique qui me permette de lentement écrabouiller ma
+                dépendance.<br />
+                Je peux donc constater les effets bénéfiques de mes activités
+                saines et substitut sur ma consommation en baisse et me donner
+                encore plus envie de choisir d'autres alternative à : "Je
+                m'ennuie, allez, une petite clope...". Et ben non, je vais faire
+                autre chose!<br />
               </div>
-            </div>
+            </section>
+            <section class="panel p2 pc-1">
+              <h6>Je décide</h6>
+              <p>
+                Visuel profile day avec choix bouton rouge ou bouton vert
+              </p>
+            </section>
+            <section class="panel p3 pc-1">
+              <h6>Je constate</h6>
+              <p>
+                visuel page results
+              </p>
+            </section>
+          </main>
 
-            <!-- Pie Chart -->
-            <div class="col-xl-4 col-lg-6">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Je constate</h6>
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-                  <div class="chart-area">
-                    visuel page results
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- End panel content-->
+          <!-- End page content -->
         </div>
-        <!-- /.container-fluid -->
+        <!-- End grid container -->
 
-      </div>
-      <!-- End of Main Content -->
-
-      <!-- Footer -->
-      <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2019</span>
-          </div>
-        </div>
-      </footer>
-      <!-- End of Footer -->
-
-    </div>
-    <!-- End of Content Wrapper -->
-
-  </div>
-  <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Me déconnecter</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>{{user.username}}, êtes-vous sûr de vouloir vous déconnecter?</p>
-          <p>Cliquez sur "Valider" pour confirmer</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
-          <a class="btn btn-primary" href="{% url 'logout' %}">Valider</a>
-        </div>
+        <!-- Footer -->
+        <footer>Footer content</footer>
+        <!-- End of footer -->
       </div>
     </div>
-  </div>
 
-  <!-- Bootstrap core JavaScript-->
-  <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
-  <script src="{% static 'QuitSoonApp/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="{% static 'QuitSoonApp/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-
-  <!-- Custom scripts for all pages-->
-  <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
-
-  <!-- Page level plugins -->
-  <script src="{% static 'QuitSoonApp/vendor/chart.js/Chart.min.js' %}"></script>
-
-  <!-- Page level custom scripts -->
-  <script src="{% static 'QuitSoonApp/js/demo/chart-area-demo.js' %}"></script>
-  <script src="{% static 'QuitSoonApp/js/demo/chart-pie-demo.js' %}"></script>
-
-</body>
-
+    <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
+    <script src="{% static 'QuitSoonApp/js/index.min.js' %}"></script>
+  </body>
 </html>

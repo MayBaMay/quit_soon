@@ -1,9 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'QuitSoonApp/base.html' %}
 {% load static %}
 {% load mathfilters %}
-
 {% block content %}
-
 
   <!-- Main content -->
 
@@ -17,7 +15,7 @@
 
   <!-- Panel content -->
   <main id="objectifs" class="content">
-    <section class="panel p1 pc1">
+    <section class="panel p1 pc-1">
       <p>Trophées Sans tabac : </p>
       {% for challenge, success in challenges.items %}
           {% if challenge.0  == 0 %}

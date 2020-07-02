@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'QuitSoonApp/base.html' %}
 {% load static %}
 {% load plotly_dash %}
 {% block content %}
@@ -19,14 +19,14 @@
   {% if not no_data %}
 
     {% if not first_day %}
-      <section class="panel p1 pc1">
+      <section class="panel p1 pc-1">
           CONSO :<br>
           total_number : {{ total_number }} <br>
           average_number : {{ average_number }} <br>
           non_smoked : {{ non_smoked }} <br>
       </section>
 
-       <section class="panel p2 pc1">
+       <section class="panel p2 pc-1">
         MONEY:<br>
         total_money : {{ total_money }}€ <br>
         average_money : {{ average_money }}€ <br>
@@ -34,13 +34,13 @@
         <br>
       </section>
 
-      <section class="panel p3 pc1">
+      <section class="panel p3 pc-1">
         <div id='consociggraph' class="{% plotly_class name='ConsoCigGraph' %} card=" style="height:100%; width: 100%">
             {% plotly_app name='ConsoCigGraph' ratio=1 %}
         </div>
       </section>
 
-      <section class="panel p4 pc1">
+      <section class="panel p4 pc-1">
         <div id='moneygraph' class="{% plotly_class name='MoneyGraph' %} card=" style="height:100%; width: 100%">
             {% plotly_app name='MoneyGraph' ratio=1 %}
         </div>
@@ -48,7 +48,7 @@
 
 
       {% if user_conso_subsitut %}
-        <section class="panel p5 pc1">
+        <section class="panel p5 pc-1">
           <div id='nicotinegraph' class="{% plotly_class name='NicotineGraph' %} card=" style="height:100%; width: 100%">
               {% plotly_app name='NicotineGraph' ratio=1 %}
           </div>
@@ -56,7 +56,7 @@
       {% endif %}
 
       {% if smoke_user_conso_full_days %}
-        <section class="panel p6 pc1">
+        <section class="panel p6 pc-1">
           <div id='timeciggraph' class="{% plotly_class name='TimeCigGraph' %} card=" style="height:100%; width: 100%">
               {% plotly_app name='TimeCigGraph' ratio=1 %}
           </div>
@@ -65,14 +65,14 @@
 
 
     {% else %}
-    <section class="panel p1 pc1">
+    <section class="panel p1 pc-1">
         C'est votre 1er jour, les données sont donc insuffisante pour l'instant.
         Retrouvez vos statistiques ici même dès demain
     </section>
     {% endif %}
 
   {% else %}
-    <section class="panel p1 pc1">
+    <section class="panel p1 pc-1">
       Vous n'avez pas encore enregistré de données <br>
       (craquage cigarette ou actions saines)
     </section>
