@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% load static %} {% load l10n %}
+{% extends 'QuitSoonApp/base.html' %}
+{% load static %}
+{% load l10n %}
 {% block content %}
 
 <!-- Main content -->
@@ -13,7 +15,7 @@
 
 <!-- Panel content -->
 <main id="paquets" class="content">
-  <section class="panel p1 pc1">
+  <section class="panel p1 pc-1">
 
     <div class="form-container">
       <form id="paquetform" action="{% url 'QuitSoonApp:paquets' %}" method="POST">
