@@ -1,9 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'QuitSoonApp/base.html' %}
 {% load static %}
 {% load mathfilters %}
-
 {% block content %}
-
 
   <!-- Main content -->
 
@@ -18,7 +16,7 @@
   <!-- Panel content -->
   <main id="objectifs" class="content">
     <section class="panel p1 pc1">
-      <p>Trophées Sans tabac : </p>
+      <p>Jours sans tabac : </p>
       {% for challenge, success in challenges.items %}
           {% if challenge.0  == 0 %}
 
@@ -35,11 +33,11 @@
 
       {% endfor %}
     </section>
-    <section class="panel p2 pc-1">
+    <section class="panel p3 pc1">
       <p>Baisse de consommation : </p>
       {% for challenge, success in challenges.items %}
         {% if challenge.0  != 0 %}
-          {{challenge.1}} à moins de {{challenge.0 }} par jour {{success}}<br>
+          {{challenge.1}} jours à moins de {{challenge.0 }} cigarettes par jour {{success}}<br>
         {% endif %}
       {% endfor %}
     </section>
