@@ -1,0 +1,117 @@
+$transition-open-time: 0.4s;
+$transition-close-time: 0.2s;
+
+.modal-container {
+  z-index: 3;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  opacity: 0;
+  overflow-y: auto;
+  padding: 1rem;
+  transition: $transition-close-time;
+  background-color: rgba(0, 0, 0, 0.445);
+
+  .modal {
+    transform: translateY(20px) scale(0.95);
+    transition: $transition-close-time;
+    background-color: white;
+    max-width: 500px;
+    border-radius: $container-radius;
+
+    margin: 0 auto;
+    display: block;
+    position: relative;
+
+    .close-modal-btn {
+      // padding: 0.4rem;
+      margin: 0.4rem;
+      position: absolute;
+      right: 0;
+      // float: right;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+    .modal-content {
+      display: none;
+      padding: 1rem;
+      h4 {
+        // display: flex;
+        // justify-content: center;
+        // text-align: center;
+        font-size: 1.4rem;
+        margin-bottom: 2rem;
+      }
+      .modal-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+        span {
+          position: relative;
+          margin: 0.4em;
+        }
+      }
+    }
+    .content-active {
+      display: block;
+    }
+    .modal-1 {
+    }
+  }
+}
+
+// Open modal
+
+.page-modals-visible {
+  .page-modals {
+    transition: $transition-open-time;
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal {
+    transition: $transition-open-time;
+    // transition-delay: 0.1s;
+    transform: scale(1);
+    transform: translateY(0);
+  }
+}
+
+.logout-modal-visible {
+  .logout-modal {
+    transition: $transition-open-time;
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal {
+    transition: $transition-open-time;
+    // transition-delay: 0.1s;
+    transform: scale(1);
+    transform: translateY(0);
+  }
+}
+
+// static modal (not really a modal (only in appearance)- no close button - no other content on page)
+
+.modal-static {
+  opacity: 1;
+
+  &.modal-container {
+    opacity: 1;
+    visibility: visible;
+    .modal {
+      // transform: scale(1);
+
+      display: block;
+      .modal-content {
+        display: block;
+      }
+    }
+  }
+}
