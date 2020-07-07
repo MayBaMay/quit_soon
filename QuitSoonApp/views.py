@@ -324,16 +324,17 @@ def smoke(request):
                 if smoke_form.is_valid():
 
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
-                    print(smoke_form.cleaned_data.get('date_cig'))
                     smoke.create_conso_cig()
                     return redirect('QuitSoonApp:today')
             context['smoke_form'] = smoke_form
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
         context['smoke'] = smoke
+        context['nb_smoke_today']= smoke.filter(date_cig=datetime.date.today()).count()
         if smoke:
             last = smoke.latest('date_cig', 'time_cig')
             last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
             context['lastsmoke'] = get_delta_last_event(last_time)
+            print(context['lastsmoke'])
         return render(request, 'QuitSoonApp/smoke.html', context)
     else:
         return redirect('QuitSoonApp:login')

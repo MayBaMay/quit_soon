@@ -7,7 +7,7 @@
 <div class="page-heading">
   <i class="fas fa-heartbeat"></i>
   <h1>je tiens bon</h1>
-  <h2>bien bien</h2>
+  <h2>et ça, ça me fait du bien!</h2>
 </div>
 <!-- End page heading -->
 
@@ -20,6 +20,14 @@
     <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
 
   {% else %}
+
+  {% if health %}
+    <p>Bravo! Faites-vous du bien, occupez-vous et ça ira mieux.</p>
+    <p>Vous avez sauvegardé votre dernière action saine il y a :
+    {% for element in lasthealth %}
+         {{ element }}
+    {% endfor %}</p>
+  {% endif %}
   <div class="form-container">
     <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
       {% csrf_token %}
@@ -28,7 +36,7 @@
           {% for error in field.errors %}
             <div class="error">
               <p> {{ error }} </p>
-            </div>  
+            </div>
           {% endfor %}
         {% endfor %}
         {{ form.non_field_errors }}
@@ -57,22 +65,14 @@
 
   {% endif %}
 
-  {% comment %} <a class="btn-outline-secondary" href ="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>   {% endcomment %}
-
-
+  {% if health %}
+    <p><a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes actions saines</a></p>
+  {% else %}
+    <p>Vous n'avez encore enregistré aucune action</p>
+  {% endif %}
 
   </section>
-  <section class="panel p2 pc-1">
-    {% if health %}
-      Dernière alternative enregistrée il y a :
-      {% for element in lasthealth %}
-           {{ element }}
-      {% endfor %}
-      <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
-    {% else %}
-      Vous n'avez encore enregistré aucune action
-    {% endif %}
-  </section>
+
 </main>
 <!-- End panel content -->
 

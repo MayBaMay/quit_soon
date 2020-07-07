@@ -18,24 +18,9 @@ load_dotenv()
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
-
-try:
-    IP = os.getenv("IP")
-    if IP:
-        ALLOWED_HOSTS.append(IP)
-except:
-    pass
-
-try:
-    DOMAIN = os.getenv("DOMAIN")
-    if DOMAIN:
-        ALLOWED_HOSTS.append(DOMAIN)
-except:
-    pass
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
