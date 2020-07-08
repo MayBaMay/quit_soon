@@ -17,7 +17,8 @@ $(document).ready(function () {
   const body = document.querySelector("body");
 
   //responsive header for tablet and lower
-
+  let responsive = true;
+  
   function addResponsiveNav() {
     //header change style on scroll
     const options = {
@@ -30,42 +31,46 @@ $(document).ready(function () {
     let throttling = false;
     let throttlingT = 100;
     window.addEventListener("scroll", function () {
-      // if (!throttling) {
-      //   throttling = true;
-      //   setTimeout(() => {
-      //     throttling = false;
-      //   }, throttlingT);
-      if (this.pageYOffset > 5) {
-        header.classList.add("header-scroll");
+      if (responsive) {
+        // if (!throttling) {
+        //   throttling = true;
+        //   setTimeout(() => {
+        //     throttling = false;
+        //   }, throttlingT);
+        if (this.pageYOffset > 5) {
+          header.classList.add("header-scroll");
+        }
+        if (this.pageYOffset <= 5) {
+          header.classList.remove("header-scroll");
+        }
+        if (this.pageYOffset <= 80) {
+          header.style.visibility = "visible";
+          header.style.opacity = 1;
+          header.style.pointerEvents = "auto";
+        }
+        if (this.pageYOffset > currentScroll && this.pageYOffset > 80) {
+          header.style.visibility = "hidden";
+          header.style.opacity = 0;
+          header.style.pointerEvents = "none";
+        } else {
+          header.style.visibility = "visible";
+          header.style.opacity = 1;
+          header.style.pointerEvents = "auto";
+        }
+        currentScroll = this.pageYOffset;
+        // }
       }
-      if (this.pageYOffset <= 5) {
-        header.classList.remove("header-scroll");
-      }
-      if (this.pageYOffset <= 80) {
-        header.style.visibility = "visible";
-        header.style.opacity = 1;
-        header.style.pointerEvents = "auto";
-      }
-      if (this.pageYOffset > currentScroll && this.pageYOffset > 80) {
-        header.style.visibility = "hidden";
-        header.style.opacity = 0;
-        header.style.pointerEvents = "none";
-      } else {
-        header.style.visibility = "visible";
-        header.style.opacity = 1;
-        header.style.pointerEvents = "auto";
-      }
-      currentScroll = this.pageYOffset;
-      // }
     });
   }
+  addResponsiveNav();
 
-  //To do: won't currently add/remove resoponsive nav on resize
-  if (window.innerWidth < 850) {
-    addResponsiveNav();
-  }
-
-  // window.addEventListener("resize", responsiveNav);
+  window.addEventListener("resize", () => {
+    if (window.innerWidth < 850) {
+      responsive = true;
+    } else {
+      responsive = false;
+    }
+  });
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Modals
