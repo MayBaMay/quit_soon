@@ -1316,17 +1316,17 @@ footer {
 
 @media (min-width: 480px) {
   #today {
-    grid-template-areas: ". . . p1 p1 p1 p2 p2 p2 . . ." "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4";
+    grid-template-areas: ". . . p1 p1 p1 p2 p2 p2 . . ." ". . . p3 p3 p3 p3 p3 p3. . .";
   }
 }
 
 #report {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6" "p7 p7 p7 p7 p7 p7 p7 p7 p7 p7 p7 p7";
 }
 
 @media (min-width: 850px) {
   #report {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p5 p5 p5 p5 p5 p5 p6 p6 p6 p6 p6 p6";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p7 p7 p7 p7 p7 p7";
   }
 }
 
