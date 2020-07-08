@@ -1078,12 +1078,10 @@ header {
   height: 6rem;
   color: #292929;
   opacity: 1;
-  transition: 0.35s ease-in;
 }
 
 header .header-content {
-  transition: 0.3s ease-in;
-  background-color: transparent;
+  transition: all 0.1s linear;
   background-color: #e6e6e6;
   border-radius: 10px;
   margin: 0.4rem;
@@ -1175,7 +1173,7 @@ header nav > ul li.dropdown-menu .sub-menu {
   visibility: hidden;
   opacity: 0;
   transform: translateY(-3rem) scale(0.3);
-  transition: 0.2s;
+  transition: 0.3s;
   margin-top: 0.2rem;
   position: absolute;
   right: 0;
@@ -1205,11 +1203,14 @@ header nav > ul li.dropdown-menu .sub-menu.sub-menu-open {
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
-  transition: 0.2s;
+  transition: 0.3s;
+}
+
+header.header-scroll {
+  transition: 0.3s ease-in;
 }
 
 header.header-scroll .header-content {
-  transition: 1s ease-in;
   box-shadow: rgba(0, 0, 0, 0.514) 2px 4px 12px;
 }
 

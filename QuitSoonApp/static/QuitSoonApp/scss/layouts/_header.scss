@@ -1,5 +1,5 @@
-$menu-transition-open: 0.2s;
-$menu-transition-close: 0.2s;
+$menu-transition-open: 0.3s;
+$menu-transition-close: 0.3s;
 
 header {
   z-index: 10;
@@ -13,13 +13,11 @@ header {
   height: $header-height-mob;
   color: $header-colour;
   opacity: 1;
-
-  transition: 0.35s ease-in;
+  // transition: $menu-transition-open ease-out;
 
   .header-content {
-    transition: 0.3s ease-in;
-
-    background-color: transparent;
+    transition: all 0.1s linear;
+    // background-color: transparent;
     background-color: $body-bg-colour;
     border-radius: $container-radius;
 
@@ -144,7 +142,7 @@ header {
               visibility: visible;
               opacity: 1;
               transform: translateY(0);
-              transition: $menu-transition-open;
+              transition: 0.3s;
             }
           }
         }
@@ -153,8 +151,9 @@ header {
   }
 
   &.header-scroll {
+    transition: $menu-transition-close ease-in;
+
     .header-content {
-      transition: 1s ease-in;
       box-shadow: rgba(0, 0, 0, 0.514) 2px 4px 12px;
       // background-color: $header-bg-colour;
     }
