@@ -19,12 +19,6 @@ $(document).ready(function () {
   //responsive header for tablet and lower
 
   function addResponsiveNav() {
-    //header change style on scroll
-    const options = {
-      rootMargin: "-64px 0px 100px 0px",
-      threshold: 1.0,
-    };
-
     //header on scroll up
     let currentScroll = 0;
     let throttling = false;
@@ -36,11 +30,11 @@ $(document).ready(function () {
         //   setTimeout(() => {
         //     throttling = false;
         //   }, throttlingT);
-        if (this.pageYOffset > 5) {
-          header.classList.add("header-scroll");
-        }
         if (this.pageYOffset <= 5) {
           header.classList.remove("header-scroll");
+        }
+        if (this.pageYOffset > 5) {
+          header.classList.add("header-scroll");
         }
         if (this.pageYOffset <= 80) {
           header.style.visibility = "visible";
@@ -66,6 +60,7 @@ $(document).ready(function () {
   if (window.innerWidth < 850) {
     responsive = true;
   } else {
+    console.log("large screen");
     responsive = false;
   }
   //on resize
@@ -73,6 +68,10 @@ $(document).ready(function () {
     if (window.innerWidth < 850) {
       responsive = true;
     } else {
+      header.style.visibility = "visible";
+      header.style.opacity = 1;
+      header.style.pointerEvents = "auto";
+      header.classList.remove("header-scroll");
       responsive = false;
     }
   });
