@@ -20,27 +20,72 @@
 
     {% if not first_day %}
       <section class="panel p1 pc-1">
-          CONSO :<br>
-          total_number : {{ total_number }} <br>
-          average_number : {{ average_number }} <br>
-          non_smoked : {{ non_smoked }} <br>
+          <p><b>MA CONSO :</b></p><br>
+          Cigarettes fumées : {{ total_number }} <br>
+          Moyenne par jour : {{ average_number }} <br>
+          Cigarettes non fumées : {{ non_smoked }} <br>
       </section>
 
        <section class="panel p2 pc-1">
-        MONEY:<br>
-        total_money : {{ total_money }}€ <br>
-        average_money : {{ average_money }}€ <br>
-        saved_money : {{ saved_money }}€ <br>
+        <p><b>MES SOUS :</b></p><br>
+        Argent fumé : {{ total_money }}€ <br>
+        Moyenne par jour : {{ average_money }}€ <br>
+        Argent économisé : {{ saved_money }}€ <br>
         <br>
       </section>
 
       <section class="panel p3 pc-1">
+        <p><b>MES ALTERNATIVES :</b></p><br>
+        <p>
+          {% for type, values in activity_stats.items %}
+            {% if values.exists %}
+              <b>{{ values.name }}:</b>
+              {% if values.day %}
+                {{ values.day }} aujourd'hui,
+              {% endif %}
+              {% if values.week %}
+                {{ values.week }} cette semaine,
+              {% endif %}
+              {% if values.month %}
+                {{ values.month }} ce mois-ci,
+              {% else %}
+                Aucune activité ce mois-ci
+              {% endif %}
+            {% endif %}
+            <br>
+          {% endfor %}
+        </p>
+
+        <p><b>Substituts : </b></p>
+        <p>
+          {% for type, values in substitut_stats.items %}
+            {% if values.exists %}
+              {{ values.name }}:
+              {% if values.day %}
+                {{ values.day }} aujourd'hui,
+              {% endif %}
+              {% if values.week %}
+                {{ values.week }} cette semaine,
+              {% endif %}
+              {% if values.month %}
+                {{ values.month }} ce mois-ci,
+              {% else %}
+                Aucune consommation de substitut enregistrée ce mois-ci
+              {% endif %}
+            <br>
+            {% endif %}
+          {% endfor %}
+        </p>
+
+      </section>
+
+      <section class="panel p4 pc-1">
         <div id='consociggraph' class="{% plotly_class name='ConsoCigGraph' %} card=" style="height:100%; width: 100%">
             {% plotly_app name='ConsoCigGraph' ratio=1 %}
         </div>
       </section>
 
-      <section class="panel p4 pc-1">
+      <section class="panel p5 pc-1">
         <div id='moneygraph' class="{% plotly_class name='MoneyGraph' %} card=" style="height:100%; width: 100%">
             {% plotly_app name='MoneyGraph' ratio=1 %}
         </div>
@@ -48,7 +93,7 @@
 
 
       {% if user_conso_subsitut %}
-        <section class="panel p5 pc-1">
+        <section class="panel p6 pc-1">
           <div id='nicotinegraph' class="{% plotly_class name='NicotineGraph' %} card=" style="height:100%; width: 100%">
               {% plotly_app name='NicotineGraph' ratio=1 %}
           </div>
@@ -56,7 +101,7 @@
       {% endif %}
 
       {% if smoke_user_conso_full_days %}
-        <section class="panel p6 pc-1">
+        <section class="panel p7 pc-1">
           <div id='timeciggraph' class="{% plotly_class name='TimeCigGraph' %} card=" style="height:100%; width: 100%">
               {% plotly_app name='TimeCigGraph' ratio=1 %}
           </div>

@@ -45,65 +45,11 @@
 
     <section class="panel p3 pc-1">
         {% if lastsmoke %}
-          <p><b>Dernière cigarette il y a
-            {% for element in lastsmoke %}
-                  {{ element }}
-            {% endfor %}</b></p>
-          <p><b>Consommation : {{ smoke_today }}</b></p>
-          <p><b>Moyenne / jour : {{ average_number }}</b></p>
-          <a class="btn" href="{% url 'QuitSoonApp:smoke_list' %}">Voir mes craquages</a>
+          <p><b>Dernière cigarette fumée il y a {{ lastsmoke }}</b></p>
+          <p><b>Aujourd'hui : {{ smoke_today }}</b></p>
+          <p><b>Moyenne journalière : {{ average_number }}</b></p>
         {% else %}
           Aucune cigarette fumée enregistrée
-        {% endif %}
-    </section>
-    <section class="panel p4 pc-1">
-        {% if lasthealth %}
-          <p><b>Dernière alternative il y a
-            {% for element in lasthealth %}
-                  {{ element }}
-            {% endfor %}</b></p>
-
-          <p><b>
-            {% for type, values in activity_stats.items %}
-              {% if values.exists %}
-                {{ values.name }}:
-                {% if values.day %}
-                  {{ values.day }} aujourd'hui,
-                {% endif %}
-                {% if values.week %}
-                  {{ values.week }} cette semaine,
-                {% endif %}
-                {% if values.month %}
-                  {{ values.month }} ce mois-ci,
-                {% else %}
-                  Aucune activité ce mois-ci
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-          </b></p>
-
-          <p><b>Substituts : </b></p>
-          <p><b>
-            {% for type, values in substitut_stats.items %}
-              {% if values.exists %}
-                {{ values.name }}:
-                {% if values.day %}
-                  {{ values.day }} aujourd'hui,
-                {% endif %}
-                {% if values.week %}
-                  {{ values.week }} cette semaine,
-                {% endif %}
-                {% if values.month %}
-                  {{ values.month }} ce mois-ci,
-                {% else %}
-                  Aucune consommation de substitut enregistrée ce mois-ci
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-          </b></p>
-          <a class="btn" href="{% url 'QuitSoonApp:health_list' %}">Voir actions saines</a>
-        {% else %}
-          Aucune action saine enregistrée
         {% endif %}
     </section>
 
