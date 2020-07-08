@@ -15,7 +15,7 @@
 
   <!-- Panel content -->
   <main id="objectifs" class="content">
-    <section class="panel p1 pc1">
+    <section class="panel p1 pc1" style="color: white;">
       <p>Jours sans tabac : </p>
       {% for challenge, success in challenges.items %}
           {% if challenge.0  == 0 %}
@@ -33,7 +33,7 @@
 
       {% endfor %}
     </section>
-    <section class="panel p3 pc1">
+    <section class="panel p3 pc1" style="color: white;">
       <p>Baisse de consommation : </p>
       {% for challenge, success in challenges.items %}
         {% if challenge.0  != 0 %}

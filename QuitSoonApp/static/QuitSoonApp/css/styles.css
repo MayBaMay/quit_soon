@@ -1306,7 +1306,7 @@ footer {
 
 @media (min-width: 480px) {
   #objectifs {
-    grid-template-areas: "p1 p1 p1 p1 p1 p4 p4 3 p3 p3 p3 p3" ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
+    grid-template-areas: "p1 p1 p1 p1 p1 p3 p3 p3 p3 p3 p3 p3" ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
   }
 }
 
