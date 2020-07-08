@@ -601,12 +601,7 @@ def objectifs(request):
             stats = SmokeStats(request.user, datetime.date.today())
             trophee = Trophee_checking(stats)
             trophee.create_trophees()
-            challenge_dict = {}
-            for challenge in trophee.list_user_challenges:
-                challenge_dict[challenge] = False
-                if Trophee.objects.filter(user=request.user, nb_cig=challenge[0], nb_jour=challenge[1]).exists():
-                    challenge_dict[challenge] = True
-            context['challenges'] = challenge_dict
+            context['challenges'] = trophee.user_trophees
             return render(request, 'QuitSoonApp/objectifs.html', context)
         else:
             return redirect('QuitSoonApp:profile')
