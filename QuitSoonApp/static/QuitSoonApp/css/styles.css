@@ -981,6 +981,23 @@ tr:nth-child(even) {
   height: auto;
 }
 
+.tabbed-content-container .btn-tab {
+  display: flex;
+  justify-content: center;
+  min-width: 3.5rem;
+}
+
+.tabbed-content-container .btn-tab span {
+  display: none;
+}
+
+@media (min-width: 850px) {
+  .tabbed-content-container .btn-tab span {
+    display: block;
+    margin-left: 0.5rem;
+  }
+}
+
 body {
   background-color: #e6e6e6;
   overflow-x: hidden;
@@ -1323,12 +1340,12 @@ footer {
 }
 
 #report {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
 }
 
 @media (min-width: 850px) {
   #report {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p5 p5 p5 p5 p5 p5 p6 p6 p6 p6 p6 p6";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
   }
 }
 
