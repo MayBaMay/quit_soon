@@ -150,9 +150,6 @@ $(document).ready(function () {
         let cont = toggle.closest(".tabbed-content-container");
         const allContent = cont.querySelectorAll(".tabbed-content");
         allContent.forEach((tc) => tc.classList.remove("active"));
-        console.log(cont);
-        console.log(allContent);
-
         let tabId = toggle.dataset.toggle;
         let tabContent = document.querySelector(`#${tabId}`);
         toggle.classList.add("active");
@@ -234,64 +231,64 @@ $(document).ready(function () {
 
   // -------- Graphs - ploty dash
 
-  let graphConts = document.querySelectorAll(".django-plotly-dash");
-  let iframes = Array.from(graphConts).map((c) => {
-    return c.firstElementChild.firstElementChild;
-  });
+  // let graphConts = document.querySelectorAll(".django-plotly-dash");
+  // let iframes = Array.from(graphConts).map((c) => {
+  //   return c.firstElementChild.firstElementChild;
+  // });
 
-  let loadedFrames = 0;
-  iframes.forEach((f) =>
-    f.addEventListener("load", () => {
-      loadedFrames++;
-      console.log(loadedFrames);
-      //only add globalToggle when all graphs have loaded
-      loadedFrames == iframes.length
-        ? setTimeout(() => {
-            addGlobalToggle();
-          }, 100)
-        : null;
-    })
-  );
+  // let loadedFrames = 0;
+  // iframes.forEach((f) =>
+  //   f.addEventListener("load", () => {
+  //     loadedFrames++;
+  //     console.log(loadedFrames);
+  //     //only add globalToggle when all graphs have loaded
+  //     loadedFrames == iframes.length
+  //       ? setTimeout(() => {
+  //           addGlobalToggle();
+  //         }, 100)
+  //       : null;
+  //   })
+  // );
 
-  const inputs = {};
-  //collect all inputs and add global toggle
-  function addGlobalToggle() {
-    iframes.forEach((f, i) => {
-      let doc = f.contentWindow.document;
-      let labels = doc.querySelectorAll("label");
-      labels.forEach((label) => {
-        inputs[label.innerText] ? null : (inputs[label.innerText] = []);
-        inputs[label.innerText].push(label.firstElementChild);
-        //first graph radio buttons control add graphs
-        if (i == 0) {
-          label.querySelector("input").addEventListener("click", (e) => {
-            globalToggle(e);
-          });
-        } else {
-          //hide other controls
-          let controls = doc.querySelector(".graph-controls");
-          controls.style.display = "none";
-        }
-      });
-      //
-    });
-  }
+  // const inputs = {};
+  // //collect all inputs and add global toggle
+  // function addGlobalToggle() {
+  //   iframes.forEach((f, i) => {
+  //     let doc = f.contentWindow.document;
+  //     let labels = doc.querySelectorAll("label");
+  //     labels.forEach((label) => {
+  //       inputs[label.innerText] ? null : (inputs[label.innerText] = []);
+  //       inputs[label.innerText].push(label.firstElementChild);
+  //       //first graph radio buttons control add graphs
+  //       if (i == 0) {
+  //         label.querySelector("input").addEventListener("click", (e) => {
+  //           globalToggle(e);
+  //         });
+  //       } else {
+  //         //hide other controls
+  //         let controls = doc.querySelector(".graph-controls");
+  //         controls.style.display = "none";
+  //       }
+  //     });
+  //     //
+  //   });
+  // }
 
-  //first graph controls can toggles all graph inputs (providing they have the same label name e.g. "Mois")
-  function globalToggle(e) {
-    let val, target;
-    if (e.target.nodeName == "INPUT") {
-      val = e.target.parentNode.innerText; //label value
-      target = e.target;
-    } else {
-      val = e.target.innerText;
-      target = e.target.firstElementChild;
-    }
-    inputs[val].forEach((input, i) => {
-      if (i !== 0) {
-        console.log("el", input);
-        input.click();
-      }
-    });
-  }
+  // //first graph controls can toggles all graph inputs (providing they have the same label name e.g. "Mois")
+  // function globalToggle(e) {
+  //   let val, target;
+  //   if (e.target.nodeName == "INPUT") {
+  //     val = e.target.parentNode.innerText; //label value
+  //     target = e.target;
+  //   } else {
+  //     val = e.target.innerText;
+  //     target = e.target.firstElementChild;
+  //   }
+  //   inputs[val].forEach((input, i) => {
+  //     if (i !== 0) {
+  //       console.log("el", input);
+  //       input.click();
+  //     }
+  //   });
+  // }
 })();

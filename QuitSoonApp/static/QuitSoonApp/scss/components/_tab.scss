@@ -1,9 +1,10 @@
-.tabbed-content-container{
-    margin: 1em 0;
-    .tabbed-content{
-        display: none;
-        &.active{
-            display: block;
-        }
+.tabbed-content-container {
+  margin: 1em 0;
+  .tabbed-content {
+    display: none;
+    &.active {
+      display: block;
+      height: auto;
     }
+  }
 }
