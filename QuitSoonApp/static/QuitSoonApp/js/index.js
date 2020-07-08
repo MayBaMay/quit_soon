@@ -17,8 +17,7 @@ $(document).ready(function () {
   const body = document.querySelector("body");
 
   //responsive header for tablet and lower
-  let responsive = true;
-  
+
   function addResponsiveNav() {
     //header change style on scroll
     const options = {
@@ -62,8 +61,14 @@ $(document).ready(function () {
       }
     });
   }
-  addResponsiveNav();
-
+  let responsive;
+  //on load
+  if (window.innerWidth < 850) {
+    responsive = true;
+  } else {
+    responsive = false;
+  }
+  //on resize
   window.addEventListener("resize", () => {
     if (window.innerWidth < 850) {
       responsive = true;
@@ -71,6 +76,8 @@ $(document).ready(function () {
       responsive = false;
     }
   });
+  addResponsiveNav();
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Modals
