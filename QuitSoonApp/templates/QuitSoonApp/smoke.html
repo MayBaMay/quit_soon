@@ -33,14 +33,13 @@
           {% endfor %}
           {{ smoke_form.non_field_errors }}
         {% endif %}
-          <div class="fieldWrapper form-group ">
-            <label for="id_date_smoke">  {{ smoke_form.date_smoke.label }}</label>
-            {{ smoke_form.date_smoke }}
+          <div class="fieldWrapper form-group row">
+            <span><label for="id_date_smoke">  {{ smoke_form.date_smoke.label }}</label>
+            {{ smoke_form.date_smoke }}</span>
+            <span><label for="id_time_smoke">  {{ smoke_form.time_smoke.label }}</label>
+            {{ smoke_form.time_smoke }}</span>
           </div>
-          <div class="fieldWrapper form-group ">
-            <label for="id_time_smoke">  {{ smoke_form.time_smoke.label }}</label>
-            {{ smoke_form.time_smoke }}
-          </div>
+         
           <div class="fieldWrapper form-group checkbox-group">
             <label for="id_given_field">  {{ smoke_form.given_field.label }}</label>
             {{ smoke_form.given_field }}
@@ -66,16 +65,18 @@
 
   <section class="panel p2 pc-1">
     {% if smoke %}
-      <p>Vous avez fumé votre dernière cigarette il y a :</p>
-
+      <p>Vous avez fumé votre dernière cigarette il y a:</p>
           {% for element in lastsmoke %}
-            {{ element }}
+            <p class="last-smoke">{{ element }}</p>
           {% endfor %}
 
-          <a href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages </a>
+      <div class="flex-center">
+        <a class = "btn" href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages </a>
+      </div>
+          
     {% else %}
       <p>
-        Vous n'avez encore enregistré aucune cigarette fumée
+        Vous n'avez encore enregistré aucune cigarette fumée
       </p>
     {% endif %}
 

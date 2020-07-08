@@ -5,7 +5,6 @@
   margin: 0.6rem 0;
   form {
     display: flex;
-    max-width: 400px;
     // flex-direction: column;
     flex-wrap: wrap;
     justify-content: center;
@@ -27,6 +26,29 @@
           width: auto;
           margin-right: 1rem;
         }
+      }
+
+      &.row {
+        &.time {
+          display: flex;
+          justify-content: center;
+          label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          select,
+          label {
+            width: auto;
+            margin: 0 0.3rem;
+          }
+        }
+      }
+
+      .flex-text {
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
     }
 
@@ -89,6 +111,36 @@
           color: black;
           background-color: transparent;
           min-width: 1.6em;
+        }
+      }
+    }
+  }
+}
+@include min-break("mobile") {
+  form {
+  }
+}
+@include min-break("tablet") {
+  form {
+    max-width: 75%;
+
+    .form-group {
+      &.row {
+        display: flex;
+        justify-content: center;
+        input,
+        label {
+          width: auto;
+        }
+        label,
+        .flex-text {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        span {
+          margin: 0 1rem;
+          display: inline-block;
         }
       }
     }

@@ -283,10 +283,11 @@
   });
 
   /////////////////healthy activity page////////////////////
-  if (top.location.pathname === '/health/'){
+  if (top.location.pathname === "/health/") {
     displayAlternativeFields();
     $("#id_type_alternative_field").on("change", function (e) {
       $(".show").removeClass("show").addClass("hide");
+      $("#duration-group").removeClass("hide").addClass("show-flex");
       $("#id_duration_hour").removeClass("hide").addClass("show");
       $("#id_duration_min").removeClass("hide").addClass("show");
       displayAlternativeFields();
@@ -356,6 +357,7 @@ function displayAlternativeFields() {
     $("#id_lo_field").removeClass("hide").addClass("show");
   } else if ($("#id_type_alternative_field").val() == "Su") {
     $("#id_su_field").removeClass("hide").addClass("show");
+    $("#duration-group").removeClass("show-flex").addClass("hide");
     $("#id_duration_hour").removeClass("show").addClass("hide");
     $("#id_duration_min").removeClass("show").addClass("hide");
   }

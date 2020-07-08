@@ -13,7 +13,12 @@
   display: block !important;
 }
 
+.show-flex {
+  display: flex !important;
+}
+
 .flex-center {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -791,7 +796,6 @@ body {
 
 .form-container form {
   display: flex;
-  max-width: 400px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -821,6 +825,34 @@ body {
 .form-container form .form-group.checkbox-group label {
   width: auto;
   margin-right: 1rem;
+}
+
+.form-container form .fieldWrapper.row.time,
+.form-container form .form-group.row.time {
+  display: flex;
+  justify-content: center;
+}
+
+.form-container form .fieldWrapper.row.time label,
+.form-container form .form-group.row.time label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container form .fieldWrapper.row.time select,
+.form-container form .fieldWrapper.row.time label,
+.form-container form .form-group.row.time select,
+.form-container form .form-group.row.time label {
+  width: auto;
+  margin: 0 0.3rem;
+}
+
+.form-container form .fieldWrapper .flex-text,
+.form-container form .form-group .flex-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .form-container form h1,
@@ -885,6 +917,30 @@ body {
   color: black;
   background-color: transparent;
   min-width: 1.6em;
+}
+
+@media (min-width: 850px) {
+  form {
+    max-width: 75%;
+  }
+  form .form-group.row {
+    display: flex;
+    justify-content: center;
+  }
+  form .form-group.row input,
+  form .form-group.row label {
+    width: auto;
+  }
+  form .form-group.row label,
+  form .form-group.row .flex-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  form .form-group.row span {
+    margin: 0 1rem;
+    display: inline-block;
+  }
 }
 
 .panel {
@@ -1371,6 +1427,12 @@ form .substitut_form {
 
 @media (min-width: 480px) {
   #smoke {
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  }
+}
+
+@media (min-width: 850px) {
+  #smoke {
     grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
 }
@@ -1380,6 +1442,12 @@ form .substitut_form {
 }
 
 @media (min-width: 480px) {
+  #health {
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  }
+}
+
+@media (min-width: 850px) {
   #health {
     grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
