@@ -70,16 +70,23 @@
 
   </section>
   <section class="panel p2 pc-1">
-    {% if health %}
-      Dernière alternative enregistrée il y a :
-      {% for element in lasthealth %}
-           {{ element }}
-      {% endfor %}
-      <a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+
+     {% if health %}
+     <div class="health-timer">
+      <p>Dernière alternative enregistrée il y a:</p>
+        {% for element in lasthealth %}
+          <span class="last-health">{{ element }}</span>
+        {% endfor %}
+      </div>
+      <div class="flex-center">
+      <a class="btn" href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+      </div>  
     {% else %}
       Vous n'avez encore enregistré aucune action
     {% endif %}
+
   </section>
+  <div class="fill"><div>
 </main>
 <!-- End panel content -->
 

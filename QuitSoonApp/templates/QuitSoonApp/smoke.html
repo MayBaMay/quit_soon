@@ -65,15 +65,15 @@
 
   <section class="panel p2 pc-1">
     {% if smoke %}
+    <div class="smoke-timer">
       <p>Vous avez fumé votre dernière cigarette il y a:</p>
-          {% for element in lastsmoke %}
-            <p class="last-smoke">{{ element }}</p>
-          {% endfor %}
-
+      {% for element in lastsmoke %}
+        <span class="last-smoke">{{ element }}</span>
+      {% endfor %}
+    </div>    
       <div class="flex-center">
-        <a class = "btn" href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages </a>
-      </div>
-          
+        <a class="btn" href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages </a>
+      </div>          
     {% else %}
       <p>
         Vous n'avez encore enregistré aucune cigarette fumée
@@ -81,6 +81,7 @@
     {% endif %}
 
   </section>
+  <div class="fill"><div>
 </main>
 <!-- End panel content -->
 

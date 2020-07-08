@@ -1134,9 +1134,18 @@ header {
   grid-area: p6;
 }
 
+.content .fill {
+  min-height: 0;
+  grid-area: fill;
+}
+
 @media (min-width: 480px) {
   .content {
     grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p5 p5 p5 p5 p5 p5 p6 p6 p6 p6 p6 p6";
+  }
+  .content .fill {
+    min-height: 30vh;
+    grid-area: fill;
   }
 }
 
@@ -1422,35 +1431,57 @@ form .substitut_form {
 }
 
 #smoke {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "fill . . . . . . . . . . .";
 }
 
 @media (min-width: 480px) {
   #smoke {
-    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
   }
 }
 
 @media (min-width: 850px) {
   #smoke {
-    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
   }
+}
+
+#smoke .smoke-timer {
+  text-align: center;
+  padding: 2rem;
+}
+
+#smoke .smoke-timer .last-smoke {
+  font-size: 2em;
+  display: inline-block;
+  margin: 0 0.3rem;
 }
 
 #health {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "fill . . . . . . . . . . .";
 }
 
 @media (min-width: 480px) {
   #health {
-    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
   }
 }
 
 @media (min-width: 850px) {
   #health {
-    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
   }
+}
+
+#health .health-timer {
+  text-align: center;
+  padding: 2rem;
+}
+
+#health .health-timer .last-health {
+  font-size: 2em;
+  display: inline-block;
+  margin: 0 0.3rem;
 }
 
 #paquets {
