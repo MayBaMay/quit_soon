@@ -4,8 +4,12 @@
 .show {
   display: block !important;
 }
+.show-flex {
+  display: flex !important;
+}
 
 .flex-center {
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
