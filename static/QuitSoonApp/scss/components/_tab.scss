@@ -1,9 +1,29 @@
-.tabbed-content-container{
-    margin: 1em 0;
-    .tabbed-content{
-        display: none;
-        &.active{
-            display: block;
-        }
+.tabbed-content-container {
+  margin: 1em 0;
+  .tabbed-content {
+    display: none;
+    &.active {
+      display: block;
+      height: auto;
     }
+  }
+  .btn-tab {
+    display: flex;
+    justify-content: center;
+    min-width: 3.5rem;
+    span {
+      display: none;
+    }
+  }
+}
+
+@include min-break("tablet") {
+  .tabbed-content-container {
+    .btn-tab {
+      span {
+        display: block;
+        margin-left: 0.5rem;
+      }
+    }
+  }
 }

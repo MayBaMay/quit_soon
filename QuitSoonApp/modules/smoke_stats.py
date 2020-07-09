@@ -170,6 +170,7 @@ class HealthyStats(Stats):
         self.user_conso_subsitut = self.user_conso_all_days.filter(alternative__type_alternative='Su')
 
     def filter_queryset_for_report(self, category='Ac', type=None):
+        """filter data depending of category (Ac or Su)"""
         if category == 'Ac':
             queryset = self.user_activities
             if type:
@@ -201,6 +202,7 @@ class HealthyStats(Stats):
         return None
 
     def report_substitut_average_per_period(self, date, category='Ac', period='day', type=None):
+        """get average per period """
         # get only full days data so exclude today
         queryset = self.filter_queryset_for_report(category, type).exclude(date_alter=date)
         try:
@@ -217,6 +219,7 @@ class HealthyStats(Stats):
             return None
 
     def filter_by_period(self, date, period, queryset):
+        """filter queryset by period of time (day, week, month)"""
         # filter by period
         if period == 'day':
             return queryset.filter(date_alter=date)
@@ -225,24 +228,6 @@ class HealthyStats(Stats):
             return queryset.filter(date_alter__week=week_number)
         elif period == 'month':
             return queryset.filter(date_alter__month=date.month)
-
-    def nb_full_period_for_average(self, date, period):
-        if period == 'day':
-            # get the day before to get last full day
-            yesterday = date - timedelta(1)
-            # delta between yesterday and first day app
-            delta = yesterday - self.date_start
-            # return nb days
-            return delta.days
-        if period == 'week':
-            # get week number last (full) week
-            last_week = date.isocalendar()[1] - 1
-            first_week = self.date_start.isocalendar()[1]
-            return last_week - first_week
-        if period == 'month':
-            last_month = date.month - 1
-            first_month = self.date_start.month
-            return last_month - first_month
 
     @staticmethod
     def convert_minutes_to_hours_min_str(minutes):
