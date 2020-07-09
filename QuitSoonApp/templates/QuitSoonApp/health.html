@@ -2,7 +2,6 @@
 {% load static %}
 {% block content %}
 
-
 <!-- Page heading -->
 <div class="page-heading">
   <i class="fas fa-heartbeat"></i>
@@ -42,11 +41,15 @@
         {{ form.non_field_errors }}
       {% endif %}
       <div class="fieldWrapper form-group row">
-        <span>{{ form.date_health.label }}
+       <span><label>{{ form.date_health.label }}</label>
         {{ form.date_health }}</span>
-        <span>{{ form.time_health.label }}
-        {{ form.time_health }}</span>
+        <span>
+        <label>{{ form.time_health.label }}</label>
+        {{ form.time_health }}
+        </span>         
       </div>
+       
+
       <div class="fieldWrapper form-group ">
         {{ form.type_alternative_field }}
         {{ form.sp_field }}
@@ -55,9 +58,13 @@
         {{ form.su_field }}
         {{ form.ecig_vape_or_start }}
       </div>
-      <div class="fieldWrapper form-group ">
+      <div id="duration-group" class="fieldWrapper form-group row time ">
+      <span class="flex-text">Pendant:</span>
         {{ form.duration_hour }}
+        <label>{{ form.duration_hour.label }} </label>
         {{ form.duration_min }}
+        <label>{{ form.duration_min.label }} </label> 
+
       </div>
       <input id="" type="submit" class="btn" value="Sauvergarder">
     </form>
@@ -72,7 +79,24 @@
   {% endif %}
 
   </section>
+  <section class="panel p2 pc-1">
 
+     {% if health %}
+     <div class="health-timer">
+      <p>Dernière alternative enregistrée il y a:</p>
+        {% for element in lasthealth %}
+          <span class="last-health">{{ element }}</span>
+        {% endfor %}
+      </div>
+      <div class="flex-center">
+      <a class="btn" href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
+      </div>  
+    {% else %}
+      Vous n'avez encore enregistré aucune action
+    {% endif %}
+
+  </section>
+  <div class="fill"><div>
 </main>
 <!-- End panel content -->
 
