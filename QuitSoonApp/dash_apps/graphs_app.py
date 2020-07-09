@@ -43,9 +43,9 @@ def create_layout(name_graph):
             # value=['MTL', 'SF'],
             )],className='graph-controls'),
         dcc.Graph(id=name_graph,
-                  animate=False,
-                  style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
-                  ),
+            animate=False,
+            style={"height": "500px", "width": "100%","backgroundColor": "#1a2d46", 'color': '#ffffff'},
+        )
     ])
 
 def fig(df, checkbox, fig_name, bar_name, y_name, y_data):

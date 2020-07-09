@@ -26,7 +26,9 @@ from QuitSoonApp.modules import SmokeStats
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = DjangoDash('TimeCigGraph', external_stylesheets=external_stylesheets)
+app = DjangoDash('TimeCigGraph', external_stylesheets=external_stylesheets, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 
 def generate_hour_df(user):
     """

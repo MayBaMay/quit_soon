@@ -240,7 +240,7 @@ class HealthForm(ChooseAlternativeForm):
 
     duration_hour = forms.IntegerField(
         required=False,
-        label="Pendant:",
+        label="h",
         widget=forms.Select
             (attrs={'class':"form-control show"},
              choices= [tuple([x,x]) for x in range(25)]),
@@ -248,7 +248,7 @@ class HealthForm(ChooseAlternativeForm):
 
     duration_min = forms.IntegerField(
         required=False,
-        label='',
+        label='m',
         widget=forms.Select
             (attrs={'class':"form-control show"},
              choices= [tuple([x,x]) for x in range(0, 60, 5)]),

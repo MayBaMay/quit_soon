@@ -1,11 +1,31 @@
 #smoke {
   grid-template-areas:
     "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
-    ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
+    "fill . . . . . . . . . . .";
 
   @include min-break("mobile") {
+    // padding-top: 4rem;
+
+    grid-template-areas:
+      ". . p1 p1 p1 p1 p1 p1 p1 p1 . ."
+      ". . p2 p2 p2 p2 p2 p2 p2 p2 . ."
+      "fill . . . . . . . . . . .";
+  }
+  @include min-break("tablet") {
     grid-template-areas:
       ". . . p1 p1 p1 p1 p1 p1 . . ."
-      ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
+      ". . p2 p2 p2 p2 p2 p2 p2 p2 . ."
+      "fill . . . . . . . . . . .";
+  }
+
+  .smoke-timer {
+    text-align: center;
+    padding: 2rem;
+    .last-smoke {
+      font-size: 2em;
+      display: inline-block;
+      margin: 0 0.3rem;
+    }
   }
 }
