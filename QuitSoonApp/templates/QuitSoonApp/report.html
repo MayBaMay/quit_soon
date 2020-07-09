@@ -18,17 +18,17 @@
   {% if not no_data %}
   {% if not first_day %}
   <section class="panel p1 pc-1">
-    CONSO :<br />
-    total_number : {{ total_number }} <br />
-    average_number : {{ average_number }} <br />
-    non_smoked : {{ non_smoked }} <br />
+    <b>MA CONSO :</b><br />
+    Cigarettes fumées : {{ total_number }} <br />
+    Moyenne par jour : {{ average_number }} <br />
+    Cigarettes non fumées : {{ non_smoked }} <br />
   </section>
 
   <section class="panel p2 pc-1">
-    MONEY:<br />
-    total_money : {{ total_money }}€ <br />
-    average_money : {{ average_money }}€ <br />
-    saved_money : {{ saved_money }}€ <br />
+    <b>MES SOUS:</b><br />
+    Argent fumé : {{ total_money }}€ <br />
+    Moyenne par jour : {{ average_money }}€ <br />
+    Moyenne par jour : {{ saved_money }}€ <br />
     <br />
   </section>
 
@@ -60,7 +60,7 @@
         <div
           id="consociggraph"
           class="{% plotly_class name='ConsoCigGraph' %}"
-       
+
         >
           {% plotly_app name='ConsoCigGraph' ratio=1 %}
         </div>
@@ -69,7 +69,7 @@
         <div
           id="moneygraph"
           class="{% plotly_class name='MoneyGraph' %}"
-       
+
         >
           {% plotly_app name='MoneyGraph' ratio=1 %}
 

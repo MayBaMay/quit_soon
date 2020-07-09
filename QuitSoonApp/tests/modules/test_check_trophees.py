@@ -284,3 +284,14 @@ class CheckTropheeTestCase(TestCase):
         self.assertTrue(trophees.get(nb_cig=0, nb_jour=1))
         self.assertTrue(trophees.get(nb_cig=15, nb_jour=3))
         self.assertEqual(trophees.count(), 25)
+        self.assertEqual(
+            self.check_trophee.user_trophees,
+            {(15, 3): True, (15, 7): True, (10, 3): True, (10, 7): True,
+            (5, 3): True, (5, 7): True, (4, 3): True, (4, 7): True,
+            (3, 3): True, (3, 7): True, (2, 3): True, (2, 7): True, (1, 3): True,
+            (1, 7): True, (0, 1): True, (0, 2): True, (0, 3): True, (0, 4): True,
+            (0, 7): True, (0, 10): True, (0, 15): True, (0, 20): True,
+            (0, 25): True, (0, 30): True, (0, 60): True, (0, 90): False,
+            (0, 120): False, (0, 150): False, (0, 180): False, (0, 210): False,
+            (0, 240): False, (0, 270): False, (0, 300): False, (0, 330): False}
+            )
