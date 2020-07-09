@@ -1,0 +1,14 @@
+footer {
+  flex-shrink: 0;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+  background-color: $footer-bg-colour;
+  color: $footer-colour;
+
+  border-top-left-radius: $container-radius;
+  border-top-right-radius: $container-radius;
+
+
+}

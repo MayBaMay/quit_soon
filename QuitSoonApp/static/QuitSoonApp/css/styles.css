@@ -1390,7 +1390,7 @@ footer {
 
 @media (min-width: 480px) {
   #objectifs {
-    grid-template-areas: "p1 p1 p1 p1 p4 p4 p4 p4 p3 p3 p3 p3" ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
+    grid-template-areas: "p1 p1 p1 p1 p1 p3 p3 p3 p3 p3 p3 p3" ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
   }
 }
 
@@ -1400,7 +1400,7 @@ footer {
 
 @media (min-width: 480px) {
   #today {
-    grid-template-areas: ". . . p1 p1 p1 p2 p2 p2 . . ." "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4" "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4";
+    grid-template-areas: ". . . p1 p1 p1 p2 p2 p2 . . ." ". . . p3 p3 p3 p3 p3 p3. . .";
   }
 }
 

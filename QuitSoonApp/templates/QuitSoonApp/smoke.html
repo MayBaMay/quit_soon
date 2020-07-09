@@ -20,6 +20,26 @@
       <p>Veuillez paramétrer vos paquets <a href="{% url 'QuitSoonApp:paquets' %}">ici</a></p>
 
     {% else %}
+
+    {% if smoke %}
+      <p>
+        Vous avez déjà fumé <b>{{ nb_smoke_today }} cigarettes</b> aujourd'hui,
+          la dernière il y a
+          {% for element in lastsmoke %}
+            <b>{{ element }}</b>
+          {% endfor %}.
+      </p>
+    {% else %}
+      Vous avez fumé votre dernière cigarette il y a :
+      {% for element in lastsmoke %}
+       {{ element }}
+      {% endfor %} %}
+    {% endif %}
+
+    <p>Êtes-vous vraiment sûr de vouloir en allumer une maintenant?</p>
+
+    <p>Respirez profondément et si l'envie est trop forte complétez le formulaire ci-dessous</p>
+
     <div class="form-container">
       <form id="smokeform" action="{% url 'QuitSoonApp:smoke' %}" method="post">
         {% csrf_token %}
@@ -59,7 +79,6 @@
           <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
       </form>
     </div>
-
     {% endif %}
   </section>
 
@@ -74,6 +93,7 @@
       <div class="flex-center">
         <a class="btn" href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages </a>
       </div>          
+
     {% else %}
       <p>
         Vous n'avez encore enregistré aucune cigarette fumée

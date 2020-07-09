@@ -18,24 +18,9 @@ load_dotenv()
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
-
-try:
-    IP = os.getenv("IP")
-    if IP:
-        ALLOWED_HOSTS.append(IP)
-except:
-    pass
-
-try:
-    DOMAIN = os.getenv("DOMAIN")
-    if DOMAIN:
-        ALLOWED_HOSTS.append(DOMAIN)
-except:
-    pass
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
@@ -64,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'django.contrib.postgres',
     'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'channels',
@@ -80,7 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django_plotly_dash.middleware.BaseMiddleware',
 ]

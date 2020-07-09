@@ -17,7 +17,8 @@ class Trophee_checking:
 
     def __init__(self, stats):
         self.stats = stats
-        self.df = self.smoking_values_per_dates_with_all_dates_df(self.all_dates, self.values_per_dates)
+        if stats.user_conso_full_days:
+            self.df = self.smoking_values_per_dates_with_all_dates_df(self.all_dates, self.values_per_dates)
         self.challenges = {
             'conso' : {
                 'nb_cig': [20, 15, 10, 5, 4, 3, 2, 1],
@@ -28,6 +29,24 @@ class Trophee_checking:
                 'nb_days': [1, 2, 3, 4, 7, 10, 15, 20, 25, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
                 },
             }
+        # initialise all_user_challenges in a dict with bool in Trophees or ot
+        self.user_trophees = self.all_user_challenges_before_parsing
+
+    @property
+    def all_user_challenges_before_parsing(self):
+        """"""
+        challenges_dict = {}
+        for type, challenge in self.challenges.items():
+            for cig in challenge['nb_cig']:
+                # only challenges with less cig then usual user conso
+                if cig < self.stats.starting_nb_cig:
+                    for days in challenge['nb_days']:
+                        # only if challenge not already saved as trophee in db
+                        if Trophee.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():
+                            challenges_dict[(cig, days)] = True
+                        else:
+                            challenges_dict[(cig, days)] = False
+        return challenges_dict
 
     @property
     def values_per_dates(self):
@@ -87,30 +106,36 @@ class Trophee_checking:
         take only relevant challenge to check
         """
         challenges_list = []
-        for type, challenge in self.challenges.items():
-            for cig in challenge['nb_cig']:
-                # only challenges with less cig then usual user conso
-                if cig < self.stats.starting_nb_cig:
-                    for days in challenge['nb_days']:
-                        # only challenges if enough days in user history
-                        if days <= self.stats.nb_full_days_since_start:
-                            # only if challenge not already saved as trophee in db
-                            if not Trophee.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():
-                                challenges_list.append((cig, days))
+        for challenge, success in self.all_user_challenges_before_parsing.items():
+            # only if challenge not already saved as trophee in db
+            if not success:
+                challenges_list.append((challenge[0], challenge[1]))
         return challenges_list
 
     @property
     def trophees_accomplished(self):
         """ get list of trophees accomplished by user and to be created in DB """
-        trophee_to_create = []
-        for challenge in self.list_user_challenges:
-            if challenge[1] < 30:
-                if self.check_days_trophees(challenge):
-                    trophee_to_create.append(challenge)
-            else:
-                if self.check_month_trophees(challenge[1]):
-                    trophee_to_create.append(challenge)
-        return trophee_to_create
+        new_trophees = []
+        if self.stats.user_conso_full_days:
+            # only modify trophees if user
+            for challenge in self.list_user_challenges:
+
+                # if not enough days in user history, challenge = False
+                if challenge[1] >= self.stats.nb_full_days_since_start:
+                    pass
+                else:
+                    # treatement differs if days or month
+                    if challenge[1] < 30:
+                        new = self.check_days_trophees(challenge)
+                        if new:
+                            self.user_trophees[challenge] = new
+                            new_trophees.append(challenge)
+                    else:
+                        new = self.check_month_trophees(challenge[1])
+                        if new:
+                            self.user_trophees[challenge] = new
+                            new_trophees.append(challenge)
+        return new_trophees
 
     def check_days_trophees(self, challenge):
         """
@@ -126,13 +151,13 @@ class Trophee_checking:
                 return True
         return False
 
-    def check_month_trophees(self, challenge):
+    def check_month_trophees(self, nb_jour):
         """
         ##################### non smoking month trophees #####################
         check if completed trophees months without smoking
         """
         non_smoking_month = self.parse_smoking_month
-        compared_month = range(int((challenge / 30) - 1))
+        compared_month = range(int((nb_jour) / 30 - 1))
         # for each bool non_smoking_month => True if full month and no smoking
         # compare with following bool
         while True:
@@ -180,6 +205,7 @@ class Trophee_checking:
         return non_smoking_month
 
     def create_trophees(self):
+        """create new trophees"""
         for trophee in self.trophees_accomplished:
             try:
                 with transaction.atomic():
