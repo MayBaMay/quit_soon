@@ -1334,9 +1334,6 @@ header.header-scroll .header-content {
   header .header-content nav > ul li.dropdown-menu .sub-menu {
     top: 3rem;
   }
-  #username-nav {
-    margin-left: 0.25em;
-  }
 }
 
 @media (min-width: 850px) {
