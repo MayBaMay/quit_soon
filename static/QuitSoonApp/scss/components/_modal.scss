@@ -2,7 +2,7 @@ $transition-open-time: 0.4s;
 $transition-close-time: 0.2s;
 
 .modal-container {
-  z-index: 3;
+  z-index: 9999;
 
   position: fixed;
   top: 0;

@@ -152,6 +152,7 @@ def new_parameters(request):
         except:
             existing_pack = False
         # if new pack, createpack with PaquetFormCreation
+        print(existing_pack)
         if not existing_pack:
             paquet_form = PaquetFormCreation(request.user, data)
             if paquet_form.is_valid():

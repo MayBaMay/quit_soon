@@ -60,11 +60,19 @@ header {
   .p6 {
     grid-area: p6;
   }
+  .fill {
+    min-height: 0;
+    grid-area: fill;
+  }
 
   @include min-break("mobile") {
     grid-template-areas:
       "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2"
       "p3 p3 p3 p3 p3 p3 p4 p4 p4 p4 p4 p4"
       "p5 p5 p5 p5 p5 p5 p6 p6 p6 p6 p6 p6";
+    .fill {
+      min-height: 30vh;
+      grid-area: fill;
+    }
   }
 }

@@ -21,6 +21,25 @@ class Stats:
         self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
         self.nb_full_days_since_start = (self.lastday - self.date_start).days
 
+    def nb_full_period_for_average(self, date, period):
+        if period == 'day':
+            # get the day before to get last full day
+            yesterday = date - timedelta(1)
+            # delta between yesterday and first day app
+            delta = yesterday - self.date_start
+            # return nb days
+            return delta.days
+        if period == 'week':
+            # get week number last (full) week
+            last_week = date.isocalendar()[1] - 1
+            first_week = self.date_start.isocalendar()[1]
+            return last_week - first_week
+        if period == 'month':
+            last_month = date.month - 1
+            first_month = self.date_start.month
+            return last_month - first_month
+
+
 class SmokeStats(Stats):
     """Generate stats reports on user smoke habits for past days"""
 
@@ -226,23 +245,6 @@ class HealthyStats(Stats):
         elif period == 'month':
             return queryset.filter(date_alter__month=date.month)
 
-    def nb_full_period_for_average(self, date, period):
-        if period == 'day':
-            # get the day before to get last full day
-            yesterday = date - timedelta(1)
-            # delta between yesterday and first day app
-            delta = yesterday - self.date_start
-            # return nb days
-            return delta.days
-        if period == 'week':
-            # get week number last (full) week
-            last_week = date.isocalendar()[1] - 1
-            first_week = self.date_start.isocalendar()[1]
-            return last_week - first_week
-        if period == 'month':
-            last_month = date.month - 1
-            first_month = self.date_start.month
-            return last_month - first_month
 
     @staticmethod
     def convert_minutes_to_hours_min_str(minutes):
