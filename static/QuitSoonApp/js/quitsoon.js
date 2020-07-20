@@ -91,7 +91,7 @@
       var new_name_response = jQuery.parseJSON(data);
       if (new_name_response.response == "success") {
         document.location.reload(true);
-        $("#modal_change_username").modal("hide");
+        // $("#modal_change_username").modal("hide");
       } else if (new_name_response.response == "name already in db") {
         $(".username-error").css("display", "block");
         submitBtn.prop("disabled", false);
@@ -116,7 +116,7 @@
       var new_email_response = jQuery.parseJSON(data);
       if (new_email_response.response == "success") {
         document.location.reload(true);
-        $("#modal_change_email").modal("hide");
+        // $("#modal_change_email").modal("hide");
       } else if (new_email_response.response == "email already in DB") {
         $(".dbemail-error").css("display", "block");
         submitBtn.prop("disabled", false);
@@ -143,7 +143,7 @@
       var new_password_response = jQuery.parseJSON(data);
       if (new_password_response.response == "success") {
         document.location.reload(true);
-        $("#modal_change_password").modal("hide");
+        // $("#modal_change_password").modal("hide");
       } else if (new_password_response.response == "incorrect old password") {
         $(".oldpwd-error").css("display", "block");
         submitBtn.prop("disabled", false);
@@ -164,10 +164,10 @@
 
   var noprofile = $("#noprofile");
   if (noprofile.length) {
-    $("#modal_starting_parameters").modal("show");
+    // $("#modal_starting_parameters").modal("show");
   }
 
-  $("#NewParametersForm").on("submit", function (e) {
+  $("#NewParametersForm").on("submit", function () {
     // keep only value from form chosen
     if ($("#choose_existing_pack").hasClass("active")) {
       $("#id_type_cig").val("");
@@ -182,9 +182,7 @@
 
   newparameterspackform();
 
-  $(".nav li").on("click", function () {
-    $(".nav li").removeClass("active");
-    $(this).addClass("active");
+  $(".param-tab").on("click", function () {
     newparameterspackform();
   });
 
@@ -365,9 +363,6 @@ function displayAlternativeFields() {
 
 function newparameterspackform() {
   if ($("#choose_existing_pack").hasClass("active")) {
-    console.log("choose_existing_pack");
-    $("#existing_packs").removeClass("hide").addClass("show");
-    $(".newpackform").removeClass("show").addClass("hide");
     $("#id_ref_pack").prop("required", true);
     $("#id_type_cig").prop("required", false);
     $("#id_brand").prop("required", false);
@@ -375,9 +370,6 @@ function newparameterspackform() {
     $("#id_price").prop("required", false);
   }
   if ($("#create_pack_choice").hasClass("active")) {
-    console.log("create_pack_choice");
-    $(".newpackform").removeClass("hide").addClass("show");
-    $("#existing_packs").removeClass("show").addClass("hide");
     $("#id_ref_pack").prop("required", false);
     $("#id_type_cig").prop("required", true);
     $("#id_brand").prop("required", true);
