@@ -1,10 +1,20 @@
-@import "./objectifs";
-@import "./today";
-@import "./report";
-@import "./alternatives";
-@import "./health_list";
-@import "./smoke_list";
-@import "./smoke";
-@import "./health";
-@import "./paquets";
-@import "./profile";
+//quit soon app pages
+
+@import "./QuitSoonApp/objectifs";
+@import "./QuitSoonApp/today";
+@import "./QuitSoonApp/report";
+@import "./QuitSoonApp/alternatives";
+@import "./QuitSoonApp/health_list";
+@import "./QuitSoonApp/smoke_list";
+@import "./QuitSoonApp/smoke";
+@import "./QuitSoonApp/health";
+@import "./QuitSoonApp/paquets";
+@import "./QuitSoonApp/profile";
+
+//registration pages
+@import "./registration/pw-reset-form.scss";
+@import "./registration/login";
+@import "./registration/register";
+
+//index/homepage    
+@import "./_index_page.scss";
