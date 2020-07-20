@@ -150,7 +150,7 @@
             </button>
           </form>
         </div>
-     
+
       </section>
     </div>
     <!-- End of change_username-->
@@ -194,7 +194,7 @@
               </button>
           </form>
         </div>
-      
+
       </section>
     </div>
     <!-- End of change_email-->
@@ -293,7 +293,7 @@
             </button>
           </form>
         </div>
-       
+
       </section>
     </div>
     <!-- End of change-password-->
@@ -327,17 +327,17 @@
             <label for="starting_nb_cig"
               ><b>Nb cigarettes moyen/jour en début de suivi : </b></label
             >
-            {{ parameter_form.starting_nb_cig }} 
+            {{ parameter_form.starting_nb_cig }}
             </div>
 
             {% if user_packs %}
 
             <div class="tabbed-content-container">
               <div class="flex-center">
-                <button class="btn-tab active" data-toggle="tab1">
+                <button type="button" id="choose_existing_pack" class="btn-tab param-tab active" data-toggle="tab1">
                   Paquets existants
                 </button>
-                <button class="btn-tab" data-toggle="tab2">
+                <button type="button" id="create_pack_choice" class="btn-tab param-tab" data-toggle="tab2">
                   Nouveau paquet
                 </button>
               </div>
@@ -377,7 +377,7 @@
                 {{ field.label }}: {{ field }} {{ field.error }}
               </div>
               {% endfor %} {% endif %}
-            
+
             </div>
               <input
                 type="submit"
