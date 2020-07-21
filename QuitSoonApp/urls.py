@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
