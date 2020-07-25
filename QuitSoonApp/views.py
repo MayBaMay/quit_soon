@@ -287,6 +287,7 @@ def change_g_per_cig(request):
 
 def smoke(request):
     """User smokes"""
+    print('django_timezone', request.session.get('django_timezone'))
     # check if packs are in parameters to fill fields with actual packs
     if request.user.is_authenticated:
         packs = Paquet.objects.filter(user=request.user, display=True)
@@ -296,7 +297,6 @@ def smoke(request):
             if request.method == 'POST':
                 smoke_form = SmokeForm(request.user, request.POST)
                 if smoke_form.is_valid():
-
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
                     smoke.create_conso_cig()
                     return redirect('QuitSoonApp:today')
