@@ -9,7 +9,7 @@ from ..models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
-    Objectif, Trophee
+    Objectif, Trophy
 )
 
 class TestModels(TestCase):
@@ -83,7 +83,7 @@ class TestModels(TestCase):
             datetime_creation= make_aware(datetime.datetime(2020, 5, 17, 14, 30)),
             datetime_objectif=make_aware(datetime.datetime(2020, 7, 17, 14, 30)),
         )
-        self.trophee = Trophee.objects.create(
+        self.trophy = Trophy.objects.create(
             user=self.usertest,
             nb_cig=20,
             nb_jour=3,
@@ -141,6 +141,6 @@ class TestModels(TestCase):
         """ test objectif creation"""
         self.assertTrue(Objectif.objects.filter(user=self.usertest).exists())
 
-    def test_trophee_model(self):
+    def test_trophy_model(self):
         """ test trophhe creation"""
-        self.assertTrue(Trophee.objects.filter(user=self.usertest).exists())
+        self.assertTrue(Trophy.objects.filter(user=self.usertest).exists())

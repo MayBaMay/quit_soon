@@ -2,14 +2,14 @@
 
 """
 This module reset userprofile parameters and reset users informations related
-such as informations in tables : ConsoCig, ConsoAlternative, Objectif and Trophee
+such as informations in tables : ConsoCig, ConsoAlternative, Objectif and trophy
 """
 from django.contrib.auth.models import User
 from ..models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
-    Objectif, Trophee
+    Objectif, Trophy
 )
 
 class ResetProfile:
@@ -36,13 +36,13 @@ class ResetProfile:
         ConsoCig.objects.filter(user=self.user).delete()
         ConsoAlternative.objects.filter(user=self.user).delete()
         Objectif.objects.filter(user=self.user).delete()
-        Trophee.objects.filter(user=self.user).delete()
+        Trophy.objects.filter(user=self.user).delete()
         # CLEAN COLUMN FIRST, ALL FALSE
         Paquet.objects.filter(user=self.user, first=True).update(first=False)
         # CLEAN UNDISPLAYED PACKS & ALTERNATIVES
         Paquet.objects.filter(user=self.user, display=False).delete()
         Alternative.objects.filter(user=self.user, display=False).delete()
-        
+
     def new_profile(self):
         """
         Create a new profile for user (old profile deleted in __init__)

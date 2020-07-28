@@ -25,7 +25,6 @@ from QuitSoonApp.models import UserProfile
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-
 def create_layout(name_graph):
     return html.Div([
         html.Div([
@@ -45,7 +44,9 @@ def create_layout(name_graph):
         dcc.Graph(id=name_graph,
             animate=False,
             config=dict(responsive=True),
-            style={"height": "500px", "width": "100%","backgroundColor": "#1a2d46", 'color': '#ffffff'},
+            style={
+                "height": "500px", "width": "100%", "backgroundColor": "#1a2d46", 'color': '#ffffff'
+                },
         )
     ])
 

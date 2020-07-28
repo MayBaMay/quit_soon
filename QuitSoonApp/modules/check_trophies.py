@@ -9,10 +9,10 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db import transaction
 
-from QuitSoonApp.models import Trophee
+from QuitSoonApp.models import Trophy
 
 
-class Trophee_checking:
+class trophy_checking:
 
     def __init__(self, stats):
         self.stats = stats
@@ -28,8 +28,8 @@ class Trophee_checking:
                 'nb_days': [1, 2, 3, 4, 7, 10, 15, 20, 25, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
                 },
             }
-        # initialise all_user_challenges in a dict with bool in Trophees or ot
-        self.user_trophees = self.all_user_challenges_before_parsing
+        # initialise all_user_challenges in a dict with bool in trophies or ot
+        self.user_trophies = self.all_user_challenges_before_parsing
 
     @property
     def all_user_challenges_before_parsing(self):
@@ -40,8 +40,8 @@ class Trophee_checking:
                 # only challenges with less cig then usual user conso
                 if cig < self.stats.starting_nb_cig:
                     for days in challenge['nb_days']:
-                        # only if challenge not already saved as trophee in db
-                        if Trophee.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():
+                        # only if challenge not already saved as trophy in db
+                        if Trophy.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():
                             challenges_dict[(cig, days)] = True
                         else:
                             challenges_dict[(cig, days)] = False
@@ -106,17 +106,17 @@ class Trophee_checking:
         """
         challenges_list = []
         for challenge, success in self.all_user_challenges_before_parsing.items():
-            # only if challenge not already saved as trophee in db
+            # only if challenge not already saved as trophy in db
             if not success:
                 challenges_list.append((challenge[0], challenge[1]))
         return challenges_list
 
     @property
-    def trophees_accomplished(self):
-        """ get list of trophees accomplished by user and to be created in DB """
-        new_trophees = []
+    def trophies_accomplished(self):
+        """ get list of trophies accomplished by user and to be created in DB """
+        new_trophies = []
         if self.stats.user_conso_full_days:
-            # only modify trophees if user
+            # only modify trophies if user
             for challenge in self.list_user_challenges:
 
                 # if not enough days in user history, challenge = False
@@ -125,21 +125,21 @@ class Trophee_checking:
                 else:
                     # treatement differs if days or month
                     if challenge[1] < 30:
-                        new = self.check_days_trophees(challenge)
+                        new = self.check_days_trophies(challenge)
                         if new:
-                            self.user_trophees[challenge] = new
-                            new_trophees.append(challenge)
+                            self.user_trophies[challenge] = new
+                            new_trophies.append(challenge)
                     else:
-                        new = self.check_month_trophees(challenge[1])
+                        new = self.check_month_trophies(challenge[1])
                         if new:
-                            self.user_trophees[challenge] = new
-                            new_trophees.append(challenge)
-        return new_trophees
+                            self.user_trophies[challenge] = new
+                            new_trophies.append(challenge)
+        return new_trophies
 
-    def check_days_trophees(self, challenge):
+    def check_days_trophies(self, challenge):
         """
-        ##################### non smoking days trophees #########################
-        for element in occurence, check if >= element in trophee to succeed
+        ##################### non smoking days trophies #########################
+        for element in occurence, check if >= element in trophy to succeed
         """
         if challenge[0] > 0:
             occurence = self.get_conso_occurence(challenge[0])
@@ -150,10 +150,10 @@ class Trophee_checking:
                 return True
         return False
 
-    def check_month_trophees(self, nb_jour):
+    def check_month_trophies(self, nb_jour):
         """
-        ##################### non smoking month trophees #####################
-        check if completed trophees months without smoking
+        ##################### non smoking month trophies #####################
+        check if completed trophies months without smoking
         """
         non_smoking_month = self.parse_smoking_month
         compared_month = range(int((nb_jour) / 30 - 1))
@@ -163,18 +163,18 @@ class Trophee_checking:
             for i in range(len(non_smoking_month)):
                 compare = [non_smoking_month[i]]
                 n = 0
-                # based on trophee compared following data would be different size
+                # based on trophy compared following data would be different size
                 for month in compared_month:
                     try:
                         n+=1
                         compare.append(non_smoking_month[i+n])
                     except IndexError:
-                        # comparing data out of list index, pass next trophee checking
+                        # comparing data out of list index, pass next trophy checking
                         break
                 if not False in compare:
-                    # only full month and non smoked, break to pass next trophee checking
+                    # only full month and non smoked, break to pass next trophy checking
                     return True
-            # end index in non_smoking_month, pass next trophee checking
+            # end index in non_smoking_month, pass next trophy checking
             break
         return False
 
@@ -203,12 +203,12 @@ class Trophee_checking:
                     non_smoking_month.append(False)
         return non_smoking_month
 
-    def create_trophees(self):
-        """create new trophees"""
-        for trophee in self.trophees_accomplished:
+    def create_trophies(self):
+        """create new trophies"""
+        for trophy in self.trophies_accomplished:
             try:
                 with transaction.atomic():
-                    Trophee.objects.create(user=self.stats.user, nb_cig=trophee[0], nb_jour=trophee[1])
+                    Trophy.objects.create(user=self.stats.user, nb_cig=trophy[0], nb_jour=trophy[1])
             except IntegrityError:
                 # method already called
                 pass

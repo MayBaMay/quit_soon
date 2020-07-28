@@ -136,7 +136,7 @@ class Objectif(models.Model):
     respected = models.BooleanField(default=False)
 
 
-class Trophee(models.Model):
+class Trophy(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nb_cig = models.IntegerField()
     nb_jour = models.IntegerField()

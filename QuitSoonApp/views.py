@@ -19,7 +19,7 @@ from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
-    Objectif, Trophee
+    Objectif, Trophy
 )
 from QuitSoonApp.forms import (
     RegistrationForm,
@@ -38,7 +38,7 @@ from QuitSoonApp.modules import (
     AlternativeManager, HealthManager,
     SmokeStats, HealthyStats,
     get_delta_last_event,
-    Trophee_checking
+    trophy_checking
     )
 
 
@@ -576,7 +576,6 @@ def report(request, **kwargs):
                         nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
                         substitut_stats[type[0]][period] = nicotine
                 context['substitut_stats'] = substitut_stats
-                print('substitut_stats', substitut_stats)
 
                 return render(request, 'QuitSoonApp/report.html', context)
             else:
@@ -588,15 +587,15 @@ def report(request, **kwargs):
         return redirect('QuitSoonApp:index')
 
 def objectifs(request):
-    """Page with user trophees and goals"""
+    """Page with user trophies and goals"""
     context = {}
     if request.user.is_authenticated:
         profile = UserProfile.objects.filter(user=request.user).exists()
         if profile:
             stats = SmokeStats(request.user, datetime.date.today())
-            trophee = Trophee_checking(stats)
-            trophee.create_trophees()
-            context['challenges'] = trophee.user_trophees
+            trophy = trophy_checking(stats)
+            trophy.create_trophies()
+            context['challenges'] = trophy.user_trophies
             return render(request, 'QuitSoonApp/objectifs.html', context)
         else:
             return redirect('QuitSoonApp:profile')
