@@ -78,6 +78,7 @@
       </form>
     </div>
     {% endif %}
+    <a class="btn" href="{% url 'QuitSoonApp:paquets' %}">Créer un nouveau paquet</a>
   </section>
 
   <section class="panel p2 pc-1">
@@ -89,7 +90,7 @@
       {% endfor %}
     </div>
       <div class="flex-center">
-        <a class="btn" href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages </a>
+        <a class="btn" href="{% url 'QuitSoonApp:smoke_list' %}" >Voir mes craquages</a>
       </div>          
 
     {% else %}

@@ -44,6 +44,7 @@ def create_layout(name_graph):
             )],className='graph-controls'),
         dcc.Graph(id=name_graph,
             animate=False,
+            config=dict(responsive=True),
             style={"height": "500px", "width": "100%","backgroundColor": "#1a2d46", 'color': '#ffffff'},
         )
     ])
@@ -68,6 +69,7 @@ def fig(df, checkbox, fig_name, bar_name, y_name, y_data):
         paper_bgcolor='#27293d',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(color='white'),
+
         )
     # Set x-axis title
     fig.update_xaxes(title_text="Dates")
@@ -127,7 +129,10 @@ def dataframe(radio, user_dict, focus):
         df = df.month_df
     return df
 
-app1 = DjangoDash('ConsoCigGraph', external_stylesheets=external_stylesheets)
+
+app1 = DjangoDash('ConsoCigGraph', external_stylesheets=external_stylesheets, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 app1.layout = create_layout('graph1')
 @app1.expanded_callback(
     dash.dependencies.Output('graph1', 'figure'),
@@ -141,7 +146,9 @@ def display_value(radio, checkbox, request, **kwargs):
     figure = fig(df, checkbox, "Consommation de cigarettes", "Conso cigarette", "Cigarettes", df.nb_cig)
     return figure
 
-app2 = DjangoDash('MoneyGraph', external_stylesheets=external_stylesheets)
+app2 = DjangoDash('MoneyGraph', external_stylesheets=external_stylesheets, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 app2.layout = create_layout('graph2')
 @app2.expanded_callback(
     dash.dependencies.Output('graph2', 'figure'),
@@ -155,7 +162,9 @@ def display_value(radio, checkbox, request, **kwargs):
     figure = fig(df, checkbox, "Argent parti en fumée", "Argent dépensé (en €)", "Mes sous", df.money_smoked)
     return figure
 
-app3 = DjangoDash('NicotineGraph', external_stylesheets=external_stylesheets)
+app3 = DjangoDash('NicotineGraph', external_stylesheets=external_stylesheets, meta_tags=[
+        {"name": "viewport", "content": "width=device-width, initial-scale=1"}
+    ])
 app3.layout = create_layout('graph3')
 @app3.expanded_callback(
     dash.dependencies.Output('graph3', 'figure'),
