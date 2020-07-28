@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db import transaction
 
-
 from QuitSoonApp.models import Trophee
 
 

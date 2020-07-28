@@ -169,6 +169,17 @@
     }
   }
 
+  //dark theme (for light backgrounds)
+
+  &[class*="-dark"] {
+    color: $gray-9;
+    background-color: transparent;
+    &:hover {
+      color: black;
+      background-color: transparent;
+    }
+  }
+
   //overrides
 
   //focus

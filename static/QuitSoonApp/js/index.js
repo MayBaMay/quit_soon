@@ -3,8 +3,6 @@ $(document).ready(function () {
 });
 
 (function () {
-  console.log("IIFE");
-  // const a = 4;
   const header = document.querySelector("header");
   const content = document.querySelector(".content");
   const modalContainer = document.querySelector(".page-modals");
@@ -21,51 +19,29 @@ $(document).ready(function () {
   //responsive header for tablet and lower
 
   function addResponsiveNav() {
-    //header change style on scroll
-    const options = {
-      rootMargin: "-64px 0px 100px 0px",
-      threshold: 1.0,
-    };
-
-    const observer = new IntersectionObserver(function (entries) {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) {
-          header.classList.add("header-scroll");
-          header.style.visibility = "hidden";
-          header.style.opacity = 0;
-          header.style.pointerEvents = "none";
-        } else {
-          header.classList.remove("header-scroll");
-
-          //overrides scroll hiding below
-          header.style.visibility = "visible";
-          header.style.opacity = 1;
-          header.style.pointerEvents = "auto";
-        }
-      });
-    }, options);
-
-    const pheading = document.querySelector(".page-heading");
-    observer.observe(pheading);
-
     //header on scroll up
     let currentScroll = 0;
     let throttling = false;
     let throttlingT = 100;
     window.addEventListener("scroll", function () {
-      if (!throttling) {
-        throttling = true;
-        setTimeout(() => {
-          throttling = false;
-        }, throttlingT);
-        if (this.pageYOffset > "80") {
-          // header.style.visibility = "visible";
-          // header.style.opacity = 1;
-          // header.style.pointerEvents = "auto";
-          // return;
+      if (responsive) {
+        // if (!throttling) {
+        //   throttling = true;
+        //   setTimeout(() => {
+        //     throttling = false;
+        //   }, throttlingT);
+        if (this.pageYOffset <= 5) {
+          header.classList.remove("header-scroll");
         }
-        if (this.pageYOffset > currentScroll) {
-          //down scroll
+        if (this.pageYOffset > 5) {
+          header.classList.add("header-scroll");
+        }
+        if (this.pageYOffset <= 80) {
+          header.style.visibility = "visible";
+          header.style.opacity = 1;
+          header.style.pointerEvents = "auto";
+        }
+        if (this.pageYOffset > currentScroll && this.pageYOffset > 80) {
           header.style.visibility = "hidden";
           header.style.opacity = 0;
           header.style.pointerEvents = "none";
@@ -75,16 +51,32 @@ $(document).ready(function () {
           header.style.pointerEvents = "auto";
         }
         currentScroll = this.pageYOffset;
+        // }
       }
     });
   }
-
-  //To do: won't currently add/remove resoponsive nav on resize
+  let responsive;
+  //on load
   if (window.innerWidth < 850) {
-    addResponsiveNav();
+    responsive = true;
+  } else {
+    console.log("large screen");
+    responsive = false;
   }
+  //on resize
+  window.addEventListener("resize", () => {
+    if (window.innerWidth < 850) {
+      responsive = true;
+    } else {
+      header.style.visibility = "visible";
+      header.style.opacity = 1;
+      header.style.pointerEvents = "auto";
+      header.classList.remove("header-scroll");
+      responsive = false;
+    }
+  });
+  addResponsiveNav();
 
-  // window.addEventListener("resize", responsiveNav);
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Modals
@@ -157,9 +149,6 @@ $(document).ready(function () {
         let cont = toggle.closest(".tabbed-content-container");
         const allContent = cont.querySelectorAll(".tabbed-content");
         allContent.forEach((tc) => tc.classList.remove("active"));
-        console.log(cont);
-        console.log(allContent);
-
         let tabId = toggle.dataset.toggle;
         let tabContent = document.querySelector(`#${tabId}`);
         toggle.classList.add("active");
@@ -241,64 +230,64 @@ $(document).ready(function () {
 
   // -------- Graphs - ploty dash
 
-  let graphConts = document.querySelectorAll(".django-plotly-dash");
-  let iframes = Array.from(graphConts).map((c) => {
-    return c.firstElementChild.firstElementChild;
-  });
+  // let graphConts = document.querySelectorAll(".django-plotly-dash");
+  // let iframes = Array.from(graphConts).map((c) => {
+  //   return c.firstElementChild.firstElementChild;
+  // });
 
-  let loadedFrames = 0;
-  iframes.forEach((f) =>
-    f.addEventListener("load", () => {
-      loadedFrames++;
-      console.log(loadedFrames);
-      //only add globalToggle when all graphs have loaded
-      loadedFrames == iframes.length
-        ? setTimeout(() => {
-            addGlobalToggle();
-          }, 100)
-        : null;
-    })
-  );
+  // let loadedFrames = 0;
+  // iframes.forEach((f) =>
+  //   f.addEventListener("load", () => {
+  //     loadedFrames++;
+  //     console.log(loadedFrames);
+  //     //only add globalToggle when all graphs have loaded
+  //     loadedFrames == iframes.length
+  //       ? setTimeout(() => {
+  //           addGlobalToggle();
+  //         }, 100)
+  //       : null;
+  //   })
+  // );
 
-  const inputs = {};
-  //collect all inputs and add global toggle
-  function addGlobalToggle() {
-    iframes.forEach((f, i) => {
-      let doc = f.contentWindow.document;
-      let labels = doc.querySelectorAll("label");
-      labels.forEach((label) => {
-        inputs[label.innerText] ? null : (inputs[label.innerText] = []);
-        inputs[label.innerText].push(label.firstElementChild);
-        //first graph radio buttons control add graphs
-        if (i == 0) {
-          label.querySelector("input").addEventListener("click", (e) => {
-            globalToggle(e);
-          });
-        } else {
-          //hide other controls
-          let controls = doc.querySelector(".graph-controls");
-          controls.style.display = "none";
-        }
-      });
-      //
-    });
-  }
+  // const inputs = {};
+  // //collect all inputs and add global toggle
+  // function addGlobalToggle() {
+  //   iframes.forEach((f, i) => {
+  //     let doc = f.contentWindow.document;
+  //     let labels = doc.querySelectorAll("label");
+  //     labels.forEach((label) => {
+  //       inputs[label.innerText] ? null : (inputs[label.innerText] = []);
+  //       inputs[label.innerText].push(label.firstElementChild);
+  //       //first graph radio buttons control add graphs
+  //       if (i == 0) {
+  //         label.querySelector("input").addEventListener("click", (e) => {
+  //           globalToggle(e);
+  //         });
+  //       } else {
+  //         //hide other controls
+  //         let controls = doc.querySelector(".graph-controls");
+  //         controls.style.display = "none";
+  //       }
+  //     });
+  //     //
+  //   });
+  // }
 
-  //first graph controls can toggles all graph inputs (providing they have the same label name e.g. "Mois")
-  function globalToggle(e) {
-    let val, target;
-    if (e.target.nodeName == "INPUT") {
-      val = e.target.parentNode.innerText; //label value
-      target = e.target;
-    } else {
-      val = e.target.innerText;
-      target = e.target.firstElementChild;
-    }
-    inputs[val].forEach((input, i) => {
-      if (i !== 0) {
-        console.log("el", input);
-        input.click();
-      }
-    });
-  }
+  // //first graph controls can toggles all graph inputs (providing they have the same label name e.g. "Mois")
+  // function globalToggle(e) {
+  //   let val, target;
+  //   if (e.target.nodeName == "INPUT") {
+  //     val = e.target.parentNode.innerText; //label value
+  //     target = e.target;
+  //   } else {
+  //     val = e.target.innerText;
+  //     target = e.target.firstElementChild;
+  //   }
+  //   inputs[val].forEach((input, i) => {
+  //     if (i !== 0) {
+  //       console.log("el", input);
+  //       input.click();
+  //     }
+  //   });
+  // }
 })();

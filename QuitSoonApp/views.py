@@ -152,6 +152,7 @@ def new_parameters(request):
         except:
             existing_pack = False
         # if new pack, createpack with PaquetFormCreation
+        print(existing_pack)
         if not existing_pack:
             paquet_form = PaquetFormCreation(request.user, data)
             if paquet_form.is_valid():
@@ -295,7 +296,6 @@ def smoke(request):
             if request.method == 'POST':
                 smoke_form = SmokeForm(request.user, request.POST)
                 if smoke_form.is_valid():
-
                     smoke = SmokeManager(request.user, smoke_form.cleaned_data)
                     smoke.create_conso_cig()
                     return redirect('QuitSoonApp:today')
@@ -576,6 +576,7 @@ def report(request, **kwargs):
                         nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
                         substitut_stats[type[0]][period] = nicotine
                 context['substitut_stats'] = substitut_stats
+                print('substitut_stats', substitut_stats)
 
                 return render(request, 'QuitSoonApp/report.html', context)
             else:
