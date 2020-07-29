@@ -612,6 +612,7 @@ class ChartData(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
+        print(request.GET)
         data = {'user' : User.objects.all().count()}
         print(data)
         return Response(data)
