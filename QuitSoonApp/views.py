@@ -15,6 +15,11 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
@@ -601,3 +606,12 @@ def objectifs(request):
             return redirect('QuitSoonApp:profile')
     else:
         return redirect('QuitSoonApp:index')
+
+class ChartData(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        data = {'user' : User.objects.all().count()}
+        print(data)
+        return Response(data)
