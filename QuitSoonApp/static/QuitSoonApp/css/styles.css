@@ -1056,6 +1056,27 @@ tr:nth-child(even) {
   }
 }
 
+.resp-container {
+  height: 80%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+.resp-iframe {
+  position: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#myChart {
+  width: 100%;
+  height: 100%;
+  overflow-x: scroll;
+}
+
 .chartWrapper {
   position: relative;
 }
@@ -1068,7 +1089,7 @@ tr:nth-child(even) {
 }
 
 .chartAreaWrapper {
-  width: 300px;
+  width: 600px;
   overflow-x: scroll;
 }
 

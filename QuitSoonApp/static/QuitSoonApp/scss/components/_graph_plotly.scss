@@ -3,20 +3,26 @@
   }
 }
 
-// .resp-container {
-//   position: fixed;
-//   overflow: hidden;
-//   padding-top: 56.25%;
-// }
-//
-// .resp-iframe {
-//   position: block;
-//   top: 0;
-//   left: 0;
-//   width: 50%;
-//   height: 50%;
-//   border: 0;
-// }
+.resp-container {
+  height: 80%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+.resp-iframe {
+  position: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#myChart {
+  width: 100%;
+  height: 100%;
+  overflow-x: scroll;
+}
 
 .chartWrapper {
   position: relative;
@@ -30,6 +36,6 @@
 }
 
 .chartAreaWrapper {
-  width: 300px;
+  width: 600px;
   overflow-x: scroll;
 }

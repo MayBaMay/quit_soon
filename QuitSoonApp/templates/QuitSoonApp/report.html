@@ -103,7 +103,8 @@
   </section> -->
 
   <section class="panel p4">
-    <div class="tabbed-content-container graph-height">
+
+
       <div class="flex-center">
         <button class="btn-tab active" data-toggle="tab1">
           <i class="fas fa-chart-bar"></i><span> Graph</span>
@@ -122,10 +123,30 @@
           </button>
         {% endif %}
       </div>
-    </div>
-    <div class="resp-container">
-      <iframe class="resp-iframe" src="{% url 'QuitSoonApp:charts' %}" frameborder="0"></iframe>
-    </div>
+      <div id="radio">
+        <label style="display: inline-block;">
+          <input type="radio" name="period" value="Jour" checked="">
+          Jour
+        </label>
+        <label style="display: inline-block;">
+          <input type="radio" name="period" value="Semaine">
+          Semaine
+        </label>
+        <label style="display: inline-block;">
+          <input type="radio" name="period" value="Mois">
+          Mois
+        </label>
+      </div>
+      <div id="checkbox">
+        <label>
+          <input type="checkbox" name="show-healthy">
+          Voir mes activités saines
+        </label>
+      </div>
+      <div class="resp-container" >
+        <iframe class="resp-iframe" src="{% url 'QuitSoonApp:charts' %}" frameborder="0"></iframe>
+      </div>
+
   </section>
 
   {% else %}

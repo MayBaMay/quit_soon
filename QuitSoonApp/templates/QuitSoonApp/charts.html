@@ -13,132 +13,104 @@
       integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="{% static 'QuitSoonApp/vendor/fontawesome-free/css/all.min.css' %}"
+    />
     <title>Nicotine Kill</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
   </head>
 
   <body>
 
-    <div class='container'>
-      <div id="radio">
-        <label style="display: inline-block;">
-          <input type="radio" name="period" value="Jour" checked="">
-          Jour
-        </label>
-        <label style="display: inline-block;">
-          <input type="radio" name="period" value="Semaine">
-          Semaine
-        </label>
-        <label style="display: inline-block;">
-          <input type="radio" name="period" value="Mois">
-          Mois
-        </label>
-      </div>
-      <div id="checkbox">
-        <label>
-          <input type="checkbox" name="show-healthy">
-          Voir mes activités saines
-        </label>
-      </div>
 
-      <div class="chartWrapper">
-        <div class="chartAreaWrapper">
-          <div class="chartAreaWrapper2">
-              <canvas id="myChart" width="300" height="300"></canvas>
-          </div>
-        </div>
-        <canvas id="axis-Test" height="300" width="0"></canvas>
-      </div>
+      <canvas id="myChart"></canvas>
 
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 
-        <script>
+      <script>
 
-          $(document).ready(function(){
+        $(document).ready(function(){
 
-            let endpoint = "{% url 'QuitSoonApp:api' %}"
-            let params = {'period':'Jour', 'how-healthy':false, 'charttype':'nb_cig'}
-            console.log(params);
+          let endpoint = "{% url 'QuitSoonApp:api' %}"
+          let params = {'period':'Jour', 'how-healthy':false, 'charttype':'nb_cig'}
+          console.log(params);
+          getCharts(params)
+
+          $( ":input" ).change(function(){
+            e.preventDefault();
+            // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
+            // CHANGE JS TOGGLE?
+            // let charttype = $('.btn-tab.active', parent.document).attr('data-toggle');
+            let radioValue = $("input[name='period']:checked", parent.document).val();
+            let checkboxvalue = $("input[name='show-healthy']", parent.document).prop('checked');
+            let params = {'period':radioValue, 'how-healthy':checkboxvalue, 'charttype':charttype}
             getCharts(params)
-
-            $( ":input" ).change(function(){
-              e.preventDefault();
-              // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
-              // CHANGE JS TOGGLE?
-              // let charttype = $('.btn-tab.active', parent.document).attr('data-toggle');
-              let radioValue = $("input[name='period']:checked").val();
-              let checkboxvalue = $("input[name='show-healthy']").prop('checked');
-              let params = {'period':radioValue, 'how-healthy':checkboxvalue, 'charttype':charttype}
-              getCharts(params)
-            });
-
-            function getCharts(params) {
-              $.ajax({
-                  method: "GET",
-                  url: endpoint,
-                  data: params,
-                  contentType: "application/json",
-                  success: function(response_data){
-                    console.log(response_data);
-                    let columns = JSON.parse(response_data).columns
-                    let index = JSON.parse(response_data).index
-                    let data = JSON.parse(response_data).data
-                    console.log(columns);
-                    console.log(index);
-                    console.log(data);
-                    var ctx = document.getElementById('myChart').getContext('2d');
-                    var myChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: index,
-                            datasets: [{
-                                label: columns,
-                                data: data,
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            scales: {
-                                yAxes: [{
-                                    gridLines: {
-                                        display: false,
-                                        color: "black"
-                                      },
-                                    ticks: {
-                                        beginAtZero: true,
-                                        stepSize: 1
-                                    }
-                                }],
-                                xAxes: [{
-                                    gridLines: {
-                                        type: 'time',
-                                        bounds:'data',
-                                        display: false,
-                                        time: {
-                                          unit: 'day',
-                                          unitStepSize: 1,
-                                        },
-                                        ticks: {
-                                          source: 'labels',
-                                        },
-                                      },
-                                }]
-                            }
-                        }
-                    });
-                  },
-                  error: function(error_response_data){
-                    console.log("error");
-                    console.log(error_response_data);
-                  }
-              });
-            };
           });
 
-    </script>
-  </div>
+          function getCharts(params) {
+            $.ajax({
+                method: "GET",
+                url: endpoint,
+                data: params,
+                contentType: "application/json",
+                success: function(response_data){
+                  let columns = JSON.parse(response_data).columns
+                  let index = JSON.parse(response_data).index
+                  let data = JSON.parse(response_data).data
 
+                  var ctx = document.getElementById('myChart').getContext('2d');
+                  let chartData = {
+                      labels: index,
+                      datasets: [{
+                          label: columns,
+                          data: data,
+                          borderWidth: 1
+                      }]
+                  }
+                  var myChart = new Chart(ctx, {
+                      type: 'bar',
+                      data: chartData,
+                      options: {
+                          scales: {
+                              yAxes: [{
+                                  gridLines: {
+                                      display: false,
+                                      color: "black"
+                                    },
+                                  ticks: {
+                                      beginAtZero: true,
+                                      stepSize: 1
+                                  }
+                              }],
+                              xAxes: [{
+                                  gridLines: {
+                                      type: 'time',
+                                      bounds:'data',
+                                      display: false,
+                                      time: {
+                                        unit: 'day',
+                                        unitStepSize: 1,
+                                      },
+                                      ticks: {
+                                        source: 'labels',
+                                      },
+                                    },
+                              }]
+                          }
+                      }
+                  });
+                },
+                error: function(error_response_data){
+                  console.log("error");
+                  console.log(error_response_data);
+                }
+            });
+          };
+        });
+
+  </script>
   </body>
 </html>
