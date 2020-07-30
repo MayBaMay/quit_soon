@@ -43,7 +43,8 @@ from QuitSoonApp.modules import (
     AlternativeManager, HealthManager,
     SmokeStats, HealthyStats,
     get_delta_last_event,
-    trophy_checking
+    trophy_checking,
+    DataFrameDate
     )
 
 
@@ -612,7 +613,47 @@ class ChartData(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        print(request.GET)
-        data = {'user' : User.objects.all().count()}
-        print(data)
-        return Response(data)
+        period = request.GET.get('period')
+        show_healthy = request.GET.get('show_healthy')
+        charttype = request.GET.get('charttype')
+        smoke_stats = SmokeStats(request.user, datetime.date.today())
+        healthy_stats = HealthyStats(request.user, datetime.date.today())
+
+        # generate data for graphs
+        user_dict = {'date':[],
+                     'activity_duration':[],
+                     'nb_cig':[],
+                     'money_smoked':[],
+                     'nicotine':[]}
+        for date in smoke_stats.list_dates:
+            user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
+            if show_healthy:
+                user_dict['activity_duration'].append(healthy_stats.report_substitut_per_period(date))
+            if charttype == 'nb_cig':
+                user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
+            elif charttype == 'money_smoked':
+                user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
+            elif charttype == 'nicotine':
+                user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
+        # keep only usefull keys and value in user_dict
+        user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
+
+        df = DataFrameDate(user_dict, charttype)
+        if period == 'Jour':
+            df = df.day_df
+        elif period == 'Semaine':
+            df = df.week_df
+        elif period == 'Mois':
+            df = df.month_df
+
+        values = df.to_json(orient="values")
+        parsed = json.loads(values)
+        formated_val = []
+        for elt in parsed:
+            formated_val.append(elt[0])
+
+        result = df.to_json(orient="split")
+        parsed = json.loads(result)
+        parsed["data"] = formated_val
+
+        return Response(json.dumps(parsed))

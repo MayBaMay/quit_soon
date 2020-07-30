@@ -23,63 +23,118 @@
   <body>
 
     <div class='container'>
-      <canvas id="myChart" width="400" height="400"></canvas>
+      <div id="radio">
+        <label style="display: inline-block;">
+          <input type="radio" name="period" value="Jour" checked="">
+          Jour
+        </label>
+        <label style="display: inline-block;">
+          <input type="radio" name="period" value="Semaine">
+          Semaine
+        </label>
+        <label style="display: inline-block;">
+          <input type="radio" name="period" value="Mois">
+          Mois
+        </label>
+      </div>
+      <div id="checkbox">
+        <label>
+          <input type="checkbox" name="show-healthy">
+          Voir mes activités saines
+        </label>
+      </div>
+
+      <div class="chartWrapper">
+        <div class="chartAreaWrapper">
+          <div class="chartAreaWrapper2">
+              <canvas id="myChart" width="300" height="300"></canvas>
+          </div>
+        </div>
+        <canvas id="axis-Test" height="300" width="0"></canvas>
+      </div>
+
+
         <script>
 
-          var endpoint = "{% url 'QuitSoonApp:api' %}"
           $(document).ready(function(){
-            $.ajax({
-                method: "GET",
-                url: endpoint,
-                dataType: "json",
-                data: {'salut':'salut'},
-                contentType: "application/json",
-                success: function(data){
-                  console.log(data);
-                },
-                error: function(error_data){
-                  console.log("error");
-                  console.log(error_data);
-                }
-            });
-          });
 
-          var ctx = document.getElementById('myChart').getContext('2d');
-          var myChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                  datasets: [{
-                      label: '# of Votes',
-                      data: [12, 19, 3, 5, 2, 3],
-                      backgroundColor: [
-                          'rgba(255, 99, 132, 0.2)',
-                          'rgba(54, 162, 235, 0.2)',
-                          'rgba(255, 206, 86, 0.2)',
-                          'rgba(75, 192, 192, 0.2)',
-                          'rgba(153, 102, 255, 0.2)',
-                          'rgba(255, 159, 64, 0.2)'
-                      ],
-                      borderColor: [
-                          'rgba(255, 99, 132, 1)',
-                          'rgba(54, 162, 235, 1)',
-                          'rgba(255, 206, 86, 1)',
-                          'rgba(75, 192, 192, 1)',
-                          'rgba(153, 102, 255, 1)',
-                          'rgba(255, 159, 64, 1)'
-                      ],
-                      borderWidth: 1
-                  }]
-              },
-              options: {
-                  scales: {
-                      yAxes: [{
-                          ticks: {
-                              beginAtZero: true
-                          }
-                      }]
+            let endpoint = "{% url 'QuitSoonApp:api' %}"
+            let params = {'period':'Jour', 'how-healthy':false, 'charttype':'nb_cig'}
+            console.log(params);
+            getCharts(params)
+
+            $( ":input" ).change(function(){
+              e.preventDefault();
+              // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
+              // CHANGE JS TOGGLE?
+              // let charttype = $('.btn-tab.active', parent.document).attr('data-toggle');
+              let radioValue = $("input[name='period']:checked").val();
+              let checkboxvalue = $("input[name='show-healthy']").prop('checked');
+              let params = {'period':radioValue, 'how-healthy':checkboxvalue, 'charttype':charttype}
+              getCharts(params)
+            });
+
+            function getCharts(params) {
+              $.ajax({
+                  method: "GET",
+                  url: endpoint,
+                  data: params,
+                  contentType: "application/json",
+                  success: function(response_data){
+                    console.log(response_data);
+                    let columns = JSON.parse(response_data).columns
+                    let index = JSON.parse(response_data).index
+                    let data = JSON.parse(response_data).data
+                    console.log(columns);
+                    console.log(index);
+                    console.log(data);
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: index,
+                            datasets: [{
+                                label: columns,
+                                data: data,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    gridLines: {
+                                        display: false,
+                                        color: "black"
+                                      },
+                                    ticks: {
+                                        beginAtZero: true,
+                                        stepSize: 1
+                                    }
+                                }],
+                                xAxes: [{
+                                    gridLines: {
+                                        type: 'time',
+                                        bounds:'data',
+                                        display: false,
+                                        time: {
+                                          unit: 'day',
+                                          unitStepSize: 1,
+                                        },
+                                        ticks: {
+                                          source: 'labels',
+                                        },
+                                      },
+                                }]
+                            }
+                        }
+                    });
+                  },
+                  error: function(error_response_data){
+                    console.log("error");
+                    console.log(error_response_data);
                   }
-              }
+              });
+            };
           });
 
     </script>

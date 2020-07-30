@@ -1056,19 +1056,20 @@ tr:nth-child(even) {
   }
 }
 
-.resp-container {
+.chartWrapper {
   position: relative;
-  overflow: hidden;
-  padding-top: 56.25%;
 }
 
-.resp-iframe {
+.chartWrapper > canvas {
   position: absolute;
-  top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.chartAreaWrapper {
+  width: 300px;
+  overflow-x: scroll;
 }
 
 body {
