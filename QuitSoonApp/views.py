@@ -616,6 +616,8 @@ class ChartData(APIView):
         period = request.GET.get('period')
         show_healthy = request.GET.get('show_healthy')
         charttype = request.GET.get('charttype')
+        datesRange = request.GET.get('datesRange')
+        print(datesRange)
         smoke_stats = SmokeStats(request.user, datetime.date.today())
         healthy_stats = HealthyStats(request.user, datetime.date.today())
 
@@ -625,6 +627,7 @@ class ChartData(APIView):
                      'nb_cig':[],
                      'money_smoked':[],
                      'nicotine':[]}
+
         for date in smoke_stats.list_dates:
             user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
             if show_healthy:
@@ -645,6 +648,9 @@ class ChartData(APIView):
             df = df.week_df
         elif period == 'Mois':
             df = df.month_df
+
+        if len(df.index) > 7:
+            df = df[-8 + int(datesRange): -1 + int(datesRange)]
 
         values = df.to_json(orient="values")
         parsed = json.loads(values)

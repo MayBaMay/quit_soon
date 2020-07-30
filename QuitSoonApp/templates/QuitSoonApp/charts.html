@@ -34,23 +34,41 @@
 
         $(document).ready(function(){
 
-          let endpoint = "{% url 'QuitSoonApp:api' %}"
-          let params = {'period':'Jour', 'how-healthy':false, 'charttype':'nb_cig'}
-          console.log(params);
-          getCharts(params)
+          let endpoint = "{% url 'QuitSoonApp:api' %}";
+          var datesRange = 0;
 
-          $( ":input" ).change(function(){
+          let params = {'period':'Jour', 'show-healthy':false, 'charttype':'nb_cig', 'datesRange':0}
+          getCharts();
+
+          $( "#previousDates", parent.document ).click(function() {
+              datesRange -= 1;
+              getCharts();
+          });
+
+          $( "#nextDates", parent.document ).click(function() {
+            if (datesRange < 0) {
+              datesRange += 1;
+              getCharts();
+            }
+          });
+
+          $( ":input", parent.document ).change(function(e){
             e.preventDefault();
             // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
             // CHANGE JS TOGGLE?
-            // let charttype = $('.btn-tab.active', parent.document).attr('data-toggle');
-            let radioValue = $("input[name='period']:checked", parent.document).val();
-            let checkboxvalue = $("input[name='show-healthy']", parent.document).prop('checked');
-            let params = {'period':radioValue, 'how-healthy':checkboxvalue, 'charttype':charttype}
-            getCharts(params)
+            datesRange = 0;
+            getCharts();
           });
 
-          function getCharts(params) {
+          function getParams() {
+            let radioValue = $("input[name='period']:checked", parent.document).val();
+            let checkboxvalue = $("input[name='show-healthy']", parent.document).prop('checked');
+            params = {'period':radioValue, 'show-healthy':checkboxvalue, 'charttype':'nb_cig', 'datesRange':datesRange};
+          }
+
+          function getCharts() {
+            getParams()
+            console.log(params);
             $.ajax({
                 method: "GET",
                 url: endpoint,
@@ -69,7 +87,7 @@
                           data: data,
                           borderWidth: 1
                       }]
-                  }
+                  };
                   var myChart = new Chart(ctx, {
                       type: 'bar',
                       data: chartData,

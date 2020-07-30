@@ -102,23 +102,23 @@
     </div>
   </section> -->
 
-  <section class="panel p4">
+  <section class="panel p4 pc-1">
 
 
       <div class="flex-center">
-        <button class="btn-tab active" data-toggle="tab1">
+        <button id="nb_cig" class="btn-tab active" >
           <i class="fas fa-chart-bar"></i><span> Graph</span>
         </button>
-        <button class="btn-tab" data-toggle="tab2">
+        <button id="money_smoked" class="btn-tab">
           <i class="fas fa-euro-sign"></i><span> Money</span>
         </button>
         {% if user_conso_subsitut %}
-          <button class="btn-tab" data-toggle="tab3">
+          <button id="nicotine" class="btn-tab">
             <i class="fas fa-smoking"></i><span> Nicotine</span>
           </button>
         {% endif %}
         {% if smoke_user_conso_full_days %}
-          <button class="btn-tab" data-toggle="tab4">
+          <button class="btn-tab">
             <i class="fas fa-clock"></i><span> Time</span>
           </button>
         {% endif %}
@@ -143,8 +143,20 @@
           Voir mes activités saines
         </label>
       </div>
+
       <div class="resp-container" >
         <iframe class="resp-iframe" src="{% url 'QuitSoonApp:charts' %}" frameborder="0"></iframe>
+      </div>
+
+      <div class="flex-center">
+        <a id="previousDates">
+          <i class='fas fa-angle-double-left' style='font-size:24px'></i>
+           Précédent -
+        </a>
+        <a id="nextDates">
+          - Suivant
+          <i class='fas fa-angle-double-right' style='font-size:24px'></i>
+        </a>
       </div>
 
   </section>
