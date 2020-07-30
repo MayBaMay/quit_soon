@@ -39,7 +39,7 @@ class DataFrameDate:
             end = start + timedelta(days=6)
             formated_date = week_df.index.tolist()
             idx = formated_date.index(date)
-            formated_date[idx] = start.strftime('%d/%m/%y')
+            formated_date[idx] = "{}-{}".format(start.strftime('%d/%m'), end.strftime('%d/%m'))
             week_df.index = formated_date
         return week_df
 
