@@ -650,7 +650,7 @@ class ChartData(APIView):
             df = df.month_df
 
         if len(df.index) > 7:
-            df = df[-8 + int(datesRange): -1 + int(datesRange)]
+            df = df.tail(7)
 
         values = df.to_json(orient="values")
         parsed = json.loads(values)
