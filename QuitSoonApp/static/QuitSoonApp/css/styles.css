@@ -1075,6 +1075,10 @@ tr:nth-child(even) {
   margin: auto;
 }
 
+.chart-iframe {
+  background: #1D1F20;
+}
+
 #myChart {
   margin: auto;
   height: 100%;

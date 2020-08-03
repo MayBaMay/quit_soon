@@ -6,6 +6,7 @@ from datetime import time as t
 from dateutil import relativedelta
 from decimal import Decimal
 import json
+import pandas as pd
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, update_session_auth_hash
@@ -613,58 +614,78 @@ class ChartData(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        
+
         period = request.GET.get('period') or 'Jour'
         show_healthy = request.GET.get('show_healthy') or False
         charttype = request.GET.get('charttype') or 'nb_cig'
         datesRange = request.GET.get('datesRange') or 0
 
-        smoke_stats = SmokeStats(request.user, datetime.date.today())
-        healthy_stats = HealthyStats(request.user, datetime.date.today())
+        if charttype == 'time':
 
-        # generate data for graphs
-        user_dict = {'date':[],
-                     'activity_duration':[],
-                     'nb_cig':[],
-                     'money_smoked':[],
-                     'nicotine':[]}
+            smoke = SmokeStats(request.user, datetime.date.today())
+            nb_full_days = smoke.nb_full_days_since_start
+            qs = smoke.user_conso_full_days.values()
+            data_cig = pd.DataFrame(qs)
+            data_cig['date'] = data_cig.apply(lambda r : datetime.datetime.combine(r['date_cig'],r['time_cig']),1)
+            data = data_cig.date.dt.hour.value_counts()
+            data_dict = {}
+            for hour in range(0,25):
+                try:
+                    data_dict[hour] = data.loc[hour] / nb_full_days
+                except KeyError:
+                    data_dict[hour] = 0
+            hour_serie = pd.Series(data_dict)
+            result = hour_serie.to_json(orient="split")
+            parsed = json.loads(result)
+            parsed["columns"] = 'Moyenne par heure'
 
-        for date in smoke_stats.list_dates:
-            user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
-            if show_healthy:
-                user_dict['activity_duration'].append(healthy_stats.report_substitut_per_period(date))
-            if charttype == 'nb_cig':
-                user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
-            elif charttype == 'money_smoked':
-                user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
-            elif charttype == 'nicotine':
-                user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
-        # keep only usefull keys and value in user_dict
-        user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
+        else:
 
-        df = DataFrameDate(user_dict, charttype)
-        if period == 'Jour':
-            df = df.day_df
-        elif period == 'Semaine':
-            df = df.week_df
-        elif period == 'Mois':
-            df = df.month_df
-        print(df.index)
+            smoke_stats = SmokeStats(request.user, datetime.date.today())
+            healthy_stats = HealthyStats(request.user, datetime.date.today())
 
-        if len(df.index) > 7:
-            if int(datesRange):
-                df = df.iloc[-7 + int(datesRange): int(datesRange) ]
-            else:
-                df = df.tail(7)
+            # generate data for graphs
+            user_dict = {'date':[],
+                         'activity_duration':[],
+                         'nb_cig':[],
+                         'money_smoked':[],
+                         'nicotine':[]}
 
-        values = df.to_json(orient="values")
-        parsed = json.loads(values)
-        formated_val = []
-        for elt in parsed:
-            formated_val.append(elt[0])
+            for date in smoke_stats.list_dates:
+                user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
+                if show_healthy:
+                    user_dict['activity_duration'].append(healthy_stats.report_substitut_per_period(date))
+                if charttype == 'nb_cig':
+                    user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
+                elif charttype == 'money_smoked':
+                    user_dict['money_smoked'].append(float(smoke_stats.money_smoked_per_day(date)))
+                elif charttype == 'nicotine':
+                    user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
+            # keep only usefull keys and value in user_dict
+            user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
 
-        result = df.to_json(orient="split")
-        parsed = json.loads(result)
-        parsed["data"] = formated_val
+            df = DataFrameDate(user_dict, charttype)
+            if period == 'Jour':
+                df = df.day_df
+            elif period == 'Semaine':
+                df = df.week_df
+            elif period == 'Mois':
+                df = df.month_df
+
+            if len(df.index) > 7:
+                if int(datesRange):
+                    df = df.iloc[-7 + int(datesRange): int(datesRange) ]
+                else:
+                    df = df.tail(7)
+
+            values = df.to_json(orient="values")
+            parsed = json.loads(values)
+            formated_val = []
+            for elt in parsed:
+                formated_val.append(elt[0])
+
+            result = df.to_json(orient="split")
+            parsed = json.loads(result)
+            parsed["data"] = formated_val
 
         return Response(json.dumps(parsed))

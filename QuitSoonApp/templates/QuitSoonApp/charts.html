@@ -20,11 +20,11 @@
     <title>Nicotine Kill</title>
   </head>
 
-  <body>
+  <body style="background-color:#25344b;">
 
-    <!-- <div class="chart-container"> -->
+    <div class="chart-container">
       <canvas id="myChart"></canvas>
-    <!-- </div> -->
+    </div>
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
@@ -38,38 +38,70 @@
           let endpoint = "{% url 'QuitSoonApp:api' %}";
           var datesRange = 0;
 
-          let params = {'period':'Jour', 'show-healthy':false, 'charttype':'nb_cig', 'datesRange':0}
           getCharts();
 
-          $( "#previousDates", parent.document ).click(function() {
+          $( "#previousDates", parent.document ).on("click", function() {
+            console.log('previousDates');
               datesRange -= 1;
               getCharts();
           });
 
-          $( "#nextDates", parent.document ).click(function() {
+          $( "#nextDates", parent.document ).on("click", function() {
+            console.log('nextDates');
             if (datesRange < 0) {
               datesRange += 1;
               getCharts();
             }
           });
 
-          $( ":input", parent.document ).change(function(e){
+          $( ":button", parent.document ).on("click", function(){
+            // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
+            // CHANGE JS TOGGLE?
+            getCharts();
+          });
+
+          $( ":input", parent.document ).on('change',function(e){
             e.preventDefault();
             // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
             // CHANGE JS TOGGLE?
-            datesRange = 0;
             getCharts();
           });
 
           function getParams() {
+            let label
+            let typeChart
+            let idTab = $("div.tabbed-content.active", parent.document).attr("id")
+            if ((idTab == "tab1") || (idTab == "tab2") || (idTab == "tab3")) {
+              $(".user-choices", parent.document)
+                .removeClass("hide")
+                .addClass("show");
+            };
+            if (idTab == "tab1") {
+              label = "Cigarettes fumées"
+              typeChart = "nb_cig"
+            } else if (idTab == "tab2"){
+              label = "Argent parti en fumée (en€)"
+              typeChart = "money_smoked"
+            } else if (idTab == "tab3"){
+              label = "Nicotine (en mg)"
+              typeChart = "nicotine"
+            } else if (idTab == "tab4") {
+              label = "Consommation moyenne de cigarettes par heure"
+              typeChart = "time"
+            };
             let radioValue = $("input[name='period']:checked", parent.document).val();
             let checkboxvalue = $("input[name='show-healthy']", parent.document).prop('checked');
-            params = {'period':radioValue, 'show-healthy':checkboxvalue, 'charttype':'nb_cig', 'datesRange':datesRange};
+            params = {'charttype':typeChart, label:label, 'period':radioValue, 'show-healthy':checkboxvalue, 'datesRange':datesRange};
           }
 
           function getCharts() {
             getParams()
-            console.log(params);
+            let type
+            if (params.charttype == 'time'){
+              type = 'line';
+            } else {
+              type = 'bar';
+            };
             $.ajax({
                 method: "GET",
                 url: endpoint,
@@ -82,24 +114,33 @@
 
                   var ctx = document.getElementById('myChart').getContext('2d');
 
+                  Chart.defaults.global.defaultFontColor = "white";
+
                   let chartData = {
                       labels: index,
+
                       datasets: [{
-                          label: columns,
+                          label: params.label,
                           data: data,
-                          borderWidth: 1
+                          borderWidth: 1,
+                          backgroundColor: "rgba(88,122,173,0.4)",
+                          borderColor: "rgba(88,122,173,1)",
+                          borderWidth: 2,
                       }]
                   };
                   var myChart = new Chart(ctx, {
-                      type: 'bar',
+                      type: type,
                       data: chartData,
                       maintainAspectRatio: false,
                       options: {
+                          events: [],
+                          tooltips: {enabled: false},
+                          hover: {mode: null},
                           scales: {
                               yAxes: [{
                                   gridLines: {
-                                      display: false,
-                                      color: "black"
+                                      display: true,
+                                      color: "rgba(88,122,173,0.2)"
                                     },
                                   ticks: {
                                       beginAtZero: true,
