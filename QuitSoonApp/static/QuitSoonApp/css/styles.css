@@ -1057,40 +1057,27 @@ tr:nth-child(even) {
 }
 
 .resp-container {
-  height: 70%;
+  height: 60%;
   padding-top: 1%;
   padding-bottom: 1%;
 }
 
+@media (min-width: 480px) {
+  .resp-container {
+    height: 75%;
+  }
+}
+
 .resp-iframe {
-  position: block;
-  top: 0;
-  left: 0;
-  width: 100%;
+  position: relative;
   height: 100%;
-  border: 0;
+  width: 100%;
+  margin: auto;
 }
 
 #myChart {
-  width: 100%;
+  margin: auto;
   height: 100%;
-  overflow-x: scroll;
-}
-
-.chartWrapper {
-  position: relative;
-}
-
-.chartWrapper > canvas {
-  position: absolute;
-  left: 0;
-  top: 0;
-  pointer-events: none;
-}
-
-.chartAreaWrapper {
-  width: 600px;
-  overflow-x: scroll;
 }
 
 body {

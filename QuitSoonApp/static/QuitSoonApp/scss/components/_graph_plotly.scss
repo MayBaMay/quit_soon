@@ -2,40 +2,33 @@
   & > div {
   }
 }
-
+//
 .resp-container {
-  height: 70%;
+  height: 60%;
   padding-top: 1%;
   padding-bottom: 1%;
 }
+@include min-break("mobile") {
+  .resp-container {
+    height: 75%;
+  }
+}
 
 .resp-iframe {
-  position: block;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-#myChart {
-  width: 100%;
-  height: 100%;
-  overflow-x: scroll;
-}
-
-.chartWrapper {
   position: relative;
+  height: 100%;
+  width: 100%;
+  margin: auto;
 }
-
-.chartWrapper > canvas {
-  position: absolute;
-  left: 0;
-  top: 0;
-  pointer-events: none;
-}
-
-.chartAreaWrapper {
-  width: 600px;
-  overflow-x: scroll;
+//
+// // .chart-container {
+// //   position: relative;
+// //   margin: auto;
+// //   height: 100%;
+// //   width: 100%;
+// // }
+//
+#myChart {
+  margin: auto;
+  height: 100%;
 }

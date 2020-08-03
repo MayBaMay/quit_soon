@@ -613,11 +613,12 @@ class ChartData(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
-        period = request.GET.get('period')
-        show_healthy = request.GET.get('show_healthy')
-        charttype = request.GET.get('charttype')
-        datesRange = request.GET.get('datesRange')
-        print(datesRange)
+        
+        period = request.GET.get('period') or 'Jour'
+        show_healthy = request.GET.get('show_healthy') or False
+        charttype = request.GET.get('charttype') or 'nb_cig'
+        datesRange = request.GET.get('datesRange') or 0
+
         smoke_stats = SmokeStats(request.user, datetime.date.today())
         healthy_stats = HealthyStats(request.user, datetime.date.today())
 
@@ -648,6 +649,7 @@ class ChartData(APIView):
             df = df.week_df
         elif period == 'Mois':
             df = df.month_df
+        print(df.index)
 
         if len(df.index) > 7:
             if int(datesRange):
