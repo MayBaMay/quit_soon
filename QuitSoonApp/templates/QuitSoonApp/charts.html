@@ -55,19 +55,16 @@
           });
 
           $( ":button", parent.document ).on("click", function(){
-            // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
-            // CHANGE JS TOGGLE?
             getCharts();
           });
 
-          $( ":input", parent.document ).on('change',function(e){
-            e.preventDefault();
-            // GET DATA-TOGGLE FROM PAGE REPORT => CHARTS TYPE
-            // CHANGE JS TOGGLE?
+          $( ":input", parent.document ).on('change',function(){
             getCharts();
           });
 
           function getParams() {
+
+            // get base type chart
             let label
             let typeChart
             let idTab = $("div.tabbed-content.active", parent.document).attr("id")
@@ -75,6 +72,10 @@
               $(".user-choices", parent.document)
                 .removeClass("hide")
                 .addClass("show");
+            } else {
+              $(".user-choices", parent.document)
+                .addClass("hide")
+                .removeClass("show");
             };
             if (idTab == "tab1") {
               label = "Cigarettes fumées"
@@ -89,10 +90,14 @@
               label = "Consommation moyenne de cigarettes par heure"
               typeChart = "time"
             };
+
+            // get parameter period for data chart
             let radioValue = $("input[name='period']:checked", parent.document).val();
+
+            // get parameter for displaying additionnal data (activity duration)
             let checkboxvalue = $("input[name='show-healthy']", parent.document).prop('checked');
             params = {'charttype':typeChart, label:label, 'period':radioValue, 'show-healthy':checkboxvalue, 'datesRange':datesRange};
-          }
+          };
 
           function getCharts() {
             getParams()
@@ -111,33 +116,60 @@
                   let columns = JSON.parse(response_data).columns
                   let index = JSON.parse(response_data).index
                   let data = JSON.parse(response_data).data
+                  console.log(data, params);
 
                   var ctx = document.getElementById('myChart').getContext('2d');
 
                   Chart.defaults.global.defaultFontColor = "white";
 
                   let chartData = {
-                      labels: index,
-
-                      datasets: [{
                           label: params.label,
-                          data: data,
+                          data: data.base,
+                          yAxisID: 'base',
                           borderWidth: 1,
                           backgroundColor: "rgba(88,122,173,0.4)",
                           borderColor: "rgba(88,122,173,1)",
                           borderWidth: 2,
-                      }]
+                          order: 1,
                   };
+
+                  let activityChartData = {
+                        label:  "Activités (en minutes)",
+                        type: 'line',
+                        data: data.activity,
+                        yAxisID: 'activity',
+                        borderWidth: 1,
+                        borderColor: "rgba(75,181,67)",
+                        borderWidth: 2,
+                        order: 2,
+                    };
+
+                  let ActivityYAxis = {
+                      id: "activity",
+                      position: 'right',
+                      ticks: {
+                          beginAtZero: true,
+                      }
+                  }
+
                   var myChart = new Chart(ctx, {
                       type: type,
-                      data: chartData,
+                      data: {
+                        datasets: [chartData, activityChartData],
+                        labels: index
+                      },
                       maintainAspectRatio: false,
                       options: {
                           events: [],
                           tooltips: {enabled: false},
                           hover: {mode: null},
+                          animation:{
+                            duration:0,
+                          },
                           scales: {
                               yAxes: [{
+                                  id: 'base',
+                                  position: 'left',
                                   gridLines: {
                                       display: true,
                                       color: "rgba(88,122,173,0.2)"
@@ -146,7 +178,8 @@
                                       beginAtZero: true,
                                       stepSize: 1
                                   }
-                              }],
+                              }, ActivityYAxis
+                            ],
                               xAxes: [{
                                   gridLines: {
                                       type: 'time',
@@ -164,6 +197,29 @@
                           }
                       }
                   });
+
+                  function addData(chart, data, YAxis) {
+                    chart.data.datasets[1] = data;
+                    chart.options.scales.yAxes[1] = YAxis;
+                    chart.update();
+                  }
+
+                  function removeData(chart) {
+                    chart.data.datasets.pop();
+                    chart.options.scales.yAxes.pop();
+                    chart.update();
+                  }
+
+                  if ($("input[name='show-healthy']", parent.document).prop('checked')) {
+                    if ($(".user-choices", parent.document).hasClass("show")) {
+                      addData(myChart, activityChartData, ActivityYAxis)
+                    } else {
+                      removeData(myChart)
+                    };
+                  } else {
+                    removeData(myChart)
+                  };
+
                 },
                 error: function(error_response_data){
                   console.log("error");

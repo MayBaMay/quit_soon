@@ -159,7 +159,6 @@ def new_parameters(request):
         except:
             existing_pack = False
         # if new pack, createpack with PaquetFormCreation
-        print(existing_pack)
         if not existing_pack:
             paquet_form = PaquetFormCreation(request.user, data)
             if paquet_form.is_valid():
@@ -314,7 +313,6 @@ def smoke(request):
             last = smoke.latest('date_cig', 'time_cig')
             last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
             context['lastsmoke'] = get_delta_last_event(last_time)
-            print(context['lastsmoke'])
         return render(request, 'QuitSoonApp/smoke.html', context)
     else:
         return redirect('QuitSoonApp:login')
@@ -637,7 +635,9 @@ class ChartData(APIView):
             hour_serie = pd.Series(data_dict)
             result = hour_serie.to_json(orient="split")
             parsed = json.loads(result)
+            parsed["data"] = {'base':parsed["data"]}
             parsed["columns"] = 'Moyenne par heure'
+            print(parsed)
 
         else:
 
@@ -653,8 +653,10 @@ class ChartData(APIView):
 
             for date in smoke_stats.list_dates:
                 user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
-                if show_healthy:
+                if healthy_stats.report_substitut_per_period(date):
                     user_dict['activity_duration'].append(healthy_stats.report_substitut_per_period(date))
+                else:
+                    user_dict['activity_duration'].append(0)
                 if charttype == 'nb_cig':
                     user_dict['nb_cig'].append(smoke_stats.nb_per_day(date))
                 elif charttype == 'money_smoked':
@@ -663,6 +665,8 @@ class ChartData(APIView):
                     user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
             # keep only usefull keys and value in user_dict
             user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
+            print(user_dict)
+
 
             df = DataFrameDate(user_dict, charttype)
             if period == 'Jour':
@@ -677,15 +681,21 @@ class ChartData(APIView):
                     df = df.iloc[-7 + int(datesRange): int(datesRange) ]
                 else:
                     df = df.tail(7)
+            print(df)
 
             values = df.to_json(orient="values")
             parsed = json.loads(values)
-            formated_val = []
+            print(parsed)
+            formated_data = []
+            formated_activity_data = []
             for elt in parsed:
-                formated_val.append(elt[0])
+                formated_data.append(elt[0])
+                formated_activity_data.append(elt[1])
+            print(formated_data, formated_activity_data)
 
             result = df.to_json(orient="split")
             parsed = json.loads(result)
-            parsed["data"] = formated_val
+            parsed["data"] = {'base':formated_data, 'activity':formated_activity_data}
+            print(parsed)
 
         return Response(json.dumps(parsed))
