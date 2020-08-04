@@ -1104,7 +1104,7 @@ body {
   position: relative;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: 6rem 4rem minmax(100vh, auto);
+  grid-template-rows: 6rem 4rem auto;
 }
 
 header {
@@ -1127,7 +1127,7 @@ header {
 
 @media (min-width: 480px) {
   .grid-container {
-    grid-template-rows: 4rem 4rem minmax(100vh, auto);
+    grid-template-rows: 4rem 4rem auto;
   }
 }
 
@@ -1390,8 +1390,6 @@ header.header-scroll .header-content {
 
 .content {
   padding: 1rem 1rem 2rem 1rem;
-  background-color: #999999;
-  background-image: linear-gradient(to bottom, #e6e6e6, white);
 }
 
 footer {
@@ -1407,17 +1405,17 @@ footer {
 }
 
 #objectifs {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5" "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6" ". . . . . . . . . . . . " ". p3 p3 p3 p3 p4 p4 p4 p4 p4 p4 .";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
 
 @media (min-width: 480px) {
   #objectifs {
-    grid-template-areas: "p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2 p2" ". . p3 p3 p3 p3 p5 p5 p5 p5 . .";
+    grid-template-areas: ". p1 p1 p1 p1 p2 p2 p2 p2 p2 p2 .";
   }
 }
 
 #today {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
 }
 
 @media (min-width: 480px) {
@@ -1427,44 +1425,60 @@ footer {
 }
 
 #report {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
 }
 
 @media (min-width: 850px) {
   #report {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
   }
 }
 
-form .activity_form,
-form .substitut_form {
+#alternatives {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
+}
+
+#alternatives form .activity_form,
+#alternatives form .substitut_form {
   display: block;
   width: 100%;
 }
 
-#alternatives {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+@media (min-width: 480px) {
+  #alternatives {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
+  }
+}
+
+#smoke_list, #health_list {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1";
 }
 
 @media (min-width: 480px) {
-  #alternatives {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" ". . p3 p3 p3 p3 p3 p3 p3 p3 . ." ". . . . . . . . . . . ." ". . . . . . . . . . . .";
+  #smoke_list, #health_list {
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . .";
+  }
+}
+
+@media (min-width: 850px) {
+  #smoke_list, #health_list {
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . .";
   }
 }
 
 #smoke {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "fill . . . . . . . . . . .";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
 
 @media (min-width: 480px) {
   #smoke {
-    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
 }
 
 @media (min-width: 850px) {
   #smoke {
-    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
 }
 
@@ -1480,18 +1494,18 @@ form .substitut_form {
 }
 
 #health {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "fill . . . . . . . . . . .";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
 
 @media (min-width: 480px) {
   #health {
-    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
+    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
 }
 
 @media (min-width: 850px) {
   #health {
-    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . ." "fill . . . . . . . . . . .";
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
 }
 
@@ -1507,12 +1521,22 @@ form .substitut_form {
 }
 
 #paquets {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
 
 @media (min-width: 480px) {
   #paquets {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" ". . p3 p3 p3 p3 p3 p3 p3 p3 . ." ". . . . . . . . . . . ." ". . . . . . . . . . . .";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
+  }
+}
+
+#profile {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
+}
+
+@media (min-width: 480px) {
+  #profile {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
   }
 }
 
