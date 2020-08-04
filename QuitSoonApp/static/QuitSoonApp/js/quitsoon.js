@@ -228,7 +228,7 @@
   });
 
   /////////////////healthy activity page////////////////////
-  if (top.location.pathname === "/health/") {
+  if (window.location.pathname === "/health/") {
     displayAlternativeFields();
     $("#id_type_alternative_field").on("change", function (e) {
       $(".show").removeClass("show").addClass("hide");
