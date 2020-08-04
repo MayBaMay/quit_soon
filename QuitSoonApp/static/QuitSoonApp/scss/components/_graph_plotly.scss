@@ -4,6 +4,7 @@
 }
 //
 .resp-container {
+  position: relative;
   height: 60%;
   padding-top: 1%;
   padding-bottom: 1%;
@@ -15,10 +16,11 @@
 }
 
 .resp-iframe {
-  position: relative;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  margin: auto;
+  height: 100%;
 }
 .chart-iframe {
   //   position: relative;
