@@ -83,6 +83,7 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='time_graph',
         animate=False,
+        config=dict(responsive=True),
         style={"backgroundColor": "#1a2d46", 'color': '#ffffff'},
     ),
     dcc.Input(
