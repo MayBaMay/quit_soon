@@ -10,7 +10,7 @@
 }
 @include min-break("mobile") {
   .resp-container {
-    height: 75%;
+    height: 80%;
   }
 }
 
@@ -29,7 +29,7 @@
 }
 
 #myChart {
-  margin: auto;
-  height: 100%;
+  // margin: auto;
+  // height: 100%;
 
 }

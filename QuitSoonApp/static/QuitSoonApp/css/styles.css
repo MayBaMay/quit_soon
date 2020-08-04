@@ -1064,7 +1064,7 @@ tr:nth-child(even) {
 
 @media (min-width: 480px) {
   .resp-container {
-    height: 75%;
+    height: 80%;
   }
 }
 
@@ -1077,11 +1077,6 @@ tr:nth-child(even) {
 
 .chart-iframe {
   background: #1D1F20;
-}
-
-#myChart {
-  margin: auto;
-  height: 100%;
 }
 
 body {
