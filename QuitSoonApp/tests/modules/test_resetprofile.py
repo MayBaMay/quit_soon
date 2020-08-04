@@ -8,7 +8,7 @@ from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
-    Objectif, Trophee
+    Objectif, Trophy
 )
 from QuitSoonApp.modules.resetprofile import ResetProfile
 
@@ -83,7 +83,7 @@ class ResetProfileTestCase(TestCase):
             datetime_creation= make_aware(datetime.datetime(2020, 5, 17, 14, 30)),
             datetime_objectif=make_aware(datetime.datetime(2020, 7, 17, 14, 30)),
         )
-        self.trophee = Trophee.objects.create(
+        self.trophy = Trophy.objects.create(
             user=self.usertest,
             nb_cig=20,
             nb_jour=3,
@@ -111,7 +111,7 @@ class ResetProfileTestCase(TestCase):
         self.assertFalse(ConsoCig.objects.filter(user=self.usertest).exists())
         self.assertFalse(ConsoAlternative.objects.filter(user=self.usertest).exists())
         self.assertFalse(Objectif.objects.filter(user=self.usertest).exists())
-        self.assertFalse(Trophee.objects.filter(user=self.usertest).exists())
+        self.assertFalse(Trophy.objects.filter(user=self.usertest).exists())
 
 
     def test_new_profile(self):
