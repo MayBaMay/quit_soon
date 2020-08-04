@@ -989,15 +989,20 @@ body {
   padding-left: 1rem;
 }
 
-.page-heading h1 {
-  line-height: 1;
+.page-heading span {
+  display: flex;
+  align-items: baseline;
+}
+
+.page-heading span h1 {
   font-weight: 400;
   font-size: 1.7em;
   letter-spacing: 0.05em;
+  margin: 0;
   margin-left: 0.8em;
 }
 
-.page-heading h2 {
+.page-heading span h2 {
   margin-left: 1em;
 }
 
