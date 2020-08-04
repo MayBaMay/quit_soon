@@ -41,13 +41,11 @@
           getCharts();
 
           $( "#previousDates", parent.document ).on("click", function() {
-            console.log('previousDates');
               datesRange -= 1;
               getCharts();
           });
 
           $( "#nextDates", parent.document ).on("click", function() {
-            console.log('nextDates');
             if (datesRange < 0) {
               datesRange += 1;
               getCharts();
@@ -116,7 +114,6 @@
                   let columns = JSON.parse(response_data).columns
                   let index = JSON.parse(response_data).index
                   let data = JSON.parse(response_data).data
-                  console.log(data, params);
 
                   var ctx = document.getElementById('myChart').getContext('2d');
 

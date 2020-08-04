@@ -637,7 +637,6 @@ class ChartData(APIView):
             parsed = json.loads(result)
             parsed["data"] = {'base':parsed["data"]}
             parsed["columns"] = 'Moyenne par heure'
-            print(parsed)
 
         else:
 
@@ -665,7 +664,6 @@ class ChartData(APIView):
                     user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
             # keep only usefull keys and value in user_dict
             user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
-            print(user_dict)
 
 
             df = DataFrameDate(user_dict, charttype)
@@ -681,21 +679,17 @@ class ChartData(APIView):
                     df = df.iloc[-7 + int(datesRange): int(datesRange) ]
                 else:
                     df = df.tail(7)
-            print(df)
 
             values = df.to_json(orient="values")
             parsed = json.loads(values)
-            print(parsed)
             formated_data = []
             formated_activity_data = []
             for elt in parsed:
                 formated_data.append(elt[0])
                 formated_activity_data.append(elt[1])
-            print(formated_data, formated_activity_data)
 
             result = df.to_json(orient="split")
             parsed = json.loads(result)
             parsed["data"] = {'base':formated_data, 'activity':formated_activity_data}
-            print(parsed)
 
         return Response(json.dumps(parsed))
