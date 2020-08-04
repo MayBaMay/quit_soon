@@ -1061,18 +1061,6 @@ tr:nth-child(even) {
   }
 }
 
-.resp-container {
-  height: 60%;
-  padding-top: 1%;
-  padding-bottom: 1%;
-}
-
-@media (min-width: 480px) {
-  .resp-container {
-    height: 80%;
-  }
-}
-
 .chart-iframe {
   background: #1D1F20;
 }
@@ -1423,12 +1411,30 @@ footer {
 }
 
 #report {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+}
+
+#report .resp-container {
+  height: 100%;
+}
+
+#report .resp-container .resp-iframe {
+  width: 98%;
+  height: 400px;
+}
+
+@media (min-width: 480px) {
+  #report .resp-container .resp-iframe {
+    height: 600px;
+  }
 }
 
 @media (min-width: 850px) {
   #report {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+  }
+  #report .resp-container .resp-iframe {
+    height: 800px;
   }
 }
 

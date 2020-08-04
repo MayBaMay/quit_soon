@@ -1,11 +1,39 @@
+//IMPORTANT NOTE: to make the contents of the iframe responsive, the same media queries need to applied
+// to the div (".chart-container") in the embedded html. [see inline style in chart.html]
+
 #report {
   grid-template-areas:
     "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
     "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
-    "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+    "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3"
+    "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+
+  .resp-container {
+    height: 100%;
+    .resp-iframe {
+      width: 98%;
+      height: 400px;
+    }
+  }
+
+  @include min-break("mobile") {
+    .resp-container {
+      .resp-iframe {
+        height: 600px;
+      }
+    }
+  }
+
   @include min-break("tablet") {
     grid-template-areas:
       "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2"
-      "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+      "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3"
+      "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+
+    .resp-container {
+      .resp-iframe {
+        height: 800px;
+      }
+    }
   }
 }
