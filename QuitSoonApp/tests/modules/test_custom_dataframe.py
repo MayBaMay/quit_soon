@@ -11,7 +11,7 @@ from pandas._testing import assert_frame_equal
 
 from django.test import TestCase
 
-from QuitSoonApp.dash_apps import DataFrameDate
+from QuitSoonApp.modules import DataFrameDate
 
 
 class DataFrameDateTestCase(TestCase):
@@ -49,7 +49,7 @@ class DataFrameDateTestCase(TestCase):
 
     def test_weekly_dataframe(self):
         assert_frame_equal(self.custom_df_nb_cig.week_df, self.custom_df_nb_cig.week_df)
-        self.assertEqual(self.custom_df_nb_cig.week_df.loc['08/06/20-14/06/20', 'nb_cig'], 7)
+        self.assertEqual(self.custom_df_nb_cig.week_df.loc['08/06-14/06', 'nb_cig'], 7)
 
     def test_monthly_dataframe(self):
         assert_frame_equal(self.custom_df_nb_cig.month_df, self.custom_df_nb_cig.month_df)

@@ -2,8 +2,6 @@
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
-from QuitSoonApp.urls import graphs_app
-
 from QuitSoonApp.views import (
     index, today,
     register_view, login_view,
