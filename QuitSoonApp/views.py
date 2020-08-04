@@ -562,25 +562,28 @@ def report(request, **kwargs):
                 context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
 
                 activity_stats = {}
-                for type in Alternative.TYPE_ACTIVITY:
-                    activity_stats[type[0]] = {}
-                    if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
-                        activity_stats[type[0]]['exists'] = True
-                    activity_stats[type[0]]['name'] = type[1]
-                    for period in ['day', 'week', 'month']:
-                        minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
-                        activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
-                context['activity_stats'] = activity_stats
+                if healthy_stats.user_activities:
+                    for type in Alternative.TYPE_ACTIVITY:
+                        activity_stats[type[0]] = {}
+                        if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
+                            activity_stats[type[0]]['exists'] = True
+                        activity_stats[type[0]]['name'] = type[1]
+                        for period in ['day', 'week', 'month']:
+                            minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
+                            activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
+                    context['activity_stats'] = activity_stats
                 substitut_stats = {}
-                for type in Alternative.SUBSTITUT:
-                    substitut_stats[type[0]] = {}
-                    if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
-                        substitut_stats[type[0]]['exists'] = True
-                    substitut_stats[type[0]]['name'] = type[1]
-                    for period in ['day', 'week', 'month']:
-                        nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
-                        substitut_stats[type[0]][period] = nicotine
-                context['substitut_stats'] = substitut_stats
+                if healthy_stats.user_conso_subsitut:
+                    for type in Alternative.SUBSTITUT:
+                        substitut_stats[type[0]] = {}
+                        if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
+                            substitut_stats[type[0]]['exists'] = True
+                        substitut_stats[type[0]]['name'] = type[1]
+                        for period in ['day', 'week', 'month']:
+                            nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
+                            substitut_stats[type[0]][period] = nicotine
+                    context['substitut_stats'] = substitut_stats
+                print('substitut_stats', substitut_stats)
 
                 return render(request, 'QuitSoonApp/report.html', context)
             else:

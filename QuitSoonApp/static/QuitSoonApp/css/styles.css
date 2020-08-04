@@ -1068,13 +1068,6 @@ tr:nth-child(even) {
   }
 }
 
-.resp-iframe {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  margin: auto;
-}
-
 .chart-iframe {
   background: #1D1F20;
 }

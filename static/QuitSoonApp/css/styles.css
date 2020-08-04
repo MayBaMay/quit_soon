@@ -949,6 +949,8 @@ body {
   border-radius: 10px;
   padding: 1.2rem;
   box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
+  height: 100%;
+  overflow: hidden;
 }
 
 .panel.pc-0 {
@@ -1052,6 +1054,22 @@ tr:nth-child(even) {
     display: block;
     margin-left: 0.5rem;
   }
+}
+
+.resp-container {
+  height: 60%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+@media (min-width: 480px) {
+  .resp-container {
+    height: 80%;
+  }
+}
+
+.chart-iframe {
+  background: #1D1F20;
 }
 
 body {
@@ -1390,7 +1408,7 @@ footer {
 
 @media (min-width: 480px) {
   #objectifs {
-    grid-template-areas: "p1 p1 p1 p1 p1 p3 p3 p3 p3 p3 p3 p3" ". . p2 p2 p2 p2 p5 p5 p5 p5 . .";
+    grid-template-areas: "p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2 p2" ". . p3 p3 p3 p3 p5 p5 p5 p5 . .";
   }
 }
 
@@ -1405,12 +1423,12 @@ footer {
 }
 
 #report {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
 }
 
 @media (min-width: 850px) {
   #report {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
   }
 }
 

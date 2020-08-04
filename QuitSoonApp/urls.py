@@ -4,7 +4,6 @@ from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 
 from . import views
-from QuitSoonApp.dash_apps import graphs_app, smoke_time_app
 
 app_name = 'QuitSoonApp'
 
