@@ -32,7 +32,7 @@
     <br />
   </section>
 
-  <section class="panel p3 pc-1">
+  <!-- <section class="panel p3 pc-1">
     <div class="tabbed-content-container graph-height">
       <div class="flex-center">
         <button class="btn-tab active" data-toggle="tab1">
@@ -75,8 +75,8 @@
 
         </div>
       </div>
-      {% if user_conso_subsitut %}
 
+      {% if user_conso_subsitut %}
       <div class="tabbed-content" id="tab3">
         <div
           id="nicotinegraph"
@@ -98,10 +98,80 @@
           {% plotly_app name='TimeCigGraph' ratio=1 %}
         </div>
       </div>
-
       {% endif %}
-
     </div>
+  </section> -->
+
+  <section class="panel p3 pc-1">
+
+    <div class="tabbed-content-container graph-height">
+      <div class="flex-center">
+        <button class="btn-tab active" data-toggle="tab1">
+          <i class="fas fa-chart-bar"></i><span> Cigarettes fumées</span>
+        </button>
+        <button class="btn-tab" data-toggle="tab2">
+          <i class="fas fa-euro-sign"></i><span> Argent dépensé</span>
+        </button>
+        {% if user_conso_subsitut %}
+        <button class="btn-tab" data-toggle="tab3">
+          <i class="fas fa-smoking"></i><span> Substituts nicotiniques</span>
+        </button>
+        {% endif %}
+        {% if smoke_user_conso_full_days %}
+        <button class="btn-tab" data-toggle="tab4">
+          <i class="fas fa-clock"></i><span> Moyenne par heure</span>
+        </button>
+        {% endif %}
+      </div>
+
+      <div class="tabbed-content active" id="tab1">
+      </div>
+      <div class="tabbed-content" id="tab2">
+      </div>
+      <div class="tabbed-content" id="tab3">
+      </div>
+      <div class="tabbed-content" id="tab4">
+      </div>
+
+      <div class="user-choices">
+        <div id="radio">
+          <label style="display: inline-block;">
+            <input type="radio" name="period" value="Jour" checked="">
+            Jour
+          </label>
+          <label style="display: inline-block;">
+            <input type="radio" name="period" value="Semaine">
+            Semaine
+          </label>
+          <label style="display: inline-block;">
+            <input type="radio" name="period" value="Mois">
+            Mois
+          </label>
+        </div>
+        <div id="checkbox">
+          <label>
+            <input type="checkbox" name="show-healthy">
+            Voir mes activités saines
+          </label>
+        </div>
+      </div>
+
+      <div class="resp-container" >
+        <iframe class="resp-iframe" src="{% url 'QuitSoonApp:charts' %}" frameborder="0"></iframe>
+      </div>
+
+      <div class="flex-center">
+        <a id="previousDates">
+          <i class='fas fa-angle-double-left' style='font-size:24px'></i>
+           Précédent -
+        </a>
+        <a id="nextDates">
+          - Suivant
+          <i class='fas fa-angle-double-right' style='font-size:24px'></i>
+        </a>
+      </div>
+
+
   </section>
 
   {% else %}
