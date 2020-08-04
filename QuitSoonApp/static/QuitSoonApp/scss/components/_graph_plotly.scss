@@ -2,3 +2,34 @@
   & > div {
   }
 }
+//
+.resp-container {
+  height: 60%;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+@include min-break("mobile") {
+  .resp-container {
+    height: 80%;
+  }
+}
+
+.resp-iframe {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  margin: auto;
+}
+.chart-iframe {
+  //   position: relative;
+  //   margin: auto;
+  //   height: 100%;
+  //   width: 100%;
+  background: #1D1F20;
+}
+
+#myChart {
+  // margin: auto;
+  // height: 100%;
+
+}

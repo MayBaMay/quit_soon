@@ -9,7 +9,7 @@
   <div class="page-heading">
     <i class="fas fa-trophy"></i>
     <h1>Objectifs</h1>
-    <h2>oui, oui tu peux le faire!<h2>
+    <h2>Oui, oui tu peux le faire!<h2>
   </div>
   <!-- End page heading -->
 
@@ -21,24 +21,38 @@
           {% if challenge.0  == 0 %}
 
             {% if challenge.1 == 1 %}
-             {{challenge.1}} Jour sans tabac {{success}}<br>
+             {{challenge.1}} Jour sans tabac
             {% else %}
               {% if nb_jour >= 30 %}
-                {{ challenge.1|intdiv:30 }} Mois sans tabac {{success}}<br>
+                {{ challenge.1|intdiv:30 }} Mois sans tabac
               {% else %}
-                {{challenge.1}} Jours sans tabac {{success}}<br>
+                {{challenge.1}} Jours sans tabac
               {% endif %}
             {% endif %}
+
+            {% if success %}
+              <i class="fas fa-trophy" style="color:#28b463"></i>
+            {% else %}
+              <i class="fas fa-trophy" style="color:#cecac9"></i>
+            {% endif %}
+            <br>
           {% endif %}
 
       {% endfor %}
     </section>
-    <section class="panel p3 pc1" style="color: white;">
+    <section class="panel p2 pc1" style="color: white;">
       <p>Baisse de consommation : </p>
       {% for challenge, success in challenges.items %}
         {% if challenge.0  != 0 %}
-          {{challenge.1}} jours à moins de {{challenge.0 }} cigarettes par jour {{success}}<br>
+          {{challenge.1}} jours à moins de {{challenge.0 }} cigarettes par jour
+          {% if success %}
+            <i class="fas fa-trophy" style="color:#28b463"></i>
+          {% else %}
+            <i class="fas fa-trophy" style="color:#cecac9"></i>
+          {% endif %}
         {% endif %}
+
+        <br>
       {% endfor %}
     </section>
   </main>

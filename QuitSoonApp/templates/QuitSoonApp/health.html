@@ -5,79 +5,71 @@
 <!-- Page heading -->
 <div class="page-heading">
   <i class="fas fa-heartbeat"></i>
-  <h1>je tiens bon</h1>
-  <h2>et ça, ça me fait du bien!</h2>
+  <h1>Je tiens bon</h1>
+  <h2>Et ça, ça me fait du bien!</h2>
 </div>
 <!-- End page heading -->
 
 <!-- Panel content -->
 <main id="health" class="content">
   <section class="panel p1 pc-1">
-  {% if not alternatives %}
+    {% if not alternatives %}
 
-    <p>Vous n'avez enregistré aucune alternative</p>
-    <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
+      <p>Vous n'avez enregistré aucune alternative</p>
+      <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
 
-  {% else %}
+    {% else %}
 
-  {% if health %}
-    <p>Bravo! Faites-vous du bien, occupez-vous et ça ira mieux.</p>
-    <p>Vous avez sauvegardé votre dernière action saine il y a :
-    {% for element in lasthealth %}
-         {{ element }}
-    {% endfor %}</p>
-  {% endif %}
-  <div class="form-container">
-    <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
-      {% csrf_token %}
-      {% if form.errors %}
-        {% for field in form %}
-          {% for error in field.errors %}
-            <div class="error">
-              <p> {{ error }} </p>
-            </div>
+    {% if health %}
+      <p>Bravo! Faites-vous du bien, occupez-vous et ça ira mieux.</p>
+      <p>Vous avez sauvegardé votre dernière action saine il y a :
+      {% for element in lasthealth %}
+           {{ element }}
+      {% endfor %}</p>
+    {% endif %}
+    <div class="form-container">
+      <form id="healthform" method='post' action="{% url 'QuitSoonApp:health' %}">
+        {% csrf_token %}
+        {% if form.errors %}
+          {% for field in form %}
+            {% for error in field.errors %}
+              <div class="error">
+                <p> {{ error }} </p>
+              </div>
+            {% endfor %}
           {% endfor %}
-        {% endfor %}
-        {{ form.non_field_errors }}
-      {% endif %}
-      <div class="fieldWrapper form-group row">
-       <span><label>{{ form.date_health.label }}</label>
-        {{ form.date_health }}</span>
-        <span>
-        <label>{{ form.time_health.label }}</label>
-        {{ form.time_health }}
-        </span>         
-      </div>
-       
+          {{ form.non_field_errors }}
+        {% endif %}
+        <div class="fieldWrapper form-group row">
+         <span><label>{{ form.date_health.label }}</label>
+          {{ form.date_health }}</span>
+          <span>
+          <label>{{ form.time_health.label }}</label>
+          {{ form.time_health }}
+          </span>
+        </div>
+        <div class="fieldWrapper form-group ">
+          {{ form.type_alternative_field }}
+          {{ form.sp_field }}
+          {{ form.so_field }}
+          {{ form.lo_field }}
+          {{ form.su_field }}
+          {{ form.ecig_vape_or_start }}
+        </div>
+        <div id="duration-group" class="fieldWrapper form-group row time ">
+        <span class="flex-text">Pendant:</span>
+          {{ form.duration_hour }}
+          <label>{{ form.duration_hour.label }} </label>
+          {{ form.duration_min }}
+          <label>{{ form.duration_min.label }} </label>
 
-      <div class="fieldWrapper form-group ">
-        {{ form.type_alternative_field }}
-        {{ form.sp_field }}
-        {{ form.so_field }}
-        {{ form.lo_field }}
-        {{ form.su_field }}
-        {{ form.ecig_vape_or_start }}
-      </div>
-      <div id="duration-group" class="fieldWrapper form-group row time ">
-      <span class="flex-text">Pendant:</span>
-        {{ form.duration_hour }}
-        <label>{{ form.duration_hour.label }} </label>
-        {{ form.duration_min }}
-        <label>{{ form.duration_min.label }} </label> 
+        </div>
+        <input id="" type="submit" class="btn" value="Sauvergarder">
+      </form>
+    </div>
 
-      </div>
-      <input id="" type="submit" class="btn" value="Sauvergarder">
-    </form>
-  </div>
-
-  {% endif %}
-
-  {% if health %}
-    <p><a href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes actions saines</a></p>
-  {% else %}
-    <p>Vous n'avez encore enregistré aucune action</p>
-  {% endif %}
-
+    {% endif %}
+    <a class="btn" href="{% url 'QuitSoonApp:alternatives' %}">Créer une nouvelle alternative</a>
   </section>
   <section class="panel p2 pc-1">
 
@@ -90,7 +82,7 @@
       </div>
       <div class="flex-center">
       <a class="btn" href="{% url 'QuitSoonApp:health_list' %}">Voir la liste de mes bonnes actions</a>
-      </div>  
+      </div>
     {% else %}
       Vous n'avez encore enregistré aucune action
     {% endif %}

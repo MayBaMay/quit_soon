@@ -449,7 +449,7 @@ fake_smoke = [
 ]
 
 
-fake_smoke_for_trophees = [
+fake_smoke_for_trophies = [
 {'date_cig': '2020-12-31', 'time_cig': '13:49:00 PM', 'paquet': 1001},
 {'date_cig': '2020-10-19', 'time_cig': '13:49:00 PM', 'paquet': 1001},
 {'date_cig': '2020-07-19', 'time_cig': '13:49:00 PM', 'paquet': 1001},

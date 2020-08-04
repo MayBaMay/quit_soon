@@ -15,7 +15,9 @@
       rel="stylesheet"
       href="{% static 'QuitSoonApp/css/styles.min.css' %}"
     />
-    <title>Quit Soon</title>
+    <link rel="shortcut icon" href="{% static 'QuitSoonApp/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'QuitSoonApp/favicon.ico' %}" type="image/x-icon">
+    <title>Nicotine Kill</title>
   </head>
 
   <body id="reg">
@@ -27,7 +29,9 @@
           <header>
             <div class="header-content">
               <div class="logo">
-                <span><a href="{% url 'QuitSoonApp:index' %}">QS</a></span>
+                <span><a href="{% url 'QuitSoonApp:index' %}">
+                  <img class="NK-logo" src="{% static 'QuitSoonApp/img/clope-ecrasee-fond-a.png' %}" alt="kill nicotine" height="50" width="50">
+                </a></span>
               </div>
             </div>
           </header>
