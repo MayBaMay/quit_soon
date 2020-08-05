@@ -20,9 +20,12 @@
   <section class="panel p1 pc-1">
 
     {% if not alternatives %}
-      Vous n'avez enregistré aucune alternative,<br>
-      Veuillez paramétrer vos alternatives
-      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
+    <p>Vous n'avez enregistré aucune alternative, </p>
+      <p> Veuillez paramétrer vos alternatives
+      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>      
+      </p>
+    
+      
 
 
     {% else %}
@@ -74,8 +77,9 @@
         {% endfor %}
 
       {% else %}
-          Vous n'avez pas encore enregistré d'action saine,
-          Allez, un petit effort, ça te fera vraiment du bien!
+      <p>
+         Vous n'avez pas encore enregistré d'action saine,
+          Allez, un petit effort, ça te fera vraiment du bien!</p>       
       {% endif %}
     {% endif %}
   </section>

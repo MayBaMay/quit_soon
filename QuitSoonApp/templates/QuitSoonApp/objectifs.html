@@ -19,7 +19,7 @@
   <!-- Panel content -->
   <main id="objectifs" class="content">
     <section class="panel p1 pc-1" >
-      <p>Jours sans tabac : </p>
+      <h2>Jours sans tabac  </h2>
       {% for challenge, success in challenges.items %}
           {% if challenge.0  == 0 %}
 
@@ -39,12 +39,13 @@
               <i class="fas fa-trophy" style="color:#cecac9"></i>
             {% endif %}
             <br>
+
           {% endif %}
 
       {% endfor %}
     </section>
     <section class="panel p2 pc-1" >
-      <p>Baisse de consommation : </p>
+      <h2>Baisse de consommation </h2>
       {% for challenge, success in challenges.items %}
         {% if challenge.0  != 0 %}
           {{challenge.1}} jours à moins de {{challenge.0 }} cigarettes par jour

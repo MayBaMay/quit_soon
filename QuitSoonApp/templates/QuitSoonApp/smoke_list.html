@@ -21,9 +21,11 @@
   <section class="panel p1 pc-1">
 
   {% if not packs %}
-    Vous n'avez enregistré aucun paquet,<br>
-    Veuillez paramétrer vos paquets
+  <p>
+    Vous n'avez enregistré aucun paquet</p>
+    <p> Veuillez paramétrer vos paquets 
     <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
+    </p>  
 
   {% else %}
     {% if smoke %}

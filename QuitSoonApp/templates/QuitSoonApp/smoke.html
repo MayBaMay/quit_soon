@@ -27,10 +27,10 @@
 
       {% if smoke %}
         <p>
-          Vous avez déjà fumé <b>{{ nb_smoke_today }} cigarettes</b> aujourd'hui,
+          Vous avez déjà fumé <em>{{ nb_smoke_today }} cigarettes</em> aujourd'hui,
             la dernière il y a
             {% for element in lastsmoke %}
-              <b>{{ element }}</b>
+              <em>{{ element }}</em>
             {% endfor %}.
         </p>
       {% else %}

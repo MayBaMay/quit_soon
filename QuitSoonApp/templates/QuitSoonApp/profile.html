@@ -24,8 +24,8 @@
 <main id="profile" class="content">
   <section class="panel p1 pc-1">
     <div class="container">
-      <b>
-        <p>MES INFORMATIONS PERSONNELLES</p>
+      
+        <h2>MES INFORMATIONS PERSONNELLES</h2>
         <p>
           Nom d'utilisateur : {{ user.username }}
           <a
@@ -48,7 +48,6 @@
             ><i class="fas fa-edit"></i
           ></a>
         </p>
-      </b>
       <p>
         <a
           href="#"
@@ -63,17 +62,17 @@
   </section>
   <section class="panel p2 pc-1">
     <div class="container">
-      <b>
-        <p>
-          MON SUIVI<a
+      
+        <h2>
+          MON SUIVI    <a
             href="#"
             id="starting_parameters"
             title="Modfier"
             class="toggle-modal"
             data-modal="modal_starting_parameters"
             ><i class="fas fa-edit ml-1"></i
-          ></a>
-        </p>
+          ></a></h2>
+       
         {% if userprofile %}
         <p>Début du suivi : {{ userprofile.date_start }}</p>
         <p>
@@ -103,7 +102,6 @@
           </p>
         </div>
         {% endif %}
-      </b>
     </div>
   </section>
 </main>
@@ -328,7 +326,7 @@
             </div>
             <div class="form-group">
             <label for="starting_nb_cig"
-              ><b>Nb cigarettes moyen/jour en début de suivi : </b></label
+              ><em>Nb cigarettes moyen/jour en début de suivi : </em></label
             >
             {{ parameter_form.starting_nb_cig }}
             </div>
@@ -369,7 +367,7 @@
                 {% endfor %} {% comment %} end {% endcomment %}
               </div>
               {% endif %} {% if not user_packs %}
-              <p><b>Paquet de cigarette de référence:</b></p>
+              <h3>Paquet de cigarette de référence:</h3>
               <p>
                 Renseignez les informations demandées concernant le paquet de
                 cigarette que vous consommez le plus régulièrement

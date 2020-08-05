@@ -21,14 +21,14 @@
     {% if not first_day %}
 
       <section class="panel p1 pc-1">
-        <b>MA CONSO :</b><br />
+        <h2>MA CONSO :</h2/>
         Cigarettes fumées : {{ total_number }} <br />
         Moyenne par jour : {{ average_number }} <br />
         Cigarettes non fumées : {{ non_smoked }} <br />
       </section>
 
       <section class="panel p2 pc-1">
-        <b>MES SOUS:</b><br />
+        <h2>MES SOUS:</h2/>
         Argent fumé : {{ total_money }}€ <br />
         Moyenne par jour : {{ average_money }}€ <br />
         Moyenne par jour : {{ saved_money }}€ <br />
@@ -37,12 +37,12 @@
 
       {% if activity_stats or substitut_stats %}
         <section class="panel p3 pc-1">
-          <p><b>MES ALTERNATIVES :</b></p><br>
+          <h2>MES ALTERNATIVES :</h2>
           <p>
 
           {% for type, values in activity_stats.items %}
             {% if values.exists %}
-              <b>{{ values.name }}:</b>
+              <h3>{{ values.name }}:</h3>
               {% if values.day %}
                 {{ values.day }} aujourd'hui,
               {% endif %}
@@ -60,7 +60,7 @@
           </p>
 
           {% if substitut_stats %}
-            <p><b>Substituts : </b></p>
+            <h3>Substituts : </h3>
             <p>
             {% for type, values in substitut_stats.items %}
               {% if values.exists %}
@@ -139,7 +139,7 @@
           </div>
 
           <div class="resp-container" >
-            <iframe class="resp-iframe" src="{% url 'QuitSoonApp:charts' %}" frameborder="0" ></iframe>
+            <iframe class="resp-iframe" scrolling="no" src="{% url 'QuitSoonApp:charts' %}" frameborder="0" ></iframe>
           </div>
 
           <div class="flex-center">

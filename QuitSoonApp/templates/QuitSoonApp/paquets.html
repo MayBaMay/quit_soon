@@ -19,10 +19,10 @@
 <!-- Panel content -->
 <main id="paquets" class="content">
   <section class="panel p1 pc-1">
+    <h2>Nouveau paquet</h2>
 
     <div class="form-container">
       <form id="paquetform" action="{% url 'QuitSoonApp:paquets' %}" method="POST">
-       <h2>Nouveau paquet</h2>
        {% if first %}
        <div class="">
         Attention, veillez à renseigner le paquet que vous consommez le plus couramment.
@@ -44,13 +44,13 @@
   </section>
 
   <section class="panel p2 pc-1">
-   <p><b>Mes clopes :</b></p>
+   <h2>Mes clopes :</h2>
     <div class="">
 
       {% if rol or ind %}
 
         {% if ind %}
-          <p><b>Cigarettes industrielles</b></p>
+          <h3>Cigarettes industrielles</h3>
           {% for paquet in ind %}
             <div class="row">
               {{ paquet.brand }}
@@ -65,7 +65,7 @@
 
       <div class="">
         {% if rol %}
-          <p><b>Cigarettes roulées</b></p>
+          <h3>Cigarettes roulées</h3>
           {% for paquet in rol %}
             <div class="row">
               {{ paquet.brand }}

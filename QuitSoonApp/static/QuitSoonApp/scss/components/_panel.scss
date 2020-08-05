@@ -8,7 +8,6 @@
   height: 100%;
   overflow: hidden;
 
-
   //panel colour utility classes
   &.pc-0 {
     background-color: rgba(0, 0, 0, 0);
@@ -26,6 +25,30 @@
   &.pc-3 {
     background-color: $panel-bg-colour3;
     color: $panel-fg-colour3;
+  }
+
+  h2,
+  h3,
+  h4 {
+    letter-spacing: 0.1em;
+  }
+
+  h2 {
+    // text-transform: uppercase;
+    font-size: 1.4rem;
+    margin: 1.2rem 0;
+  }
+  h3 {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+  }
+  h4 {
+    font-size: 1.1rem;
+    margin: 0.8rem 0;
+  }
+  p {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
   }
 }
 
