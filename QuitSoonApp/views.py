@@ -548,17 +548,12 @@ def report(request, **kwargs):
 
                 context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days.exists()
                 # generate context
-                try:
-                    context['total_number'] = smoke_stats.total_smoke_all_days
-                    context['average_number'] = round(smoke_stats.average_per_day)
-                    context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
-                    context['total_money'] = round(smoke_stats.total_money_smoked_full_days, 2)
-                    context['saved_money'] = round(smoke_stats.money_saved_full_days, 2)
-                    context['average_money'] = round(smoke_stats.average_money_per_day_full_days, 2)
-                except (ZeroDivisionError, TypeError):
-                    # 1st day so no full day, average return None
-                    context['first_day'] = True
-
+                context['total_number'] = smoke_stats.total_smoke_all_days
+                context['average_number'] = round(smoke_stats.average_per_day)
+                context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
+                context['total_money'] = round(smoke_stats.total_money_smoked, 2)
+                context['saved_money'] = round(smoke_stats.money_saved, 2)
+                context['average_money'] = round(smoke_stats.average_money_per_day, 2)
                 context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
 
                 activity_stats = {}
