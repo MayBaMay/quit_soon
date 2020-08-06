@@ -1,6 +1,15 @@
 (function ($) {
   "use strict"; // Start of use strict
 
+  // function get_time_zone_offset( ) {
+  // var current_date = new Date();
+  // return parseInt(-current_date.getTimezoneOffset() / 60);
+  // }
+  // console.log(get_time_zone_offset());
+
+
+
+
   ///////////////////show password//////////////////////
 
   $(".pass-status").on("click", function (e) {

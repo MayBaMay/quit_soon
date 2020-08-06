@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'django.contrib.postgres',
     'channels',
     'channels_redis',
@@ -65,8 +65,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'quit_soon_project.middleware.login_middleware.LoginRequiredMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -124,7 +125,7 @@ NOSE_ARGS = [
 
 LANGUAGE_CODE = 'fr'  #used for project including administration interface
 
-TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = 'Etc/Greenwich'
 
 USE_I18N = True
 
@@ -140,6 +141,19 @@ SITE_URL = 'http://127.0.0.1:8000'
 
 INTERNAL_IPS = ['127.0.0.1']
 
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+LOGIN_EXEMPT_URLS = (
+    r'^$',
+    r'^accounts/logout/$',
+    r'^register/$',
+    r'^password_reset/$',
+    r'^accounts/password_reset/$',
+    r'^password_reset/done/$',
+    r'^accounts/password_reset/done/$',
+    r'^accounts/reset/',
+    r'^reset/done/$',
+)
 LOGOUT_REDIRECT_URL = '/'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'

@@ -45,9 +45,9 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'day'), 61)
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'week'), 8)
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'month'), 1)
-        self.assertEqual(self.stats.nb_full_period_for_average(datetime.date.today(), 'day'), 312)
-        self.assertEqual(self.stats.nb_full_period_for_average(datetime.date.today(), 'week'), 44)
-        self.assertEqual(self.stats.nb_full_period_for_average(datetime.date.today(), 'month'), 10)
+        self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2020,8,5), 'day'), 312)
+        self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2020,8,5), 'week'), 44)
+        self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2020,8,5), 'month'), 10)
 
     def test_nb_full_period_for_average_dates_first_and_last_day_of_month(self):
         user = User.objects.create_user(

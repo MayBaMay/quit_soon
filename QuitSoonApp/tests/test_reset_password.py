@@ -31,6 +31,12 @@ class ResetPasswordTransactionTestCase(TransactionTestCase):
         # post password_reset email found
         response = self.client.post(reverse('password_reset'), {'email': 'test@test.com'})
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response,
+                             '/accounts/password_reset/done/',
+                             status_code=302,
+                             target_status_code=200,
+                             fetch_redirect_response=True)
+        print(mail.outbox)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("http://", mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].subject, 'NicotineKill réinitialisation du mot de passe')
