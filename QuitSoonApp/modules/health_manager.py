@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import datetime
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -10,14 +13,27 @@ from QuitSoonApp.models import Alternative, ConsoAlternative
 class HealthManager:
     """Manage informations of healthy actions"""
 
-    def __init__(self, user, datas):
+    def __init__(self, user, datas, tz_offset=0):
         self.datas = datas
         self.user = user
         self.id = self.get_request_data('id_health')
         if not self.id:
-            self.date_alter = self.get_request_data('date_health')
-            self.time_alter = self.get_request_data('time_health')
+            self.date_alter, self.time_alter = self.get_date_time_alter_aware(
+                self.get_request_data('date_health'),
+                self.get_request_data('time_health'),
+                tz_offset
+                )
 
+    def get_date_time_alter_aware(self, date_health, time_health, tz_offset):
+        try:
+            dt_alter = datetime.datetime.combine(date_health, time_health)
+            dt_alter -= timedelta(hours=tz_offset)
+            date_alter = dt_alter.date()
+            time_alter = dt_alter.time()
+            return date_alter, time_alter
+        except TypeError:
+            # get_request_data returned None
+            return None, None
 
     def get_request_data(self, data):
         try:

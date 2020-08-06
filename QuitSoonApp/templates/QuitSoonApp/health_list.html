@@ -51,8 +51,7 @@
 
         {% for conso in health %}
           <div class="row">
-              {{ conso.date_alter }}
-              {{ conso.time_alter }}
+              {{ conso.datetime_alter }}
               {% if conso.alternative.type_activity %}
                 {{ conso.alternative.type_activity }}
                 {{ conso.alternative.activity }}

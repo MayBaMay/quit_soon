@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+import datetime
+import pytz
 
+from django.utils.timezone import make_aware
 from django.db import models
+import django.dispatch
 from django.contrib.auth.models import User
 
 
@@ -49,6 +53,7 @@ class ConsoCig(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_cig = models.DateField()
     time_cig = models.TimeField()
+    datetime_cig = models.DateTimeField()
     paquet = models.ForeignKey(Paquet, on_delete=models.CASCADE, null=True)
     given = models.BooleanField(default=False)
 
@@ -58,6 +63,22 @@ class ConsoCig(models.Model):
         else:
             paquet = None
         return "%s %s-%s" % (self.user, self.date_cig, paquet)
+
+@django.dispatch.receiver(models.signals.post_init, sender=ConsoCig)
+def set_default_ConsoCig_datetime_cig(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `datetime_cig` on the `instance`.
+    :param sender: The `ConsoCig` class that sent the signal.
+    :param instance: The `ConsoCig` instance that is being
+        initialised.
+    :return: None.
+    """
+    if not instance.datetime_cig:
+        naive_datetime = datetime.datetime.combine(
+            instance.date_cig,
+            instance.time_cig,
+            )
+        instance.datetime_cig = make_aware(naive_datetime, pytz.utc)
 
 
 class Alternative(models.Model):
@@ -119,6 +140,7 @@ class ConsoAlternative(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_alter = models.DateField()
     time_alter = models.TimeField()
+    datetime_alter = models.DateTimeField()
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
     activity_duration = models.IntegerField(null=True)
     ecig_choice = models.CharField(
@@ -126,6 +148,22 @@ class ConsoAlternative(models.Model):
         choices=ECIG_CHOICE,
         null=True,
     )
+
+@django.dispatch.receiver(models.signals.post_init, sender=ConsoAlternative)
+def set_default_ConsoAlternative_datetime_alter(sender, instance, *args, **kwargs):
+    """
+    Set the default value for `datetime_cig` on the `instance`.
+    :param sender: The `ConsoCig` class that sent the signal.
+    :param instance: The `ConsoCig` instance that is being
+        initialised.
+    :return: None.
+    """
+    if not instance.datetime_alter:
+        naive_datetime = datetime.datetime.combine(
+            instance.date_alter,
+            instance.time_alter,
+            )
+        instance.datetime_alter = make_aware(naive_datetime, pytz.utc)
 
 
 class Objectif(models.Model):

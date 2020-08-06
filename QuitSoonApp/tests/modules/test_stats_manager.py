@@ -25,7 +25,6 @@ from ..MOCK_DATA import (
 class SmokeStatsTestCaseBigData(TestCase):
     """class testing Create_smoke """
 
-    @mock.patch('datetime.date', FakeTodayDate191128)
     def setUp(self):
         """setup tests"""
         self.user = User.objects.create_user(
@@ -39,7 +38,7 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.packs.populate_db()
         self.smoke = Create_smoke(self.user, row_conso_cig_data)
         self.smoke.populate_db()
-        self.stats = SmokeStats(self.user, datetime.date.today())
+        self.stats = SmokeStats(self.user, datetime.date(2019,11,28))
 
     def test_nb_full_period_for_average(self):
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'day'), 61)

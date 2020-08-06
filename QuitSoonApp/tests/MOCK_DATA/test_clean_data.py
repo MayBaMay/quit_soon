@@ -83,7 +83,7 @@ class CreateTestSmokeTestCase(TestCase):
         self.assertEqual(ConsoCig.objects.count(), 329)
 
 
-class CreateAlternativeTestCas(TestCase):
+class CreateAlternativeTestCase(TestCase):
     """class testing CreateAlternative for tests """
 
     def setUp(self):

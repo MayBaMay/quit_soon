@@ -51,9 +51,9 @@
       {% for conso in smoke %}
         <div class="row">
           {% if conso.given %}
-            {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
+            {{ conso.datetime_cig }} Clope taxée
           {% else %}
-            {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
+            {{ conso.datetime_cig }} {{ conso.paquet.brand }}
           {% endif %}
           <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
         </div>

@@ -87,7 +87,6 @@ def login_view(request):
 def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
     context = {}
-
     smoke = ConsoCig.objects.filter(user=request.user)
     health = ConsoAlternative.objects.filter(user=request.user)
     if UserProfile.objects.filter(user=request.user).exists():
@@ -283,18 +282,19 @@ def change_g_per_cig(request):
             change_pack.update_pack_g_per_cig()
     return redirect('QuitSoonApp:paquets')
 
-
 def smoke(request):
     """User smokes"""
     # check if packs are in parameters to fill fields with actual packs
     packs = Paquet.objects.filter(user=request.user, display=True)
     context = {'packs':packs}
+    # timezone offset returned by client with ajax
+    tz_offset = -request.session.get('detected_tz') / 60
     if packs :
         smoke_form = SmokeForm(request.user)
         if request.method == 'POST':
             smoke_form = SmokeForm(request.user, request.POST)
             if smoke_form.is_valid():
-                smoke = SmokeManager(request.user, smoke_form.cleaned_data)
+                smoke = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
                 smoke.create_conso_cig()
                 return redirect('QuitSoonApp:today')
         context['smoke_form'] = smoke_form
@@ -427,6 +427,7 @@ def health(request):
     """User do a healthy activity or uses substitutes"""
     context = {}
     # check if packs are in parameters to fill fields with actual packs
+    tz_offset = -request.session.get('detected_tz') / 60
     alternatives = Alternative.objects.filter(user=request.user, display=True)
     context['alternatives'] = alternatives
     if alternatives :
@@ -434,7 +435,7 @@ def health(request):
         if request.method == 'POST':
             form = HealthForm(request.user, request.POST)
             if form.is_valid():
-                new_health = HealthManager(request.user, form.cleaned_data)
+                new_health = HealthManager(request.user, form.cleaned_data, tz_offset)
                 new_health.create_conso_alternative()
                 return redirect('QuitSoonApp:today')
         context['form'] = form

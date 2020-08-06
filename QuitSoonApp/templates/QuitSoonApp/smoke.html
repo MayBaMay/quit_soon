@@ -2,6 +2,8 @@
 {% load static %}
 {% block content %}
 
+{% load tz_detect %}
+
 
 <!-- Page heading -->
 <div class="page-heading">
@@ -12,8 +14,11 @@
 <!-- End page heading -->
 
 <!-- Panel content -->
-<main id="smoke" class="content">
+<main id="smoke" class="content tz">
   <section class="panel p1 pc-1">
+
+
+    It is {% now "jS F Y H:i" %}
 
     {% if not packs %}
 
