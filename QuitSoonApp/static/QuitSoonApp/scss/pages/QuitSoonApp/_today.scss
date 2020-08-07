@@ -1,8 +1,18 @@
 #today {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
+  grid-template-areas:
+    "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2"
+    "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
   @include min-break("mobile") {
     grid-template-areas:
-      ". . . p1 p1 p1 p2 p2 p2 . . ."
-      ". . . p3 p3 p3 p3 p3 p3. . .";
+      ". p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 ."
+      ". . . p3 p3 p3 p3 p3 p3 . . .";
   }
+
+  // .page-heading {
+  //   span {
+  //     h1 {
+  //       font-size: 1rem;
+  //     }
+  //   }
+  // }
 }

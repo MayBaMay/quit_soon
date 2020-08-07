@@ -42,8 +42,8 @@ $header-colour: rgb(41, 41, 41);
 
 // $header-bg-colour: white;
 // $header-bg-colour: rgba(255, 255, 255, 1);
-$header-bg-colour: $gray-1;
 
+$header-bg-colour: $gray-2;
 $header-opacity: 0.95;
 
 //layout
@@ -51,7 +51,7 @@ $body-bg-colour: $gray-2;
 
 //content (main background)
 
-$content-bg-colour: $header-bg-colour;
+$content-bg-colour: $gray-1;
 
 // $header-bg-colour-open: rgb(212, 211, 212);
 
@@ -79,3 +79,5 @@ $max-width: 1080px;
 $container-radius: 10px;
 $header-height: 4rem;
 $header-height-mob: 6rem;
+
+$heading-height: 6rem;
