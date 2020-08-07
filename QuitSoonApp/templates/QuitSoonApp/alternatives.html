@@ -75,13 +75,10 @@
                 {% if Sp %}
                   <h3>Sports<h3>
                   {% for activity in Sp %}
-                    <div class="row">
-                      {{ activity.activity }}
-                      <a href="/delete_alternative/{{activity.id}}/"">
+                      <p class="flex-between">{{ activity.activity }}  <a href="/delete_alternative/{{activity.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  {% endfor %}
+                      </a></p>
+                    {% endfor %}
                 {% endif %}
               </div>
 
@@ -89,11 +86,12 @@
                 {% if Lo %}
                   <h3>Loisirs</h3>
                   {% for activity in Lo %}
-                    <div class="row">
+                  <p class="flex-between">
                       {{ activity.activity }}
-                      <a href="/delete_alternative/{{activity.id}}/"">
+                      <a href="/delete_alternative/{{activity.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>                </div>
+                      </a>        
+                      </p>       
                   {% endfor %}
                 {% endif %}
               </div>
@@ -102,11 +100,11 @@
                 {% if So %}
                   <h3>Soins</h3>
                   {% for activity in So %}
-                    <div class="row">
+                    <p class="flex-between">
                       {{ activity.activity }}
-                        <a href="/delete_alternative/{{activity.id}}/"">
+                        <a href="/delete_alternative/{{activity.id}}/">
                           <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>                </div>
+                      </a>                </p>
                   {% endfor %}
                 {% endif %}
               </div>
@@ -115,13 +113,13 @@
                 {% if Su %}
                   <h3>Substituts</h3>
                   {% for substitut in Su %}
-                    <div class="row">
+                    <p class="flex-between">
                       {{ substitut.substitut }}
                       {{ substitut.nicotine }}
-                      <a href="/delete_alternative/{{substitut.id}}/"">
+                      <a href="/delete_alternative/{{substitut.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                       </a>
-                    </div>
+                    </p>
                   {% endfor %}
                 {% endif %}
               </div>

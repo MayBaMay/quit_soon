@@ -6,7 +6,7 @@
 
 <!-- Page heading -->
 <div class="page-heading">
-  <i class="fa-calendar-day"></i>
+  <i class="fas fa-heartbeat"></i>
   <span>
   <h1>Je tiens bon</h1>
   <h2>Avec ça je me sens mieux!</h2>
@@ -53,28 +53,48 @@
           </div>
           <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
         </form>
-
+<ul>
         {% for conso in health %}
-          <div class="row">
+          <li class="flex-between">
+          <table class="info-table">
+          <tbody>
+          <tr>
+          <td>
               {{ conso.date_alter }}
+              </td>
+              <td>
               {{ conso.time_alter }}
+              </td>
               {% if conso.alternative.type_activity %}
+              <td>
                 {{ conso.alternative.type_activity }}
                 {{ conso.alternative.activity }}
+                </td>
               {% endif %}
               {% if conso.alternative.substitut %}
+              <td>
                 {{ conso.alternative.substitut }}
                 {{ conso.alternative.nicotine }}
+                </td>
               {% endif %}
               {% if conso.activity_duration %}
+              <td>
                 {{ conso.activity_duration }}min
+                </td>
               {% endif %}
               {% if conso.ecig_choice %}
+              <td>
                 {{ conso.get_ecig_choice_display }}
+                </td>
               {% endif %}
+              </tr>
+              </tbody>
+              </table>
+
             <a href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-          </div>
+              </li>
         {% endfor %}
+          </ul>
 
       {% else %}
       <p>

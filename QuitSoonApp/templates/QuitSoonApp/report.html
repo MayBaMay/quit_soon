@@ -43,6 +43,7 @@
           {% for type, values in activity_stats.items %}
             {% if values.exists %}
               <h3>{{ values.name }}:</h3>
+              <p>
               {% if values.day %}
                 {{ values.day }} aujourd'hui,
               {% endif %}
@@ -50,12 +51,15 @@
                 {{ values.week }} cette semaine,
               {% endif %}
               {% if values.month %}
-                {{ values.month }} ce mois-ci,
+                {{ values.month }} ce mois-ci.
+              </p>
               {% else %}
+              <p>
                 Aucune activité ce mois-ci
+                </p>
               {% endif %}
             {% endif %}
-            <br>
+            
           {% endfor %}
           </p>
 

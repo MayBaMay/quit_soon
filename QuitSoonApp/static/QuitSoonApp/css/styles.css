@@ -17,6 +17,11 @@
   display: flex !important;
 }
 
+.flex-between {
+  display: flex !important;
+  justify-content: space-between;
+}
+
 .flex-center {
   width: 100%;
   display: flex;
@@ -945,7 +950,7 @@ body {
   background-color: #25344b;
   color: black;
   border-radius: 10px;
-  padding: 1.2rem;
+  padding: 1.2rem 1.6rem;
   box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
   height: 100%;
   overflow: hidden;
@@ -980,17 +985,17 @@ body {
 
 .panel h2 {
   font-size: 1.4rem;
-  margin: 1.2rem 0;
+  margin: 1rem 0;
 }
 
 .panel h3 {
   font-size: 1.2rem;
-  margin: 1rem 0;
+  margin: 0.8rem 0;
 }
 
 .panel h4 {
   font-size: 1.1rem;
-  margin: 0.8rem 0;
+  margin: 0.7rem 0;
 }
 
 .panel p {
@@ -1055,6 +1060,26 @@ tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.199);
 }
 
+.info-table {
+  border: none;
+}
+
+.info-table td {
+  display: inline-block;
+  padding: 0.2em 0.4em;
+  border: none;
+}
+
+.info-table form {
+  display: inline;
+  max-width: 100%;
+  width: 4rem;
+}
+
+.info-table form input {
+  width: 100%;
+}
+
 .tabbed-content-container {
   margin: 1em 0;
 }
@@ -1090,7 +1115,7 @@ tr:nth-child(even) {
 }
 
 body {
-  background-color: #e6e6e6;
+  background-color: #cccccc;
   overflow-x: hidden;
 }
 
@@ -1100,6 +1125,7 @@ body {
 }
 
 .wrapper .content-wrapper {
+  background-color: #e6e6e6;
   display: flex;
   position: relative;
   flex-direction: column;
@@ -1408,7 +1434,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #b80523;
+  background-color: #4d4d4d;
   color: white;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
@@ -1422,6 +1448,11 @@ footer {
   #objectifs {
     grid-template-areas: ". p1 p1 p1 p1 p2 p2 p2 p2 p2 p2 .";
   }
+}
+
+#objectifs .trophy-display {
+  display: flex;
+  justify-content: space-between;
 }
 
 #today {
@@ -1479,20 +1510,35 @@ footer {
   }
 }
 
-#smoke_list, #health_list {
+#smoke_list,
+#health_list {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1";
 }
 
 @media (min-width: 480px) {
-  #smoke_list, #health_list {
-    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . .";
+  #smoke_list,
+  #health_list {
+    grid-template-areas: ". p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 .";
   }
 }
 
 @media (min-width: 850px) {
-  #smoke_list, #health_list {
-    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . .";
+  #smoke_list,
+  #health_list {
+    grid-template-areas: ". p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 .";
   }
+}
+
+#health_list td:nth-child(1), #health_list td:nth-child(2) {
+  width: 8rem;
+}
+
+#health_list td:nth-child(3) {
+  width: 10rem;
+}
+
+#smoke_list td:nth-child(1), #smoke_list td:nth-child(2) {
+  width: 8rem;
 }
 
 #smoke {
@@ -1557,6 +1603,26 @@ footer {
   #paquets {
     grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
   }
+}
+
+#paquets table {
+  border: none;
+}
+
+#paquets table td {
+  display: inline-block;
+  padding: 0.2em 0.4em;
+  border: none;
+}
+
+#paquets table form {
+  display: inline;
+  max-width: 100%;
+  width: 4rem;
+}
+
+#paquets table form input {
+  width: 100%;
 }
 
 #profile {

@@ -13,3 +13,21 @@ th {
 tr:nth-child(even) {
   background-color: rgba(255, 255, 255, 0.199);
 }
+
+.info-table {
+  border: none;
+  td {
+    display: inline-block;
+    padding: 0.2em 0.4em;
+    border: none;
+    // background-color: $gray-7;
+  }
+  form {
+    display: inline;
+    max-width: 100%;
+    width: 4rem;
+    input {
+      width: 100%;
+    }
+  }
+}

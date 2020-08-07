@@ -7,7 +7,7 @@
 
 <!-- Page heading -->
 <div class="page-heading">
-  <i class="fa-calendar-day"></i>
+  <i class="fas fa-smoking"></i>
   <span>
   <h1>Mes craquages</h1>
   <h2>Pas grave, je peux faire mieux!</h2>
@@ -53,16 +53,41 @@
           </div>
         </form>
       </div>
-      {% for conso in smoke %}
-        <div class="row">
-          {% if conso.given %}
-            {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
-          {% else %}
-            {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
-          {% endif %}
+      <ul>
+        {% for conso in smoke %}
+        <li class="flex-between">
+          <table class="info-table">
+            <tbody>
+              <tr>
+              {% if conso.given %}
+              <td>
+                {{ conso.date_cig }}
+              </td>
+              <td>
+                {{ conso.time_cig }}
+              </td>
+              <td>
+                Clope taxée 
+              </td>
+              {% else %}
+              <td>
+                {{ conso.date_cig }}
+              </td>
+              <td>
+                {{ conso.time_cig }} 
+              </td>
+              <td>
+                {{ conso.paquet.brand }}
+              </td>
+              {% endif %}
+            </tr>
+            </tbody>
+          </table>
           <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-        </div>
-      {% endfor %}
+        </li>
+        {% endfor %}
+      </ul>
+
 
       <div class="pagination">
         <span class="step-links">

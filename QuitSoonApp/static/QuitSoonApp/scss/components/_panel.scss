@@ -3,7 +3,7 @@
   color: black;
   border-radius: $container-radius;
   // margin: 0.4rem;
-  padding: 1.2rem;
+  padding: 1.2rem 1.6rem;
   box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
   height: 100%;
   overflow: hidden;
@@ -36,15 +36,15 @@
   h2 {
     // text-transform: uppercase;
     font-size: 1.4rem;
-    margin: 1.2rem 0;
+    margin: 1rem 0;
   }
   h3 {
     font-size: 1.2rem;
-    margin: 1rem 0;
+    margin: 0.8rem 0;
   }
   h4 {
     font-size: 1.1rem;
-    margin: 0.8rem 0;
+    margin: 0.7rem 0;
   }
   p {
     font-size: 1rem;

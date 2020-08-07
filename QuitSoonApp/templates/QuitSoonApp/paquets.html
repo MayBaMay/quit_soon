@@ -51,40 +51,75 @@
 
         {% if ind %}
           <h3>Cigarettes industrielles</h3>
+          <ul>
           {% for paquet in ind %}
-            <div class="row">
-              {{ paquet.brand }}
-              {{ paquet.qt_paquet }}/paquet
-              {{ paquet.price }}€
-              {{ paquet.price_per_cig }}€/cig
-              <a href="/delete_pack/{{paquet.id}}/""><i class="fa fa-trash" aria-hidden="true"></i></a>
-            </div>
+          <li class="flex-between">
+            <table class="info-table">
+              <tr>
+                <td>
+                  {{ paquet.brand }}
+                </td>
+                <td>
+                  {{ paquet.qt_paquet }}/paquet
+                </td>
+                <td>
+                  {{ paquet.price }}€
+                </td>
+                <td>
+                  {{ paquet.price_per_cig }}€/cig
+                </td>
+                
+              <tr>
+            </table>
+                  <a href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                  </li>
           {% endfor %}
+          </ul>
         {% endif %}
       </div>
 
-      <div class="">
+      <div>
         {% if rol %}
           <h3>Cigarettes roulées</h3>
+          <ul>
           {% for paquet in rol %}
-            <div class="row">
-              {{ paquet.brand }}
-              {{ paquet.qt_paquet }}g/paquet
-              {{ paquet.price }}€
-              <form class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
-                {% csrf_token %}
-                <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
-                <input type="hidden" name="brand" value="{{ paquet.brand }}">
-                <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
-                <input type="hidden" name="price" value="{{ paquet.price|unlocalize }}">
-                <input type="number" step="0.1" name="g_per_cig" value="{{ paquet.g_per_cig|unlocalize }}">
-              </form>
-              {{ paquet.g_per_cig }}g/cigarette
-              <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
-              {{ paquet.price_per_cig }}€/cig
-              <a href="/delete_pack/{{paquet.id}}/""><i class="fa fa-trash " aria-hidden="true"></i></a>
-            </div>
+          <li class="flex-between">
+            <table>
+              <tr>
+                <td>
+                  {{ paquet.brand }}
+                </td>
+                <td>
+                  {{ paquet.qt_paquet }}g/paquet
+                </td>
+                <td>
+                  {{ paquet.price }}€
+                </td>
+                <td>
+                  {{ paquet.g_per_cig }}g/cigarette
+                </td>
+                <td>
+                  <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
+                  <form class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
+                    <input type="hidden" name="brand" value="{{ paquet.brand }}">
+                    <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
+                    <input type="hidden" name="price" value="{{ paquet.price|unlocalize }}">
+                    <input type="number" step="0.1" name="g_per_cig" value="{{ paquet.g_per_cig|unlocalize }}">
+                  </form>
+                </td>
+                <td>
+                  {{ paquet.price_per_cig }}€/cig
+                </td>
+                
+              </tr>
+            </table>
+                  <a href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+                  </li>
+          
           {% endfor %}
+          </ul>
         {% endif %}
       </div>
 
