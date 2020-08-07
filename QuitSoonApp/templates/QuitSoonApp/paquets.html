@@ -71,7 +71,7 @@
                 
               <tr>
             </table>
-                  <a href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                  <a class="icon-link" href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
                   </li>
           {% endfor %}
           </ul>
@@ -84,7 +84,7 @@
           <ul>
           {% for paquet in rol %}
           <li class="flex-between">
-            <table>
+            <table class="info-table">
               <tr>
                 <td>
                   {{ paquet.brand }}
@@ -99,7 +99,7 @@
                   {{ paquet.g_per_cig }}g/cigarette
                 </td>
                 <td>
-                  <a class="cig-change" href="#"><i class="fas fa-edit"></i></a>
+                  <a  class="cig-change icon-link" href="#"><i class="fas fa-edit"></i></a>
                   <form class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
@@ -115,7 +115,7 @@
                 
               </tr>
             </table>
-                  <a href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+                  <a class="icon-link" href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
                   </li>
           
           {% endfor %}

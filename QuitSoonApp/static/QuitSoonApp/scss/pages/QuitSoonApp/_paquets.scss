@@ -2,30 +2,23 @@
   grid-template-areas:
     "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
     "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
-  // "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
 
-  @include min-break("mobile") {
+  @include min-break("tablet") {
     grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
-    // ". . p3 p3 p3 p3 p3 p3 p3 p3 . .";
-    // ". . . . . . . . . . . ."
-    // ". . . . . . . . . . . .";
   }
 
-  table {
-    border: none;
-    td {
-      display: inline-block;
-      padding: 0.2em 0.4em;
-      border: none;
-      // background-color: $gray-7;
+  td {
+    &:nth-child(1) {
+      width: 8rem;
     }
-    form {
-      display: inline;
-      max-width: 100%;
-      width: 4rem;
-      input {
-        width: 100%;
-      }
+    &:nth-child(2) {
+      width: 6rem;
+    }
+    &:nth-child(3) {
+      width: 6rem;
+    }
+    &:nth-child(4) {
+      width: 9rem;
     }
   }
 }

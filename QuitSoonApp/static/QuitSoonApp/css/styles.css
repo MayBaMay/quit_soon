@@ -791,6 +791,17 @@ body {
   display: block;
 }
 
+@media (min-width: 850px) {
+  .modal form input,
+  .modal form select {
+    max-width: 100%;
+  }
+  .modal form .form-group input,
+  .modal form .form-group select {
+    max-width: 100%;
+  }
+}
+
 .form-container {
   display: flex;
   justify-content: center;
@@ -922,13 +933,27 @@ body {
   min-width: 1.6em;
 }
 
-@media (min-width: 850px) {
-  form {
-    max-width: 75%;
+@media (min-width: 480px) {
+  .form-container form {
+    max-width: 400px;
   }
+}
+
+@media (min-width: 850px) {
   form .form-group.row {
     display: flex;
     justify-content: center;
+  }
+  form .form-group.row span {
+    margin: 0.3rem 0;
+  }
+  form .form-group.row span label {
+    margin-right: 0.3rem;
+  }
+  form .form-group.row span input,
+  form .form-group.row span select {
+    width: 10rem;
+    margin: 0 0.3rem;
   }
   form .form-group.row input,
   form .form-group.row label {
@@ -937,12 +962,7 @@ body {
   form .form-group.row label,
   form .form-group.row .flex-text {
     display: flex;
-    justify-content: center;
     align-items: center;
-  }
-  form .form-group.row span {
-    margin: 0 1rem;
-    display: inline-block;
   }
 }
 
@@ -985,17 +1005,17 @@ body {
 
 .panel h2 {
   font-size: 1.4rem;
-  margin: 1rem 0;
+  margin: 0.5rem 0 1rem;
 }
 
 .panel h3 {
   font-size: 1.2rem;
-  margin: 0.8rem 0;
+  margin: 0.4rem 0 0.9rem;
 }
 
 .panel h4 {
   font-size: 1.1rem;
-  margin: 0.7rem 0;
+  margin: 0.35rem 0 0.7rem;
 }
 
 .panel p {
@@ -1062,6 +1082,11 @@ tr:nth-child(even) {
 
 .info-table {
   border: none;
+  margin: 0.3rem;
+}
+
+.info-table tr {
+  border: 1px solid white;
 }
 
 .info-table td {
@@ -1108,6 +1133,13 @@ tr:nth-child(even) {
     display: block;
     margin-left: 0.5rem;
   }
+}
+
+.icon-link {
+  padding: 0 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .chart-iframe {
@@ -1475,12 +1507,12 @@ footer {
 
 #report .resp-container .resp-iframe {
   width: 98%;
-  height: 400px;
+  height: 350px;
 }
 
 @media (min-width: 480px) {
   #report .resp-container .resp-iframe {
-    height: 600px;
+    height: 400px;
     overflow: hidden;
   }
 }
@@ -1490,7 +1522,7 @@ footer {
     grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
   }
   #report .resp-container .resp-iframe {
-    height: 800px;
+    height: 600px;
   }
 }
 
@@ -1508,6 +1540,10 @@ footer {
   #alternatives {
     grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
   }
+}
+
+.flex-between {
+  text-transform: capitalize;
 }
 
 #smoke_list,
@@ -1599,30 +1635,26 @@ footer {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
 
-@media (min-width: 480px) {
+@media (min-width: 850px) {
   #paquets {
     grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
   }
 }
 
-#paquets table {
-  border: none;
+#paquets td:nth-child(1) {
+  width: 8rem;
 }
 
-#paquets table td {
-  display: inline-block;
-  padding: 0.2em 0.4em;
-  border: none;
+#paquets td:nth-child(2) {
+  width: 6rem;
 }
 
-#paquets table form {
-  display: inline;
-  max-width: 100%;
-  width: 4rem;
+#paquets td:nth-child(3) {
+  width: 6rem;
 }
 
-#paquets table form input {
-  width: 100%;
+#paquets td:nth-child(4) {
+  width: 9rem;
 }
 
 #profile {
@@ -1631,7 +1663,7 @@ footer {
 
 @media (min-width: 480px) {
   #profile {
-    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
+    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . . p2 p2 p2 p2 p2 p2 . . .";
   }
 }
 

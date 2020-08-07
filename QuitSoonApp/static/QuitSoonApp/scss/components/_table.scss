@@ -16,6 +16,11 @@ tr:nth-child(even) {
 
 .info-table {
   border: none;
+  margin: 0.3rem ;
+
+  tr {
+    border: 1px solid white;
+  }
   td {
     display: inline-block;
     padding: 0.2em 0.4em;

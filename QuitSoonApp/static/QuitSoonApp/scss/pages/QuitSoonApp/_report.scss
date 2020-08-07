@@ -12,14 +12,14 @@
     height: 100%;
     .resp-iframe {
       width: 98%;
-      height: 400px;
+      height: 350px;
     }
   }
 
   @include min-break("mobile") {
     .resp-container {
       .resp-iframe {
-        height: 600px;
+        height: 400px;
         overflow: hidden;
       }
     }
@@ -33,7 +33,7 @@
 
     .resp-container {
       .resp-iframe {
-        height: 800px;
+        height: 600px;
       }
     }
   }
