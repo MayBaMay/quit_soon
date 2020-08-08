@@ -1,18 +1,14 @@
 #objectifs {
   grid-template-areas:
     "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
-    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
-    "p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5 p5"
-    "p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6 p6"
-    ". . . . . . . . . . . . "
-    ". p3 p3 p3 p3 p4 p4 p4 p4 p4 p4 .";
+    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 
   @include min-break("mobile") {
-    grid-template-areas:
-      "p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2 p2"
-      ". . p3 p3 p3 p3 p5 p5 p5 p5 . .";
+    grid-template-areas: ". p1 p1 p1 p1 p2 p2 p2 p2 p2 p2 .";
+  }
+
+  .trophy-display {
+    display: flex;
+    justify-content: space-between;
   }
 }
-
-// #objectifs-modals {
-// }

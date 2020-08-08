@@ -1,0 +1,10 @@
+//see health_list.scss for grid
+
+#smoke_list {
+  td {
+    &:nth-child(1),
+    &:nth-child(2) {
+      width: 8rem;
+    }
+  }
+}

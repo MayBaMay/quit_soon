@@ -18,7 +18,7 @@ header {
   .header-content {
     transition: all 0.1s linear;
     // background-color: transparent;
-    background-color: $body-bg-colour;
+    background-color: $header-bg-colour;
     border-radius: $container-radius;
 
     margin: 0.4rem;
@@ -124,7 +124,7 @@ header {
             li {
               overflow: hidden;
               border-radius: $container-radius;
-              background-color: $body-bg-colour;
+              background-color: $header-bg-colour;
               margin-top: 0.4rem;
               padding: 0em;
               box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
@@ -214,7 +214,7 @@ header {
     }
   }
   &#username-nav {
-    margin-left: 0.25em;
+    // margin-left: 0.25em;
     // display: inline-block;
   }
 }

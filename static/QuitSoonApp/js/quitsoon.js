@@ -1,6 +1,15 @@
 (function ($) {
   "use strict"; // Start of use strict
 
+  // function get_time_zone_offset( ) {
+  // var current_date = new Date();
+  // return parseInt(-current_date.getTimezoneOffset() / 60);
+  // }
+  // console.log(get_time_zone_offset());
+
+
+
+
   ///////////////////show password//////////////////////
 
   $(".pass-status").on("click", function (e) {
@@ -214,17 +223,18 @@
 
   $("#id_given_field").change(function () {
     if (this.checked) {
-      $(".show").removeClass("show").addClass("hide");
-      $(".showtypes").removeClass("showtypes").addClass("hidetypes");
+      $("#cig_details").removeClass("show").addClass("hide");
     } else {
-      $(".hidetypes").removeClass("hidetypes").addClass("showtypes");
+      $("#cig_details").removeClass("hide").addClass("show");
       displayPaquetsFields();
-    }
+    };
   });
 
   $("#id_type_cig_field").on("change", function (e) {
-    $(".show").removeClass("show").addClass("hide");
-    displayPaquetsFields();
+    if ($("#cig_details").hasClass("show")) {
+      $(".show").removeClass("show").addClass("hide");
+      displayPaquetsFields();
+    };
   });
 
   /////////////////healthy activity page////////////////////
@@ -255,21 +265,23 @@ if (dateField) {
     (date.getMonth() + 1).toString().padStart(2, 0) +
     "-" +
     date.getDate().toString().padStart(2, 0);
-}
+};
 if (timeField) {
   timeField.value =
     date.getHours().toString().padStart(2, 0) +
     ":" +
     date.getMinutes().toString().padStart(2, 0);
-}
+};
 
 function displayPaquetsFields() {
-  if ($("#id_type_cig_field").val() == "IND") {
-    $("#id_ind_pack_field").removeClass("hide").addClass("show");
-  } else if ($("#id_type_cig_field").val() == "ROL") {
-    $("#id_rol_pack_field").removeClass("hide").addClass("show");
+  if ($("#cig_details").hasClass("show")) {
+    if ($("#id_type_cig_field").val() == "IND") {
+      $("#id_ind_pack_field").removeClass("hide").addClass("show");
+    } else if ($("#id_type_cig_field").val() == "ROL") {
+      $("#id_rol_pack_field").removeClass("hide").addClass("show");
+    }
   }
-}
+};
 
 function displayAlternativeFields() {
   var su = {
@@ -294,6 +306,7 @@ function displayAlternativeFields() {
       $("#id_ecig_vape_or_start_1").removeClass("show").addClass("hide");
     }
   });
+
   if ($("#id_type_alternative_field").val() == "Sp") {
     $("#id_sp_field").removeClass("hide").addClass("show");
   } else if ($("#id_type_alternative_field").val() == "So") {
@@ -306,7 +319,7 @@ function displayAlternativeFields() {
     $("#id_duration_hour").removeClass("show").addClass("hide");
     $("#id_duration_min").removeClass("show").addClass("hide");
   }
-}
+};
 
 function newparameterspackform() {
   if ($("#choose_existing_pack").hasClass("active")) {
@@ -315,7 +328,7 @@ function newparameterspackform() {
     $("#id_brand").prop("required", false);
     $("#id_qt_paquet").prop("required", false);
     $("#id_price").prop("required", false);
-  }
+  };
   if ($("#create_pack_choice").hasClass("active")) {
     $("#id_ref_pack").prop("required", false);
     $("#id_type_cig").prop("required", true);
@@ -323,4 +336,4 @@ function newparameterspackform() {
     $("#id_qt_paquet").prop("required", true);
     $("#id_price").prop("required", true);
   }
-}
+};
