@@ -1,6 +1,6 @@
 /*!
  * Start Bootstrap -  v1.0.0 ()
- * Copyright 2013-2020 
+ * Copyright 2013-2020
  * Licensed under  (https://github.com/BlackrockDigital/quit_soon/blob/master/LICENSE)
  */
 
@@ -11563,13 +11563,5 @@ body.sidebar-toggled footer.sticky-footer {
 }
 
 .show {
-  display: inline;
-}
-
-.hidetypes {
-  display: none;
-}
-
-.showtypes {
   display: inline;
 }
