@@ -19,52 +19,26 @@
 <main id="report" class="content">
   {% if not no_data %}
     <section class="panel p1 pc-1">
-      <b>MA CONSO :</b><br />
+      <h2>MA CONSO :</h2>
       Cigarettes fumées : {{ total_number }} <br />
       Moyenne par jour : {{ average_number }} <br />
       Cigarettes non fumées : {{ non_smoked }} <br />
     </section>
 
     <section class="panel p2 pc-1">
-      <b>MES SOUS:</b><br />
+      <h2>MES SOUS:</h2>
       Argent fumé : {{ total_money }}€ <br />
       Moyenne par jour : {{ average_money }}€ <br />
       Argent économisé : {{ saved_money }}€ <br />
-      <br />
     </section>
 
     {% if activity_stats or substitut_stats %}
       <section class="panel p3 pc-1">
-        <p><b>MES ALTERNATIVES :</b></p><br>
-        <p>
-
+        <h2>MES ALTERNATIVES :</h2>
         {% for type, values in activity_stats.items %}
           {% if values.exists %}
-            <b>{{ values.name }}:</b>
-            {% if values.day %}
-              {{ values.day }} aujourd'hui,
-            {% endif %}
-            {% if values.week %}
-              {{ values.week }} cette semaine,
-            {% endif %}
-            {% if values.month %}
-              {{ values.month }} ce mois-ci,
-            {% else %}
-              Aucune activité ce mois-ci
-            {% endif %}
-          {% endif %}
-          <br>
-        {% endfor %}
-        </p>
-
-        {% if substitut_stats %}
-          <p><b>Substituts : </b></p>
-          <p>
-          {% for type, values in substitut_stats.items %}
-            {% if values.exists %}
-
-              <h3>{{ values.name }}:</h3>
-              <p>
+            <h3>{{ values.name }}:</h3>
+            <p>
               {% if values.day %}
                 {{ values.day }} aujourd'hui,
               {% endif %}
@@ -72,18 +46,36 @@
                 {{ values.week }} cette semaine,
               {% endif %}
               {% if values.month %}
-                {{ values.month }} ce mois-ci.
-              </p>
+                {{ values.month }} ce mois-ci,
+            </p>
               {% else %}
-
-              <p>
-                Aucune activité ce mois-ci
+                <p>
+                  Aucune activité ce mois-ci
                 </p>
               {% endif %}
-            {% endif %}
+          {% endif %}
+        {% endfor %}
 
+        {% if substitut_stats %}
+          <p><b>Substituts : </b></p>
+          {% for type, values in substitut_stats.items %}
+            {% if values.exists %}
+              <h3>{{ values.name }}:</h3>
+              <p>
+                {% if values.day %}
+                  {{ values.day }} aujourd'hui,
+                {% endif %}
+                {% if values.week %}
+                  {{ values.week }} cette semaine,
+                {% endif %}
+                {% if values.month %}
+                  {{ values.month }} ce mois-ci.
+                {% else %}
+                    Aucune activité ce mois-ci
+                {% endif %}
+              {% endif %}
+            </p>
           {% endfor %}
-          </p>
         {% endif %}
       </section>
 
@@ -91,61 +83,6 @@
     {% else %}
       <section class="panel p3 pc-1">
     {% endif %}
-      {% if substitut_stats %}
-        <h3>Substituts : </h3>
-        <p>
-        {% for type, values in substitut_stats.items %}
-          {% if values.exists %}
-            {{ values.name }}:
-            {% if values.day %}
-              {{ values.day }} aujourd'hui,
-            {% endif %}
-            {% if values.week %}
-              {{ values.week }} cette semaine,
-            {% endif %}
-            {% if values.month %}
-              {{ values.month }} ce mois-ci,
-            {% else %}
-              Aucune consommation de substitut enregistrée ce mois-ci
-            {% endif %}
-            <br>
-          {% endif %}
-        {% endfor %}
-        </p>
-      {% endif %}
-    </section>
-
-          <section class="panel p4 pc-1">
-        {% else %}
-          <section class="panel p3 pc-1">
-        {% endif %}
-
-
-
-        <div class="tabbed-content-container graph-height">
-          <div class="flex-center">
-            <button class="btn-tab active" data-toggle="tab1">
-              <i class="fas fa-chart-bar"></i><span> Cigarettes fumées</span>
-            </button>
-            <button class="btn-tab" data-toggle="tab2">
-              <i class="fas fa-euro-sign"></i><span> Argent dépensé</span>
-            </button>
-            {% if user_conso_subsitut %}
-            <button class="btn-tab" data-toggle="tab3">
-              <i class="fas fa-smoking"></i><span> Substituts nicotiniques</span>
-            </button>
-            {% endif %}
-            {% if smoke_user_conso_full_days %}
-            <button class="btn-tab" data-toggle="tab4">
-              <i class="fas fa-clock"></i><span> Moyenne par heure</span>
-            </button>
-            {% endif %}
-          </div>
-
-
-          <div class="resp-container" >
-            <iframe class="resp-iframe" scrolling="no" src="{% url 'QuitSoonApp:charts' %}" frameborder="0" ></iframe>
-          </div>
 
       <div class="tabbed-content-container graph-height">
         <div class="flex-center">
@@ -211,9 +148,10 @@
         </div>
 
 
-    </section>
+      </section>
 
   {% else %}
+
     <section class="panel p1 pc-1">
       Vous n'avez pas encore enregistré de données <br />
       (craquage cigarette ou actions saines)
