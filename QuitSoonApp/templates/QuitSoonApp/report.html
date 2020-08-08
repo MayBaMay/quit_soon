@@ -7,8 +7,11 @@
 <!-- Page heading -->
 <div class="page-heading">
   <i class="fas fa-chart-bar"></i>
+  <span>
   <h1>Mon suivi</h1>
   <h2>Alors, est-ce que je progresse?</h2>
+  </span>
+
 </div>
 <!-- End page heading -->
 
@@ -59,7 +62,9 @@
           <p>
           {% for type, values in substitut_stats.items %}
             {% if values.exists %}
-              {{ values.name }}:
+
+              <h3>{{ values.name }}:</h3>
+              <p>
               {% if values.day %}
                 {{ values.day }} aujourd'hui,
               {% endif %}
@@ -67,12 +72,16 @@
                 {{ values.week }} cette semaine,
               {% endif %}
               {% if values.month %}
-                {{ values.month }} ce mois-ci,
+                {{ values.month }} ce mois-ci.
+              </p>
               {% else %}
-                Aucune consommation de substitut enregistrée ce mois-ci
+
+              <p>
+                Aucune activité ce mois-ci
+                </p>
               {% endif %}
-              <br>
             {% endif %}
+
           {% endfor %}
           </p>
         {% endif %}
@@ -82,8 +91,61 @@
     {% else %}
       <section class="panel p3 pc-1">
     {% endif %}
+      {% if substitut_stats %}
+        <h3>Substituts : </h3>
+        <p>
+        {% for type, values in substitut_stats.items %}
+          {% if values.exists %}
+            {{ values.name }}:
+            {% if values.day %}
+              {{ values.day }} aujourd'hui,
+            {% endif %}
+            {% if values.week %}
+              {{ values.week }} cette semaine,
+            {% endif %}
+            {% if values.month %}
+              {{ values.month }} ce mois-ci,
+            {% else %}
+              Aucune consommation de substitut enregistrée ce mois-ci
+            {% endif %}
+            <br>
+          {% endif %}
+        {% endfor %}
+        </p>
+      {% endif %}
+    </section>
+
+          <section class="panel p4 pc-1">
+        {% else %}
+          <section class="panel p3 pc-1">
+        {% endif %}
 
 
+
+        <div class="tabbed-content-container graph-height">
+          <div class="flex-center">
+            <button class="btn-tab active" data-toggle="tab1">
+              <i class="fas fa-chart-bar"></i><span> Cigarettes fumées</span>
+            </button>
+            <button class="btn-tab" data-toggle="tab2">
+              <i class="fas fa-euro-sign"></i><span> Argent dépensé</span>
+            </button>
+            {% if user_conso_subsitut %}
+            <button class="btn-tab" data-toggle="tab3">
+              <i class="fas fa-smoking"></i><span> Substituts nicotiniques</span>
+            </button>
+            {% endif %}
+            {% if smoke_user_conso_full_days %}
+            <button class="btn-tab" data-toggle="tab4">
+              <i class="fas fa-clock"></i><span> Moyenne par heure</span>
+            </button>
+            {% endif %}
+          </div>
+
+
+          <div class="resp-container" >
+            <iframe class="resp-iframe" scrolling="no" src="{% url 'QuitSoonApp:charts' %}" frameborder="0" ></iframe>
+          </div>
 
       <div class="tabbed-content-container graph-height">
         <div class="flex-center">

@@ -6,9 +6,11 @@
 
 <!-- Page heading -->
 <div class="page-heading">
-  <i class="fa-calendar-day"></i>
+  <i class="fas fa-heartbeat"></i>
+  <span>
   <h1>Je tiens bon</h1>
   <h2>Avec ça je me sens mieux!</h2>
+  </span>
 </div>
 <!-- End page heading -->
 
@@ -18,9 +20,12 @@
   <section class="panel p1 pc-1">
 
     {% if not alternatives %}
-      Vous n'avez enregistré aucune alternative,<br>
-      Veuillez paramétrer vos alternatives
-      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
+    <p>Vous n'avez enregistré aucune alternative, </p>
+      <p> Veuillez paramétrer vos alternatives
+      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>      
+      </p>
+    
+      
 
 
     {% else %}
@@ -48,32 +53,53 @@
           </div>
           <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
         </form>
-
+<ul>
         {% for conso in health %}
-          <div class="row">
+          <li class="flex-between">
+          <table class="info-table">
+          <tbody>
+          <tr>
+          <td>
               {{ conso.date_alter }}
+              </td>
+              <td>
               {{ conso.time_alter }}
+              </td>
               {% if conso.alternative.type_activity %}
+              <td>
                 {{ conso.alternative.type_activity }}
                 {{ conso.alternative.activity }}
+                </td>
               {% endif %}
               {% if conso.alternative.substitut %}
+              <td>
                 {{ conso.alternative.substitut }}
                 {{ conso.alternative.nicotine }}
+                </td>
               {% endif %}
               {% if conso.activity_duration %}
+              <td>
                 {{ conso.activity_duration }}min
+                </td>
               {% endif %}
               {% if conso.ecig_choice %}
+              <td>
                 {{ conso.get_ecig_choice_display }}
+                </td>
               {% endif %}
-            <a href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-          </div>
+              </tr>
+              </tbody>
+              </table>
+
+            <a class="icon-link" href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+              </li>
         {% endfor %}
+          </ul>
 
       {% else %}
-          Vous n'avez pas encore enregistré d'action saine,
-          Allez, un petit effort, ça te fera vraiment du bien!
+      <p>
+         Vous n'avez pas encore enregistré d'action saine,
+          Allez, un petit effort, ça te fera vraiment du bien!</p>       
       {% endif %}
     {% endif %}
   </section>

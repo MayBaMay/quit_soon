@@ -11,6 +11,26 @@
       integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
       crossorigin="anonymous"
     />
+    <style>
+
+ .chart-container{
+   height: 350px;
+ }
+
+ @media(min-width:423px){
+    .chart-container{
+      height: 400px;
+    }
+ }
+
+  @media(min-width:763px){
+    .chart-container{
+       height: 600px;
+    }
+ }
+
+
+    </style>
 
     <title>Nicotine Kill</title>
   </head>
@@ -150,8 +170,8 @@
                         datasets: [chartData, activityChartData],
                         labels: index
                       },
-                      maintainAspectRatio: false,
                       options: {
+                          maintainAspectRatio: false,
                           events: [],
                           tooltips: {enabled: false},
                           hover: {mode: null},

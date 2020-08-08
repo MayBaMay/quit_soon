@@ -36,21 +36,22 @@ $b-success-bgcol: green;
 $b-success-hov-col: green;
 $b-success-hov-bgcol: white;
 
-//layout
-$body-bg-colour: $gray-1;
-
 //header
-$header-colour: rgb(255, 255, 255);
+// $header-colour: rgb(255, 255, 255);
 $header-colour: rgb(41, 41, 41);
 
-$header-bg-colour: white;
-$header-bg-colour: rgba(255, 255, 255, 1);
+// $header-bg-colour: white;
+// $header-bg-colour: rgba(255, 255, 255, 1);
+$header-bg-colour: $gray-1;
 
 $header-opacity: 0.95;
 
+//layout
+$body-bg-colour: $gray-2;
+
 //content (main background)
 
-$content-bg-colour: $gray-4;
+$content-bg-colour: $header-bg-colour;
 
 // $header-bg-colour-open: rgb(212, 211, 212);
 
@@ -71,7 +72,7 @@ $panel-fg-colour3: white;
 
 //footer
 $footer-colour: white;
-$footer-bg-colour: rgb(184, 5, 35);
+$footer-bg-colour: $gray-7;
 
 //------------------------------------Sizing
 $max-width: 1080px;
