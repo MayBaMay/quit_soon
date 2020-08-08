@@ -27,13 +27,13 @@ $b-secondary-hov-col: $gray-6;
 $b-secondary-hov-bgcol: white;
 //error
 $b-error-col: white;
-$b-error-bgcol: red;
-$b-error-hov-col: red;
+$b-error-bgcol: hsl(0, 96%, 39%);
+$b-error-hov-col: hsl(0, 96%, 39%);
 $b-error-hov-bgcol: white;
 //success
 $b-success-col: white;
-$b-success-bgcol: green;
-$b-success-hov-col: green;
+$b-success-bgcol: hsl(137, 93%, 34%);
+$b-success-hov-col: hsl(137, 93%, 34%);
 $b-success-hov-bgcol: white;
 
 //header

@@ -19,6 +19,16 @@
   justify-content: center;
   align-items: center;
 }
+.flex-end {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.footnote {
+  margin-top: 2rem;
+}
 
 .text-highlight-error,
 .text-highlight-success {

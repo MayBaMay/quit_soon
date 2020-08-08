@@ -16,7 +16,7 @@
 
 <!-- Panel content -->
 <main id="smoke" class="content">
-  <section class="panel p1 pc-1">
+  <section class="panel p1 pc-3">
 
     {% if not packs %}
 
@@ -91,10 +91,11 @@
       </form>
     </div>
     {% endif %}
+    <div class="flex-end footnote">
     <a class="btn" href="{% url 'QuitSoonApp:paquets' %}">Créer un nouveau paquet</a>
   </section>
 
-  <section class="panel p2 pc-1">
+  <section class="panel p2 pc-0">
     {% if smoke %}
     <div class="smoke-timer">
       <p>Vous avez fumé votre dernière cigarette il y a:</p>

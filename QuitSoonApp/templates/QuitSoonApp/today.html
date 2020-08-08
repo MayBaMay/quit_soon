@@ -49,11 +49,15 @@
         <div>
           <p>Dernière cigarette fumée il y a:</p>
           <p class="text-highlight-error">{{ lastsmoke }}</p> 
-          <div>
+        </div>
+        <div>
           <p>Aujourd'hui :</p>
           <p class="text-highlight-error">{{ smoke_today }}</p>
+        </div>
+        <div>
           <p>Moyenne journalière :</p>
           <p class="text-highlight-error">{{ average_number }}</p>
+        </div>
         {% else %}
           Aucune cigarette fumée enregistrée
         {% endif %}

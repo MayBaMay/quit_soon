@@ -29,6 +29,17 @@
   align-items: center;
 }
 
+.flex-end {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.footnote {
+  margin-top: 2rem;
+}
+
 .text-highlight-error,
 .text-highlight-success {
   text-align: center;
@@ -37,11 +48,11 @@
 }
 
 .text-highlight-success {
-  color: rgba(0, 128, 0, 0.9);
+  color: rgba(6, 167, 52, 0.9);
 }
 
 .text-highlight-error {
-  color: rgba(255, 0, 0, 0.9);
+  color: rgba(195, 4, 4, 0.9);
 }
 
 .mobile-content {
@@ -464,10 +475,10 @@ body {
 }
 
 [class^="btn"] {
-  font-size: 0.7em;
+  font-size: 0.8em;
   font-weight: 600;
   letter-spacing: 0.05em;
-  padding: 0.5em 0.7em;
+  padding: 0.7em 0.9em;
   margin: 0.2em 0;
   border-radius: 4px;
   border: none;
@@ -496,22 +507,22 @@ body {
 [class^="btn"][class*="-error"] {
   transition: all 0.25s ease-in-out;
   color: white;
-  background-color: red;
+  background-color: #c30404;
 }
 
 [class^="btn"][class*="-error"]:hover {
-  color: red;
+  color: #c30404;
   background-color: white;
 }
 
 [class^="btn"][class*="-success"] {
   transition: all 0.25s ease-in-out;
   color: white;
-  background-color: green;
+  background-color: #06a734;
 }
 
 [class^="btn"][class*="-success"]:hover {
-  color: green;
+  color: #06a734;
   background-color: white;
 }
 
@@ -558,23 +569,23 @@ body {
 
 [class^="btn"][class*="-outline"][class*="-error"] {
   transition: all 0.25s ease-in-out;
-  color: red;
+  color: #c30404;
 }
 
 [class^="btn"][class*="-outline"][class*="-error"]:hover {
   color: white;
-  background-color: red;
+  background-color: #c30404;
   border-color: transparent;
 }
 
 [class^="btn"][class*="-outline"][class*="-success"] {
   transition: all 0.25s ease-in-out;
-  color: green;
+  color: #06a734;
 }
 
 [class^="btn"][class*="-outline"][class*="-success"]:hover {
   color: white;
-  background-color: green;
+  background-color: #06a734;
   border-color: transparent;
 }
 
@@ -657,11 +668,11 @@ body {
 }
 
 .big-btn-container .error-label {
-  color: red;
+  color: #c30404;
 }
 
 .big-btn-container .success-label {
-  color: green;
+  color: #06a734;
 }
 
 .big-btn {
@@ -736,6 +747,9 @@ body {
   top: 0;
   left: 0;
   display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   height: 100%;
   visibility: hidden;
@@ -769,7 +783,7 @@ body {
 
 .modal-container .modal .modal-content {
   display: none;
-  padding: 1rem;
+  padding: 2.4rem 1rem 1rem 1rem;
 }
 
 .modal-container .modal .modal-content h4 {
@@ -940,6 +954,7 @@ body {
 
 .form-container form input[type="submit"],
 .form-container form button[type="submit"] {
+  padding: 1em;
   cursor: pointer;
   width: auto;
   margin: 1.4em 0;
@@ -1584,14 +1599,14 @@ footer {
 }
 
 #today .btn-mal {
-  background-color: red;
-  box-shadow: 2px 6px 0px #db0000, 0 5px 5px 1px rgba(0, 0, 0, 0.9);
+  background-color: #c30404;
+  box-shadow: 2px 6px 0px #a00303, 0 5px 5px 1px rgba(0, 0, 0, 0.9);
 }
 
 #today .btn-bien {
-  background-color: green;
+  background-color: #06a734;
   color: white;
-  box-shadow: 2px 6px 0px #005c00, 0 5px 5px 1px rgba(0, 0, 0, 0.9);
+  box-shadow: 2px 6px 0px #058529, 0 5px 5px 1px rgba(0, 0, 0, 0.9);
 }
 
 #today .p3 {
@@ -1685,22 +1700,6 @@ footer {
   width: 8rem;
 }
 
-#smoke {
-  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
-}
-
-@media (min-width: 480px) {
-  #smoke {
-    grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
-  }
-}
-
-@media (min-width: 850px) {
-  #smoke {
-    grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
-  }
-}
-
 #smoke .smoke-timer {
   text-align: center;
   padding: 2rem;
@@ -1712,20 +1711,28 @@ footer {
   margin: 0 0.3rem;
 }
 
-#health {
+#health,
+#smoke {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
 
 @media (min-width: 480px) {
-  #health {
+  #health,
+  #smoke {
     grid-template-areas: ". . p1 p1 p1 p1 p1 p1 p1 p1 . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
 }
 
 @media (min-width: 850px) {
-  #health {
+  #health,
+  #smoke {
     grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . p2 p2 p2 p2 p2 p2 p2 p2 . .";
   }
+}
+
+#health .p1 > :nth-child(2),
+#smoke .p1 > :nth-child(2) {
+  margin-bottom: 2rem;
 }
 
 #health .health-timer {
