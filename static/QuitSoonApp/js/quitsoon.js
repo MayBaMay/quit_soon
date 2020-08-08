@@ -223,15 +223,15 @@
 
   $("#id_given_field").change(function () {
     if (this.checked) {
-      $("#cig_details").removeClass("show").addClass("hide");
+      $("#cig_details").removeClass("showflex").addClass("hide");
     } else {
-      $("#cig_details").removeClass("hide").addClass("show");
+      $("#cig_details").removeClass("hide").addClass("showflex");
       displayPaquetsFields();
     };
   });
 
   $("#id_type_cig_field").on("change", function (e) {
-    if ($("#cig_details").hasClass("show")) {
+    if ($("#cig_details").hasClass("showflex")) {
       $(".show").removeClass("show").addClass("hide");
       displayPaquetsFields();
     };
@@ -274,7 +274,7 @@ if (timeField) {
 };
 
 function displayPaquetsFields() {
-  if ($("#cig_details").hasClass("show")) {
+  if ($("#cig_details").hasClass("showflex")) {
     if ($("#id_type_cig_field").val() == "IND") {
       $("#id_ind_pack_field").removeClass("hide").addClass("show");
     } else if ($("#id_type_cig_field").val() == "ROL") {
