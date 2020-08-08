@@ -57,7 +57,6 @@
         {% endfor %}
 
         {% if substitut_stats %}
-          <p><b>Substituts : </b></p>
           {% for type, values in substitut_stats.items %}
             {% if values.exists %}
               <h3>{{ values.name }}:</h3>
