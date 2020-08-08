@@ -115,3 +115,20 @@ $transition-close-time: 0.2s;
     }
   }
 }
+
+@include min-break("tablet") {
+  .modal {
+    form {
+      input,
+      select {
+        max-width: 100%;
+      }
+      .form-group {
+        input,
+        select {
+          max-width: 100%;
+        }
+      }
+    }
+  }
+}

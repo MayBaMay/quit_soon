@@ -8,7 +8,9 @@
   <!-- Page heading -->
   <div class="page-heading">
     <i class="fas fa-heartbeat"></i>
-    <h1>Mes alternatives</h1>
+    <span>
+    <h2>Mes alternatives</h2>
+    </span>
   </div>
   <!-- End page heading -->
 
@@ -17,9 +19,9 @@
   <main id="alternatives" class="content">
 
     <section class="panel p1 pc-1">
+      <h2>Nouvelle alternative</h2>
       <div class="form-container">
         <form id="alternativeform" action="{% url 'QuitSoonApp:alternatives' %}" method="POST">
-         <h2>Nouvelle alternative</h2>
           {% csrf_token %}
           {{ alternative_form.non_field_errors }}
           {% for field in alternative_form %}
@@ -65,61 +67,59 @@
       <div class="row">
         <div class="card shadow mb-4">
           <div class="card-body">
-            <p><b>Mes alternatives :</b></p>
+            <h2>Mes alternatives :</h2>
 
             {% if Sp or Lo or So or Su %}
 
               <div class="">
                 {% if Sp %}
-                  <p><b>Sports</b></p>
+                  <h3>Sports<h3>
                   {% for activity in Sp %}
-                    <div class="row">
-                      {{ activity.activity }}
-                      <a href="/delete_alternative/{{activity.id}}/"">
+                      <p class="flex-between">{{ activity.activity }}  <a href="/delete_alternative/{{activity.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  {% endfor %}
+                      </a></p>
+                    {% endfor %}
                 {% endif %}
               </div>
 
               <div class="">
                 {% if Lo %}
-                  <p><b>Loisirs</b></p>
+                  <h3>Loisirs</h3>
                   {% for activity in Lo %}
-                    <div class="row">
+                  <p class="flex-between">
                       {{ activity.activity }}
-                      <a href="/delete_alternative/{{activity.id}}/"">
+                      <a href="/delete_alternative/{{activity.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>                </div>
+                      </a>        
+                      </p>       
                   {% endfor %}
                 {% endif %}
               </div>
 
               <div class="">
                 {% if So %}
-                  <p><b>Soins</b></p>
+                  <h3>Soins</h3>
                   {% for activity in So %}
-                    <div class="row">
+                    <p class="flex-between">
                       {{ activity.activity }}
-                        <a href="/delete_alternative/{{activity.id}}/"">
+                        <a href="/delete_alternative/{{activity.id}}/">
                           <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>                </div>
+                      </a>                </p>
                   {% endfor %}
                 {% endif %}
               </div>
 
               <div class="">
                 {% if Su %}
-                  <p><b>Substituts</b></p>
+                  <h3>Substituts</h3>
                   {% for substitut in Su %}
-                    <div class="row">
+                    <p class="flex-between">
                       {{ substitut.substitut }}
                       {{ substitut.nicotine }}
-                      <a href="/delete_alternative/{{substitut.id}}/"">
+                      <a href="/delete_alternative/{{substitut.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                       </a>
-                    </div>
+                    </p>
                   {% endfor %}
                 {% endif %}
               </div>

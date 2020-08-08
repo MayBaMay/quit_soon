@@ -8,6 +8,11 @@
   display: flex !important;
 }
 
+.flex-between {
+  display: flex !important;
+  justify-content: space-between;
+}
+
 .flex-center {
   width: 100%;
   display: flex;

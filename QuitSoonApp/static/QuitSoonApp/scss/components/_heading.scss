@@ -1,20 +1,21 @@
 .page-heading {
-  // position: absolute;
-  // top: 0.2rem;
-
-  // font-size: 1rem;
   display: flex;
   align-items: center;
   padding-left: 1rem;
-  h1 {
-    line-height: 1;
-    font-weight: 400;
-    font-size: 1.7em;
-    letter-spacing: 0.05em;
-    margin-left: 0.8em;
-  }
-  h2 {
-    margin-left: 1em;
+
+  span {
+    display: flex;
+    align-items: baseline;
+    h1 {
+      font-weight: 400;
+      font-size: 1.7em;
+      letter-spacing: 0.05em;
+      margin: 0;
+      margin-left: 0.8em;
+    }
+    h2 {
+      margin-left: 1em;
+    }
   }
 }
 @include min-break("mobile") {

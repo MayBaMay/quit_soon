@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.6rem 0;
+  // margin: 0.6rem 0;
   form {
     display: flex;
     // flex-direction: column;
@@ -117,15 +117,36 @@
   }
 }
 @include min-break("mobile") {
-  form {
+  .form-container {
+    form {
+      max-width: 400px;
+    }
   }
 }
 @include min-break("tablet") {
   form {
-    max-width: 75%;
-
+    input,
+    select {
+      // max-width: 14rem;
+    }
     .form-group {
+      input,
+      select {
+        // max-width: 10rem;
+      }
       &.row {
+        span {
+          // display: flex;
+          margin: 0.3rem 0;
+          label {
+            margin-right: 0.3rem;
+          }
+          input,
+          select {
+            width: 10rem;
+            margin: 0 0.3rem;
+          }
+        }
         display: flex;
         justify-content: center;
         input,
@@ -135,12 +156,12 @@
         label,
         .flex-text {
           display: flex;
-          justify-content: center;
+          // justify-content: center;
           align-items: center;
         }
         span {
-          margin: 0 1rem;
-          display: inline-block;
+          // margin: 0 1rem;
+          // display: inline-block;
         }
       }
     }

@@ -4,7 +4,7 @@ $heading-height: 4rem;
   position: relative;
   display: grid;
   grid-template-columns: auto;
-  grid-template-rows: $header-height-mob $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
+  grid-template-rows: $header-height-mob $heading-height auto; 
   // row-gap: 1rem;
 }
 
@@ -28,7 +28,7 @@ header {
 
 @include min-break("mobile") {
   .grid-container {
-    grid-template-rows: $header-height $heading-height minmax(100vh, auto); //note: this min height will stretch all items in main section to fill the space
+    grid-template-rows: $header-height $heading-height auto; //note: this min height will stretch all items in main section to fill the space
   }
 }
 
