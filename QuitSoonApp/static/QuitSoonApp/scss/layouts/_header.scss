@@ -127,7 +127,7 @@ header {
             li {
               overflow: hidden;
               border-radius: $container-radius;
-              background-color: $header-bg-colour;
+              background-color: lighten($color: $header-bg-colour, $amount: 10);
               margin-top: 0.4rem;
               padding: 0em;
               box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;

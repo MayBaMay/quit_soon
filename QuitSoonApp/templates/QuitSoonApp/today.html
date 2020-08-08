@@ -46,15 +46,15 @@
 
     <section class="panel p3 pc-0">
         {% if lastsmoke %}
-        <div>
+        <div class="flex-between">
           <p>Dernière cigarette fumée il y a:</p>
           <p class="text-highlight-error">{{ lastsmoke }}</p> 
         </div>
-        <div>
+        <div class="flex-between">
           <p>Aujourd'hui :</p>
           <p class="text-highlight-error">{{ smoke_today }}</p>
         </div>
-        <div>
+        <div class="flex-between">
           <p>Moyenne journalière :</p>
           <p class="text-highlight-error">{{ average_number }}</p>
         </div>

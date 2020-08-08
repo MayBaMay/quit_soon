@@ -24,12 +24,12 @@
       <p> Veuillez paramétrer vos alternatives
       <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>      
       </p>
-    
       
 
 
     {% else %}
       {% if health %}
+      <div class="form-container">
         <form id="healthfilterform" method='post' action="{% url 'QuitSoonApp:health_list' %}">
           {% csrf_token %}
           <div class="form-group">
@@ -53,6 +53,7 @@
           </div>
           <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
         </form>
+        </div>
 <ul>
         {% for conso in health %}
           <li class="flex-between">
