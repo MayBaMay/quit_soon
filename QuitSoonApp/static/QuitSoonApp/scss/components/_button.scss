@@ -7,7 +7,7 @@
   $hoverbgcol,
   $outline-button: false
 ) {
-  transition: 0.15s ease-in-out;
+  transition: all 0.25s ease-in-out;
   @if $outline-button {
     color: $bgcol; //not $col -->using same variables as for non-outline buttons for syntactical ease (same variables for outline/nonoutline button)
     &:hover {
@@ -210,11 +210,23 @@
 }
 
 //
+
+$bb-height-mob: 7rem;
+$bb-height-tab: 8rem;
+$bb-height-des: 11rem;
+
 .big-btn-container {
-  display: flex;
+  font-size: 0.7rem;
+  position: relative;
+  height: $bb-height-mob;
+  width: $bb-height-mob;
+
+  // display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  text-transform: uppercase;
 
   .mobile-content,
   .tablet-content {
@@ -233,19 +245,24 @@
     color: $b-success-bgcol;
   }
 }
+
 .big-btn {
+  padding: 0;
   font-size: 1em;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 6em;
-  height: 6em;
+  width: $bb-height-mob;
+  height: $bb-height-mob;
   box-shadow: rgba(0, 0, 0, 0.214) 4px 6px 10px;
+  text-align: center;
 
   i {
-    font-size: 3em;
+    font-size: 5em;
+    margin-bottom: 0.1em;
+    // color: white;
   }
   .mobile-content {
     color: black;
@@ -256,19 +273,41 @@
 }
 
 @include min-break("mobile") {
-  .big-btn {
-    font-size: 0.8em;
-    width: 9em;
-    height: 9em;
-    span {
-      display: block;
+  .big-btn-container {
+    font-size: 0.9rem;
+    height: $bb-height-tab;
+    width: $bb-height-tab;
+
+    .big-btn {
+      font-size: 0.8em;
+      width: $bb-height-tab;
+      height: $bb-height-tab;
+      span {
+        display: block;
+      }
+      i {
+        font-size: 3.5em;
+        margin-bottom: 0.2em;
+      }
+      .tablet-content {
+        color: inherit;
+      }
     }
-    i {
-      font-size: 3.5em;
-      margin-bottom: 0.2em;
-    }
-    .tablet-content {
-      color: inherit;
+  }
+}
+@include min-break("tablet") {
+  .big-btn-container {
+    height: $bb-height-des;
+    width: $bb-height-des;
+    font-size: 1rem;
+
+    .big-btn {
+      width: $bb-height-des;
+      height: $bb-height-des;
+      i {
+        font-size: 5em;
+        margin-bottom: 0.2em;
+      }
     }
   }
 }

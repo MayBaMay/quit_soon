@@ -19,38 +19,41 @@
 <main id="today" class="content">
   <section class="panel p1 pc-0 panel-big-btn">
     <a class="big-btn-container" href="{% url 'QuitSoonApp:health' %}">
-      <div class="btn-success big-btn">
-        <i class="fas fa-heart"></i>
-        <div class="tablet-content">
-          <span class="tablet-content">Je me fais</span>
-          <span class="tablet-content">du bien</span>
+      <div class="btn-bien big-btn">
+        <i class="far fa-smile"></i>
+        <div >
+          <span >Je me fais</span>
+          <span >du bien</span>
         </div>
       </div>
-      <span class="mobile-content success-label">Je me fais</span>
-      <span class="mobile-content success-label">du bien</span>
     </a>
   </section>
   <section class="panel p2 pc-0 panel-big-btn">
     <a class="big-btn-container" href="{% url 'QuitSoonApp:smoke' %}">
-      <div class="btn-error big-btn">
-        <i class="fas fa-skull"></i>
-        <div class="tablet-content">
-          <span class="tablet-content">Je me fais</span>
-          <span class="tablet-content">du mal</span>
+      <div class="btn-mal big-btn">
+        <i class="far fa-frown"></i>
+        <div  >
+          <span >Je me fais</span>
+          <span >du mal</span>
         </div>
       </div>
-      <span class="mobile-content error-label">Je me fais</span>
-      <span class="mobile-content error-label">du mal</span>
+      {% comment %} <span class="mobile-content error-label">Je me fais</span>
+      <span class="mobile-content error-label">du mal</span> {% endcomment %}
     </a>
   </section>
 
   {% if profile %}
 
-    <section class="panel p3 pc-1">
+    <section class="panel p3 pc-0">
         {% if lastsmoke %}
-          <p>Dernière cigarette fumée il y a {{ lastsmoke }}</p>
-          <p>Aujourd'hui : {{ smoke_today }}</p>
-          <p>Moyenne journalière : {{ average_number }}</p>
+        <div>
+          <p>Dernière cigarette fumée il y a:</p>
+          <p class="text-highlight-error">{{ lastsmoke }}</p> 
+          <div>
+          <p>Aujourd'hui :</p>
+          <p class="text-highlight-error">{{ smoke_today }}</p>
+          <p>Moyenne journalière :</p>
+          <p class="text-highlight-error">{{ average_number }}</p>
         {% else %}
           Aucune cigarette fumée enregistrée
         {% endif %}

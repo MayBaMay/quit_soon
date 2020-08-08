@@ -20,6 +20,21 @@
   align-items: center;
 }
 
+.text-highlight-error,
+.text-highlight-success {
+  text-align: center;
+  font-size: 1.5em !important;
+  font-weight: bold;
+}
+
+.text-highlight-success {
+  color: transparentize($color: $b-success-bgcol, $amount: 0.1);
+}
+
+.text-highlight-error {
+  color: transparentize($color: $b-error-bgcol, $amount: 0.1);
+}
+
 .mobile-content {
   display: block;
 }

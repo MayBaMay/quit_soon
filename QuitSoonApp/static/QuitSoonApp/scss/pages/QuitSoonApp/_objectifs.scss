@@ -18,5 +18,8 @@
   .trophy-display {
     display: flex;
     justify-content: space-between;
+    span {
+      padding: 0 0.2em;
+    }
   }
 }
