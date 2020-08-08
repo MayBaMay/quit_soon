@@ -288,7 +288,10 @@ def smoke(request):
     packs = Paquet.objects.filter(user=request.user, display=True)
     context = {'packs':packs}
     # timezone offset returned by client with ajax
-    tz_offset = -request.session.get('detected_tz') / 60
+    if request.session.get('detected_tz'):
+        tz_offset = -request.session.get('detected_tz') / 60
+    else:
+        tz_offset = None
     if packs :
         smoke_form = SmokeForm(request.user)
         if request.method == 'POST':
@@ -427,7 +430,10 @@ def health(request):
     """User do a healthy activity or uses substitutes"""
     context = {}
     # check if packs are in parameters to fill fields with actual packs
-    tz_offset = -request.session.get('detected_tz') / 60
+    if request.session.get('detected_tz'):
+        tz_offset = -request.session.get('detected_tz') / 60
+    else:
+        tz_offset = None
     alternatives = Alternative.objects.filter(user=request.user, display=True)
     context['alternatives'] = alternatives
     if alternatives :
