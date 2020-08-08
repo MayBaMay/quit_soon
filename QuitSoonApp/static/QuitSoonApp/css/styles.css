@@ -483,7 +483,7 @@ body {
   border-radius: 4px;
   border: none;
   border-color: none;
-  color: #1a1a1a;
+  color: #4d4d4d;
   background-color: #e6e6e6;
   transition: 0.1s ease-in-out;
 }
@@ -491,6 +491,7 @@ body {
 [class^="btn"]:hover {
   color: #e6e6e6;
   background-color: #333333;
+  cursor: pointer;
 }
 
 [class^="btn"][class*="-secondary"] {
@@ -634,6 +635,10 @@ body {
   box-shadow: none;
 }
 
+[class^="btn"][class*="-text"]:hover {
+  background-color: transparent;
+}
+
 [class^="btn"]:disabled {
   opacity: 0.7;
   pointer-events: none;
@@ -771,14 +776,17 @@ body {
   position: relative;
 }
 
-.modal-container .modal .close-modal-btn {
+.modal-container .modal .close-modal-btn-x {
   margin: 0.4rem;
   position: absolute;
   right: 0;
+  color: #999999;
+  background-color: rgba(0, 0, 0, 0);
 }
 
-.modal-container .modal .close-modal-btn:hover {
+.modal-container .modal .close-modal-btn-x:hover {
   cursor: pointer;
+  color: #1a1a1a;
 }
 
 .modal-container .modal .modal-content {
@@ -954,10 +962,10 @@ body {
 
 .form-container form input[type="submit"],
 .form-container form button[type="submit"] {
-  padding: 1em;
+  padding: 0.6em;
   cursor: pointer;
   width: auto;
-  margin: 1.4em 0;
+  margin: 1.4em 0 0.2em;
   border-color: transparent;
 }
 
@@ -1528,8 +1536,8 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #b3b3b3;
-  color: black;
+  background-color: #25344b;
+  color: white;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
 }
@@ -1822,6 +1830,10 @@ footer {
   }
 }
 
+#login .p1 {
+  padding-top: 2.4rem;
+}
+
 #register {
   grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
 }
@@ -1830,6 +1842,14 @@ footer {
   #register {
     grid-template-areas: ". . . p1 p1 p1 p1 p1 p1 . . ." ". . . p2 p2 p2 p2 p2 p2 . . .";
   }
+}
+
+#register .p1 {
+  padding-top: 3rem;
+}
+
+#register .p1 .password_restrictions {
+  margin: 1.4rem 0;
 }
 
 #index {

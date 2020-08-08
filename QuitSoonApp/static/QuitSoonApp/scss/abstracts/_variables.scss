@@ -16,7 +16,7 @@ $gray-9: hsl(0, 0%, 10%);
 //buttons
 
 //primary (default)
-$b-primary-col: $gray-9;
+$b-primary-col: $gray-7;
 $b-primary-bgcol: $gray-1;
 $b-primary-hov-col: $gray-1;
 $b-primary-hov-bgcol: $gray-8;
@@ -71,8 +71,8 @@ $panel-fg-colour3: white;
 // $panel-bg-colour3: scale-color(hsl(0, 96%, 39%), $lightness:+10%);
 
 //footer
-$footer-colour: black;
-$footer-bg-colour: $gray-3;
+$footer-colour: white;
+$footer-bg-colour: hsl(216, 34%, 22%);
 
 //------------------------------------Sizing
 $max-width: 1080px;

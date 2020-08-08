@@ -31,14 +31,17 @@ $transition-close-time: 0.2s;
     display: block;
     position: relative;
 
-    .close-modal-btn {
+    .close-modal-btn-x {
       // padding: 0.4rem;
       margin: 0.4rem;
       position: absolute;
       right: 0;
       // float: right;
+      color: $gray-4;
+      background-color: rgba(0, 0, 0, 0);
       &:hover {
         cursor: pointer;
+        color: $gray-9;
       }
     }
     .modal-content {

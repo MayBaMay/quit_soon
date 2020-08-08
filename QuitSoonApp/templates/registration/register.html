@@ -14,7 +14,7 @@
 
 <!-- Panel content -->
 <main id="register" class="content">
-  	<section class="panel p1 pc-0">
+  	<section class="panel p1 pc-1">
       <div class="form-container">
         <form class="user form-with-password" id="registerForm" method="POST" action="{% url 'QuitSoonApp:register' %}">
           {% csrf_token %}
@@ -38,18 +38,18 @@
           <div class="form-group row">
             {{ form.password1.errors }}
             {{ form.password2.errors }}
-            <div class="col-11">
+            <div >
               <div class="row">
-                <div class="fieldWrapper col-sm-6 mb-3 mb-sm-0">
+                <div class="fieldWrapper" >
                   <input type="password" class="form-control form-control-user password-field" name="password1" id="signUp-Password1" placeholder="Mot de passe">
                 </div>
-                <div class="fieldWrapper col-sm-6">
+                <div class="fieldWrapper" >
                     <input type="password" class="form-control form-control-user password-field" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
                 </div>
             </div>
 
             </div>
-            <div class="col-1">
+            <div >
               <i class="fa fa-eye pass-status" aria-hidden="true"></i>
             </div>
           </div>
@@ -60,11 +60,13 @@
       </div>
  	</section>
   <section class="panel p2 pc-0">
+  <p class="flex-center">
     <a
-      class="btn-primary-text-dark"
+      class="btn btn-primary-text-dark"
       href="{% url 'QuitSoonApp:password_reset' %}"
       >Mot de passe oublié?</a
     >
+    </p>
 
   </section>
 
@@ -110,15 +112,15 @@
 
   <div class="container">
 
-    <div class="card o-hidden border-0 shadow-lg my-5">
-      <div class="card-body p-0">
+    <div >
+      <div >
         <!-- Nested Row within Card Body -->
         <div class="row">
-          <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
-          <div class="col-lg-7">
-            <div class="p-5">
+          <div class=" bg-register-image"></div>
+          <div >
+            <div >
               <div class="text-center">
-                <h1 class="h4 text-gray-900 mb-4">Créer un compte</h1>
+                <h1 >Créer un compte</h1>
               </div>
               <form class="user form-with-password" id="registerForm" method="POST" action="{% url 'QuitSoonApp:register' %}">
                 {% csrf_token %}
@@ -142,18 +144,18 @@
                 <div class="form-group row">
                   {{ form.password1.errors }}
                   {{ form.password2.errors }}
-                  <div class="col-11">
+                  <div >
                     <div class="row">
-                      <div class="fieldWrapper col-sm-6 mb-3 mb-sm-0">
+                      <div class="fieldWrapper">
                         <input type="password" class="form-control form-control-user password-field" name="password1" id="signUp-Password1" placeholder="Mot de passe">
                       </div>
-                      <div class="fieldWrapper col-sm-6">
+                      <div class="fieldWrapper" >
                           <input type="password" class="form-control form-control-user password-field" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
                       </div>
                   </div>
 
                   </div>
-                  <div class="col-1">
+                  <div >
                     <i class="fa fa-eye pass-status" aria-hidden="true"></i>
                   </div>
                 </div>

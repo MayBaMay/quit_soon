@@ -8,6 +8,7 @@
   $outline-button: false
 ) {
   transition: all 0.25s ease-in-out;
+
   @if $outline-button {
     color: $bgcol; //not $col -->using same variables as for non-outline buttons for syntactical ease (same variables for outline/nonoutline button)
     &:hover {
@@ -45,6 +46,7 @@
   &:hover {
     color: $b-primary-hov-col;
     background-color: $b-primary-hov-bgcol;
+    cursor: pointer;
   }
 
   //COLOURS (note: repeated below for outline buttons)
@@ -166,7 +168,6 @@
       box-shadow: 0 0 rgba(0, 0, 0, 0);
       border: 1px solid $gray-6;
       border-radius: 5px;
-      
     }
   }
 
@@ -193,6 +194,9 @@
       outline: none;
       color: white;
       box-shadow: none;
+    }
+    &:hover {
+      background-color: transparent;
     }
   }
 
