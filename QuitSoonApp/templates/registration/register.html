@@ -35,23 +35,29 @@
               <li>Votre mot de passe ne peut pas être entièrement numérique.</li>
             </ul>
           </div>
-          <div class="form-group row">
+          <div class="fieldWrapper">
             {{ form.password1.errors }}
             {{ form.password2.errors }}
             <div >
               <div class="row">
                 <div class="fieldWrapper" >
+                <div class="input-wrapper">
                   <input type="password" class="form-control form-control-user password-field" name="password1" id="signUp-Password1" placeholder="Mot de passe">
+                   <button id="toggle-pw">
+                      <i id="pw-icon" class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
                 </div>
                 <div class="fieldWrapper" >
-                    <input type="password" class="form-control form-control-user password-field" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
+                <div class="input-wrapper">
+                  <input type="password" class="form-control form-control-user password-field" name="password2" id="signUp-Password1" placeholder="Confirmation mot de passe">
+                   
+                </div>
                 </div>
             </div>
 
             </div>
-            <div >
-              <i class="fa fa-eye pass-status" aria-hidden="true"></i>
-            </div>
+           
           </div>
 
           <input id="signup-btn" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Valider">

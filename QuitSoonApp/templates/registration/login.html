@@ -36,7 +36,7 @@
         <div class="fieldWrapper form-group">
           {{ form.password.errors }}
           <div >
-            <div >
+            <div class="input-wrapper" >
               <input
                 type="password"
                 class="form-control form-control-user password-field"
@@ -44,9 +44,12 @@
                 id="signIn-Password"
                 placeholder="Mot de passe"
               />
+              <button id="toggle-pw">
+                  <i id="pw-icon" class="fas fa-eye-slash"></i>
+                </button>
             </div>
             <div >
-              <i class="fa fa-eye pass-status" id="login-eye"></i>
+              {% comment %} <i class="fa fa-eye pass-status" id="login-eye"></i> {% endcomment %}
             </div>
           </div>
         </div>
