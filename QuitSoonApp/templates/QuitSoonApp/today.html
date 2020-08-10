@@ -66,8 +66,12 @@
   {% else %}
 
   <section class="panel p3 pc-1">
-    Vous n'avez pas paramétré votre profil, nous ne pouvons donc pas fournir de statiqtiques.
-    <a class="btn-secondary" href="{% url 'QuitSoonApp:profile' %}">Paramétrer mon profil</a>
+  <p>
+    Vous n'avez pas paramétré votre profil, nous ne pouvons donc pas fournir de statistiques.
+    </p>
+    <div class ="flex-center footnote">
+      <a class="btn" href="{% url 'QuitSoonApp:profile' %}">Paramétrer mon profil</a>
+    </div>
   </section>
 
   {% endif %}

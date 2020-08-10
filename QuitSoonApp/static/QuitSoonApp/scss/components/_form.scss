@@ -91,11 +91,14 @@
       width: 100%;
       display: flex;
       position: relative;
-      input {
+
+      #signIn-Password,
+      #signUp-Password1 {
         border: none;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
       }
+
       button {
         display: flex;
         justify-content: center;

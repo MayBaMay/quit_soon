@@ -12,8 +12,36 @@
   .p1 {
     padding-top: 3rem;
 
+    .form-container {
+      .fieldWrapper {
+        // max-width: 250px;
+
+        display: flex;
+        justify-content: center;
+        height: auto;
+        .input-wrapper {
+          max-width: 220px;
+          display: flex;
+          justify-content: center;
+          width: 100%;
+          height: auto;
+        }
+        input {
+          max-width: 250px;
+        }
+      }
+      // max-width: 70%;
+    }
+
     .password_restrictions {
+      max-width: 70%;
       margin: 1.4rem 0;
+      ul {
+        list-style: disc;
+        li {
+          margin: 0.4em 0;
+        }
+      }
     }
   }
 }

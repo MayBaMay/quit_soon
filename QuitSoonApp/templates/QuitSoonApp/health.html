@@ -18,7 +18,10 @@
     {% if not alternatives %}
 
       <p>Vous n'avez enregistré aucune alternative</p>
-      <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
+      <div class="flex-center footnote"> 
+      
+      <a class = "btn" href="{% url 'QuitSoonApp:alternatives' %}">Paramétrez vos alternatives ici </a>
+      </div>
 
     {% else %}
 
@@ -77,11 +80,11 @@
       </form>
     </div>
 
-    {% endif %}
       <div class="flex-end footnote">
 
     <a class="btn" href="{% url 'QuitSoonApp:alternatives' %}">Créer une nouvelle alternative</a>
     </div>  
+    {% endif %}
   </section>
   <section class="panel p2 pc-0">
 
