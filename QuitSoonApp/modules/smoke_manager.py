@@ -2,7 +2,9 @@
 
 import datetime
 from datetime import timedelta
+import pytz
 
+from django.utils.timezone import make_aware
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -18,24 +20,25 @@ class SmokeManager:
         self.user = user
         self.id = self.get_request_data('id_smoke')
         if not self.id:
-            self.date_cig, self.time_cig = self.get_date_time_cig_aware(
+            self.datetime_cig = self.get_datetime_cig_aware(
                 self.get_request_data('date_smoke'),
                 self.get_request_data('time_smoke'),
                 tz_offset
                 )
-            print(self.date_cig, self.time_cig)
+            print(self.datetime_cig.tzinfo)
+            self.date_cig = self.datetime_cig.date()
+            self.time_cig = self.datetime_cig.time()
             self.given = self.get_request_data('given_field')
 
-    def get_date_time_cig_aware(self, date_smoke, time_smoke, tz_offset):
+    def get_datetime_cig_aware(self, date_smoke, time_smoke, tz_offset):
         try:
             dt_smoke = datetime.datetime.combine(date_smoke, time_smoke)
             dt_smoke -= timedelta(hours=tz_offset)
-            date_cig = dt_smoke.date()
-            time_cig = dt_smoke.time()
-            return date_cig, time_cig
+            dt_smoke = make_aware(dt_smoke, pytz.utc)
+            return dt_smoke
         except TypeError:
             # get_request_data returned None
-            return None, None
+            return None
 
     def get_request_data(self, data):
         try:
@@ -53,6 +56,7 @@ class SmokeManager:
                     user=self.user,
                     date_cig=self.date_cig,
                     time_cig=self.time_cig,
+                    datetime_cig=self.datetime_cig,
                     paquet=self.get_pack,
                     given=self.given,
                     )

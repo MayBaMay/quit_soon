@@ -287,11 +287,13 @@ def smoke(request):
     # check if packs are in parameters to fill fields with actual packs
     packs = Paquet.objects.filter(user=request.user, display=True)
     context = {'packs':packs}
-    # timezone offset returned by client with ajax
+
+    # timezone offset returned by client with django-tz-detect
     if request.session.get('detected_tz'):
         tz_offset = -request.session.get('detected_tz') / 60
     else:
         tz_offset = None
+
     if packs :
         smoke_form = SmokeForm(request.user)
         if request.method == 'POST':
@@ -301,6 +303,7 @@ def smoke(request):
                 smoke.create_conso_cig()
                 return redirect('QuitSoonApp:today')
         context['smoke_form'] = smoke_form
+
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
     context['smoke'] = smoke
     context['nb_smoke_today']= smoke.filter(date_cig=datetime.date.today()).count()
@@ -429,10 +432,12 @@ def delete_alternative(request, id_alternative):
 def health(request):
     """User do a healthy activity or uses substitutes"""
     context = {}
-    # check if packs are in parameters to fill fields with actual packs
+    # check if alternatives are in parameters to fill fields with actual alternatives
     if request.session.get('detected_tz'):
+        print(request.session.get('detected_tz'))
         tz_offset = -request.session.get('detected_tz') / 60
     else:
+        print('No tz')
         tz_offset = None
     alternatives = Alternative.objects.filter(user=request.user, display=True)
     context['alternatives'] = alternatives
