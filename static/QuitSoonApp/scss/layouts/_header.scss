@@ -10,7 +10,10 @@ header {
   position: fixed;
   top: 0;
   left: 0;
+  background-color: $header-bg-colour;
+
   height: $header-height-mob;
+
   color: $header-colour;
   opacity: 1;
   // transition: $menu-transition-open ease-out;
@@ -20,8 +23,8 @@ header {
     // background-color: transparent;
     background-color: $header-bg-colour;
     border-radius: $container-radius;
-
     margin: 0.4rem;
+
     display: flex;
     justify-content: space-between;
     opacity: $header-opacity;
@@ -124,7 +127,7 @@ header {
             li {
               overflow: hidden;
               border-radius: $container-radius;
-              background-color: $header-bg-colour;
+              background-color: lighten($color: $header-bg-colour, $amount: 10);
               margin-top: 0.4rem;
               padding: 0em;
               box-shadow: rgba(0, 0, 0, 0.214) 2px 4px 10px;
@@ -206,7 +209,7 @@ header {
           margin-left: 0rem;
           &.dropdown-menu {
             .sub-menu {
-              top: 3rem;
+              top: 3.8rem;
             }
           }
         }
@@ -225,6 +228,9 @@ header {
       position: relative;
       display: flex;
       justify-content: space-between;
+
+      border-radius: 0;
+      margin: 0;
     }
     .nav-toggle {
       display: none;
