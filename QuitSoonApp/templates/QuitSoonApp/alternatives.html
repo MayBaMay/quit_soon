@@ -74,53 +74,96 @@
               <div class="">
                 {% if Sp %}
                   <h3>Sports<h3>
+                  <ul>
                   {% for activity in Sp %}
-                      <p class="flex-between">{{ activity.activity }}  <a href="/delete_alternative/{{activity.id}}/">
+                 <li class="flex-between">
+                  <table class="info-table">
+                  <tr>
+                    <td>
+                      {{ activity.activity }}
+                    </td>
+                    </tr>
+                  </table>
+                    <a class="icon-link" href="/delete_alternative/{{activity.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a></p>
+                      </a>
+                    </li> 
                     {% endfor %}
+                    </ul>
                 {% endif %}
               </div>
 
               <div class="">
                 {% if Lo %}
                   <h3>Loisirs</h3>
+                  <ul>
                   {% for activity in Lo %}
-                  <p class="flex-between">
-                      {{ activity.activity }}
-                      <a href="/delete_alternative/{{activity.id}}/">
+                  <li class="flex-between">
+                    <table class="info-table">
+                      <tr>
+                          <td>
+                            {{ activity.activity }}
+                          </td>
+                        </tr>
+                    </table>
+                    <a class="icon-link" href="/delete_alternative/{{activity.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>        
-                      </p>       
+                    </a>
+                    </li>
+                
+
                   {% endfor %}
+                  </ul>
                 {% endif %}
               </div>
 
               <div class="">
                 {% if So %}
                   <h3>Soins</h3>
+                  <ul>
                   {% for activity in So %}
-                    <p class="flex-between">
-                      {{ activity.activity }}
-                        <a href="/delete_alternative/{{activity.id}}/">
-                          <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>                </p>
+                       </p>       
+
+                  <li class="flex-between">
+                    <table class="info-table">
+                      <tr>
+                          <td>
+                            {{ activity.activity }}
+                          </td>
+                        </tr>
+                    </table>
+                    <a class="icon-link" href="/delete_alternative/{{activity.id}}/">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </a>
+                    </li>
                   {% endfor %}
+                  </ul>
                 {% endif %}
               </div>
 
               <div class="">
                 {% if Su %}
                   <h3>Substituts</h3>
+                  <ul>
                   {% for substitut in Su %}
-                    <p class="flex-between">
+                   <li class="flex-between">
+                    <table class="info-table">
+                      <tr>
+                          <td>
                       {{ substitut.substitut }}
-                      {{ substitut.nicotine }}
-                      <a href="/delete_alternative/{{substitut.id}}/">
+                          </td>
+                          <td>
+                          {{ substitut.nicotine }}
+                          </td>
+                        </tr>
+                    </table>
+                    <a class="icon-link" href="/delete_alternative/{{substitut.id}}/">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                       </a>
-                    </p>
+                    </li>
+
                   {% endfor %}
+                  </ul>
                 {% endif %}
               </div>
 
