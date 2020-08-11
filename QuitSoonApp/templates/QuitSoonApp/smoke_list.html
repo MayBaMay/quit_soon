@@ -18,7 +18,7 @@
 
 <!-- Panel content -->
 <main id="smoke_list" class="content">
-  <section class="panel p1 pc-1">
+  <section class="panel p1 pc-3">
 
   {% if not packs %}
   <p>
@@ -49,8 +49,8 @@
               {{ smoke_list_form.rol_pack_field }}
               {{ smoke_list_form.rol_pack_field.error }}
             </div>
-            <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
           </div>
+            <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
         </form>
       </div>
       <ul>
@@ -89,7 +89,7 @@
       </ul>
 
 
-      <div class="pagination">
+      <div class="pagination footnote">
         <span class="step-links">
           {% if smoke.has_previous %}
             <a href="?page=1">&laquo; first</a>

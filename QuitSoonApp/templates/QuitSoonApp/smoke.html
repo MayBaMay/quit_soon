@@ -16,12 +16,12 @@
 
 <!-- Panel content -->
 <main id="smoke" class="content">
-  <section class="panel p1 pc-1">
+  <section class="panel p1 pc-3">
 
     {% if not packs %}
 
       <p>Vous n'avez enregistré aucun paquet</p>
-      <p>Veuillez paramétrer vos paquets <a href="{% url 'QuitSoonApp:paquets' %}">ici</a></p>
+      <div class="flex-center footnote"><a class="btn" href="{% url 'QuitSoonApp:paquets' %}">Paramétrez vos paquets ici</a> </div>
 
     {% else %}
 
@@ -90,16 +90,18 @@
           <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
       </form>
     </div>
-    {% endif %}
+    <div class="flex-end footnote">
     <a class="btn" href="{% url 'QuitSoonApp:paquets' %}">Créer un nouveau paquet</a>
+    </div>
+    {% endif %}
   </section>
 
-  <section class="panel p2 pc-1">
+  <section class="panel p2 pc-0">
     {% if smoke %}
     <div class="smoke-timer">
       <p>Vous avez fumé votre dernière cigarette il y a:</p>
       {% for element in lastsmoke %}
-        <span class="last-smoke">{{ element }}</span>
+        <span class="last-smoke text-highlight-error">{{ element }}</span>
       {% endfor %}
     </div>
       <div class="flex-center">

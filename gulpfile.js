@@ -54,13 +54,13 @@ function clean() {
 // Bring third party dependencies from node_modules into vendor directory
 function modules() {
   // Bootstrap JS
-  var bootstrapJS = gulp
-    .src("./node_modules/bootstrap/dist/js/*")
-    .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/vendor/bootstrap/js"));
-  // Bootstrap SCSS
-  var bootstrapSCSS = gulp
-    .src("./node_modules/bootstrap/scss/**/*")
-    .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/vendor/bootstrap/scss"));
+  // var bootstrapJS = gulp
+  //   .src("./node_modules/bootstrap/dist/js/*")
+  //   .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/vendor/bootstrap/js"));
+  // // Bootstrap SCSS
+  // var bootstrapSCSS = gulp
+  //   .src("./node_modules/bootstrap/scss/**/*")
+  //   .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/vendor/bootstrap/scss"));
   // ChartJS
   var chartJS = gulp
     .src("./node_modules/chart.js/dist/*.js")
@@ -89,8 +89,8 @@ function modules() {
     ])
     .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/vendor/jquery"));
   return merge(
-    bootstrapJS,
-    bootstrapSCSS,
+    // bootstrapJS,
+    // bootstrapSCSS,
     chartJS,
     dataTables,
     fontAwesome,
@@ -134,26 +134,24 @@ function css() {
 
 // JS task
 function js() {
-  return (
-    gulp
-      .src([
-        "./QuitSoonApp/static/QuitSoonApp/js/*.js",
-        "!./QuitSoonApp/static/QuitSoonApp/js/*.min.js",
-      ])
-      .pipe(terser())
-      .pipe(
-        header(banner, {
-          pkg: pkg,
-        })
-      )
-      .pipe(
-        rename({
-          suffix: ".min",
-        })
-      )
-      .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/js"))
-      .pipe(browsersync.stream())
-  );
+  return gulp
+    .src([
+      "./QuitSoonApp/static/QuitSoonApp/js/*.js",
+      "!./QuitSoonApp/static/QuitSoonApp/js/*.min.js",
+    ])
+    .pipe(terser())
+    .pipe(
+      header(banner, {
+        pkg: pkg,
+      })
+    )
+    .pipe(
+      rename({
+        suffix: ".min",
+      })
+    )
+    .pipe(gulp.dest("./QuitSoonApp/static/QuitSoonApp/js"))
+    .pipe(browsersync.stream());
 }
 
 // Watch files

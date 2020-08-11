@@ -16,10 +16,10 @@ tr:nth-child(even) {
 
 .info-table {
   border: none;
-  margin: 0.3rem ;
+  margin: 0.3rem;
 
   tr {
-    border: 1px solid white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   td {
     display: inline-block;
