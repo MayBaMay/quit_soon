@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Module testing smoke_stats module"""
+"""Module testing clean_data module cleaning row_data for tests"""
 
 from decimal import Decimal
 import datetime

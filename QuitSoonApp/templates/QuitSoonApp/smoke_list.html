@@ -7,20 +7,25 @@
 
 <!-- Page heading -->
 <div class="page-heading">
-  <i class="fa-calendar-day"></i>
+  <i class="fas fa-smoking"></i>
+  <span>
   <h1>Mes craquages</h1>
   <h2>Pas grave, je peux faire mieux!</h2>
+  </span>
+
 </div>
 <!-- End page heading -->
 
 <!-- Panel content -->
 <main id="smoke_list" class="content">
-  <section class="panel p1 pc-1">
+  <section class="panel p1 pc-3">
 
   {% if not packs %}
-    Vous n'avez enregistré aucun paquet,<br>
-    Veuillez paramétrer vos paquets
+  <p>
+    Vous n'avez enregistré aucun paquet</p>
+    <p> Veuillez paramétrer vos paquets 
     <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
+    </p>  
 
   {% else %}
     {% if smoke %}
@@ -44,22 +49,47 @@
               {{ smoke_list_form.rol_pack_field }}
               {{ smoke_list_form.rol_pack_field.error }}
             </div>
-            <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
           </div>
+            <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
         </form>
       </div>
-      {% for conso in smoke %}
-        <div class="row">
-          {% if conso.given %}
-            {{ conso.date_cig }} {{ conso.time_cig }} Clope taxée
-          {% else %}
-            {{ conso.date_cig }} {{ conso.time_cig }} {{ conso.paquet.brand }}
-          {% endif %}
-          <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-        </div>
-      {% endfor %}
+      <ul>
+        {% for conso in smoke %}
+        <li class="flex-between">
+          <table class="info-table">
+            <tbody>
+              <tr>
+              {% if conso.given %}
+              <td>
+                {{ conso.date_cig }}
+              </td>
+              <td>
+                {{ conso.time_cig }}
+              </td>
+              <td>
+                Clope taxée 
+              </td>
+              {% else %}
+              <td>
+                {{ conso.date_cig }}
+              </td>
+              <td>
+                {{ conso.time_cig }} 
+              </td>
+              <td>
+                {{ conso.paquet.brand }}
+              </td>
+              {% endif %}
+            </tr>
+            </tbody>
+          </table>
+          <a class="icon-link" href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+        </li>
+        {% endfor %}
+      </ul>
 
-      <div class="pagination">
+
+      <div class="pagination footnote">
         <span class="step-links">
           {% if smoke.has_previous %}
             <a href="?page=1">&laquo; first</a>

@@ -1,20 +1,22 @@
 .page-heading {
-  // position: absolute;
-  // top: 0.2rem;
-
-  // font-size: 1rem;
   display: flex;
   align-items: center;
-  padding-left: 1rem;
-  h1 {
-    line-height: 1;
-    font-weight: 400;
-    font-size: 1.7em;
-    letter-spacing: 0.05em;
-    margin-left: 0.8em;
-  }
-  h2 {
-    margin-left: 1em;
+  padding: 1rem;
+  // border-bottom: 2px solid rgba(0, 0, 0, 0.6);
+  background-image: linear-gradient($header-bg-colour, $content-bg-colour);
+  span {
+    display: flex;
+    align-items: center;
+    h1 {
+      font-weight: 400;
+      font-size: 1.7em;
+      letter-spacing: 0.05em;
+      margin: 0;
+      margin-left: 0.8em;
+    }
+    h2 {
+      margin-left: 1em;
+    }
   }
 }
 @include min-break("mobile") {

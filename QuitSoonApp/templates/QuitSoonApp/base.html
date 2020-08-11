@@ -15,8 +15,8 @@
       rel="stylesheet"
       href="{% static 'QuitSoonApp/css/styles.min.css' %}"
     />
-    <link rel="shortcut icon" href="{% static 'QuitSoonApp/favicon.ico' %}" type="image/x-icon">
-    <link rel="icon" href="{% static 'QuitSoonApp/favicon.ico' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'QuitSoonApp/icon/favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'QuitSoonApp/icon/favicon.ico' %}" type="image/x-icon">
     <title>Nicotine Kill</title>
   </head>
 
@@ -30,7 +30,7 @@
             <div class="header-content">
               <div class="logo">
                 <span><a href="{% url 'QuitSoonApp:today' %}">
-                  <img class="NK-logo" src="{% static 'QuitSoonApp/img/clope-ecrasee-fond-a.png' %}" alt="kill nicotine" height="50" width="50">
+                  <img class="NK-logo" src="{% static 'QuitSoonApp/img/logo.png' %}" alt="Nicotine Kill" height="50" width="50">
                 </a></span>
               </div>
 
@@ -137,7 +137,7 @@
         <!-- Logout modal -->
         <div class="modal-container logout-modal">
           <div class="modal">
-            <span class="btn close-modal-btn"><i class="fas fa-times"></i></span>
+            <span class="btn close-modal-btn close-modal-btn-x "><i class="fas fa-times"></i></span>
             <div id="modal-logout" class="modal-content">
               <section>
                 <h4>Déconnexion</h4>
@@ -146,7 +146,6 @@
                 </p>
                 <div class="modal-buttons">
                   <span class="btn"> <a href="{% url 'logout' %}"> Valider </a></span>
-
                   <span class="btn close-modal-btn">Annuler</span>
                 </div>
               </section>
@@ -174,10 +173,10 @@
         </div>
         {% endif %} -->
 
+      </div>
         <!-- Footer -->
         <footer>Contact : contact@nicotinekill.com</footer>
         <!-- End of footer -->
-      </div>
     </div>
 
     <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>

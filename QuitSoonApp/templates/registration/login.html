@@ -3,13 +3,16 @@
 <!-- Page heading -->
 <div class="page-heading">
   <i class="fas fa-key"></i>
+  <span>
   <h1>Me connecter</h1>
+  </span>
+
 </div>
 <!-- End page heading -->
 
 <!-- Panel content -->
 <main id="login" class="content">
-  <section class="panel p1 pc-0">
+  <section class="panel p1 pc-1">
     <div class="form-container">
       <form
         class="user form-with-password"
@@ -32,8 +35,8 @@
         </div>
         <div class="fieldWrapper form-group">
           {{ form.password.errors }}
-          <div class="row">
-            <div class="col-11">
+          <div >
+            <div class="input-wrapper" >
               <input
                 type="password"
                 class="form-control form-control-user password-field"
@@ -41,26 +44,28 @@
                 id="signIn-Password"
                 placeholder="Mot de passe"
               />
+              <button id="toggle-pw">
+                  <i id="pw-icon" class="fas fa-eye-slash"></i>
+                </button>
             </div>
-            <div class="col-1">
-              <i class="fa fa-eye pass-status" id="login-eye"></i>
+            <div >
+              {% comment %} <i class="fa fa-eye pass-status" id="login-eye"></i> {% endcomment %}
             </div>
           </div>
         </div>
-        <input id="signin-btn" type="submit" class="" value="Valider" />
+        <input id="signin-btn" type="submit" class="btn btn-primary" value="Valider" />
       </form>
     </div>
   </section>
 
-  <section class="panel p2 pc-0">
+  <section class="panel p2 pc-1 flex-between">
     <a
-      class="btn-primary-text-dark"
+      class="btn btn-text-secondary"
       href="{% url 'QuitSoonApp:password_reset' %}"
       >Mot de passe oublié?</a
     >
-
-    <a class="btn-primary-text-dark" href="{% url 'QuitSoonApp:register' %}"
-      >Vous n'avez pas encore de compte? Créez en un!</a
+    <a class="btn btn-text-secondary" href="{% url 'QuitSoonApp:register' %}"
+      > Créez en un compte</a
     >
   </section>
 </main>

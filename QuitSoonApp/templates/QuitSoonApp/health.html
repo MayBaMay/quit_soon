@@ -5,18 +5,23 @@
 <!-- Page heading -->
 <div class="page-heading">
   <i class="fas fa-heartbeat"></i>
+  <span>
   <h1>Je tiens bon</h1>
   <h2>Et ça, ça me fait du bien!</h2>
+    </span>
 </div>
 <!-- End page heading -->
 
 <!-- Panel content -->
 <main id="health" class="content">
-  <section class="panel p1 pc-1">
+  <section class="panel p1 pc-2">
     {% if not alternatives %}
 
       <p>Vous n'avez enregistré aucune alternative</p>
-      <p>Veuillez paramétrer vos alternatives <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a></p>
+      <div class="flex-center footnote"> 
+      
+      <a class = "btn" href="{% url 'QuitSoonApp:alternatives' %}">Paramétrez vos alternatives ici </a>
+      </div>
 
     {% else %}
 
@@ -41,21 +46,28 @@
           {{ form.non_field_errors }}
         {% endif %}
         <div class="fieldWrapper form-group row">
-         <span><label>{{ form.date_health.label }}</label>
+         <span>
+         {% comment %} <label>{{ form.date_health.label }}</label> {% endcomment %}
           {{ form.date_health }}</span>
           <span>
-          <label>{{ form.time_health.label }}</label>
+          {% comment %} <label>{{ form.time_health.label }}</label> {% endcomment %}
           {{ form.time_health }}
           </span>
         </div>
-        <div class="fieldWrapper form-group ">
+        <div class="fieldWrapper form-group row">
+        <span>
           {{ form.type_alternative_field }}
+        </span>
+        <span>
           {{ form.sp_field }}
           {{ form.so_field }}
           {{ form.lo_field }}
           {{ form.su_field }}
           {{ form.ecig_vape_or_start }}
+        </span>
         </div>
+
+
         <div id="duration-group" class="fieldWrapper form-group row time ">
         <span class="flex-text">Pendant:</span>
           {{ form.duration_hour }}
@@ -68,16 +80,19 @@
       </form>
     </div>
 
-    {% endif %}
+      <div class="flex-end footnote">
+
     <a class="btn" href="{% url 'QuitSoonApp:alternatives' %}">Créer une nouvelle alternative</a>
+    </div>  
+    {% endif %}
   </section>
-  <section class="panel p2 pc-1">
+  <section class="panel p2 pc-0">
 
      {% if health %}
      <div class="health-timer">
-      <p>Dernière alternative enregistrée il y a:</p>
+      <p >Dernière alternative enregistrée il y a:</p>
         {% for element in lasthealth %}
-          <span class="last-health">{{ element }}</span>
+          <span class="last-health text-highlight-success">{{ element }}</span>
         {% endfor %}
       </div>
       <div class="flex-center">
@@ -88,7 +103,6 @@
     {% endif %}
 
   </section>
-  <div class="fill"><div>
 </main>
 <!-- End panel content -->
 

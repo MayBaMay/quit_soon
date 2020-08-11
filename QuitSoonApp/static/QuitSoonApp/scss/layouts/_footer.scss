@@ -3,12 +3,13 @@ footer {
   height: 40px;
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   background-color: $footer-bg-colour;
   color: $footer-colour;
 
-  border-top-left-radius: $container-radius;
-  border-top-right-radius: $container-radius;
+  // border-top-left-radius: $container-radius;
+  border-top-left-radius: 4px;
 
-
+  // border-top-right-radius: $container-radius;
+  border-top-right-radius: 4px;
 }
