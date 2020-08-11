@@ -227,7 +227,8 @@ class UserProfileTestCase(TransactionTestCase):
     def test_new_name_anonymoususer(self):
         """test change nameview"""
         response = self.client.get(reverse('QuitSoonApp:new_name'))
-        self.assertEqual(response.status_code, 404)
+        # Anonymous user redirect to login by LoginRequiredMiddleware
+        self.assertEqual(response.status_code, 302)
 
     def test_new_name(self):
         """test change nameview"""
@@ -264,7 +265,8 @@ class UserProfileTestCase(TransactionTestCase):
     def test_new_email_anonymoususer(self):
         """test change nameview"""
         response = self.client.get(reverse('QuitSoonApp:new_email'))
-        self.assertEqual(response.status_code, 404)
+        # Anonymous user redirect to login by LoginRequiredMiddleware
+        self.assertEqual(response.status_code, 302)
 
     def test_new_email(self):
         """test change nameview"""
@@ -302,7 +304,8 @@ class UserProfileTestCase(TransactionTestCase):
     def test_new_password_anonymoususer(self):
         """test change nameview"""
         response = self.client.get(reverse('QuitSoonApp:new_password'))
-        self.assertEqual(response.status_code, 404)
+        # Anonymous user redirect to login by LoginRequiredMiddleware
+        self.assertEqual(response.status_code, 302)
 
     def test_new_password_success(self):
         """test userpage view in post method"""
@@ -386,7 +389,7 @@ class UserProfileTestCase(TransactionTestCase):
     def test_new_parameters_known_user(self):
         self.client.login(username='Test', password='testpassword')
         response = self.client.get(reverse('QuitSoonApp:new_parameters'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 404)
 
     def test_new_parameters_get_anonymous_user(self):
         response = self.client.post(reverse('QuitSoonApp:new_parameters'))
