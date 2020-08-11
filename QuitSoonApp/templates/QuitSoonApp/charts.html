@@ -85,8 +85,20 @@
               $(".user-choices", parent.document)
                 .removeClass("hide")
                 .addClass("show");
+              $("#previousDates", parent.document)
+                .removeClass("hide")
+                .addClass("show");
+              $("#nextDates", parent.document)
+                .removeClass("hide")
+                .addClass("show");
             } else {
               $(".user-choices", parent.document)
+                .addClass("hide")
+                .removeClass("show");
+              $("#previousDates", parent.document)
+                .addClass("hide")
+                .removeClass("show");
+              $("#nextDates", parent.document)
                 .addClass("hide")
                 .removeClass("show");
             };
