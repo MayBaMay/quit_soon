@@ -49,9 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
-    # 'debug_toolbar',
+    'debug_toolbar',
     'django.contrib.postgres',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
     'channels',
     'channels_redis',
     'mathfilters',
@@ -66,9 +65,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'django_plotly_dash.middleware.BaseMiddleware',
+    'quit_soon_project.middleware.login_middleware.LoginRequiredMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -142,6 +141,19 @@ SITE_URL = 'http://127.0.0.1:8000'
 
 INTERNAL_IPS = ['127.0.0.1']
 
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+LOGIN_EXEMPT_URLS = (
+    r'^$',
+    r'^accounts/logout/$',
+    r'^register/$',
+    r'^password_reset/$',
+    r'^accounts/password_reset/$',
+    r'^password_reset/done/$',
+    r'^accounts/password_reset/done/$',
+    r'^accounts/reset/',
+    r'^reset/done/$',
+)
 LOGOUT_REDIRECT_URL = '/'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -155,42 +167,11 @@ CHANNEL_LAYERS = {
     },
 }
 
-# Staticfiles finders for locating dash app assets and related files
-
-STATICFILES_FINDERS = [
-
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-
-    'django_plotly_dash.finders.DashAssetFinder',
-    'django_plotly_dash.finders.DashComponentFinder',
-    'django_plotly_dash.finders.DashAppDirectoryFinder',
-]
-
-# Plotly components containing static content that should
-# be handled by the Django staticfiles infrastructure
-
-PLOTLY_COMPONENTS = [
-
-    # Common components
-    'dash_core_components',
-    'dash_html_components',
-    'dash_renderer',
-
-    # django-plotly-dash components
-    'dpd_components',
-    # # static support if serving local assets
-    # 'dpd_static_support',
-    #
-    # # Other components, as needed
-    # 'dash_bootstrap_components',
-]
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 STATIC_LOCATION = 'static'
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 staticfiles_DIRS = [
-    os.path.join(BASE_DIR, 'quit_soon_project/static')
+    os.path.join(BASE_DIR, '/static')
 ]

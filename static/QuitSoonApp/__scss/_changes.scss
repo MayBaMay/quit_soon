@@ -3,13 +3,9 @@
 }
 
 .show{
-  display: inline;
+  display: block;
 }
 
-.hidetypes{
-  display: none;
-}
-
-.showtypes{
-  display: inline;
+.showflex{
+  display: flex;
 }

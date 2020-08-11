@@ -1,22 +1,21 @@
-form {
-  .activity_form,
-  .substitut_form {
-    display: block;
-    width: 100%;
-  }
-}
-
 #alternatives {
   grid-template-areas:
     "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1"
-    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2"
-    "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3";
+    "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2";
+
+  form {
+    .activity_form,
+    .substitut_form {
+      display: block;
+      width: 100%;
+    }
+  }
+
+  .flex-between {
+    text-transform: capitalize;
+  }
 
   @include min-break("mobile") {
-    grid-template-areas:
-      "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2"
-      ". . p3 p3 p3 p3 p3 p3 p3 p3 . ."
-      ". . . . . . . . . . . ."
-      ". . . . . . . . . . . .";
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2";
   }
 }

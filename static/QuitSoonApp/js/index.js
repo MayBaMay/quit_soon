@@ -196,17 +196,19 @@ $(document).ready(function () {
 
   function togglepw(e) {
     e.preventDefault();
-    let p = document.getElementById("password");
-    let show = document.getElementById("pw-show");
-    let hide = document.getElementById("pw-hide");
+    let p =
+      document.getElementById("signIn-Password") ||
+      document.getElementById("signUp-Password1");
+    let icon = document.getElementById("pw-icon");
+    // let hide = document.getElementById("pw-hide");
     if (p.type === "password") {
       p.type = "text";
-      show.classList.toggle("hide");
-      hide.classList.toggle("hide");
+      icon.classList = "fas fa-eye-slash";
+      icon.classList = "fas fa-eye";
     } else {
       p.type = "password";
-      show.classList.toggle("hide");
-      hide.classList.toggle("hide");
+      icon.classList = "fas fa-eye";
+      icon.classList = "fas fa-eye-slash";
     }
   }
 
