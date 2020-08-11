@@ -1,11 +1,12 @@
 .page-heading {
   display: flex;
   align-items: center;
-  padding-left: 1rem;
-
+  padding: 1rem;
+  // border-bottom: 2px solid rgba(0, 0, 0, 0.6);
+  background-image: linear-gradient($header-bg-colour, $content-bg-colour);
   span {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     h1 {
       font-weight: 400;
       font-size: 1.7em;

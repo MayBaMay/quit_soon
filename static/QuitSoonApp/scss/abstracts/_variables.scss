@@ -16,7 +16,7 @@ $gray-9: hsl(0, 0%, 10%);
 //buttons
 
 //primary (default)
-$b-primary-col: $gray-9;
+$b-primary-col: $gray-7;
 $b-primary-bgcol: $gray-1;
 $b-primary-hov-col: $gray-1;
 $b-primary-hov-bgcol: $gray-8;
@@ -27,13 +27,13 @@ $b-secondary-hov-col: $gray-6;
 $b-secondary-hov-bgcol: white;
 //error
 $b-error-col: white;
-$b-error-bgcol: red;
-$b-error-hov-col: red;
+$b-error-bgcol: hsl(0, 96%, 39%);
+$b-error-hov-col: hsl(0, 96%, 39%);
 $b-error-hov-bgcol: white;
 //success
 $b-success-col: white;
-$b-success-bgcol: green;
-$b-success-hov-col: green;
+$b-success-bgcol: hsl(137, 93%, 34%);
+$b-success-hov-col: hsl(137, 93%, 34%);
 $b-success-hov-bgcol: white;
 
 //header
@@ -42,8 +42,8 @@ $header-colour: rgb(41, 41, 41);
 
 // $header-bg-colour: white;
 // $header-bg-colour: rgba(255, 255, 255, 1);
-$header-bg-colour: $gray-1;
 
+$header-bg-colour: $gray-2;
 $header-opacity: 0.95;
 
 //layout
@@ -51,7 +51,7 @@ $body-bg-colour: $gray-2;
 
 //content (main background)
 
-$content-bg-colour: $header-bg-colour;
+$content-bg-colour: $gray-1;
 
 // $header-bg-colour-open: rgb(212, 211, 212);
 
@@ -72,10 +72,12 @@ $panel-fg-colour3: white;
 
 //footer
 $footer-colour: white;
-$footer-bg-colour: $gray-7;
+$footer-bg-colour: hsl(216, 34%, 22%);
 
 //------------------------------------Sizing
 $max-width: 1080px;
 $container-radius: 10px;
 $header-height: 4rem;
 $header-height-mob: 6rem;
+
+$heading-height: 6rem;
