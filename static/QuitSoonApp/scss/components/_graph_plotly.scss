@@ -1,13 +1,13 @@
 
 .resp-container {
   // position: relative;
-  height: 60%;
-  padding-top: 1%;
-  padding-bottom: 1%;
+  // height: 60%;
+  // padding-top: 1%;
+  // padding-bottom: 1%;
 }
 @include min-break("mobile") {
   .resp-container {
-    height: 80%;
+    // height: 80%;
   }
 }
 
@@ -23,7 +23,7 @@
   //   margin: auto;
   //   height: 100%;
   //   width: 100%;
-  background: #1D1F20;
+  // background: #1D1F20;
 }
 
 #myChart {

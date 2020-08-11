@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.6rem 0;
+  // margin: 0.6rem 0;
   form {
     display: flex;
     // flex-direction: column;
@@ -78,9 +78,10 @@
     //   select
     input[type="submit"],
     button[type="submit"] {
+      padding: 0.6em;
       cursor: pointer;
       width: auto;
-      margin: 1.4em 0;
+      margin: 1.4em 0 0.2em;
 
       // margin-left: auto;
       border-color: transparent;
@@ -90,11 +91,14 @@
       width: 100%;
       display: flex;
       position: relative;
-      input {
+
+      #signIn-Password,
+      #signUp-Password1 {
         border: none;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
       }
+
       button {
         display: flex;
         justify-content: center;
@@ -117,15 +121,36 @@
   }
 }
 @include min-break("mobile") {
-  form {
+  .form-container {
+    form {
+      max-width: 400px;
+    }
   }
 }
 @include min-break("tablet") {
   form {
-    max-width: 75%;
-
+    input,
+    select {
+      // max-width: 14rem;
+    }
     .form-group {
+      input,
+      select {
+        // max-width: 10rem;
+      }
       &.row {
+        span {
+          // display: flex;
+          margin: 0.3rem 0;
+          label {
+            margin-right: 0.3rem;
+          }
+          input,
+          select {
+            width: 10rem;
+            margin: 0 0.3rem;
+          }
+        }
         display: flex;
         justify-content: center;
         input,
@@ -135,12 +160,12 @@
         label,
         .flex-text {
           display: flex;
-          justify-content: center;
+          // justify-content: center;
           align-items: center;
         }
         span {
-          margin: 0 1rem;
-          display: inline-block;
+          // margin: 0 1rem;
+          // display: inline-block;
         }
       }
     }

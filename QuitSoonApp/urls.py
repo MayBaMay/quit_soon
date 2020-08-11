@@ -17,7 +17,7 @@ urlpatterns = [
     path('report/', views.report, name='report'),
     path('charts/', TemplateView.as_view(template_name="QuitSoonApp/charts.html"),
                    name='charts'),
-    path('api/chart/data', views.ChartData.as_view(), name='api' ),
+    path('api/chart/data', views.ChartData.as_view(), name='CahrtApi' ),
     path('objectifs/', views.objectifs, name='objectifs'),
 
     path('paquets/', views.paquets, name='paquets'),

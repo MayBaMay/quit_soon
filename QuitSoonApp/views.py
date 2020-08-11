@@ -87,26 +87,25 @@ def login_view(request):
 def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
     context = {}
-    if request.user.is_authenticated:
-        smoke = ConsoCig.objects.filter(user=request.user)
-        health = ConsoAlternative.objects.filter(user=request.user)
-        if UserProfile.objects.filter(user=request.user).exists():
-            context['profile'] = True
-            smoke_stats = SmokeStats(request.user, datetime.date.today())
-            if smoke:
-                context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
-                last = smoke.latest('date_cig', 'time_cig')
-                last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
-                context['lastsmoke'] = get_delta_last_event(last_time)[0]
-                try:
-                    context['average_number'] = round(smoke_stats.average_per_day)
-                except (ZeroDivisionError, TypeError):
-                    # 1st day so no full day, average return None
-                    context['average_number'] = """C'est votre 1er jour, les données sont insuffisantes aujourd'hui.
-                                                   Retrouvez votre moyenne dès demain."""
-        return render(request, 'QuitSoonApp/today.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+
+    smoke = ConsoCig.objects.filter(user=request.user)
+    health = ConsoAlternative.objects.filter(user=request.user)
+    if UserProfile.objects.filter(user=request.user).exists():
+        context['profile'] = True
+        smoke_stats = SmokeStats(request.user, datetime.date.today())
+        if smoke:
+            context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
+            last = smoke.latest('date_cig', 'time_cig')
+            last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+            context['lastsmoke'] = get_delta_last_event(last_time)[0]
+            try:
+                context['average_number'] = round(smoke_stats.average_per_day)
+            except (ZeroDivisionError, TypeError):
+                # 1st day so no full day, average return None
+                context['average_number'] = """C'est votre 1er jour, les données sont insuffisantes aujourd'hui.
+                                               Retrouvez votre moyenne dès demain."""
+    return render(request, 'QuitSoonApp/today.html', context)
+
 
 def profile(request):
     """User profile page with authentication infos and smoking habits"""
@@ -114,36 +113,33 @@ def profile(request):
         'userprofile':None,
         'user_packs':None,
         }
-    if request.user.is_authenticated:
-        parameter_form = ParametersForm(request.user, request.POST)
-        paquet_form = PaquetFormCreation(request.user)
-        context['parameter_form'] = parameter_form
-        context['paquet_form'] = paquet_form
-        try:
-            userprofile = UserProfile.objects.get(user=request.user)
-        except ObjectDoesNotExist:
-            userprofile = None
-        try:
-            paquet_ref = Paquet.objects.get(user=request.user, first=True)
-        except ObjectDoesNotExist:
-            paquet_ref = None
-            # if nor ref_pack, profile is incomplete
-            userprofile = None
-        # !!!!!!!!! to do!!!!!!!!!except pb more then one first? should not happened but in case
-        if userprofile:
-            context['userprofile'] = userprofile
-            context['paquet_ref'] = paquet_ref
-        packs = Paquet.objects.filter(user=request.user, display=True)
-        if packs.exists:
-            context['user_packs'] = packs
-        return render(request, 'QuitSoonApp/profile.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    parameter_form = ParametersForm(request.user, request.POST)
+    paquet_form = PaquetFormCreation(request.user)
+    context['parameter_form'] = parameter_form
+    context['paquet_form'] = paquet_form
+    try:
+        userprofile = UserProfile.objects.get(user=request.user)
+    except ObjectDoesNotExist:
+        userprofile = None
+    try:
+        paquet_ref = Paquet.objects.get(user=request.user, first=True)
+    except ObjectDoesNotExist:
+        paquet_ref = None
+        # if nor ref_pack, profile is incomplete
+        userprofile = None
+    # !!!!!!!!! to do!!!!!!!!!except pb more then one first? should not happened but in case
+    if userprofile:
+        context['userprofile'] = userprofile
+        context['paquet_ref'] = paquet_ref
+    packs = Paquet.objects.filter(user=request.user, display=True)
+    if packs.exists:
+        context['user_packs'] = packs
+    return render(request, 'QuitSoonApp/profile.html', context)
 
 def new_parameters(request):
     """View changing user smoking habits when starting using app"""
     response_data = {'response':None}
-    if request.user.is_authenticated and request.method == 'POST':
+    if request.method == 'POST':
         # make request.POST mutable
         data = dict(request.POST)
         for field in data:
@@ -176,7 +172,7 @@ def new_parameters(request):
             reset.new_profile()
         return redirect('QuitSoonApp:profile')
     else:
-        return redirect('QuitSoonApp:login')
+        raise Http404()
 
 def new_name(request):
     """View changing user name"""
@@ -242,27 +238,24 @@ def new_password(request):
 def paquets(request):
     """Smoking parameters, user different packs"""
     context = {'first' : False}
-    if request.user.is_authenticated:
-        form = PaquetFormCreation(request.user)
-        if not Paquet.objects.filter(user=request.user).exists():
-            context['first'] = True
-        if request.method == 'POST':
-            # receive smoking habits from user in a
-            form = PaquetFormCreation(request.user, request.POST)
-            if form.is_valid():
-                new_pack = PackManager(request.user, form.cleaned_data)
-                new_pack.create_pack()
-                form = PaquetFormCreation(request.user)
-                context['first'] = False
-        # select users packs for display in paquets page
-        paquets = Paquet.objects.filter(user=request.user, display=True)
-        context['form'] = form
-        # get packs per type
-        context['ind'] = paquets.filter(type_cig='IND')
-        context['rol'] = paquets.filter(type_cig='ROL')
-        return render(request, 'QuitSoonApp/paquets.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    form = PaquetFormCreation(request.user)
+    if not Paquet.objects.filter(user=request.user).exists():
+        context['first'] = True
+    if request.method == 'POST':
+        # receive smoking habits from user in a
+        form = PaquetFormCreation(request.user, request.POST)
+        if form.is_valid():
+            new_pack = PackManager(request.user, form.cleaned_data)
+            new_pack.create_pack()
+            form = PaquetFormCreation(request.user)
+            context['first'] = False
+    # select users packs for display in paquets page
+    paquets = Paquet.objects.filter(user=request.user, display=True)
+    context['form'] = form
+    # get packs per type
+    context['ind'] = paquets.filter(type_cig='IND')
+    context['rol'] = paquets.filter(type_cig='ROL')
+    return render(request, 'QuitSoonApp/paquets.html', context)
 
 def delete_pack(request, id_pack):
     """
@@ -294,28 +287,25 @@ def change_g_per_cig(request):
 def smoke(request):
     """User smokes"""
     # check if packs are in parameters to fill fields with actual packs
-    if request.user.is_authenticated:
-        packs = Paquet.objects.filter(user=request.user, display=True)
-        context = {'packs':packs}
-        if packs :
-            smoke_form = SmokeForm(request.user)
-            if request.method == 'POST':
-                smoke_form = SmokeForm(request.user, request.POST)
-                if smoke_form.is_valid():
-                    smoke = SmokeManager(request.user, smoke_form.cleaned_data)
-                    smoke.create_conso_cig()
-                    return redirect('QuitSoonApp:today')
-            context['smoke_form'] = smoke_form
-        smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
-        context['smoke'] = smoke
-        context['nb_smoke_today']= smoke.filter(date_cig=datetime.date.today()).count()
-        if smoke:
-            last = smoke.latest('date_cig', 'time_cig')
-            last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
-            context['lastsmoke'] = get_delta_last_event(last_time)
-        return render(request, 'QuitSoonApp/smoke.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    packs = Paquet.objects.filter(user=request.user, display=True)
+    context = {'packs':packs}
+    if packs :
+        smoke_form = SmokeForm(request.user)
+        if request.method == 'POST':
+            smoke_form = SmokeForm(request.user, request.POST)
+            if smoke_form.is_valid():
+                smoke = SmokeManager(request.user, smoke_form.cleaned_data)
+                smoke.create_conso_cig()
+                return redirect('QuitSoonApp:today')
+        context['smoke_form'] = smoke_form
+    smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
+    context['smoke'] = smoke
+    context['nb_smoke_today']= smoke.filter(date_cig=datetime.date.today()).count()
+    if smoke:
+        last = smoke.latest('date_cig', 'time_cig')
+        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
+        context['lastsmoke'] = get_delta_last_event(last_time)
+    return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
     """
@@ -332,99 +322,93 @@ def delete_smoke(request, id_smoke):
 def smoke_list(request):
     """list conso cig"""
     context = {}
-    if request.user.is_authenticated:
-        packs = Paquet.objects.filter(user=request.user, display=True)
-        context['packs'] = packs
-        if packs.exists():
-            smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
-            if smoke.exists() :
-                smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
-                if request.method == 'POST':
-                    smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
-                    if smoke_list_form.is_valid():
-                        data = smoke_list_form.cleaned_data
-                        if data['type_cig_field'] != 'empty':
-                            if data['type_cig_field'] == 'given':
-                                smoke = smoke.filter(given=True)
-                            else:
-                                smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
-                                if data['ind_pack_field'] != 'empty':
-                                    pack = Paquet.objects.get(id=int(data['ind_pack_field']))
-                                    smoke = smoke.filter(paquet__brand=pack.brand)
-                                elif data['rol_pack_field'] != 'empty':
-                                    pack = Paquet.objects.get(id=int(data['rol_pack_field']))
-                                    smoke = smoke.filter(paquet__brand=pack.brand)
-                paginator = Paginator(smoke, 20)
-                page = request.GET.get('page')
-                page_smoke = paginator.get_page(page)
-                context['smoke'] = page_smoke
-                context['smoke_list_form'] = smoke_list_form
-        return render(request, 'QuitSoonApp/smoke_list.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    packs = Paquet.objects.filter(user=request.user, display=True)
+    context['packs'] = packs
+    if packs.exists():
+        smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
+        if smoke.exists() :
+            smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
+            if request.method == 'POST':
+                smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
+                if smoke_list_form.is_valid():
+                    data = smoke_list_form.cleaned_data
+                    if data['type_cig_field'] != 'empty':
+                        if data['type_cig_field'] == 'given':
+                            smoke = smoke.filter(given=True)
+                        else:
+                            smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
+                            if data['ind_pack_field'] != 'empty':
+                                pack = Paquet.objects.get(id=int(data['ind_pack_field']))
+                                smoke = smoke.filter(paquet__brand=pack.brand)
+                            elif data['rol_pack_field'] != 'empty':
+                                pack = Paquet.objects.get(id=int(data['rol_pack_field']))
+                                smoke = smoke.filter(paquet__brand=pack.brand)
+            paginator = Paginator(smoke, 20)
+            page = request.GET.get('page')
+            page_smoke = paginator.get_page(page)
+            context['smoke'] = page_smoke
+            context['smoke_list_form'] = smoke_list_form
+    return render(request, 'QuitSoonApp/smoke_list.html', context)
 
 def alternatives(request):
     """Healthy parameters, user different activities or substitutes"""
     context = {}
-    if request.user.is_authenticated:
-        alternative_form = TypeAlternativeForm(request.user)
-        activity_form = ActivityForm(request.user)
-        substitut_form = SubstitutForm(request.user)
+    alternative_form = TypeAlternativeForm(request.user)
+    activity_form = ActivityForm(request.user)
+    substitut_form = SubstitutForm(request.user)
 
-        if request.method == 'POST':
-            # get wich type of alternative
-            form_data = {'type_alternative':request.POST['type_alternative']}
-            alternative_form = TypeAlternativeForm(request.user, form_data)
-            if alternative_form.is_valid():
-                final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
+    if request.method == 'POST':
+        # get wich type of alternative
+        form_data = {'type_alternative':request.POST['type_alternative']}
+        alternative_form = TypeAlternativeForm(request.user, form_data)
+        if alternative_form.is_valid():
+            final_data = {'type_alternative': alternative_form.cleaned_data['type_alternative']}
 
-                if alternative_form.cleaned_data['type_alternative']== 'Ac' :
-                    form_data = {'type_activity':request.POST['type_activity'],
-                                 'activity':request.POST['activity']}
-                    activity_form = ActivityForm(request.user, form_data)
-                    if activity_form.is_valid():
-                        # keep only fields from alternative_form & activity_form
-                        final_data['type_activity'] = activity_form.cleaned_data['type_activity']
-                        final_data['activity'] = activity_form.cleaned_data['activity']
-                        # Create a AlternativeManager object and create a new alternative
-                        new_alternative = AlternativeManager(request.user, final_data)
-                        new_alternative.create_alternative()
+            if alternative_form.cleaned_data['type_alternative']== 'Ac' :
+                form_data = {'type_activity':request.POST['type_activity'],
+                             'activity':request.POST['activity']}
+                activity_form = ActivityForm(request.user, form_data)
+                if activity_form.is_valid():
+                    # keep only fields from alternative_form & activity_form
+                    final_data['type_activity'] = activity_form.cleaned_data['type_activity']
+                    final_data['activity'] = activity_form.cleaned_data['activity']
+                    # Create a AlternativeManager object and create a new alternative
+                    new_alternative = AlternativeManager(request.user, final_data)
+                    new_alternative.create_alternative()
 
-                        alternative_form = TypeAlternativeForm(request.user)
-                        activity_form = ActivityForm(request.user)
-                        substitut_form = SubstitutForm(request.user)
+                    alternative_form = TypeAlternativeForm(request.user)
+                    activity_form = ActivityForm(request.user)
+                    substitut_form = SubstitutForm(request.user)
 
-                elif alternative_form.cleaned_data['type_alternative'] == 'Su' :
-                    form_data = {'substitut':request.POST['substitut'],
-                                 'nicotine':request.POST['nicotine']}
-                    substitut_form = SubstitutForm(request.user, form_data)
-                    if substitut_form.is_valid():
-                        # keep only fields from alternative_form & substitut_form
-                        final_data['substitut'] = substitut_form.cleaned_data['substitut']
-                        final_data['nicotine'] = substitut_form.cleaned_data['nicotine']
-                        # Create a AlternativeManager object and create a new alternative
-                        new_alternative = AlternativeManager(request.user, final_data)
-                        new_alternative.create_alternative()
+            elif alternative_form.cleaned_data['type_alternative'] == 'Su' :
+                form_data = {'substitut':request.POST['substitut'],
+                             'nicotine':request.POST['nicotine']}
+                substitut_form = SubstitutForm(request.user, form_data)
+                if substitut_form.is_valid():
+                    # keep only fields from alternative_form & substitut_form
+                    final_data['substitut'] = substitut_form.cleaned_data['substitut']
+                    final_data['nicotine'] = substitut_form.cleaned_data['nicotine']
+                    # Create a AlternativeManager object and create a new alternative
+                    new_alternative = AlternativeManager(request.user, final_data)
+                    new_alternative.create_alternative()
 
-                        alternative_form = TypeAlternativeForm(request.user)
-                        activity_form = ActivityForm(request.user)
-                        substitut_form = SubstitutForm(request.user)
+                    alternative_form = TypeAlternativeForm(request.user)
+                    activity_form = ActivityForm(request.user)
+                    substitut_form = SubstitutForm(request.user)
 
-        # select users packs for display in paquets page
-        alternatives = Alternative.objects.filter(user=request.user, display=True)
-        context = {
-            'alternative_form':alternative_form,
-            'activity_form':activity_form,
-            'substitut_form':substitut_form,
-            # get packs per type
-            'Sp':alternatives.filter(type_activity='Sp'),
-            'Lo':alternatives.filter(type_activity='Lo'),
-            'So':alternatives.filter(type_activity='So'),
-            'Su':alternatives.filter(type_alternative='Su'),
-            }
-        return render(request, 'QuitSoonApp/alternatives.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    # select users packs for display in paquets page
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    context = {
+        'alternative_form':alternative_form,
+        'activity_form':activity_form,
+        'substitut_form':substitut_form,
+        # get packs per type
+        'Sp':alternatives.filter(type_activity='Sp'),
+        'Lo':alternatives.filter(type_activity='Lo'),
+        'So':alternatives.filter(type_activity='So'),
+        'Su':alternatives.filter(type_alternative='Su'),
+        }
+    return render(request, 'QuitSoonApp/alternatives.html', context)
 
 def delete_alternative(request, id_alternative):
     """
@@ -442,28 +426,25 @@ def delete_alternative(request, id_alternative):
 def health(request):
     """User do a healthy activity or uses substitutes"""
     context = {}
-    if request.user.is_authenticated:
-        # check if packs are in parameters to fill fields with actual packs
-        alternatives = Alternative.objects.filter(user=request.user, display=True)
-        context['alternatives'] = alternatives
-        if alternatives :
-            form = HealthForm(request.user)
-            if request.method == 'POST':
-                form = HealthForm(request.user, request.POST)
-                if form.is_valid():
-                    new_health = HealthManager(request.user, form.cleaned_data)
-                    new_health.create_conso_alternative()
-                    return redirect('QuitSoonApp:today')
-            context['form'] = form
-        health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
-        context['health'] = health
-        if health:
-            last = health.latest('date_alter', 'date_alter')
-            last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
-            context['lasthealth'] = get_delta_last_event(last_time)
-        return render(request, 'QuitSoonApp/health.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    # check if packs are in parameters to fill fields with actual packs
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    context['alternatives'] = alternatives
+    if alternatives :
+        form = HealthForm(request.user)
+        if request.method == 'POST':
+            form = HealthForm(request.user, request.POST)
+            if form.is_valid():
+                new_health = HealthManager(request.user, form.cleaned_data)
+                new_health.create_conso_alternative()
+                return redirect('QuitSoonApp:today')
+        context['form'] = form
+    health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
+    context['health'] = health
+    if health:
+        last = health.latest('date_alter', 'date_alter')
+        last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
+        context['lasthealth'] = get_delta_last_event(last_time)
+    return render(request, 'QuitSoonApp/health.html', context)
 
 def su_ecig(request):
     """Tells if ecig has been selected by user"""
@@ -496,119 +477,105 @@ def delete_health(request, id_health):
 
 def health_list(request):
     context = {}
-    if request.user.is_authenticated:
-        # check if packs are in parameters to fill fields with actual packs
-        alternatives = Alternative.objects.filter(user=request.user, display=True)
-        context['alternatives'] = alternatives
-        if alternatives.exists():
-            health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
-            if health.exists():
-                health_form = ChooseAlternativeFormWithEmptyFields(request.user)
-                if request.method == 'POST':
-                    health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
-                    if health_form.is_valid():
-                        data = health_form.cleaned_data
-                        if data['type_alternative_field'] != 'empty':
-                            if data['type_alternative_field'] == 'Su':
-                                health = health.filter(alternative__type_alternative=data['type_alternative_field'])
-                                if data['su_field'] != 'empty':
-                                    alt = Alternative.objects.get(id=int(data['su_field']))
-                                    health = health.filter(alternative__substitut=alt.substitut)
-                            else:
-                                health = health.filter(alternative__type_activity=data['type_alternative_field'])
-                                if data['sp_field'] != 'empty':
-                                    alt = Alternative.objects.get(id=int(data['sp_field']))
-                                    health = health.filter(alternative__activity=alt.activity)
-                                elif data['so_field'] != 'empty':
-                                    alt = Alternative.objects.get(id=int(data['so_field']))
-                                    health = health.filter(alternative__activity=alt.activity)
-                                elif data['lo_field'] != 'empty':
-                                    alt = Alternative.objects.get(id=int(data['lo_field']))
-                                    health = health.filter(alternative__activity=alt.activity)
-                paginator = Paginator(health, 20)
-                page = request.GET.get('page')
-                page_health = paginator.get_page(page)
-                context['health'] = page_health
-                context['health_form'] = health_form
-        return render(request, 'QuitSoonApp/health_list.html', context)
-    else:
-        return redirect('QuitSoonApp:login')
+    # check if packs are in parameters to fill fields with actual packs
+    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    context['alternatives'] = alternatives
+    if alternatives.exists():
+        health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
+        if health.exists():
+            health_form = ChooseAlternativeFormWithEmptyFields(request.user)
+            if request.method == 'POST':
+                health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
+                if health_form.is_valid():
+                    data = health_form.cleaned_data
+                    if data['type_alternative_field'] != 'empty':
+                        if data['type_alternative_field'] == 'Su':
+                            health = health.filter(alternative__type_alternative=data['type_alternative_field'])
+                            if data['su_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['su_field']))
+                                health = health.filter(alternative__substitut=alt.substitut)
+                        else:
+                            health = health.filter(alternative__type_activity=data['type_alternative_field'])
+                            if data['sp_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['sp_field']))
+                                health = health.filter(alternative__activity=alt.activity)
+                            elif data['so_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['so_field']))
+                                health = health.filter(alternative__activity=alt.activity)
+                            elif data['lo_field'] != 'empty':
+                                alt = Alternative.objects.get(id=int(data['lo_field']))
+                                health = health.filter(alternative__activity=alt.activity)
+            paginator = Paginator(health, 20)
+            page = request.GET.get('page')
+            page_health = paginator.get_page(page)
+            context['health'] = page_health
+            context['health_form'] = health_form
+    return render(request, 'QuitSoonApp/health_list.html', context)
 
 def report(request, **kwargs):
     """Page with user results, graphs..."""
     context = {}
-    if request.user.is_authenticated:
-        profile = UserProfile.objects.filter(user=request.user).exists()
-        if profile:
-            smoke_stats = SmokeStats(request.user, datetime.date.today())
-            healthy_stats = HealthyStats(request.user, datetime.date.today())
+    profile = UserProfile.objects.filter(user=request.user).exists()
+    if profile:
+        smoke_stats = SmokeStats(request.user, datetime.date.today())
+        healthy_stats = HealthyStats(request.user, datetime.date.today())
 
-            # graphs with smoke and health activities
-            if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
+        # graphs with smoke and health activities
+        if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
 
-                context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days.exists()
-                # generate context
-                try:
-                    context['total_number'] = smoke_stats.total_smoke_all_days
-                    context['average_number'] = round(smoke_stats.average_per_day)
-                    context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
-                    context['total_money'] = round(smoke_stats.total_money_smoked_full_days, 2)
-                    context['saved_money'] = round(smoke_stats.money_saved_full_days, 2)
-                    context['average_money'] = round(smoke_stats.average_money_per_day_full_days, 2)
-                except (ZeroDivisionError, TypeError):
-                    # 1st day so no full day, average return None
-                    context['first_day'] = True
+            context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days.exists()
+            # generate context
+            context['total_number'] = smoke_stats.total_smoke_all_days
+            context['average_number'] = round(smoke_stats.average_per_day)
+            context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
+            context['total_money'] = round(smoke_stats.total_money_smoked, 2)
+            context['saved_money'] = round(smoke_stats.money_saved, 2)
+            context['average_money'] = round(smoke_stats.average_money_per_day, 2)
+            context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
 
-                context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
+            activity_stats = {}
+            if healthy_stats.user_activities:
+                for type in Alternative.TYPE_ACTIVITY:
+                    activity_stats[type[0]] = {}
+                    if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
+                        activity_stats[type[0]]['exists'] = True
+                    activity_stats[type[0]]['name'] = type[1]
+                    for period in ['day', 'week', 'month']:
+                        minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
+                        activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
+                context['activity_stats'] = activity_stats
+            substitut_stats = {}
+            if healthy_stats.user_conso_subsitut:
+                for type in Alternative.SUBSTITUT:
+                    substitut_stats[type[0]] = {}
+                    if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
+                        substitut_stats[type[0]]['exists'] = True
+                    substitut_stats[type[0]]['name'] = type[1]
+                    for period in ['day', 'week', 'month']:
+                        nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
+                        substitut_stats[type[0]][period] = nicotine
+                context['substitut_stats'] = substitut_stats
+            print('substitut_stats', substitut_stats)
 
-                activity_stats = {}
-                if healthy_stats.user_activities:
-                    for type in Alternative.TYPE_ACTIVITY:
-                        activity_stats[type[0]] = {}
-                        if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
-                            activity_stats[type[0]]['exists'] = True
-                        activity_stats[type[0]]['name'] = type[1]
-                        for period in ['day', 'week', 'month']:
-                            minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
-                            activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
-                    context['activity_stats'] = activity_stats
-                substitut_stats = {}
-                if healthy_stats.user_conso_subsitut:
-                    for type in Alternative.SUBSTITUT:
-                        substitut_stats[type[0]] = {}
-                        if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
-                            substitut_stats[type[0]]['exists'] = True
-                        substitut_stats[type[0]]['name'] = type[1]
-                        for period in ['day', 'week', 'month']:
-                            nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
-                            substitut_stats[type[0]][period] = nicotine
-                    context['substitut_stats'] = substitut_stats
-                print('substitut_stats', substitut_stats)
-
-                return render(request, 'QuitSoonApp/report.html', context)
-            else:
-                context['no_data'] = True
-                return render(request, 'QuitSoonApp/report.html', context)
+            return render(request, 'QuitSoonApp/report.html', context)
         else:
-            return redirect('QuitSoonApp:profile')
+            context['no_data'] = True
+            return render(request, 'QuitSoonApp/report.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:profile')
 
 def objectifs(request):
     """Page with user trophies and goals"""
     context = {}
-    if request.user.is_authenticated:
-        profile = UserProfile.objects.filter(user=request.user).exists()
-        if profile:
-            stats = SmokeStats(request.user, datetime.date.today())
-            trophy = trophy_checking(stats)
-            trophy.create_trophies()
-            context['challenges'] = trophy.user_trophies
-            return render(request, 'QuitSoonApp/objectifs.html', context)
-        else:
-            return redirect('QuitSoonApp:profile')
+    profile = UserProfile.objects.filter(user=request.user).exists()
+    if profile:
+        stats = SmokeStats(request.user, datetime.date.today())
+        trophy = trophy_checking(stats)
+        trophy.create_trophies()
+        context['challenges'] = trophy.user_trophies
+        return render(request, 'QuitSoonApp/objectifs.html', context)
     else:
-        return redirect('QuitSoonApp:index')
+        return redirect('QuitSoonApp:profile')
 
 class ChartData(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]

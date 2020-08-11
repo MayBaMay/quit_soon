@@ -50,7 +50,7 @@ class ChoosePackForm(forms.Form):
         required=True,
         choices=[],
         widget=forms.Select
-        (attrs={'class':"form-control showtypes"}),
+        (attrs={'class':"form-control"}),
         label='',
         )
 
