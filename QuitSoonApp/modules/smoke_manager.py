@@ -25,7 +25,6 @@ class SmokeManager:
                 self.get_request_data('time_smoke'),
                 tz_offset
                 )
-            print(self.datetime_cig.tzinfo)
             self.date_cig = self.datetime_cig.date()
             self.time_cig = self.datetime_cig.time()
             self.given = self.get_request_data('given_field')
@@ -33,11 +32,12 @@ class SmokeManager:
     def get_datetime_cig_aware(self, date_smoke, time_smoke, tz_offset):
         try:
             dt_smoke = datetime.datetime.combine(date_smoke, time_smoke)
-            dt_smoke -= timedelta(hours=tz_offset)
+            dt_smoke += timedelta(minutes=tz_offset)
             dt_smoke = make_aware(dt_smoke, pytz.utc)
             return dt_smoke
-        except TypeError:
+        except TypeError as e:
             # get_request_data returned None
+            print(e)
             return None
 
     def get_request_data(self, data):

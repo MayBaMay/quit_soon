@@ -135,7 +135,7 @@ NOSE_ARGS = [
 
 LANGUAGE_CODE = 'fr'  #used for project including administration interface
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 USE_I18N = True
 

@@ -14,13 +14,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='consoalternative',
             name='datetime_alter',
-            field=models.DateTimeField(default=datetime.datetime(2020, 8, 6, 16, 29)),
+            field=models.DateTimeField(),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='consocig',
             name='datetime_cig',
-            field=models.DateTimeField(default=datetime.datetime(2020, 8, 6, 16, 29)),
+            field=models.DateTimeField(),
             preserve_default=False,
         ),
     ]

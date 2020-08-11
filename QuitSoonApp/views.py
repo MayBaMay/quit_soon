@@ -3,7 +3,9 @@
 import time
 import datetime
 from datetime import time as t
+from datetime import timedelta
 from dateutil import relativedelta
+import pytz
 from decimal import Decimal
 import json
 import pandas as pd
@@ -94,9 +96,8 @@ def today(request):
         smoke_stats = SmokeStats(request.user, datetime.date.today())
         if smoke:
             context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
-            last = smoke.latest('date_cig', 'time_cig')
-            last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
-            context['lastsmoke'] = get_delta_last_event(last_time)[0]
+            last = smoke.latest('datetime_cig').datetime_cig
+            context['lastsmoke'] = get_delta_last_event(last)[0]
             try:
                 context['average_number'] = round(smoke_stats.average_per_day)
             except (ZeroDivisionError, TypeError):
@@ -290,9 +291,10 @@ def smoke(request):
 
     # timezone offset returned by client with django-tz-detect
     if request.session.get('detected_tz'):
-        tz_offset = -request.session.get('detected_tz') / 60
+        tz_offset = request.session.get('detected_tz')
     else:
         tz_offset = None
+    print(tz_offset)
 
     if packs :
         smoke_form = SmokeForm(request.user)
@@ -308,9 +310,9 @@ def smoke(request):
     context['smoke'] = smoke
     context['nb_smoke_today']= smoke.filter(date_cig=datetime.date.today()).count()
     if smoke:
-        last = smoke.latest('date_cig', 'time_cig')
-        last_time = datetime.datetime.combine(last.date_cig, last.time_cig)
-        context['lastsmoke'] = get_delta_last_event(last_time)
+        last = smoke.latest('datetime_cig').datetime_cig
+        print(last.tzinfo)
+        context['lastsmoke'] = get_delta_last_event(last)
     return render(request, 'QuitSoonApp/smoke.html', context)
 
 def delete_smoke(request, id_smoke):
@@ -330,6 +332,10 @@ def smoke_list(request):
     context = {}
     packs = Paquet.objects.filter(user=request.user, display=True)
     context['packs'] = packs
+    if request.session.get('detected_tz'):
+        tz_offset = request.session.get('detected_tz')
+    else:
+        tz_offset = None
     if packs.exists():
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
         if smoke.exists() :
@@ -349,9 +355,17 @@ def smoke_list(request):
                             elif data['rol_pack_field'] != 'empty':
                                 pack = Paquet.objects.get(id=int(data['rol_pack_field']))
                                 smoke = smoke.filter(paquet__brand=pack.brand)
-            paginator = Paginator(smoke, 20)
+            colums = ['datetime_cig', 'paquet__brand']
+            smokedf = pd.DataFrame(smoke.values_list(*colums))
+            smokedf.rename(columns={0:colums[0],1:colums[1]},inplace=True)
+            smokedf.datetime_cig -= timedelta(minutes=tz_offset)
+            print(smokedf)
+            paginator = Paginator(smokedf, 20)
+            print('paginator', paginator)
             page = request.GET.get('page')
+            print('page',page)
             page_smoke = paginator.get_page(page)
+            print('page_smoke',page_smoke)
             context['smoke'] = page_smoke
             context['smoke_list_form'] = smoke_list_form
     return render(request, 'QuitSoonApp/smoke_list.html', context)
@@ -453,9 +467,8 @@ def health(request):
     health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
     context['health'] = health
     if health:
-        last = health.latest('date_alter', 'date_alter')
-        last_time = datetime.datetime.combine(last.date_alter, last.time_alter)
-        context['lasthealth'] = get_delta_last_event(last_time)
+        last = health.latest('datetime_alter').datetime_alter
+        context['lasthealth'] = get_delta_last_event(last)
     return render(request, 'QuitSoonApp/health.html', context)
 
 def su_ecig(request):
