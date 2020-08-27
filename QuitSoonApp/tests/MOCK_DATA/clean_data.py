@@ -22,7 +22,7 @@ class CreateDataInDatabase:
             data = self.get_missing_data(data)
 
     def date_format(self, date):
-        return dt.strptime(date, '%Y-%M-%d').date()
+        return dt.strptime(date, '%Y-%m-%d').date()
 
     def time_format(self, time):
         return dt.strptime(time, '%H:%M').time()

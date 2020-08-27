@@ -3,6 +3,9 @@
 {% load l10n %}
 {% block content %}
 
+{% load tz_detect %}
+{% tz_detect %}
+
 <!-- Main content -->
 
 <!-- Page heading -->
@@ -53,7 +56,7 @@
           {% if conso.given %}
             {{ conso.datetime_cig }} Clope taxée
           {% else %}
-            {{ conso.datetime_cig }} {{ conso.paquet__brand }}
+            {{ conso.datetime_cig }} {{ conso.brand }}
           {% endif %}
           <a href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
         </div>

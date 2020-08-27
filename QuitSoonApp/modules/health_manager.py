@@ -2,7 +2,9 @@
 
 import datetime
 from datetime import timedelta
+import pytz
 
+from django.utils.timezone import make_aware
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -18,22 +20,24 @@ class HealthManager:
         self.user = user
         self.id = self.get_request_data('id_health')
         if not self.id:
-            self.date_alter, self.time_alter = self.get_date_time_alter_aware(
+            self.datetime_alter = self.get_datetime_alter_aware(
                 self.get_request_data('date_health'),
                 self.get_request_data('time_health'),
                 tz_offset
                 )
+            self.date_alter = self.datetime_alter.date()
+            self.time_alter = self.datetime_alter.time()
 
-    def get_date_time_alter_aware(self, date_health, time_health, tz_offset):
+
+    def get_datetime_alter_aware(self, date_health, time_health, tz_offset):
         try:
             dt_alter = datetime.datetime.combine(date_health, time_health)
-            dt_alter -= timedelta(hours=tz_offset)
-            date_alter = dt_alter.date()
-            time_alter = dt_alter.time()
-            return date_alter, time_alter
+            dt_alter += timedelta(minutes=tz_offset)
+            dt_alter = make_aware(dt_alter, pytz.utc)
+            return dt_alter
         except TypeError:
             # get_request_data returned None
-            return None, None
+            return None
 
     def get_request_data(self, data):
         try:
@@ -51,6 +55,7 @@ class HealthManager:
                     user=self.user,
                     date_alter=self.date_alter,
                     time_alter=self.time_alter,
+                    datetime_alter=self.datetime_alter,
                     alternative=self.get_alternative,
                     activity_duration=self.get_duration,
                     ecig_choice=self.get_ecig_data,
@@ -99,6 +104,7 @@ class HealthManager:
                 user=self.user,
                 date_alter=self.date_alter,
                 time_alter=self.time_alter,
+                datetime_alter=self.datetime_alter,
                 alternative=self.get_alternative,
                 activity_duration=self.get_duration,
                 ecig_choice=self.get_ecig_data,

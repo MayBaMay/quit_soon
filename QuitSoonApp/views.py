@@ -17,6 +17,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse, Http404
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -89,11 +90,13 @@ def login_view(request):
 def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
     context = {}
+    tz_offset = get_client_offset(request)
+    print(tz_offset)
     smoke = ConsoCig.objects.filter(user=request.user)
     health = ConsoAlternative.objects.filter(user=request.user)
     if UserProfile.objects.filter(user=request.user).exists():
         context['profile'] = True
-        smoke_stats = SmokeStats(request.user, datetime.date.today())
+        smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
         if smoke:
             context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
             last = smoke.latest('datetime_cig').datetime_cig
@@ -283,18 +286,20 @@ def change_g_per_cig(request):
             change_pack.update_pack_g_per_cig()
     return redirect('QuitSoonApp:paquets')
 
+
+def get_client_offset(request):
+    # timezone offset returned by client with django-tz-detect
+    if request.session.get('detected_tz'):
+        return request.session.get('detected_tz')
+    else:
+        return None
+
 def smoke(request):
     """User smokes"""
     # check if packs are in parameters to fill fields with actual packs
     packs = Paquet.objects.filter(user=request.user, display=True)
     context = {'packs':packs}
-
-    # timezone offset returned by client with django-tz-detect
-    if request.session.get('detected_tz'):
-        tz_offset = request.session.get('detected_tz')
-    else:
-        tz_offset = None
-    print(tz_offset)
+    tz_offset = get_client_offset(request)
 
     if packs :
         smoke_form = SmokeForm(request.user)
@@ -306,12 +311,11 @@ def smoke(request):
                 return redirect('QuitSoonApp:today')
         context['smoke_form'] = smoke_form
 
-    smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
+    smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
     context['smoke'] = smoke
-    context['nb_smoke_today']= smoke.filter(date_cig=datetime.date.today()).count()
+    context['nb_smoke_today']= smoke.filter(date_cig=timezone.now().date()).count()
     if smoke:
         last = smoke.latest('datetime_cig').datetime_cig
-        print(last.tzinfo)
         context['lastsmoke'] = get_delta_last_event(last)
     return render(request, 'QuitSoonApp/smoke.html', context)
 
@@ -332,12 +336,10 @@ def smoke_list(request):
     context = {}
     packs = Paquet.objects.filter(user=request.user, display=True)
     context['packs'] = packs
-    if request.session.get('detected_tz'):
-        tz_offset = request.session.get('detected_tz')
-    else:
-        tz_offset = None
+    tz_offset = get_client_offset(request)
+
     if packs.exists():
-        smoke = ConsoCig.objects.filter(user=request.user).order_by('-date_cig', '-time_cig')
+        smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
         if smoke.exists() :
             smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
             if request.method == 'POST':
@@ -355,17 +357,18 @@ def smoke_list(request):
                             elif data['rol_pack_field'] != 'empty':
                                 pack = Paquet.objects.get(id=int(data['rol_pack_field']))
                                 smoke = smoke.filter(paquet__brand=pack.brand)
-            colums = ['datetime_cig', 'paquet__brand']
-            smokedf = pd.DataFrame(smoke.values_list(*colums))
-            smokedf.rename(columns={0:colums[0],1:colums[1]},inplace=True)
-            smokedf.datetime_cig -= timedelta(minutes=tz_offset)
-            print(smokedf)
-            paginator = Paginator(smokedf, 20)
-            print('paginator', paginator)
+            # colums = ['datetime_cig', 'paquet__brand']
+            # smokedf = pd.DataFrame(smoke.values_list(*colums))
+            # smokedf.rename(columns={0:colums[0],1:colums[1]},inplace=True)
+            # print(tz_offset)
+            # print(smokedf)
+            # smokedf.datetime_cig -= timedelta(minutes=tz_offset)
+            # print(smokedf)
+            # paginator = Paginator(smokedf.to_dict(orient='split')['data'], 20)
+            paginator = Paginator(smoke, 20)
+
             page = request.GET.get('page')
-            print('page',page)
             page_smoke = paginator.get_page(page)
-            print('page_smoke',page_smoke)
             context['smoke'] = page_smoke
             context['smoke_list_form'] = smoke_list_form
     return render(request, 'QuitSoonApp/smoke_list.html', context)
@@ -446,13 +449,9 @@ def delete_alternative(request, id_alternative):
 def health(request):
     """User do a healthy activity or uses substitutes"""
     context = {}
+    tz_offset = get_client_offset(request)
     # check if alternatives are in parameters to fill fields with actual alternatives
-    if request.session.get('detected_tz'):
-        print(request.session.get('detected_tz'))
-        tz_offset = -request.session.get('detected_tz') / 60
-    else:
-        print('No tz')
-        tz_offset = None
+
     alternatives = Alternative.objects.filter(user=request.user, display=True)
     context['alternatives'] = alternatives
     if alternatives :
@@ -464,7 +463,7 @@ def health(request):
                 new_health.create_conso_alternative()
                 return redirect('QuitSoonApp:today')
         context['form'] = form
-    health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
+    health = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
     context['health'] = health
     if health:
         last = health.latest('datetime_alter').datetime_alter
@@ -540,10 +539,11 @@ def health_list(request):
 def report(request, **kwargs):
     """Page with user results, graphs..."""
     context = {}
+    tz_offset = get_client_offset(request)
     profile = UserProfile.objects.filter(user=request.user).exists()
     if profile:
-        smoke_stats = SmokeStats(request.user, datetime.date.today())
-        healthy_stats = HealthyStats(request.user, datetime.date.today())
+        smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
+        healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
 
         # graphs with smoke and health activities
         if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
@@ -592,9 +592,10 @@ def report(request, **kwargs):
 def objectifs(request):
     """Page with user trophies and goals"""
     context = {}
+    tz_offset = get_client_offset(request)
     profile = UserProfile.objects.filter(user=request.user).exists()
     if profile:
-        stats = SmokeStats(request.user, datetime.date.today())
+        stats = SmokeStats(request.user, timezone.now(), tz_offset)
         trophy = trophy_checking(stats)
         trophy.create_trophies()
         context['challenges'] = trophy.user_trophies
@@ -615,7 +616,8 @@ class ChartData(APIView):
 
         if charttype == 'time':
 
-            smoke = SmokeStats(request.user, datetime.date.today())
+            tz_offset = get_client_offset(request)
+            smoke = SmokeStats(request.user, timezone.now(), tz_offset)
             nb_full_days = smoke.nb_full_days_since_start
             qs = smoke.user_conso_full_days.values()
             data_cig = pd.DataFrame(qs)
@@ -635,8 +637,9 @@ class ChartData(APIView):
 
         else:
 
-            smoke_stats = SmokeStats(request.user, datetime.date.today())
-            healthy_stats = HealthyStats(request.user, datetime.date.today())
+            tz_offset = get_client_offset(request)
+            smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
+            healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
 
             # generate data for graphs
             user_dict = {'date':[],

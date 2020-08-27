@@ -88,6 +88,7 @@ class SmokeManager:
                 user=self.user,
                 date_cig=self.date_cig,
                 time_cig=self.time_cig,
+                datetime_cig=self.datetime_cig,
                 paquet=self.get_pack,
                 given=self.given,
                 )
