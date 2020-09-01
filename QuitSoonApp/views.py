@@ -91,7 +91,6 @@ def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
     context = {}
     tz_offset = get_client_offset(request)
-    print(tz_offset)
     smoke = ConsoCig.objects.filter(user=request.user)
     health = ConsoAlternative.objects.filter(user=request.user)
     if UserProfile.objects.filter(user=request.user).exists():
@@ -313,7 +312,7 @@ def smoke(request):
 
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
     context['smoke'] = smoke
-    context['nb_smoke_today']= smoke.filter(date_cig=timezone.now().date()).count()
+    context['nb_smoke_today']= smoke.filter(datetime_cig__date=timezone.now().date()).count()
     if smoke:
         last = smoke.latest('datetime_cig').datetime_cig
         context['lastsmoke'] = get_delta_last_event(last)
@@ -357,14 +356,6 @@ def smoke_list(request):
                             elif data['rol_pack_field'] != 'empty':
                                 pack = Paquet.objects.get(id=int(data['rol_pack_field']))
                                 smoke = smoke.filter(paquet__brand=pack.brand)
-            # colums = ['datetime_cig', 'paquet__brand']
-            # smokedf = pd.DataFrame(smoke.values_list(*colums))
-            # smokedf.rename(columns={0:colums[0],1:colums[1]},inplace=True)
-            # print(tz_offset)
-            # print(smokedf)
-            # smokedf.datetime_cig -= timedelta(minutes=tz_offset)
-            # print(smokedf)
-            # paginator = Paginator(smokedf.to_dict(orient='split')['data'], 20)
             paginator = Paginator(smoke, 20)
 
             page = request.GET.get('page')
@@ -544,11 +535,11 @@ def report(request, **kwargs):
     if profile:
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
         healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
+        print(smoke_stats.lastday)
 
         # graphs with smoke and health activities
         if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
 
-            context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days.exists()
             # generate context
             context['total_number'] = smoke_stats.total_smoke_all_days
             context['average_number'] = round(smoke_stats.average_per_day)
@@ -621,8 +612,7 @@ class ChartData(APIView):
             nb_full_days = smoke.nb_full_days_since_start
             qs = smoke.user_conso_full_days.values()
             data_cig = pd.DataFrame(qs)
-            data_cig['date'] = data_cig.apply(lambda r : datetime.datetime.combine(r['date_cig'],r['time_cig']),1)
-            data = data_cig.date.dt.hour.value_counts()
+            data = data_cig.user_dt.dt.hour.value_counts()
             data_dict = {}
             for hour in range(0,25):
                 try:

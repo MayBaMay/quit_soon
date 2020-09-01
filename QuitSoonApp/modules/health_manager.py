@@ -17,6 +17,8 @@ class HealthManager:
 
     def __init__(self, user, datas, tz_offset=0):
         self.datas = datas
+        if not tz_offset:
+            tz_offset = 0
         self.user = user
         self.id = self.get_request_data('id_health')
         if not self.id:

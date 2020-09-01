@@ -21,7 +21,7 @@ row_alternative_data = [
 
 row_conso_cig_data = [
 {"date_cig":"2019-09-28","time_cig":"9:00","paquet":1001},#0.485
-{"date_cig":"2019-09-28","time_cig":"10:30","paquet":1001},
+{"date_cig":"2019-09-28","time_cig":"21:30","paquet":1001},
 {"date_cig":"2019-09-28","time_cig":"11:45","paquet":1001},
 {"date_cig":"2019-09-28","time_cig":"01:30","paquet":1001},
 {"date_cig":"2019-09-28","time_cig":"01:40","paquet":1002},#0.49

@@ -53,9 +53,9 @@ class trophy_checking:
         qs = self.stats.user_conso_full_days.values()
         data_cig = pd.DataFrame(qs)
         # combine date_cig and time_cig into a datetime column
-        data_cig['date'] = data_cig.apply(lambda r : dt.combine(r['date_cig'],r['time_cig']),1)
+        # data_cig['date'] = data_cig.apply(lambda r : dt.combine(r['date_cig'],r['time_cig']),1)
         # get nb_cig per date sorted
-        nb_cig_per_date_serie = data_cig.date.dt.date.value_counts().sort_index()
+        nb_cig_per_date_serie = data_cig.user_dt.dt.date.value_counts().sort_index()
         # rename serie to nb_cig and index to date
         nb_cig_per_date_serie.rename("nb_cig", inplace=True)
         nb_cig_per_date_serie.index.name = 'date'

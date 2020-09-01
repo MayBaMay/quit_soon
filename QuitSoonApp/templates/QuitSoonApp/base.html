@@ -21,6 +21,8 @@
   </head>
 
   <body id="app">
+    {% load tz %}
+    {% localtime off %}
     <div class="wrapper">
       <div class="content-wrapper">
         <!-- Grid container -->
@@ -179,6 +181,8 @@
         <!-- End of footer -->
       </div>
     </div>
+
+  {% endlocaltime %}
 
     <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>

@@ -96,7 +96,7 @@ class ChoosePackForm(forms.Form):
                 return lastsmoke
             else:
                 # get the last cig not given
-                for conso in self.user_conso.order_by('-date_cig', '-time_cig'):
+                for conso in self.user_conso.order_by('-datetime_cig'):
                     if conso.paquet:
                         return conso.paquet
                     else:
