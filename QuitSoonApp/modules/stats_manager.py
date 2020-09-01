@@ -5,7 +5,9 @@ from datetime import timedelta
 from dateutil import rrule
 from dateutil.relativedelta import relativedelta
 import calendar
+import pytz
 
+from django.utils.timezone import make_aware
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -18,34 +20,64 @@ from QuitSoonApp.models import (
     )
 
 class Stats:
-    def __init__(self, user, lastday):
+    def __init__(self, user, lastday, tz_offset):
         self.user = user
+        if tz_offset:
+            self.tz_offset = tz_offset
+        else:
+            self.tz_offset = 0
         self.lastday = lastday
-        self.date_start = UserProfile.objects.get(user=self.user).date_start
+        self.datetime_start = self.get_datetime_start()
         self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
-        self.nb_full_days_since_start = (self.lastday - self.date_start).days
+        self.nb_full_days_since_start = (self.lastday - self.datetime_start).days
         if self.nb_full_days_since_start:
             self.first_day = False
         else:
             self.first_day = True
+
+    def get_datetime_start(self):
+        """
+        user only gave date in order to simplifie UX
+        so find first time of this date or set it at noon
+        """
+        date_start = UserProfile.objects.get(user=self.user).date_start
+        first_smoke = ConsoCig.objects.filter(user=self.user).first()
+        first_alter = ConsoAlternative.objects.filter(user=self.user).first()
+
+        if first_smoke and first_alter:
+            min_conso_dt = min(first_smoke.datetime_cig, first_alter.datetime_alter)
+        else:
+            if first_smoke:
+                min_conso_dt = first_smoke.datetime_cig
+            elif first_alter:
+                min_conso_dt = first_alter.datetime_alter
+            else:
+                min_conso_dt = None
+
+        if min_conso_dt:
+            if min_conso_dt.date() == date_start:
+                return min_conso_dt - timedelta(minutes=self.tz_offset)
+        dt_start = datetime.datetime.combine(date_start, datetime.time(12, 0))
+        return make_aware(dt_start, pytz.utc)
+
 
     def nb_full_period_for_average(self, date, period):
         """ get number of achieve full periods (days, weeks or months) since start """
         # # get the day before to get last full day
         lastfullday = date - timedelta(1)
         if period == 'day':
-            day = rrule.rrule(rrule.DAILY, dtstart=self.date_start, until=lastfullday)
+            day = rrule.rrule(rrule.DAILY, dtstart=self.datetime_start.date(), until=lastfullday)
             return day.count()
         if period == 'week':
-            weeks = rrule.rrule(rrule.WEEKLY, dtstart=self.date_start, until=lastfullday)
+            weeks = rrule.rrule(rrule.WEEKLY, dtstart=self.datetime_start.date(), until=lastfullday)
             return weeks.count() - 1 # - current week
 
         if period == 'month':
             # get first day of month to calculte number of full months
-            if self.date_start.day == 1:
-                first_day_of_month = self.date_start
+            if self.datetime_start.day == 1:
+                first_day_of_month = self.datetime_start.date()
             else:
-                first_day_of_month = self.date_start.replace(day=1) + relativedelta(months=1)
+                first_day_of_month = self.datetime_start.date().replace(day=1) + relativedelta(months=1)
             # get last day of month to calculate number of full months
             if lastfullday.day == calendar.monthrange(lastfullday.year,lastfullday.month)[1]:
                 last_day_of_month = lastfullday
@@ -59,14 +91,21 @@ class Stats:
 class SmokeStats(Stats):
     """Generate stats reports on user smoke habits for past days"""
 
-    def __init__(self, user, lastday):
-        Stats.__init__(self, user, lastday)
+    def __init__(self, user, lastday, tz_offset):
+        Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoCig.objects.filter(user=self.user)
-        self.user_conso_full_days = self.user_conso_all_days.exclude(date_cig=self.lastday)
+        self.user_conso_full_days = self.user_conso_all_days.exclude(datetime_cig__date=self.lastday.date())
+        self.update_dt_user_model_field()
+
+    def update_dt_user_model_field(self):
+        for conso in self.user_conso_all_days:
+            conso.user_dt = conso.datetime_cig - timedelta(minutes=self.tz_offset)
+            conso.save()
 
     def nb_per_day(self, date):
         """ nb smoke per day """
-        conso_day = self.user_conso_all_days.filter(date_cig=date)
+        conso_day = self.user_conso_all_days.filter(user_dt__date=date)
+        print(date, conso_day)
         return conso_day.count()
 
     @property
@@ -91,15 +130,14 @@ class SmokeStats(Stats):
         else:
             return self.total_smoke_full_days / self.nb_full_days_since_start
 
-
     @property
     def count_smoking_day(self):
         """ number of days user smoked """
-        distinct_date_cig = ConsoCig.objects.order_by('date_cig').distinct('date_cig')
+        distinct_dt_cig = ConsoCig.objects.order_by('user_dt__date').distinct('user_dt__date')
         if self.first_day:
-            return distinct_date_cig.count()
+            return distinct_dt_cig.count()
         else:
-            return distinct_date_cig.exclude(date_cig=self.lastday).count()
+            return distinct_dt_cig.exclude(user_dt__date=self.lastday.date()).count()
 
     @property
     def count_no_smoking_day(self):
@@ -138,8 +176,8 @@ class SmokeStats(Stats):
     def list_dates(self):
         """list of all dates from day user started app and last_day in argument """
         list_dates = []
-        start_date = datetime.datetime.combine(self.date_start, datetime.datetime.min.time())
-        end_date = datetime.datetime.combine(self.lastday, datetime.datetime.min.time())
+        start_date = self.datetime_start
+        end_date = self.lastday
         for single_date in self.daterange(start_date, end_date):
             list_dates.append(single_date.date())
         return list_dates
@@ -151,18 +189,16 @@ class SmokeStats(Stats):
         so only look for full days and not current day
         """
         no_smoking_day_list_dates = []
-        start = datetime.datetime.combine(self.date_start, datetime.datetime.min.time())
-        lastday = datetime.datetime.combine(self.lastday, datetime.datetime.min.time())
-        delta =  lastday - start
+        delta = self.lastday - self.datetime_start
         for i in range(delta.days + 1):
-            day = start + timedelta(days=i)
-            if not self.user_conso_full_days.filter(date_cig=day).exists():
+            day = self.datetime_start + timedelta(days=i)
+            if not self.user_conso_full_days.filter(user_dt__date=day).exists():
                 no_smoking_day_list_dates.append(day.date())
         return no_smoking_day_list_dates
 
     def money_smoked_per_day(self, date):
         """ total of money user spent the day in argument smoking cigarettes """
-        conso_day = self.user_conso_all_days.filter(date_cig=date)
+        conso_day = self.user_conso_all_days.filter(user_dt__date=date)
         money_smoked = 0
         for conso in conso_day:
             if conso.paquet:
@@ -218,12 +254,18 @@ class SmokeStats(Stats):
 class HealthyStats(Stats):
     """Generate stats reports on user healthy habits"""
 
-    def __init__(self, user, lastday):
-        Stats.__init__(self, user, lastday)
+    def __init__(self, user, lastday, tz_offset):
+        Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoAlternative.objects.filter(user=self.user)
-        self.user_conso_full_days = self.user_conso_all_days.exclude(date_alter=self.lastday)
+        self.update_dt_user_model_field()
+        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__date=self.lastday.date())
         self.user_activities = self.user_conso_all_days.exclude(alternative__type_alternative='Su')
         self.user_conso_subsitut = self.user_conso_all_days.filter(alternative__type_alternative='Su')
+
+    def update_dt_user_model_field(self):
+        for conso in self.user_conso_all_days:
+            conso.user_dt = conso.datetime_alter - timedelta(minutes=self.tz_offset)
+            conso.save()
 
     def filter_queryset_for_report(self, category='Ac', type=None):
         if category == 'Ac':
@@ -262,7 +304,7 @@ class HealthyStats(Stats):
             queryset = self.filter_queryset_for_report(category, type)
         else:
             # get only full days data so exclude today
-            queryset = self.filter_queryset_for_report(category, type).exclude(date_alter=date)
+            queryset = self.filter_queryset_for_report(category, type).exclude(user_dt__date=date)
 
         if category == 'Ac':
             sum = queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
@@ -282,13 +324,12 @@ class HealthyStats(Stats):
     def filter_by_period(self, date, period, queryset):
         # filter by period
         if period == 'day':
-            return queryset.filter(date_alter=date)
+            return queryset.filter(user_dt__date=date)
         elif period == 'week':
             week_number = date.isocalendar()[1]
-            return queryset.filter(date_alter__week=week_number)
+            return queryset.filter(user_dt__week=week_number)
         elif period == 'month':
-            return queryset.filter(date_alter__month=date.month)
-
+            return queryset.filter(user_dt__month=date.month)
 
     @staticmethod
     def convert_minutes_to_hours_min_str(minutes=0):
@@ -304,7 +345,7 @@ class HealthyStats(Stats):
 
     def nicotine_per_day(self, date):
         """ nicotine in mg took the the day in argument """
-        conso_day = self.user_conso_subsitut.filter(date_alter=date)
+        conso_day = self.user_conso_subsitut.filter(user_dt__date=date)
         nicotine = 0
         for conso in conso_day:
             nicotine += conso.alternative.nicotine

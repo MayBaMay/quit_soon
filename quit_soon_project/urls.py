@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('QuitSoonApp.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('tz_detect/', include('tz_detect.urls')),
 ]
 
 if settings.DEBUG:

@@ -4,6 +4,7 @@
 Clean tests data and populate test database
 """
 
+from datetime import datetime as dt
 from decimal import Decimal
 from random import randint
 
@@ -19,6 +20,12 @@ class CreateDataInDatabase:
         self.clean_data = row_data
         for data in self.clean_data:
             data = self.get_missing_data(data)
+
+    def date_format(self, date):
+        return dt.strptime(date, '%Y-%m-%d').date()
+
+    def time_format(self, time):
+        return dt.strptime(time, '%H:%M').time()
 
 
 class Create_packs(CreateDataInDatabase):
@@ -85,14 +92,13 @@ class Create_smoke(CreateDataInDatabase):
 
     def populate_db(self):
         for data in self.clean_data:
-            ConsoCig.objects.create(
+            conso = ConsoCig.objects.create(
                 user=self.user,
-                date_cig=data['date_cig'],
-                time_cig=data['time_cig'],
+                date_cig=self.date_format(data['date_cig']),
+                time_cig=self.time_format(data['time_cig']),
                 paquet=data['paquet'],
                 given=data['given'],
                 )
-
 
 class CreateAlternative(CreateDataInDatabase):
     """Parse, complete and use data to populate table Alternative in test database"""
@@ -147,8 +153,8 @@ class CreateConsoAlternative(CreateDataInDatabase):
         for data in self.clean_data:
             ConsoAlternative.objects.create(
                 user=self.user,
-                date_alter=data['date_alter'],
-                time_alter=data['time_alter'],
+                date_alter=self.date_format(data['date_alter']),
+                time_alter=self.time_format(data['time_alter']),
                 alternative=data['alternative'],
                 activity_duration=data['activity_duration'],
                 )

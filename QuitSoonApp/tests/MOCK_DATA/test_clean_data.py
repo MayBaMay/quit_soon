@@ -4,10 +4,11 @@
 
 from decimal import Decimal
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
-
+from django.utils.timezone import make_aware
 from QuitSoonApp.models import Paquet, ConsoCig, Alternative, ConsoAlternative
 from QuitSoonApp.modules import SmokeManager
 
@@ -81,9 +82,14 @@ class CreateTestSmokeTestCase(TestCase):
     def test_populate_db(self):
         self.smoke.populate_db()
         self.assertEqual(ConsoCig.objects.count(), 329)
+        self.assertEqual(ConsoCig.objects.all()[0].date_cig, datetime.date(2019, 9, 28))
+        self.assertEqual(ConsoCig.objects.all()[0].time_cig, datetime.time(9, 0))
+        self.assertEqual(ConsoCig.objects.all()[0].datetime_cig, make_aware(datetime.datetime(2019, 9, 28, 9, 0), pytz.utc))
+        self.assertEqual(ConsoCig.objects.all()[0].paquet, Paquet.objects.get(id=1001))
+        self.assertEqual(ConsoCig.objects.all()[0].given, False)
 
 
-class CreateAlternativeTestCas(TestCase):
+class CreateAlternativeTestCase(TestCase):
     """class testing CreateAlternative for tests """
 
     def setUp(self):

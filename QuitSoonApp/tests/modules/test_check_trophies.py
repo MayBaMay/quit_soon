@@ -5,11 +5,13 @@
 import datetime
 from datetime import datetime as dt
 from datetime import date
+import pytz
 import calendar
 import pandas as pd
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase
+from django.utils.timezone import make_aware
 
 from QuitSoonApp.modules import trophy_checking
 from QuitSoonApp.models import (
@@ -43,7 +45,7 @@ class ChecktrophyTestCase(TestCase):
         self.packs.populate_db()
         self.smoke = Create_smoke(self.user, fake_smoke_for_trophies)
         self.smoke.populate_db()
-        stats = SmokeStats(self.user, datetime.date(2020, 12, 31))
+        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 12, 31, 12, 0), pytz.utc), -120)
         self.check_trophy = trophy_checking(stats)
 
     def test_values_per_dates(self):
@@ -54,8 +56,8 @@ class ChecktrophyTestCase(TestCase):
         df = self.check_trophy.values_per_dates
         self.assertEqual(df.columns.values.tolist(), ['nb_cig'])
         self.assertEqual(df.shape, (7, 1))
-        self.assertEqual(df.loc['2020-06-19', 'nb_cig'], 19)
-        self.assertEqual(df.loc['2020-06-20', 'nb_cig'], 14)
+        self.assertEqual(df.loc['2020-06-19', 'nb_cig'], 17)
+        self.assertEqual(df.loc['2020-06-20', 'nb_cig'], 16)
         self.assertEqual(df.loc['2020-06-22', 'nb_cig'], 1)
         self.assertEqual(df.loc['2020-06-26', 'nb_cig'], 1)
         self.assertEqual(df.loc['2020-07-05', 'nb_cig'], 1)
@@ -96,8 +98,8 @@ class ChecktrophyTestCase(TestCase):
         self.assertEqual(df.columns.values.tolist(), ['date', 'nb_cig'])
         sum_days = 12+31+31+30+31+30+30
         self.assertEqual(df.shape, (sum_days, 2))
-        self.assertEqual(df[(df['date'] == '2020-06-19')].nb_cig.values, [19.0])
-        self.assertEqual(df[(df['date'] == '2020-06-20')].nb_cig.values, [14.0])
+        self.assertEqual(df[(df['date'] == '2020-06-19')].nb_cig.values, [17.0])
+        self.assertEqual(df[(df['date'] == '2020-06-20')].nb_cig.values, [16.0])
         self.assertEqual(df[(df['date'] == '2020-06-22')].nb_cig.values, [1.0])
         self.assertEqual(df[(df['date'] == '2020-06-26')].nb_cig.values, [1.0])
         self.assertEqual(df[(df['date'] == '2020-07-05')].nb_cig.values, [1.0])
@@ -116,7 +118,6 @@ class ChecktrophyTestCase(TestCase):
         self.assertTrue(193.0 in s.values)
         # sum occurence in s = sum less than 10 cig a month
         self.assertEqual(s.sum(), 193)
-
 
     def test_get_nans_occurence(self):
         """
@@ -172,7 +173,7 @@ class ChecktrophyTestCase(TestCase):
         return list of trophies to create
         """
         ConsoCig.objects.filter(user=self.user, date_cig__gte='2020-07-5').delete()
-        stats = SmokeStats(self.user, datetime.date(2020, 6, 26))
+        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 26, 12, 0), pytz.utc), -120)
         check_trophy = trophy_checking(stats)
         self.assertTrue(check_trophy.check_days_trophies(challenge=(15, 3)))
         self.assertFalse(check_trophy.check_days_trophies(challenge=(15, 7)))
@@ -197,7 +198,6 @@ class ChecktrophyTestCase(TestCase):
         self.assertFalse(check_trophy.check_days_trophies(challenge=(0, 15)))
         self.assertFalse(check_trophy.check_days_trophies(challenge=(0, 20)))
         self.assertFalse(check_trophy.check_days_trophies(challenge=(0, 25)))
-
 
     def test_parse_smoking_month(self):
         """
@@ -240,7 +240,8 @@ class ChecktrophyTestCase(TestCase):
         # test with less days non smoked
         Trophy.objects.filter(user=self.user).delete()
         ConsoCig.objects.filter(user=self.user, date_cig__gte='2020-07-5').delete()
-        stats = SmokeStats(self.user, datetime.date(2020, 6, 26))
+        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 26, 12, 0), pytz.utc), -120)
+
         check_trophy = trophy_checking(stats)
         check_trophy.trophies_accomplished
         self.assertEqual(
@@ -257,7 +258,7 @@ class ChecktrophyTestCase(TestCase):
         # test first day
         ConsoCig.objects.filter(user=self.user).delete()
         Trophy.objects.filter(user=self.user).delete()
-        stats = SmokeStats(self.user, datetime.date(2020, 6, 19))
+        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 12, 0), pytz.utc), -120)
         check_trophy = trophy_checking(stats)
         check_trophy.trophies_accomplished
         self.assertEqual(

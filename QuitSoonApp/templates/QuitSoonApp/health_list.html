@@ -22,9 +22,9 @@
     {% if not alternatives %}
     <p>Vous n'avez enregistré aucune alternative, </p>
       <p> Veuillez paramétrer vos alternatives
-      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>      
+      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
       </p>
-      
+
 
 
     {% else %}
@@ -56,16 +56,8 @@
         </div>
 <ul>
         {% for conso in health %}
-          <li class="flex-between">
-          <table class="info-table">
-          <tbody>
-          <tr>
-          <td>
-              {{ conso.date_alter }}
-              </td>
-              <td>
-              {{ conso.time_alter }}
-              </td>
+          <div class="row">
+              {{ conso.datetime_alter }}
               {% if conso.alternative.type_activity %}
               <td>
                 {{ conso.alternative.type_activity }}
@@ -100,7 +92,7 @@
       {% else %}
       <p>
          Vous n'avez pas encore enregistré d'action saine,
-          Allez, un petit effort, ça te fera vraiment du bien!</p>       
+          Allez, un petit effort, ça te fera vraiment du bien!</p>
       {% endif %}
     {% endif %}
   </section>

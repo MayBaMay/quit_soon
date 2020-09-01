@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
+import django
 
 import os
 from dotenv import load_dotenv
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'channels_redis',
     'mathfilters',
     'rest_framework',
+    'tz_detect',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +70,15 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'quit_soon_project.middleware.login_middleware.LoginRequiredMiddleware',
+    'tz_detect.middleware.TimezoneMiddleware',
 ]
+
+if django.VERSION < (1, 10):
+    MIDDLEWARE_CLASSES += (
+        'tz_detect.middleware.TimezoneMiddleware',
+    )
+
+TZ_DETECT_COUNTRIES = ('CN', 'US', 'IN', 'JP', 'BR', 'RU', 'DE', 'FR', 'GB')
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -125,7 +135,7 @@ NOSE_ARGS = [
 
 LANGUAGE_CODE = 'fr'  #used for project including administration interface
 
-TIME_ZONE = 'Europe/Paris'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
