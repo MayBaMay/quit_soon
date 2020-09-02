@@ -223,7 +223,6 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertEqual(response.context['userprofile'], userprofile)
         self.assertEqual(response.context['paquet_ref'], db_pack_ind)
 
-
     def test_new_name_anonymoususer(self):
         """test change nameview"""
         response = self.client.get(reverse('QuitSoonApp:new_name'))
