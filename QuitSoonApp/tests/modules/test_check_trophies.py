@@ -171,8 +171,8 @@ class ChecktrophyTestCase(TestCase):
         for element in occurence, check if >= element in trophy to succeed list
         return list of trophies to create
         """
-        ConsoCig.objects.filter(user=self.user, date_cig__gte='2020-07-5').delete()
-        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 26, 12, 0), pytz.utc), -120)
+        ConsoCig.objects.filter(user=self.user, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
+        stats = SmokeStats(self.user, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
         check_trophy = trophy_checking(stats)
         self.assertTrue(check_trophy.check_days_trophies(challenge=(15, 3)))
         self.assertFalse(check_trophy.check_days_trophies(challenge=(15, 7)))
@@ -238,8 +238,8 @@ class ChecktrophyTestCase(TestCase):
             )
         # test with less days non smoked
         Trophy.objects.filter(user=self.user).delete()
-        ConsoCig.objects.filter(user=self.user, date_cig__gte='2020-07-5').delete()
-        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 26, 12, 0), pytz.utc), -120)
+        ConsoCig.objects.filter(user=self.user, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
+        stats = SmokeStats(self.user, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
 
         check_trophy = trophy_checking(stats)
         check_trophy.trophies_accomplished

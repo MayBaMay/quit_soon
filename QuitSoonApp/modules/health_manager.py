@@ -27,9 +27,6 @@ class HealthManager:
                 self.get_request_data('time_health'),
                 tz_offset
                 )
-            self.date_alter = self.datetime_alter.date()
-            self.time_alter = self.datetime_alter.time()
-
 
     def get_datetime_alter_aware(self, date_health, time_health, tz_offset):
         try:
@@ -55,8 +52,6 @@ class HealthManager:
             else:
                 health = ConsoAlternative.objects.get(
                     user=self.user,
-                    date_alter=self.date_alter,
-                    time_alter=self.time_alter,
                     datetime_alter=self.datetime_alter,
                     alternative=self.get_alternative,
                     activity_duration=self.get_duration,
@@ -104,8 +99,6 @@ class HealthManager:
         try:
             newconsoalternative = ConsoAlternative.objects.create(
                 user=self.user,
-                date_alter=self.date_alter,
-                time_alter=self.time_alter,
                 datetime_alter=self.datetime_alter,
                 alternative=self.get_alternative,
                 activity_duration=self.get_duration,

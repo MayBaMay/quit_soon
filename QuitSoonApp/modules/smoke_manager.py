@@ -27,8 +27,6 @@ class SmokeManager:
                 self.get_request_data('time_smoke'),
                 tz_offset
                 )
-            self.date_cig = self.datetime_cig.date()
-            self.time_cig = self.datetime_cig.time()
             self.given = self.get_request_data('given_field')
 
     def get_datetime_cig_aware(self, date_smoke, time_smoke, tz_offset):
@@ -56,8 +54,6 @@ class SmokeManager:
             else:
                 smoke = ConsoCig.objects.get(
                     user=self.user,
-                    date_cig=self.date_cig,
-                    time_cig=self.time_cig,
                     datetime_cig=self.datetime_cig,
                     paquet=self.get_pack,
                     given=self.given,
@@ -88,8 +84,6 @@ class SmokeManager:
         try:
             newconsocig = ConsoCig.objects.create(
                 user=self.user,
-                date_cig=self.date_cig,
-                time_cig=self.time_cig,
                 datetime_cig=self.datetime_cig,
                 paquet=self.get_pack,
                 given=self.given,

@@ -3,6 +3,7 @@
 """Module testing health user action manager module"""
 
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -71,8 +72,7 @@ class HealthManagerTestCase(TestCase):
             }
         self.health_sp = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(13, 15),
+            datetime_alter=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
             activity_duration=90,
         )

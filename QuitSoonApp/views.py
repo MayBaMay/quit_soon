@@ -59,6 +59,13 @@ def index(request):
     else:
         return render(request, 'index.html')
 
+def get_client_offset(request):
+    # timezone offset returned by client with django-tz-detect
+    if request.session.get('detected_tz'):
+        return request.session.get('detected_tz')
+    else:
+        return None
+
 def register_view(request):
     """Registration view creating a user"""
     form = RegistrationForm()
@@ -285,14 +292,6 @@ def change_g_per_cig(request):
             change_pack.update_pack_g_per_cig()
     return redirect('QuitSoonApp:paquets')
 
-
-def get_client_offset(request):
-    # timezone offset returned by client with django-tz-detect
-    if request.session.get('detected_tz'):
-        return request.session.get('detected_tz')
-    else:
-        return None
-
 def smoke(request):
     """User smokes"""
     # check if packs are in parameters to fill fields with actual packs
@@ -496,7 +495,7 @@ def health_list(request):
     alternatives = Alternative.objects.filter(user=request.user, display=True)
     context['alternatives'] = alternatives
     if alternatives.exists():
-        health = ConsoAlternative.objects.filter(user=request.user).order_by('-date_alter', '-time_alter')
+        health = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
         if health.exists():
             health_form = ChooseAlternativeFormWithEmptyFields(request.user)
             if request.method == 'POST':

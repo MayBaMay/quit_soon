@@ -252,15 +252,13 @@ class StatsFirstDay(TestCase):
         alternatives.populate_db()
         ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 6, 19),
-            time_alter=datetime.time(11, 55),
+            datetime_alter=datetime.datetime(2020, 6, 19, 11, 55, tzinfo=pytz.utc),
             alternative=Alternative.objects.get(id=1001),
             activity_duration=40
             )
         ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 6, 19),
-            time_alter=datetime.time(13, 30),
+            datetime_alter=datetime.datetime(2020, 6, 19, 13, 30, tzinfo=pytz.utc),
             alternative=Alternative.objects.get(id=1004),
             )
         stats = HealthyStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)

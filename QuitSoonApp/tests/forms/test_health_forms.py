@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import datetime
+import pytz
 
 from django.test import TransactionTestCase, TestCase
 from django.contrib.auth import get_user_model
@@ -86,32 +87,27 @@ class HealthFormTestCase(TestCase):
 
         self.conso_1 = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=self.db_alternative_activity_so,
         )
         self.conso_2 = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 6, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 6, 13, 13, 55, tzinfo=pytz.utc),
             alternative=self.db_alternative_substitut_past,
         )
         self.conso_3 = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(14, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 14, 55, tzinfo=pytz.utc),
             alternative=self.db_alternative_substitut_p24,
         )
         self.conso_4 = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 6, 14),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 6, 14, 13, 55, tzinfo=pytz.utc),
             alternative=self.db_alternative_activity_sp,
         )
         self.conso_5 = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 7, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 7, 13, 13, 55, tzinfo=pytz.utc),
             alternative=self.db_alternative_activity_so2,
         )
 
@@ -229,100 +225,6 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
             form = HealthForm(self.usertest, data)
             self.assertFalse(form.is_valid())
             self.assertRaises(ValueError)
-
-
-class HealthFormTestCase_ECIGTestCase(TestCase):
-
-    def setUp(self):
-        """setup tests"""
-        self.usertest = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
-        self.db_alternative_undisplayed = Alternative.objects.create(
-            user=self.usertest,
-            type_alternative='Ac',
-            type_activity='Lo',
-            activity='DESSIN',
-            display=False,
-            )
-        self.db_alternative_substitut_ecig = Alternative.objects.create(
-            user=self.usertest,
-            type_alternative='Su',
-            substitut='ecig',
-            nicotine=3,
-            display=True,
-            )
-
-    def test_get_ecig_none(self):
-        data = {
-            'date_health':datetime.date(2020, 5, 26),
-            'time_health':datetime.time(12, 56),
-            'type_alternative_field':'Su',
-            'su_field':self.db_alternative_substitut_ecig.id,
-            'ecig_vape_or_start':[]
-        }
-        form = HealthForm(self.usertest, data)
-        self.assertFalse(form.is_valid())
-        self.assertTrue("Vous avez sélectionné la cigarette électronique" in form.errors['__all__'][0])
-
-    def test_more_than_one_ecig_V_per_day(self):
-        conso = ConsoAlternative.objects.create(
-            user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
-            alternative=self.db_alternative_substitut_ecig,
-            ecig_choice='V',
-        )
-        data = {
-            'date_health':datetime.date(2020, 5, 13),
-            'time_health':datetime.time(14, 56),
-            'type_alternative_field':'Su',
-            'su_field':self.db_alternative_substitut_ecig.id,
-            'ecig_vape_or_start':['V']
-        }
-
-        form = HealthForm(self.usertest, data)
-        self.assertFalse(form.is_valid())
-        self.assertTrue("Vous avez déjà renseigné aujourd'hui avoir vapoté." in form.errors['__all__'][0])
-
-    def test_more_than_one_ecig_per_day(self):
-        conso = ConsoAlternative.objects.create(
-            user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
-            alternative=self.db_alternative_substitut_ecig,
-            ecig_choice='VS',
-        )
-        data = {
-            'date_health':datetime.date(2020, 5, 13),
-            'time_health':datetime.time(14, 56),
-            'type_alternative_field':'Su',
-            'su_field':self.db_alternative_substitut_ecig.id,
-            'ecig_vape_or_start':['V']
-        }
-
-        form = HealthForm(self.usertest, data)
-        self.assertFalse(form.is_valid())
-        self.assertTrue("Vous avez déjà renseigné aujourd'hui avoir vapoté." in form.errors['__all__'][0])
-
-    def test_more_than_one_ecig_VS_per_day(self):
-        conso = ConsoAlternative.objects.create(
-            user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
-            alternative=self.db_alternative_substitut_ecig,
-            ecig_choice='V',
-        )
-        data = {
-            'date_health':datetime.date(2020, 5, 13),
-            'time_health':datetime.time(14, 56),
-            'type_alternative_field':'Su',
-            'su_field':self.db_alternative_substitut_ecig.id,
-            'ecig_vape_or_start':['V', 'S']
-        }
-
-        form = HealthForm(self.usertest, data)
-        self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data.get('ecig_vape_or_start'), ['S'])
 
 
 class ChooseAlternativeFormWithEmptyFieldsTestCase(HealthFormTestCase):

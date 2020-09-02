@@ -3,6 +3,7 @@
 """tests views related to user alternatives or healthy actions """
 
 import datetime
+import pytz
 
 from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
@@ -152,8 +153,7 @@ class AlternativeAndHealthyTestCase(TestCase):
             )
         conso = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,
         )
         filter_conso = ConsoAlternative.objects.filter(
@@ -236,8 +236,7 @@ class HealthTestCase(TransactionTestCase):
             }
         self.health_sp = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(13, 15),
+            datetime_alter=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
             activity_duration=90,
         )
@@ -270,16 +269,7 @@ class HealthTestCase(TransactionTestCase):
         filter = ConsoAlternative.objects.filter(
             user=self.user,
             alternative=self.alternative_sp,
-            date_alter=datetime.date(2020, 5, 10)
-            )
-        self.assertFalse(filter.exists())
-
-    def test_healt_fail_no_option_for_ecig(self):
-        """ test get health view post with error in data : no option for ecig"""
-        response = self.client.post(reverse('QuitSoonApp:health'), data=self.data_su_ecig)
-        filter = ConsoAlternative.objects.filter(
-            user=self.user,
-            alternative=self.alternative_su_ecig,
+            datetime_alter__date=datetime.date(2020, 5, 10)
             )
         self.assertFalse(filter.exists())
 
@@ -371,44 +361,37 @@ class HealthListTestCase(TestCase):
             )
         self.conso_1 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(9, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 9, 55, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
         )
         self.conso_2 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=self.alternative_so,
         )
         self.conso_3 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(20, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 20, 55, tzinfo=pytz.utc),
             alternative=self.alternative_su,
         )
         self.conso_4 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 15),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 15, 13, 55, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
         )
         self.conso_5 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 17, 13, 55, tzinfo=pytz.utc),
             alternative=self.alternative_so,
         )
         self.conso_6 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(10, 55),
+            datetime_alter=datetime.datetime(2020, 5, 17, 10, 55, tzinfo=pytz.utc),
             alternative=self.alternative_sp2,
         )
         self.conso_7 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(10, 55),
+            datetime_alter=datetime.datetime(2020, 5, 17, 10, 55, tzinfo=pytz.utc),
             alternative=self.alternative_lo2,
         )
 

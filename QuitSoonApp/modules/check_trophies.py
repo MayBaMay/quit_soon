@@ -52,8 +52,6 @@ class trophy_checking:
         """ get count cig smoked (col nb_cig) per dates(index) in DataFrame """
         qs = self.stats.user_conso_full_days.values()
         data_cig = pd.DataFrame(qs)
-        # combine date_cig and time_cig into a datetime column
-        # data_cig['date'] = data_cig.apply(lambda r : dt.combine(r['date_cig'],r['time_cig']),1)
         # get nb_cig per date sorted
         nb_cig_per_date_serie = data_cig.user_dt.dt.date.value_counts().sort_index()
         # rename serie to nb_cig and index to date

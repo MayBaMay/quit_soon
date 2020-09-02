@@ -5,6 +5,7 @@ Clean tests data and populate test database
 """
 
 from datetime import datetime as dt
+import pytz
 from decimal import Decimal
 from random import randint
 
@@ -92,10 +93,12 @@ class Create_smoke(CreateDataInDatabase):
 
     def populate_db(self):
         for data in self.clean_data:
+            date = self.date_format(data['date_cig'])
+            time = self.time_format(data['time_cig']).replace(tzinfo=pytz.UTC)
+            datetime_cig = dt.combine(date, time)
             conso = ConsoCig.objects.create(
                 user=self.user,
-                date_cig=self.date_format(data['date_cig']),
-                time_cig=self.time_format(data['time_cig']),
+                datetime_cig=datetime_cig,
                 paquet=data['paquet'],
                 given=data['given'],
                 )
@@ -151,10 +154,12 @@ class CreateConsoAlternative(CreateDataInDatabase):
 
     def populate_db(self):
         for data in self.clean_data:
+            date = self.date_format(data['date_alter'])
+            time = self.time_format(data['time_alter']).replace(tzinfo=pytz.UTC)
+            datetime_alter = dt.combine(date, time)
             ConsoAlternative.objects.create(
                 user=self.user,
-                date_alter=self.date_format(data['date_alter']),
-                time_alter=self.time_format(data['time_alter']),
+                datetime_alter=datetime_alter,
                 alternative=data['alternative'],
                 activity_duration=data['activity_duration'],
                 )
