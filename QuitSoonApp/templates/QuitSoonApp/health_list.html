@@ -22,9 +22,9 @@
     {% if not alternatives %}
     <p>Vous n'avez enregistré aucune alternative, </p>
       <p> Veuillez paramétrer vos alternatives
-      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>      
+      <a href="{% url 'QuitSoonApp:alternatives' %}">ici</a>
       </p>
-      
+
 
 
     {% else %}
@@ -46,8 +46,6 @@
                 {{ health_form.lo_field.error }}
                 {{ health_form.su_field }}
                 {{ health_form.su_field.error }}
-                {{ health_form.ecig_vape_or_start }}
-                {{ health_form.ecig_vape_or_start.error }}
               </div>
             </div>
           </div>
@@ -55,52 +53,44 @@
         </form>
         </div>
 <ul>
-        {% for conso in health %}
+  {% for conso in health %}
           <li class="flex-between">
           <table class="info-table">
           <tbody>
           <tr>
           <td>
-              {{ conso.date_alter }}
-              </td>
-              <td>
-              {{ conso.time_alter }}
-              </td>
-              {% if conso.alternative.type_activity %}
+            {{ conso.user_dt }}
+          </td>
+            {% if conso.alternative.type_activity %}
               <td>
                 {{ conso.alternative.type_activity }}
                 {{ conso.alternative.activity }}
-                </td>
-              {% endif %}
-              {% if conso.alternative.substitut %}
+              </td>
+            {% endif %}
+            {% if conso.alternative.substitut %}
               <td>
                 {{ conso.alternative.substitut }}
                 {{ conso.alternative.nicotine }}
-                </td>
-              {% endif %}
-              {% if conso.activity_duration %}
+              </td>
+            {% endif %}
+            {% if conso.activity_duration %}
               <td>
                 {{ conso.activity_duration }}min
-                </td>
-              {% endif %}
-              {% if conso.ecig_choice %}
-              <td>
-                {{ conso.get_ecig_choice_display }}
-                </td>
-              {% endif %}
-              </tr>
-              </tbody>
-              </table>
+              </td>
+            {% endif %}
+          </tr>
+          </tbody>
+          </table>
 
             <a class="icon-link" href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
               </li>
         {% endfor %}
-          </ul>
+  </ul>
 
       {% else %}
       <p>
          Vous n'avez pas encore enregistré d'action saine,
-          Allez, un petit effort, ça te fera vraiment du bien!</p>       
+          Allez, un petit effort, ça te fera vraiment du bien!</p>
       {% endif %}
     {% endif %}
   </section>

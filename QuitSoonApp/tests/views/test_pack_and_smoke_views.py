@@ -5,13 +5,14 @@
 
 from decimal import Decimal
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 
 from QuitSoonApp.views import (
-    paquets, smoke,
+    UserProfile, paquets, smoke,
 )
 from QuitSoonApp.models import (
     Paquet, ConsoCig,
@@ -230,8 +231,7 @@ class PacksAndSmokeTestCase(TestCase):
         """ test get delete_smoke smoke.given=True """
         db_smoke_given = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
             given=True,
             )
@@ -253,8 +253,7 @@ class PacksAndSmokeTestCase(TestCase):
             )
         db_smoke = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             paquet=db_pack,
             given=False,
             )
@@ -275,6 +274,11 @@ class SmokeListTestCase(TestCase):
             'TestUser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
 
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
         self.db_pack_undisplayed = Paquet.objects.create(
             user=self.user,
             type_cig='IND',
@@ -314,36 +318,31 @@ class SmokeListTestCase(TestCase):
 
         self.bd_consocig0 = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(9, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 9, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_rol,
             given=False,
         )
         self.bd_consocig1 = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(9, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 9, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
         )
         self.bd_consocig2 = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(11, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
         )
         self.bd_consocig3 = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(22, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 22, 5, tzinfo=pytz.utc),
             paquet=None,
             given=True,
         )
         self.bd_consocig4 = ConsoCig.objects.create(
             user=self.user,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(22, 35),
+            datetime_cig=datetime.datetime(2020, 5, 13, 22, 35, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             given=False,
         )

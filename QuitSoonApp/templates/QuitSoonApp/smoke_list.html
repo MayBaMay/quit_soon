@@ -1,6 +1,5 @@
 {% extends 'QuitSoonApp/base.html' %}
 {% load static %}
-{% load l10n %}
 {% block content %}
 
 <!-- Main content -->
@@ -23,9 +22,9 @@
   {% if not packs %}
   <p>
     Vous n'avez enregistré aucun paquet</p>
-    <p> Veuillez paramétrer vos paquets 
+    <p> Veuillez paramétrer vos paquets
     <a href="{% url 'QuitSoonApp:paquets' %}">ici</a>
-    </p>  
+    </p>
 
   {% else %}
     {% if smoke %}
@@ -53,41 +52,35 @@
             <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Trier">
         </form>
       </div>
-      <ul>
-        {% for conso in smoke %}
-        <li class="flex-between">
-          <table class="info-table">
-            <tbody>
-              <tr>
-              {% if conso.given %}
-              <td>
-                {{ conso.date_cig }}
-              </td>
-              <td>
-                {{ conso.time_cig }}
-              </td>
-              <td>
-                Clope taxée 
-              </td>
-              {% else %}
-              <td>
-                {{ conso.date_cig }}
-              </td>
-              <td>
-                {{ conso.time_cig }} 
-              </td>
-              <td>
-                {{ conso.paquet.brand }}
-              </td>
-              {% endif %}
-            </tr>
-            </tbody>
-          </table>
-          <a class="icon-link" href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
-        </li>
-        {% endfor %}
-      </ul>
 
+      <ul>
+          {% for conso in smoke %}
+          <li class="flex-between">
+            <table class="info-table">
+              <tbody>
+                <tr>
+                {% if conso.given %}
+                  <td>
+                    {{ conso.user_dt }}
+                  </td>
+                  <td>
+                    Clope taxée
+                  </td>
+                {% else %}
+                <td>
+                  {{ conso.user_dt }}
+                </td>
+                <td>
+                  {{ conso.paquet.brand }}
+                </td>
+                {% endif %}
+              </tr>
+              </tbody>
+            </table>
+            <a class="icon-link" href="/delete_smoke/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
+          </li>
+          {% endfor %}
+        </ul>
 
       <div class="pagination footnote">
         <span class="step-links">

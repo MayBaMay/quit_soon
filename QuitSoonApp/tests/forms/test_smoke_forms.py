@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -92,8 +93,7 @@ class ChoosingPackFormsTestCase(TestCase):
             )
 
         self.valid_smoking_datas = {
-            'date_smoke':datetime.date(2020, 5, 26),
-            'time_smoke':datetime.time(12, 56),
+            'datetime_smoke':datetime.datetime(2020, 5, 26, 12, 56, tzinfo=pytz.utc),
             'type_cig_field':'IND',
             'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field':self.db_pack_rol.id,
@@ -128,8 +128,7 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
         """ test last_smoke method with last smoke given=False smoke """
         db_smoke = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             )
         form = SmokeForm(self.usertest, self.valid_smoking_datas)
@@ -139,26 +138,22 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
         """ test last_smoke method with last one given=True, before exists given=False """
         db_smoke_0 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 16),
-            time_cig=datetime.time(10, 15),
+            datetime_cig=datetime.datetime(2020, 6, 16, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             )
         db_smoke_1 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(10, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_nb,
             )
         db_smoke_2 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
             )
         db_smoke_3 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
             )
         form = SmokeForm(self.usertest, self.valid_smoking_datas)
@@ -168,20 +163,17 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
         """ test config_field method """
         db_smoke_1 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(10, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             )
         db_smoke_2 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             given=True,
             )
         db_smoke_3 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             given=True,
             )
         form = SmokeForm(self.usertest, self.valid_smoking_datas)
@@ -213,22 +205,19 @@ class ChoosePackFormWithEmptyFieldsTestCase(ChoosingPackFormsTestCase):
     def test_config_fields(self):
         bd_consocig1 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(11, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
         )
         bd_consocig2 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(11, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
         )
         bd_consocig3 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(22, 5),
+            datetime_cig=datetime.datetime(2020, 5, 13, 22, 5, tzinfo=pytz.utc),
             paquet=None,
             given=True,
         )

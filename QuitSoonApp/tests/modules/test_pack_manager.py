@@ -4,6 +4,7 @@
 
 from decimal import Decimal
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -252,8 +253,7 @@ class PackManagerTestCase(TestCase):
             )
         ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(13, 55),
+            datetime_cig=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             paquet=db_pack,
         )
         datas ={'id_pack': db_pack.id}

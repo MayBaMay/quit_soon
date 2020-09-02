@@ -1,6 +1,10 @@
 #!/usr/bin/env python
+import datetime
+import pytz
 
+from django.utils.timezone import make_aware
 from django.db import models
+import django.dispatch
 from django.contrib.auth.models import User
 
 
@@ -47,8 +51,8 @@ class Paquet(models.Model):
 
 class ConsoCig(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_cig = models.DateField()
-    time_cig = models.TimeField()
+    datetime_cig = models.DateTimeField(null=True)
+    user_dt = models.DateTimeField(null=True, default=None) # calculation real dt user with tz_offset
     paquet = models.ForeignKey(Paquet, on_delete=models.CASCADE, null=True)
     given = models.BooleanField(default=False)
 
@@ -57,8 +61,7 @@ class ConsoCig(models.Model):
             paquet = self.paquet.type_cig
         else:
             paquet = None
-        return "%s %s-%s" % (self.user, self.date_cig, paquet)
-
+        return "%s %s-%s" % (self.user, self.datetime_cig, paquet)
 
 class Alternative(models.Model):
 
@@ -79,7 +82,6 @@ class Alternative(models.Model):
         ('GM', 'Gommes à mâcher'),
         ('GS', 'Gommes à sucer'),
         ('CS', 'Comprimés sublinguaux'),
-        ('ECIG', 'Cigarette éléctronique'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -111,22 +113,11 @@ class Alternative(models.Model):
 
 
 class ConsoAlternative(models.Model):
-    ECIG_CHOICE = [
-        ('V', "J'ai vapoté aujourd'hui"),
-        ('S', "J'ai démarré un nouveau flacon"),
-        ('VS', "J'ai vapoté aujourd'hui et démarré un nouveau flacon"),
-    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date_alter = models.DateField()
-    time_alter = models.TimeField()
+    datetime_alter = models.DateTimeField(null=True)
+    user_dt = models.DateTimeField(null=True, default=None) # calculation real dt user with tz_offset
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
     activity_duration = models.IntegerField(null=True)
-    ecig_choice = models.CharField(
-        max_length=2,
-        choices=ECIG_CHOICE,
-        null=True,
-    )
-
 
 class Objectif(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -18,8 +18,8 @@
     {% if not alternatives %}
 
       <p>Vous n'avez enregistré aucune alternative</p>
-      <div class="flex-center footnote"> 
-      
+      <div class="flex-center footnote">
+
       <a class = "btn" href="{% url 'QuitSoonApp:alternatives' %}">Paramétrez vos alternatives ici </a>
       </div>
 
@@ -63,7 +63,6 @@
           {{ form.so_field }}
           {{ form.lo_field }}
           {{ form.su_field }}
-          {{ form.ecig_vape_or_start }}
         </span>
         </div>
 
@@ -83,7 +82,7 @@
       <div class="flex-end footnote">
 
     <a class="btn" href="{% url 'QuitSoonApp:alternatives' %}">Créer une nouvelle alternative</a>
-    </div>  
+    </div>
     {% endif %}
   </section>
   <section class="panel p2 pc-0">
