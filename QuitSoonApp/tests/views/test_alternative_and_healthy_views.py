@@ -204,12 +204,6 @@ class HealthTestCase(TransactionTestCase):
             substitut='P',
             nicotine=2,
             )
-        self.alternative_su_ecig = Alternative.objects.create(
-            user=self.user,
-            type_alternative='Su',
-            substitut='ECIG',
-            nicotine=6,
-            )
         self.data_sp = {
             'date_health': datetime.date(2020, 5, 17),
             'time_health': datetime.time(13, 15),
@@ -225,14 +219,6 @@ class HealthTestCase(TransactionTestCase):
             'sp_field': self.alternative_sp.id,
             'so_field': self.alternative_so.id,
             'su_field':self.alternative_su.id,
-            }
-        self.data_su_ecig = {
-            'date_health': datetime.date(2020, 5, 10),
-            'time_health': datetime.time(14, 15),
-            'type_alternative_field':'Su',
-            'sp_field': self.alternative_sp.id,
-            'so_field': self.alternative_so.id,
-            'su_field':self.alternative_su_ecig.id,
             }
         self.health_sp = ConsoAlternative.objects.create(
             user=self.user,
@@ -272,38 +258,6 @@ class HealthTestCase(TransactionTestCase):
             datetime_alter__date=datetime.date(2020, 5, 10)
             )
         self.assertFalse(filter.exists())
-
-    def test_su_ecig_ecig_selected(self):
-        """test ajax call to get true if ecig alternative is choosen by user"""
-        data = {'type_alternative_field': 'type_alternative_field=Su', 'su_field': 'su_field='+str(self.alternative_su_ecig.id)}
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'),
-                                    data=data,
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'{"response": "true"}')
-
-    def test_su_ecig_ecig_not_selected(self):
-        """test ajax call to get false if ecig alternative is not choosen by user"""
-        data = {'type_alternative_field': 'type_alternative_field=Sp', 'su_field': 'su_field='+str(self.alternative_sp.id)}
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'),
-                                    data=data,
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'{"response": "false"}')
-
-    def test_su_ecig_ecig_not_selected(self):
-        """test ajax call to get false if wrong data"""
-        data = {'type_alternative_field': 'dfqsdfqsdgf', 'su_field': 'dfqsdfqsdgf'}
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'),
-                                    data=data,
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'{"response": "false"}')
-
-    def test_su_ecig_no_data(self):
-        """test if not called with ajax, raise 404"""
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'))
-        self.assertEqual(response.status_code, 404)
 
     def test_delete_health_fail(self):
         """ test get delete_health view with unexisting ConsoAlternative """

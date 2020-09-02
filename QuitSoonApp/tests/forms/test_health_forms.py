@@ -41,13 +41,6 @@ class HealthFormTestCase(TestCase):
             activity='DESSIN',
             display=False,
             )
-        self.db_alternative_substitut_ecig = Alternative.objects.create(
-            user=self.usertest,
-            type_alternative='Su',
-            substitut='ecig',
-            nicotine=3,
-            display=True,
-            )
         self.db_alternative_activity_sp = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',
@@ -149,7 +142,7 @@ class HealthFormTestCase_field_configTestCase(HealthFormTestCase):
     def test_choices_su_field(self):
         form = HealthForm(self.usertest)
         self.assertEqual(form.initial['su_field'][0], self.db_alternative_substitut_p24.id)
-        self.assertEqual(len(form.fields['su_field'].choices), 3)
+        self.assertEqual(len(form.fields['su_field'].choices), 2)
 
     def test_choices_first_health(self):
         ConsoAlternative.objects.all().delete()
@@ -210,21 +203,6 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
         self.assertEqual(form.errors, {
             '__all__':["Vous n'avez pas renseigné de durée pour cette activité"],
             })
-
-        def test_ecig(self):
-            data = {
-                'date_health':datetime.date(2020, 5, 26),
-                'time_health':datetime.time(12, 56),
-                'duration_hour':0,
-                'duration_min':30,
-                'type_alternative_field':'So',
-                'sp_field':self.db_alternative_activity_sp.id,
-                'so_field':self.db_alternative_activity_so.id,
-                'su_field':self.db_alternative_substitut_p24.id,
-            }
-            form = HealthForm(self.usertest, data)
-            self.assertFalse(form.is_valid())
-            self.assertRaises(ValueError)
 
 
 class ChooseAlternativeFormWithEmptyFieldsTestCase(HealthFormTestCase):

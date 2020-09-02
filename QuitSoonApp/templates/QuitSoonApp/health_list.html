@@ -46,8 +46,6 @@
                 {{ health_form.lo_field.error }}
                 {{ health_form.su_field }}
                 {{ health_form.su_field.error }}
-                {{ health_form.ecig_vape_or_start }}
-                {{ health_form.ecig_vape_or_start.error }}
               </div>
             </div>
           </div>
@@ -78,11 +76,6 @@
             {% if conso.activity_duration %}
               <td>
                 {{ conso.activity_duration }}min
-              </td>
-            {% endif %}
-            {% if conso.ecig_choice %}
-              <td>
-                {{ conso.get_ecig_choice_display }}
               </td>
             {% endif %}
           </tr>

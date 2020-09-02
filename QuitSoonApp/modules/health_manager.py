@@ -55,7 +55,6 @@ class HealthManager:
                     datetime_alter=self.datetime_alter,
                     alternative=self.get_alternative,
                     activity_duration=self.get_duration,
-                    ecig_choice=self.get_ecig_data,
                     )
             return health
         except (ObjectDoesNotExist, ValueError, AttributeError):
@@ -84,16 +83,6 @@ class HealthManager:
         except TypeError:
             return None
 
-    @property
-    def get_ecig_data(self):
-        ecig_choice = self.get_request_data('ecig_vape_or_start')
-        if ecig_choice == [] or not ecig_choice :
-            return None
-        elif ecig_choice == ['V'] or ecig_choice == ['S']:
-            return ecig_choice[0]
-        elif ecig_choice == ['V', 'S'] or ecig_choice == ['S', 'V']:
-            return 'VS'
-
     def create_conso_alternative(self):
         """Create ConsoAlternative from datas"""
         try:
@@ -102,7 +91,6 @@ class HealthManager:
                 datetime_alter=self.datetime_alter,
                 alternative=self.get_alternative,
                 activity_duration=self.get_duration,
-                ecig_choice=self.get_ecig_data,
                 )
             self.id = newconsoalternative.id
             return newconsoalternative

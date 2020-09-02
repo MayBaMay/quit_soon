@@ -336,6 +336,9 @@ def smoke_list(request):
     context['packs'] = packs
     tz_offset = get_client_offset(request)
 
+    # update user_dt field with HealthyStats
+    smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
+
     if packs.exists():
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
         if smoke.exists() :
@@ -460,23 +463,6 @@ def health(request):
         context['lasthealth'] = get_delta_last_event(last)
     return render(request, 'QuitSoonApp/health.html', context)
 
-def su_ecig(request):
-    """Tells if ecig has been selected by user"""
-    if request.is_ajax():
-        try:
-            type_alternative = request.GET['type_alternative_field'].split('=',1)[1]
-            substitut = int(request.GET['su_field'].split('=',1)[1])
-
-            if type_alternative == 'Su':
-                if Alternative.objects.get(id=substitut).substitut == 'ECIG':
-                    return HttpResponse(JsonResponse({'response':'true'}))
-            return HttpResponse(JsonResponse({'response':'false'}))
-        except:
-            return HttpResponse(JsonResponse({'response':'false'}))
-    else:
-        raise Http404()
-
-
 def delete_health(request, id_health):
     """
     Used when user click on the trash of one of his healthy action
@@ -493,6 +479,9 @@ def health_list(request):
     context = {}
     # check if packs are in parameters to fill fields with actual packs
     alternatives = Alternative.objects.filter(user=request.user, display=True)
+    # update user_dt field with HealthyStats
+    tz_offset = get_client_offset(request)
+    healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
     context['alternatives'] = alternatives
     if alternatives.exists():
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
