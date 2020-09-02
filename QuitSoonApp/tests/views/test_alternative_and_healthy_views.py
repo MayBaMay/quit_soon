@@ -27,6 +27,11 @@ class AlternativeAndHealthyTestCase(TestCase):
         self.user = User.objects.create_user(
             'TestUser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
 
     def test_alternatives_view_post_succes_alt(self):
         """Test client post a form with alternatives with success"""
@@ -185,6 +190,11 @@ class HealthTestCase(TransactionTestCase):
         self.user = User.objects.create_user(
             'Newuser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
 
         self.alternative_sp = Alternative.objects.create(
             user=self.user,
