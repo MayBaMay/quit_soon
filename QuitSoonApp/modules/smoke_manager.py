@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+import datetime
+from datetime import timedelta
+import pytz
+
+from django.utils.timezone import make_aware
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
@@ -10,14 +15,30 @@ from QuitSoonApp.models import Paquet, ConsoCig
 class SmokeManager:
     """Manage informations of cigarette consumption"""
 
-    def __init__(self, user, datas):
+    def __init__(self, user, datas, tz_offset=0):
         self.datas = datas
+        if not tz_offset:
+            tz_offset = 0
         self.user = user
         self.id = self.get_request_data('id_smoke')
         if not self.id:
-            self.date_cig = self.get_request_data('date_smoke')
-            self.time_cig = self.get_request_data('time_smoke')
+            self.datetime_cig = self.get_datetime_cig_aware(
+                self.get_request_data('date_smoke'),
+                self.get_request_data('time_smoke'),
+                tz_offset
+                )
             self.given = self.get_request_data('given_field')
+
+    def get_datetime_cig_aware(self, date_smoke, time_smoke, tz_offset):
+        try:
+            dt_smoke = datetime.datetime.combine(date_smoke, time_smoke)
+            dt_smoke += timedelta(minutes=tz_offset)
+            dt_smoke = make_aware(dt_smoke, pytz.utc)
+            return dt_smoke
+        except TypeError as e:
+            # get_request_data returned None
+            print(e)
+            return None
 
     def get_request_data(self, data):
         try:
@@ -33,8 +54,7 @@ class SmokeManager:
             else:
                 smoke = ConsoCig.objects.get(
                     user=self.user,
-                    date_cig=self.date_cig,
-                    time_cig=self.time_cig,
+                    datetime_cig=self.datetime_cig,
                     paquet=self.get_pack,
                     given=self.given,
                     )
@@ -64,8 +84,7 @@ class SmokeManager:
         try:
             newconsocig = ConsoCig.objects.create(
                 user=self.user,
-                date_cig=self.date_cig,
-                time_cig=self.time_cig,
+                datetime_cig=self.datetime_cig,
                 paquet=self.get_pack,
                 given=self.given,
                 )

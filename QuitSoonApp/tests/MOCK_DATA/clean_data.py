@@ -4,6 +4,8 @@
 Clean tests data and populate test database
 """
 
+from datetime import datetime as dt
+import pytz
 from decimal import Decimal
 from random import randint
 
@@ -19,6 +21,12 @@ class CreateDataInDatabase:
         self.clean_data = row_data
         for data in self.clean_data:
             data = self.get_missing_data(data)
+
+    def date_format(self, date):
+        return dt.strptime(date, '%Y-%m-%d').date()
+
+    def time_format(self, time):
+        return dt.strptime(time, '%H:%M').time()
 
 
 class Create_packs(CreateDataInDatabase):
@@ -85,14 +93,15 @@ class Create_smoke(CreateDataInDatabase):
 
     def populate_db(self):
         for data in self.clean_data:
-            ConsoCig.objects.create(
+            date = self.date_format(data['date_cig'])
+            time = self.time_format(data['time_cig']).replace(tzinfo=pytz.UTC)
+            datetime_cig = dt.combine(date, time)
+            conso = ConsoCig.objects.create(
                 user=self.user,
-                date_cig=data['date_cig'],
-                time_cig=data['time_cig'],
+                datetime_cig=datetime_cig,
                 paquet=data['paquet'],
                 given=data['given'],
                 )
-
 
 class CreateAlternative(CreateDataInDatabase):
     """Parse, complete and use data to populate table Alternative in test database"""
@@ -145,10 +154,12 @@ class CreateConsoAlternative(CreateDataInDatabase):
 
     def populate_db(self):
         for data in self.clean_data:
+            date = self.date_format(data['date_alter'])
+            time = self.time_format(data['time_alter']).replace(tzinfo=pytz.UTC)
+            datetime_alter = dt.combine(date, time)
             ConsoAlternative.objects.create(
                 user=self.user,
-                date_alter=data['date_alter'],
-                time_alter=data['time_alter'],
+                datetime_alter=datetime_alter,
                 alternative=data['alternative'],
                 activity_duration=data['activity_duration'],
                 )

@@ -1,5 +1,6 @@
 """ tests on models.py """
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -43,14 +44,12 @@ class TestModels(TestCase):
             )
         self.consocig = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(13, 55),
+            datetime_cig=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             paquet=self.paquet,
         )
         self.consocig2 = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 13),
-            time_cig=datetime.time(0, 0),
+            datetime_cig=datetime.datetime(2020, 5, 13, 0, 0, tzinfo=pytz.utc),
             given=True,
         )
         self.alternative = Alternative.objects.create(
@@ -66,14 +65,12 @@ class TestModels(TestCase):
         )
         self.consoalter = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(11, 5),
+            datetime_alter=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
             alternative=self.alternative2
         )
         self.consoalter2 = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(14, 15),
+            datetime_alter=datetime.datetime(2020, 5, 13, 14, 15, tzinfo=pytz.utc),
             alternative=self.alternative,
             activity_duration=75,
         )

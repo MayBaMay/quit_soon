@@ -1,5 +1,6 @@
 from decimal import Decimal
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -199,8 +200,7 @@ class SavePackTestCase(TestCase):
             )
         conso = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,
         )
         data = {'id_alternative': db_alternative.id}
@@ -225,8 +225,7 @@ class SavePackTestCase(TestCase):
             )
         conso = ConsoAlternative.objects.create(
             user=self.usertest,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,
         )
         data = {'id_alternative': db_alternative.id}

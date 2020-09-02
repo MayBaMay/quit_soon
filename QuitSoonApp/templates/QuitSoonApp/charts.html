@@ -37,9 +37,14 @@
 
   <body style="background-color:#25344b;">
 
+    {% load tz %}
+    {% localtime off %}
+
     <div class="chart-container">
       <canvas id="myChart"></canvas>
     </div>
+
+    {% endlocaltime %}
 
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
@@ -138,9 +143,11 @@
                 data: params,
                 contentType: "application/json",
                 success: function(response_data){
+                  console.log(response_data);
                   let columns = JSON.parse(response_data).columns
                   let index = JSON.parse(response_data).index
                   let data = JSON.parse(response_data).data
+                  let min_cig = JSON.parse(response_data).min_cig
 
                   var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -200,7 +207,8 @@
                                     },
                                   ticks: {
                                       beginAtZero: true,
-                                      stepSize: 1
+                                      stepSize: 1,
+                                      suggestedMax: min_cig,
                                   }
                               }, ActivityYAxis
                             ],

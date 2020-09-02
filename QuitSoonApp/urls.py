@@ -34,7 +34,6 @@ urlpatterns = [
         views.delete_alternative,
         name='delete_alternative'),
     path('health/', views.health, name='health'),
-    path('su_ecig/', views.su_ecig, name='su_ecig'),
     path('delete_health/<id_health>/', views.delete_health, name='delete_health'),
     path('health_list/', views.health_list, name='health_list'),
 

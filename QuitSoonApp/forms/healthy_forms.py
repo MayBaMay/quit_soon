@@ -228,16 +228,6 @@ class HealthForm(ChooseAlternativeForm):
                     'type':'time'},
     ))
 
-    ecig_vape_or_start = forms.MultipleChoiceField(
-        required=False,
-        widget=forms.CheckboxSelectMultiple
-            (attrs={'class':"hide"},
-             ),
-        choices=[('V', "J'ai vapoté aujourd'hui"),
-                 ('S', "J'ai démarré un nouveau flacon")],
-        label='',
-        )
-
     duration_hour = forms.IntegerField(
         required=False,
         label="h",
@@ -271,32 +261,3 @@ class HealthForm(ChooseAlternativeForm):
         # check if duration for user activiy
         if not duration_hour and not duration_min and type_alternative != 'Su':
             raise forms.ValidationError("Vous n'avez pas renseigné de durée pour cette activité")
-
-        try:
-            ecig_data = cleaned_data.get('ecig_vape_or_start')
-
-            id_subsitut = int(cleaned_data.get('su_field'))
-            if type_alternative == 'Su':
-                # if a Ecig substitut alternative is selected in su_field
-                if id_subsitut:
-                    if Alternative.objects.get(id=id_subsitut).substitut.upper() == 'ECIG':
-                        # check if at least one choice has been selected
-                        if ecig_data == []:
-                            raise forms.ValidationError("""
-                                Vous avez sélectionné la cigarette électronique,
-                                indiquez si vous avez vapoté aujourd'hui et/ou si vous avez démarré un nouveau flacon.
-                                Ceci nous permettra de calculer le dosage quotidien moyen de votre consommation de nicotine
-                                """)
-                    filterV = ConsoAlternative.objects.filter(user=self.user, ecig_choice='V', date_alter=date_alter).exists()
-                    filterVS = ConsoAlternative.objects.filter(user=self.user, ecig_choice='VS', date_alter=date_alter).exists()
-                    if filterV or filterVS:
-                        if ecig_data == ['V']:
-                            raise forms.ValidationError("""
-                                Vous avez déjà renseigné aujourd'hui avoir vapoté.
-                                Nous prenons en compte le nombre de jours vapoté et non chaque vapotage.
-                                L'information a donc déjà été renseignée.
-                                """)
-                        if ecig_data == ['V', 'S']:
-                            self.cleaned_data['ecig_vape_or_start'] = ['S']
-        except ValueError:
-            pass

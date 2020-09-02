@@ -3,6 +3,7 @@
 """tests views related to user alternatives or healthy actions """
 
 import datetime
+import pytz
 
 from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
@@ -12,7 +13,7 @@ from QuitSoonApp.views import (
     alternatives, health,
 )
 from QuitSoonApp.models import (
-    Alternative, ConsoAlternative,
+    UserProfile, Alternative, ConsoAlternative,
 )
 
 
@@ -152,8 +153,7 @@ class AlternativeAndHealthyTestCase(TestCase):
             )
         conso = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,
         )
         filter_conso = ConsoAlternative.objects.filter(
@@ -204,12 +204,6 @@ class HealthTestCase(TransactionTestCase):
             substitut='P',
             nicotine=2,
             )
-        self.alternative_su_ecig = Alternative.objects.create(
-            user=self.user,
-            type_alternative='Su',
-            substitut='ECIG',
-            nicotine=6,
-            )
         self.data_sp = {
             'date_health': datetime.date(2020, 5, 17),
             'time_health': datetime.time(13, 15),
@@ -226,18 +220,9 @@ class HealthTestCase(TransactionTestCase):
             'so_field': self.alternative_so.id,
             'su_field':self.alternative_su.id,
             }
-        self.data_su_ecig = {
-            'date_health': datetime.date(2020, 5, 10),
-            'time_health': datetime.time(14, 15),
-            'type_alternative_field':'Su',
-            'sp_field': self.alternative_sp.id,
-            'so_field': self.alternative_so.id,
-            'su_field':self.alternative_su_ecig.id,
-            }
         self.health_sp = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(13, 15),
+            datetime_alter=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
             activity_duration=90,
         )
@@ -270,50 +255,9 @@ class HealthTestCase(TransactionTestCase):
         filter = ConsoAlternative.objects.filter(
             user=self.user,
             alternative=self.alternative_sp,
-            date_alter=datetime.date(2020, 5, 10)
+            datetime_alter__date=datetime.date(2020, 5, 10)
             )
         self.assertFalse(filter.exists())
-
-    def test_healt_fail_no_option_for_ecig(self):
-        """ test get health view post with error in data : no option for ecig"""
-        response = self.client.post(reverse('QuitSoonApp:health'), data=self.data_su_ecig)
-        filter = ConsoAlternative.objects.filter(
-            user=self.user,
-            alternative=self.alternative_su_ecig,
-            )
-        self.assertFalse(filter.exists())
-
-    def test_su_ecig_ecig_selected(self):
-        """test ajax call to get true if ecig alternative is choosen by user"""
-        data = {'type_alternative_field': 'type_alternative_field=Su', 'su_field': 'su_field='+str(self.alternative_su_ecig.id)}
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'),
-                                    data=data,
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'{"response": "true"}')
-
-    def test_su_ecig_ecig_not_selected(self):
-        """test ajax call to get false if ecig alternative is not choosen by user"""
-        data = {'type_alternative_field': 'type_alternative_field=Sp', 'su_field': 'su_field='+str(self.alternative_sp.id)}
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'),
-                                    data=data,
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'{"response": "false"}')
-
-    def test_su_ecig_ecig_not_selected(self):
-        """test ajax call to get false if wrong data"""
-        data = {'type_alternative_field': 'dfqsdfqsdgf', 'su_field': 'dfqsdfqsdgf'}
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'),
-                                    data=data,
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, b'{"response": "false"}')
-
-    def test_su_ecig_no_data(self):
-        """test if not called with ajax, raise 404"""
-        response = self.client.get(reverse('QuitSoonApp:su_ecig'))
-        self.assertEqual(response.status_code, 404)
 
     def test_delete_health_fail(self):
         """ test get delete_health view with unexisting ConsoAlternative """
@@ -339,6 +283,11 @@ class HealthListTestCase(TestCase):
             'Newuser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
 
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
         self.alternative_sp = Alternative.objects.create(
             user=self.user,
             type_alternative='Ac',
@@ -371,44 +320,37 @@ class HealthListTestCase(TestCase):
             )
         self.conso_1 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(9, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 9, 55, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
         )
         self.conso_2 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=self.alternative_so,
         )
         self.conso_3 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 13),
-            time_alter=datetime.time(20, 55),
+            datetime_alter=datetime.datetime(2020, 5, 13, 20, 55, tzinfo=pytz.utc),
             alternative=self.alternative_su,
         )
         self.conso_4 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 15),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 15, 13, 55, tzinfo=pytz.utc),
             alternative=self.alternative_sp,
         )
         self.conso_5 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(13, 55),
+            datetime_alter=datetime.datetime(2020, 5, 17, 13, 55, tzinfo=pytz.utc),
             alternative=self.alternative_so,
         )
         self.conso_6 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(10, 55),
+            datetime_alter=datetime.datetime(2020, 5, 17, 10, 55, tzinfo=pytz.utc),
             alternative=self.alternative_sp2,
         )
         self.conso_7 = ConsoAlternative.objects.create(
             user=self.user,
-            date_alter=datetime.date(2020, 5, 17),
-            time_alter=datetime.time(10, 55),
+            datetime_alter=datetime.datetime(2020, 5, 17, 10, 55, tzinfo=pytz.utc),
             alternative=self.alternative_lo2,
         )
 

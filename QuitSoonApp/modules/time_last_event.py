@@ -2,11 +2,12 @@
 
 from dateutil import relativedelta
 import datetime
+from django.utils import timezone
 
 
 
 def get_delta_last_event(last_time):
-        delta = relativedelta.relativedelta(datetime.datetime.now(), last_time)
+        delta = relativedelta.relativedelta(timezone.now(), last_time)
         deltas = {
             'year': [delta.years, 'an', 'ans'],
             'month': [delta.months, 'mois', 'mois'],
