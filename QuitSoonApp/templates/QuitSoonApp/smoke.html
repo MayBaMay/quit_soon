@@ -2,6 +2,9 @@
 {% load static %}
 {% block content %}
 
+{% load tz_detect %}
+{% tz_detect %}
+
 
 <!-- Page heading -->
 <div class="page-heading">
@@ -15,8 +18,8 @@
 <!-- End page heading -->
 
 <!-- Panel content -->
-<main id="smoke" class="content">
-  <section class="panel p1 pc-3">
+<main id="smoke" class="content tz">
+  <section class="panel p1 pc-1">
 
     {% if not packs %}
 

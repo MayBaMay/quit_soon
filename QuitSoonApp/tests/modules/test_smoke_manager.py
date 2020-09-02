@@ -3,6 +3,7 @@
 """Module testing save_smoke module"""
 
 import datetime
+import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -34,8 +35,7 @@ class SmokeManagerTestCase(TestCase):
             )
         self.db_smoke_ind = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 6, 17),
-            time_cig=datetime.time(10, 15),
+            datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             )
         self.new_datas_ind = {
@@ -63,7 +63,7 @@ class SmokeManagerTestCase(TestCase):
         self.assertEqual(smoke.get_request_data('time_smoke'), datetime.time(13, 15))
         self.assertEqual(smoke.get_request_data('ind_pack_field'), self.db_pack_ind.id)
 
-    def tes_get_pack_ind(self):
+    def test_get_pack_ind(self):
         """test SmokeManager.get_pack method with new smoke datas and given_field=False & type_cig_field='IND'"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
@@ -93,8 +93,7 @@ class SmokeManagerTestCase(TestCase):
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         smoke.create_conso_cig()
         new_smoke = ConsoCig.objects.filter(user=self.usertest,
-                             date_cig=datetime.date(2020, 5, 17),
-                             time_cig=datetime.time(13, 15),
+                             datetime_cig=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
                              paquet=self.db_pack_ind,
                              given=False)
         self.assertTrue(new_smoke.exists())
@@ -118,8 +117,7 @@ class SmokeManagerTestCase(TestCase):
         smoke.create_conso_cig()
         self.assertEqual(smoke.get_pack, None)
         new_given_smoke = ConsoCig.objects.filter(user=self.usertest,
-                             date_cig=datetime.date(2020, 7, 15),
-                             time_cig=datetime.time(20, 15),
+                             datetime_cig=datetime.datetime(2020, 7, 15, 20, 15, tzinfo=pytz.utc),
                              paquet=None,
                              given=True)
         self.assertTrue(new_given_smoke.exists())
@@ -136,8 +134,7 @@ class SmokeManagerTestCase(TestCase):
         smoke.create_conso_cig()
         self.assertEqual(smoke.get_conso_cig, ConsoCig.objects.get(
             user=self.usertest,
-            date_cig=smoke.date_cig,
-            time_cig=smoke.time_cig,
+            datetime_cig=smoke.datetime_cig,
             paquet=smoke.get_pack,
             given=smoke.given,
             ))
@@ -163,8 +160,7 @@ class SmokeManagerTestCase(TestCase):
         """test SmokeManager.delete_conso method with cig == given cig"""
         db_smoke_given = ConsoCig.objects.create(
             user=self.usertest,
-            date_cig=datetime.date(2020, 5, 17),
-            time_cig=datetime.time(13, 15),
+            datetime_cig=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
             )
         data = {'id_smoke': db_smoke_given.id}

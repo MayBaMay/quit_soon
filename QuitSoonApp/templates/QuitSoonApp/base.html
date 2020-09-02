@@ -21,6 +21,8 @@
   </head>
 
   <body id="app">
+    {% load tz %}
+    {% localtime off %}
     <div class="wrapper">
       <div class="content-wrapper">
         <!-- Grid container -->
@@ -107,7 +109,7 @@
                       <ul id="user-menu" class="sub-menu">
                         <li>
                           <a href="{% url 'QuitSoonApp:profile' %}" class="menu-item"
-                            >Mes informations personelles</a
+                            >Mes informations personnelles</a
                           >
                         </li>
                         <li>
@@ -178,6 +180,8 @@
         <footer>Contact : contact@nicotinekill.com</footer>
         <!-- End of footer -->
     </div>
+
+  {% endlocaltime %}
 
     <script src="{% static 'QuitSoonApp/vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'QuitSoonApp/js/quitsoon.min.js' %}"></script>
