@@ -143,9 +143,11 @@
                 data: params,
                 contentType: "application/json",
                 success: function(response_data){
+                  console.log(response_data);
                   let columns = JSON.parse(response_data).columns
                   let index = JSON.parse(response_data).index
                   let data = JSON.parse(response_data).data
+                  let min_cig = JSON.parse(response_data).min_cig
 
                   var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -205,7 +207,8 @@
                                     },
                                   ticks: {
                                       beginAtZero: true,
-                                      stepSize: 1
+                                      stepSize: 1,
+                                      suggestedMax: min_cig,
                                   }
                               }, ActivityYAxis
                             ],

@@ -679,5 +679,6 @@ class ChartData(APIView):
             result = df.to_json(orient="split")
             parsed = json.loads(result)
             parsed["data"] = {'base':formated_data, 'activity':formated_activity_data}
+            parsed["min_cig"] = UserProfile.objects.get(user=request.user).starting_nb_cig
 
         return Response(json.dumps(parsed))
