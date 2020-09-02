@@ -174,11 +174,11 @@ class SmokeStatsTestCaseSmallData(TestCase):
 
     def test_nb_not_smoked_cig_full_days(self):
         """test method nb_not_smoked_cig_full_days"""
-        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 1)
+        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 3)
 
     def test_average_money_per_day(self):
         """test method average_money_per_day"""
-        self.assertEqual(self.stats.average_money_per_day, Decimal('9.215'))
+        self.assertEqual(self.stats.average_money_per_day, Decimal('8.245'))
 
     def test_list_dates(self):
         """test method list_dates"""
@@ -189,13 +189,13 @@ class SmokeStatsTestCaseSmallData(TestCase):
             )
 
     def test_total_money_smoked(self):
-        self.assertEqual(self.stats.total_money_smoked, Decimal('9.215'))
+        self.assertEqual(self.stats.total_money_smoked, Decimal('8.245'))
 
     def test_total_money_with_starting_nb_cig(self):
         self.assertEqual(self.stats.total_money_with_starting_nb_cig, Decimal('9.7'))
 
     def test_money_saved(self):
-        self.assertEqual(self.stats.money_saved, Decimal('0.48'))
+        self.assertEqual(self.stats.money_saved, Decimal('1.46'))
 
 
 class StatsFirstDay(TestCase):

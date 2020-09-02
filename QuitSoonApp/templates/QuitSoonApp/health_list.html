@@ -55,39 +55,44 @@
         </form>
         </div>
 <ul>
-        {% for conso in health %}
-          <div class="row">
-              {{ conso.datetime_alter }}
-              {% if conso.alternative.type_activity %}
+  {% for conso in health %}
+          <li class="flex-between">
+          <table class="info-table">
+          <tbody>
+          <tr>
+          <td>
+            {{ conso.user_dt }}
+          </td>
+            {% if conso.alternative.type_activity %}
               <td>
                 {{ conso.alternative.type_activity }}
                 {{ conso.alternative.activity }}
-                </td>
-              {% endif %}
-              {% if conso.alternative.substitut %}
+              </td>
+            {% endif %}
+            {% if conso.alternative.substitut %}
               <td>
                 {{ conso.alternative.substitut }}
                 {{ conso.alternative.nicotine }}
-                </td>
-              {% endif %}
-              {% if conso.activity_duration %}
+              </td>
+            {% endif %}
+            {% if conso.activity_duration %}
               <td>
                 {{ conso.activity_duration }}min
-                </td>
-              {% endif %}
-              {% if conso.ecig_choice %}
+              </td>
+            {% endif %}
+            {% if conso.ecig_choice %}
               <td>
                 {{ conso.get_ecig_choice_display }}
-                </td>
-              {% endif %}
-              </tr>
-              </tbody>
-              </table>
+              </td>
+            {% endif %}
+          </tr>
+          </tbody>
+          </table>
 
             <a class="icon-link" href="/delete_health/{{conso.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
               </li>
         {% endfor %}
-          </ul>
+  </ul>
 
       {% else %}
       <p>

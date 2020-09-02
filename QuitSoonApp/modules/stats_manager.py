@@ -24,9 +24,10 @@ class Stats:
         self.user = user
         if tz_offset:
             self.tz_offset = tz_offset
+            self.lastday = lastday - timedelta(minutes=tz_offset)
         else:
             self.tz_offset = 0
-        self.lastday = lastday
+            self.lastday = lastday
         self.datetime_start = self.get_datetime_start()
         self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
         self.nb_full_days_since_start = (self.lastday - self.datetime_start).days
@@ -94,8 +95,12 @@ class SmokeStats(Stats):
     def __init__(self, user, lastday, tz_offset):
         Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoCig.objects.filter(user=self.user)
-        self.user_conso_full_days = self.user_conso_all_days.exclude(datetime_cig__date=self.lastday.date())
         self.update_dt_user_model_field()
+        date_range = (
+            datetime.datetime.combine(self.lastday, datetime.datetime.min.time().replace(tzinfo=pytz.UTC)),
+            datetime.datetime.combine(self.lastday, datetime.datetime.max.time().replace(tzinfo=pytz.UTC))
+        )
+        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__range=date_range)
 
     def update_dt_user_model_field(self):
         for conso in self.user_conso_all_days:
@@ -104,8 +109,11 @@ class SmokeStats(Stats):
 
     def nb_per_day(self, date):
         """ nb smoke per day """
-        conso_day = self.user_conso_all_days.filter(user_dt__date=date)
-        print(date, conso_day)
+        date_range = (
+            datetime.datetime.combine(date, datetime.datetime.min.time().replace(tzinfo=pytz.UTC)),
+            datetime.datetime.combine(date, datetime.datetime.max.time().replace(tzinfo=pytz.UTC))
+        )
+        conso_day = self.user_conso_all_days.filter(user_dt__range=date_range)
         return conso_day.count()
 
     @property
@@ -133,11 +141,10 @@ class SmokeStats(Stats):
     @property
     def count_smoking_day(self):
         """ number of days user smoked """
-        distinct_dt_cig = ConsoCig.objects.order_by('user_dt__date').distinct('user_dt__date')
         if self.first_day:
-            return distinct_dt_cig.count()
+            return self.user_conso_all_days.order_by('user_dt__date').distinct('user_dt__date').count()
         else:
-            return distinct_dt_cig.exclude(user_dt__date=self.lastday.date()).count()
+            return self.user_conso_full_days.order_by('user_dt__date').distinct('user_dt__date').count()
 
     @property
     def count_no_smoking_day(self):
@@ -258,7 +265,7 @@ class HealthyStats(Stats):
         Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoAlternative.objects.filter(user=self.user)
         self.update_dt_user_model_field()
-        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__date=self.lastday.date())
+        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__range=(self.datetime_start, self.lastday))
         self.user_activities = self.user_conso_all_days.exclude(alternative__type_alternative='Su')
         self.user_conso_subsitut = self.user_conso_all_days.filter(alternative__type_alternative='Su')
 
@@ -324,7 +331,11 @@ class HealthyStats(Stats):
     def filter_by_period(self, date, period, queryset):
         # filter by period
         if period == 'day':
-            return queryset.filter(user_dt__date=date)
+            date_range = (
+                datetime.datetime.combine(date, datetime.datetime.min.time().replace(tzinfo=pytz.UTC)),
+                datetime.datetime.combine(date, datetime.datetime.max.time().replace(tzinfo=pytz.UTC))
+            )
+            return queryset.filter(user_dt__range=date_range)
         elif period == 'week':
             week_number = date.isocalendar()[1]
             return queryset.filter(user_dt__week=week_number)
@@ -345,7 +356,11 @@ class HealthyStats(Stats):
 
     def nicotine_per_day(self, date):
         """ nicotine in mg took the the day in argument """
-        conso_day = self.user_conso_subsitut.filter(user_dt__date=date)
+        date_range = (
+            datetime.datetime.combine(date, datetime.datetime.min.time().replace(tzinfo=pytz.UTC)),
+            datetime.datetime.combine(date, datetime.datetime.max.time().replace(tzinfo=pytz.UTC))
+        )
+        conso_day = self.user_conso_subsitut.filter(user_dt__range=date_range)
         nicotine = 0
         for conso in conso_day:
             nicotine += conso.alternative.nicotine

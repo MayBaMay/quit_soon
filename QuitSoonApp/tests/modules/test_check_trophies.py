@@ -125,7 +125,6 @@ class ChecktrophyTestCase(TestCase):
         get NaNs occurence in dataframe
         """
         s = self.check_trophy.get_nans_occurence()
-        print(s)
         # 2020-06-21 = 1 days non smoke
         self.assertTrue(1.0 in s.values)
         # from 2020-06-23 to 2020-06-25 = 3 days non smoke

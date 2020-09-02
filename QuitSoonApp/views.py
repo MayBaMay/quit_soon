@@ -535,14 +535,15 @@ def report(request, **kwargs):
     if profile:
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
         healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
-        print(smoke_stats.lastday)
 
         # graphs with smoke and health activities
         if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
 
             # generate context
+            context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days
             context['total_number'] = smoke_stats.total_smoke_all_days
             context['average_number'] = round(smoke_stats.average_per_day)
+            print(smoke_stats.lastday, smoke_stats.datetime_start, (smoke_stats.lastday - smoke_stats.datetime_start).days )
             context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
             context['total_money'] = round(smoke_stats.total_money_smoked, 2)
             context['saved_money'] = round(smoke_stats.money_saved, 2)
@@ -571,7 +572,6 @@ def report(request, **kwargs):
                         nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
                         substitut_stats[type[0]][period] = nicotine
                 context['substitut_stats'] = substitut_stats
-            print('substitut_stats', substitut_stats)
 
             return render(request, 'QuitSoonApp/report.html', context)
         else:
@@ -638,6 +638,7 @@ class ChartData(APIView):
                          'money_smoked':[],
                          'nicotine':[]}
 
+            # print(smoke_stats.list_dates)
             for date in smoke_stats.list_dates:
                 user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
                 if healthy_stats.report_substitut_per_period(date):
@@ -652,7 +653,6 @@ class ChartData(APIView):
                     user_dict['nicotine'].append(healthy_stats.nicotine_per_day(date))
             # keep only usefull keys and value in user_dict
             user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
-
 
             df = DataFrameDate(user_dict, charttype)
             if period == 'Jour':

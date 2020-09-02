@@ -69,7 +69,7 @@ class ReportViewTestCase1(TestCase):
             )
 
     def test_user_with_profile(self, *args):
-        """test report view using FakeTodayDate as mock for date.today()"""
+        """test report view"""
         self.profile = UserProfile.objects.create(
             user=self.user,
             date_start="2019-09-28",

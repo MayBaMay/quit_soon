@@ -53,7 +53,7 @@ class ConsoCig(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_cig = models.DateField()
     time_cig = models.TimeField()
-    datetime_cig = models.DateTimeField()
+    datetime_cig = models.DateTimeField(null=True)
     user_dt = models.DateTimeField(null=True, default=None) # calculation real dt user
     paquet = models.ForeignKey(Paquet, on_delete=models.CASCADE, null=True)
     given = models.BooleanField(default=False)
@@ -141,7 +141,7 @@ class ConsoAlternative(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date_alter = models.DateField()
     time_alter = models.TimeField()
-    datetime_alter = models.DateTimeField()
+    datetime_alter = models.DateTimeField(null=True)
     user_dt = models.DateTimeField(null=True, default=None) # calculation real dt user
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
     activity_duration = models.IntegerField(null=True)
