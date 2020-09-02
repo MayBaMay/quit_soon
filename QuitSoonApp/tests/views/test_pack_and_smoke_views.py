@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 
 from QuitSoonApp.views import (
-    paquets, smoke,
+    UserProfile, paquets, smoke,
 )
 from QuitSoonApp.models import (
     Paquet, ConsoCig,
@@ -274,6 +274,11 @@ class SmokeListTestCase(TestCase):
             'TestUser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
 
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
         self.db_pack_undisplayed = Paquet.objects.create(
             user=self.user,
             type_cig='IND',

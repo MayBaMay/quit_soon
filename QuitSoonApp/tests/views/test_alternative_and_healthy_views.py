@@ -13,7 +13,7 @@ from QuitSoonApp.views import (
     alternatives, health,
 )
 from QuitSoonApp.models import (
-    Alternative, ConsoAlternative,
+    UserProfile, Alternative, ConsoAlternative,
 )
 
 
@@ -283,6 +283,11 @@ class HealthListTestCase(TestCase):
             'Newuser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
 
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
         self.alternative_sp = Alternative.objects.create(
             user=self.user,
             type_alternative='Ac',

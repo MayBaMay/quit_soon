@@ -479,6 +479,8 @@ def health_list(request):
     context = {}
     # check if packs are in parameters to fill fields with actual packs
     alternatives = Alternative.objects.filter(user=request.user, display=True)
+
+    print('user :', request.user)
     # update user_dt field with HealthyStats
     tz_offset = get_client_offset(request)
     healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
