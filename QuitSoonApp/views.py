@@ -66,6 +66,15 @@ def get_client_offset(request):
     else:
         return None
 
+def update_dt_user_model_field(user, tz_offset):
+    if tz_offset:
+        for conso in ConsoCig.objects.filter(user=user):
+            conso.user_dt = conso.datetime_cig - timedelta(minutes=tz_offset)
+            conso.save()
+        for conso in ConsoAlternative.objects.filter(user=user):
+            conso.user_dt = conso.datetime_alter - timedelta(minutes=tz_offset)
+            conso.save()
+
 def register_view(request):
     """Registration view creating a user"""
     form = RegistrationForm()
@@ -100,6 +109,9 @@ def today(request):
     tz_offset = get_client_offset(request)
     smoke = ConsoCig.objects.filter(user=request.user)
     health = ConsoAlternative.objects.filter(user=request.user)
+    # update user_dt field
+    update_dt_user_model_field(request.user, tz_offset)
+
     if UserProfile.objects.filter(user=request.user).exists():
         context['profile'] = True
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
@@ -298,6 +310,7 @@ def smoke(request):
     packs = Paquet.objects.filter(user=request.user, display=True)
     context = {'packs':packs}
     tz_offset = get_client_offset(request)
+    update_dt_user_model_field(request.user, tz_offset)
 
     if packs :
         smoke_form = SmokeForm(request.user)
@@ -334,10 +347,10 @@ def smoke_list(request):
     context = {}
     packs = Paquet.objects.filter(user=request.user, display=True)
     context['packs'] = packs
-    tz_offset = get_client_offset(request)
 
-    # update user_dt field with HealthyStats
-    smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
+    # update user_dt field
+    tz_offset = get_client_offset(request)
+    update_dt_user_model_field(request.user, tz_offset)
 
     if packs.exists():
         smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
@@ -444,8 +457,9 @@ def health(request):
     context = {}
     tz_offset = get_client_offset(request)
     # check if alternatives are in parameters to fill fields with actual alternatives
-
     alternatives = Alternative.objects.filter(user=request.user, display=True)
+    update_dt_user_model_field(request.user, tz_offset)
+
     context['alternatives'] = alternatives
     if alternatives :
         form = HealthForm(request.user)
@@ -481,9 +495,10 @@ def health_list(request):
     alternatives = Alternative.objects.filter(user=request.user, display=True)
 
     print('user :', request.user)
-    # update user_dt field with HealthyStats
+    # update user_dt field
     tz_offset = get_client_offset(request)
-    healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
+    update_dt_user_model_field(request.user, tz_offset)
+
     context['alternatives'] = alternatives
     if alternatives.exists():
         health = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
@@ -521,6 +536,8 @@ def report(request, **kwargs):
     """Page with user results, graphs..."""
     context = {}
     tz_offset = get_client_offset(request)
+    update_dt_user_model_field(request.user, tz_offset)
+
     profile = UserProfile.objects.filter(user=request.user).exists()
     if profile:
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
@@ -533,7 +550,6 @@ def report(request, **kwargs):
             context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days
             context['total_number'] = smoke_stats.total_smoke_all_days
             context['average_number'] = round(smoke_stats.average_per_day)
-            print(smoke_stats.lastday, smoke_stats.datetime_start, (smoke_stats.lastday - smoke_stats.datetime_start).days )
             context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
             context['total_money'] = round(smoke_stats.total_money_smoked, 2)
             context['saved_money'] = round(smoke_stats.money_saved, 2)
