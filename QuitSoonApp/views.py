@@ -118,12 +118,7 @@ def today(request):
             context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
             last = smoke.latest('datetime_cig').datetime_cig
             context['lastsmoke'] = get_delta_last_event(last)[0]
-            try:
-                context['average_number'] = round(smoke_stats.average_per_day)
-            except (ZeroDivisionError, TypeError):
-                # 1st day so no full day, average return None
-                context['average_number'] = """C'est votre 1er jour, les données sont insuffisantes aujourd'hui.
-                                               Retrouvez votre moyenne dès demain."""
+            context['average_number'] = round(smoke_stats.average_per_day)
     return render(request, 'QuitSoonApp/today.html', context)
 
 

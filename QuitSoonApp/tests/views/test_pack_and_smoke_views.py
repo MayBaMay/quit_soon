@@ -6,6 +6,7 @@
 from decimal import Decimal
 import datetime
 import pytz
+from freezegun import freeze_time
 
 from django.test import TestCase
 from django.urls import reverse
@@ -224,6 +225,26 @@ class PacksAndSmokeTestCase(TestCase):
         )
         self.assertTrue(filter_smoke.exists())
         self.assertEqual(filter_smoke.count(), 1)
+
+    @freeze_time("2020-05-26 20:21:34")
+    def test_smoke_get_lastsmoke(self):
+        """ test get smoke view with packs saved by user, get form"""
+        db_pack_ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        ConsoCig.objects.create(
+            user=self.user,
+            datetime_cig=datetime.datetime(2020, 5, 26, 12, 5, tzinfo=pytz.utc),
+            paquet=db_pack_ind,
+            given=False,
+        )
+        response = self.client.get(reverse('QuitSoonApp:smoke'))
+        self.assertEqual(response.context['lastsmoke'], ['8 heures ', '16 minutes '])
+
 
     def test_delete_smoke_fail(self):
         """ test get delete_smoke view with unexisting ConsoCig """
