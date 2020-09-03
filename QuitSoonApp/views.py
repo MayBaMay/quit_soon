@@ -18,6 +18,7 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import F
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -68,12 +69,10 @@ def get_client_offset(request):
 
 def update_dt_user_model_field(user, tz_offset):
     if tz_offset:
-        for conso in ConsoCig.objects.filter(user=user):
-            conso.user_dt = conso.datetime_cig - timedelta(minutes=tz_offset)
-            conso.save()
-        for conso in ConsoAlternative.objects.filter(user=user):
-            conso.user_dt = conso.datetime_alter - timedelta(minutes=tz_offset)
-            conso.save()
+        conso = ConsoCig.objects.filter(user=user)
+        conso.update(user_dt=F('datetime_cig') - timedelta(minutes=tz_offset))
+        conso = ConsoAlternative.objects.filter(user=user)
+        conso.update(user_dt=F('datetime_alter') - timedelta(minutes=tz_offset))
 
 def register_view(request):
     """Registration view creating a user"""
