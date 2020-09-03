@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from django.db.models import Sum
+from django.utils import timezone
 
 from QuitSoonApp.models import (
     UserProfile,
@@ -21,6 +22,7 @@ from QuitSoonApp.models import (
 
 class Stats:
     def __init__(self, user, lastday, tz_offset):
+        self.profile = UserProfile.objects.filter(user=user).exists()
         self.user = user
         if tz_offset:
             self.tz_offset = tz_offset
@@ -29,7 +31,10 @@ class Stats:
             self.tz_offset = 0
             self.lastday = lastday
         self.datetime_start = self.get_datetime_start()
-        self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
+        if self.profile:
+            self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
+        else:
+            self.starting_nb_cig = 0
         self.nb_full_days_since_start = (self.lastday - self.datetime_start).days
         if self.nb_full_days_since_start:
             self.first_day = False
@@ -41,7 +46,7 @@ class Stats:
         user only gave date in order to simplifie UX
         so find first time of this date or set it at noon
         """
-        date_start = UserProfile.objects.get(user=self.user).date_start
+
         first_smoke = ConsoCig.objects.filter(user=self.user).first()
         first_alter = ConsoAlternative.objects.filter(user=self.user).first()
 
@@ -55,12 +60,19 @@ class Stats:
             else:
                 min_conso_dt = None
 
-        if min_conso_dt:
-            if min_conso_dt.date() == date_start:
+        if self.profile:
+            date_start = UserProfile.objects.get(user=self.user).date_start
+            dt_start = datetime.datetime.combine(date_start, datetime.time(12, 0))
+            dt_start_aware = make_aware(dt_start, pytz.utc)
+            if min_conso_dt:
+                if min_conso_dt.date() == date_start:
+                    return min_conso_dt - timedelta(minutes=self.tz_offset)
+            return dt_start_aware
+        else:
+            if min_conso_dt:
                 return min_conso_dt - timedelta(minutes=self.tz_offset)
-        dt_start = datetime.datetime.combine(date_start, datetime.time(12, 0))
-        return make_aware(dt_start, pytz.utc)
-
+            else:
+                return timezone.now()
 
     def nb_full_period_for_average(self, date, period):
         """ get number of achieve full periods (days, weeks or months) since start """
