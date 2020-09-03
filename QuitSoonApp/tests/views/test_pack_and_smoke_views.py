@@ -278,12 +278,12 @@ class SmokeListTestCase(TestCase):
         self.user = User.objects.create_user(
             'TestUser', 'test@test.com', 'testpassword')
         self.client.login(username=self.user.username, password='testpassword')
-
         UserProfile.objects.create(
             user=self.user,
             date_start='2020-05-13',
             starting_nb_cig=20
         )
+
         self.db_pack_undisplayed = Paquet.objects.create(
             user=self.user,
             type_cig='IND',

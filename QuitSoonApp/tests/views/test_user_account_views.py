@@ -115,7 +115,7 @@ class LoginClientTestCase(TransactionTestCase):
         response = self.client.post(reverse('QuitSoonApp:login'),
                                     data=data,
                                     follow=True)
-        self.assertRedirects(response, '/today/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/profile/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue(User.objects.filter(username='loginTestUser').exists())
         self.assertTrue(User.objects.get(username='loginTestUser').is_authenticated)
         user = User.objects.get(username='loginTestUser')
@@ -129,7 +129,7 @@ class LoginClientTestCase(TransactionTestCase):
         response = self.client.post(reverse('QuitSoonApp:login'),
                                     data=data,
                                     follow=True)
-        self.assertRedirects(response, '/today/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
+        self.assertRedirects(response, '/profile/', status_code=302, target_status_code=200, msg_prefix='', fetch_redirect_response=True)
         self.assertTrue(User.objects.filter(username='loginTestUser').exists())
         self.assertTrue(User.objects.get(username='loginTestUser').is_authenticated)
         user = User.objects.get(username='loginTestUser')
