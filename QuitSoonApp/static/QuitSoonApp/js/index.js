@@ -10,6 +10,7 @@ $(document).ready(function () {
 
   const modalToggles = document.querySelectorAll(".toggle-modal");
   const modalContents = document.querySelectorAll(".modal-content");
+  const modalActive = document.querySelector(".modal-content.content-active");
   // const closeModalBtn = document.querySelector("#close-modal");
   // const closeModalBtnLogout = document.querySelector("#close-modal-logout");
   let closeModalBtns = document.querySelectorAll(".close-modal-btn");
@@ -92,6 +93,12 @@ $(document).ready(function () {
     let modalContent = document.querySelector(`#${id}`);
     modalContent.classList.add("content-active");
   }
+
+  if (modalActive){
+    openModal(modalActive.getAttribute("id"));
+  }
+
+
   function closeModal() {
     body.style.overflowY = "scroll";
     body.classList.remove("logout-modal-visible");
