@@ -24,9 +24,10 @@
 <main id="profile" class="content">
   <section class="panel p1 pc-1">
     <div class="container">
-      
+
         <h2>MES INFORMATIONS PERSONNELLES</h2>
         <p>
+
           Nom d'utilisateur : {{ user.username }}
           <a
             href="#"
@@ -62,7 +63,7 @@
   </section>
   <section class="panel p2 pc-1">
     <div class="container">
-      
+
         <h2>
           MON SUIVI    <a
             href="#"
@@ -72,7 +73,7 @@
             data-modal="modal_starting_parameters"
             ><i class="fas fa-edit ml-1"></i
           ></a></h2>
-       
+
         {% if userprofile %}
         <p>Début du suivi : {{ userprofile.date_start }}</p>
         <p>
@@ -300,7 +301,12 @@
     <!-- End of change-password-->
 
     <!--  starting_parameters modal -->
-    <div id="modal_starting_parameters" class="modal-content">
+
+    {% if userprofile %}
+      <div id="modal_starting_parameters" class="modal-content">
+    {% else %}
+      <div id="modal_starting_parameters" class="modal-content content-active">
+    {% endif %}
       <section>
         <h4>Mes paramètres de suivi</h4>
         {% if userprofile %}

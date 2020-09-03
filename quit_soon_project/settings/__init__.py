@@ -156,6 +156,7 @@ LOGIN_URL = '/login/'
 LOGIN_EXEMPT_URLS = (
     r'^$',
     r'^accounts/logout/$',
+    r'^/logout/$',
     r'^register/$',
     r'^password_reset/$',
     r'^accounts/password_reset/$',
@@ -163,6 +164,13 @@ LOGIN_EXEMPT_URLS = (
     r'^accounts/password_reset/done/$',
     r'^accounts/reset/',
     r'^reset/done/$',
+)
+PROFILE_URL = '/profile/'
+PROFILE_EXEMPT_URLS = (
+    r'^new_name/',
+    r'^new_email/',
+    r'^new_password/',
+    r'^new_parameters/',
 )
 LOGOUT_REDIRECT_URL = '/'
 

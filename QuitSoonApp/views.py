@@ -212,6 +212,7 @@ def new_name(request):
                 response_data = {'response':"fail", 'name':user.username}
     else:
         raise Http404()
+    print(response_data)
     return HttpResponse(JsonResponse(response_data))
 
 def new_email(request):
@@ -345,6 +346,8 @@ def delete_smoke(request, id_smoke):
 def smoke_list(request):
     """list conso cig"""
     context = {}
+    profile = UserProfile.objects.filter(user=request.user)
+    context['profile'] = profile
     packs = Paquet.objects.filter(user=request.user, display=True)
     context['packs'] = packs
 
@@ -539,66 +542,61 @@ def report(request, **kwargs):
     update_dt_user_model_field(request.user, tz_offset)
 
     profile = UserProfile.objects.filter(user=request.user).exists()
-    if profile:
-        smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
-        healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
+    smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
+    healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
 
-        # graphs with smoke and health activities
-        if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
+    # graphs with smoke and health activities
+    if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
 
-            # generate context
-            context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days
-            context['total_number'] = smoke_stats.total_smoke_all_days
-            context['average_number'] = round(smoke_stats.average_per_day)
-            context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
-            context['total_money'] = round(smoke_stats.total_money_smoked, 2)
-            context['saved_money'] = round(smoke_stats.money_saved, 2)
-            context['average_money'] = round(smoke_stats.average_money_per_day, 2)
-            context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
+        # generate context
+        context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days
+        context['total_number'] = smoke_stats.total_smoke_all_days
+        context['average_number'] = round(smoke_stats.average_per_day)
+        context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
+        context['total_money'] = round(smoke_stats.total_money_smoked, 2)
+        context['saved_money'] = round(smoke_stats.money_saved, 2)
+        context['average_money'] = round(smoke_stats.average_money_per_day, 2)
+        context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
 
-            activity_stats = {}
-            if healthy_stats.user_activities:
-                for type in Alternative.TYPE_ACTIVITY:
-                    activity_stats[type[0]] = {}
-                    if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
-                        activity_stats[type[0]]['exists'] = True
-                    activity_stats[type[0]]['name'] = type[1]
-                    for period in ['day', 'week', 'month']:
-                        minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
-                        activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
-                context['activity_stats'] = activity_stats
-            substitut_stats = {}
-            if healthy_stats.user_conso_subsitut:
-                for type in Alternative.SUBSTITUT:
-                    substitut_stats[type[0]] = {}
-                    if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
-                        substitut_stats[type[0]]['exists'] = True
-                    substitut_stats[type[0]]['name'] = type[1]
-                    for period in ['day', 'week', 'month']:
-                        nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
-                        substitut_stats[type[0]][period] = nicotine
-                context['substitut_stats'] = substitut_stats
+        activity_stats = {}
+        if healthy_stats.user_activities:
+            for type in Alternative.TYPE_ACTIVITY:
+                activity_stats[type[0]] = {}
+                if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
+                    activity_stats[type[0]]['exists'] = True
+                activity_stats[type[0]]['name'] = type[1]
+                for period in ['day', 'week', 'month']:
+                    minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
+                    activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
+            context['activity_stats'] = activity_stats
+        substitut_stats = {}
+        if healthy_stats.user_conso_subsitut:
+            for type in Alternative.SUBSTITUT:
+                substitut_stats[type[0]] = {}
+                if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
+                    substitut_stats[type[0]]['exists'] = True
+                substitut_stats[type[0]]['name'] = type[1]
+                for period in ['day', 'week', 'month']:
+                    nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
+                    substitut_stats[type[0]][period] = nicotine
+            context['substitut_stats'] = substitut_stats
 
-            return render(request, 'QuitSoonApp/report.html', context)
-        else:
-            context['no_data'] = True
-            return render(request, 'QuitSoonApp/report.html', context)
+        return render(request, 'QuitSoonApp/report.html', context)
     else:
-        return redirect('QuitSoonApp:profile')
+        context['no_data'] = True
+        return render(request, 'QuitSoonApp/report.html', context)
 
 def objectifs(request):
     """Page with user trophies and goals"""
     context = {}
     tz_offset = get_client_offset(request)
     profile = UserProfile.objects.filter(user=request.user).exists()
-    if profile:
-        stats = SmokeStats(request.user, timezone.now(), tz_offset)
-        trophy = trophy_checking(stats)
-        trophy.create_trophies()
-        context['challenges'] = trophy.user_trophies
-        return render(request, 'QuitSoonApp/objectifs.html', context)
-    else:
-        return redirect('QuitSoonApp:profile')
+    stats = SmokeStats(request.user, timezone.now(), tz_offset)
+    trophy = trophy_checking(stats)
+    trophy.create_trophies()
+    context['challenges'] = trophy.user_trophies
+    return render(request, 'QuitSoonApp/objectifs.html', context)
+
 
 class ChartData(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
