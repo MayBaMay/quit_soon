@@ -65,7 +65,7 @@ def get_client_offset(request):
     if request.session.get('detected_tz'):
         return request.session.get('detected_tz')
     else:
-        return None
+        return 0
 
 def update_dt_user_model_field(user, tz_offset):
     if tz_offset:
@@ -308,13 +308,16 @@ def smoke(request):
     update_dt_user_model_field(request.user, tz_offset)
 
     if packs :
-        smoke_form = SmokeForm(request.user)
+        smoke_form = SmokeForm(request.user, tz_offset)
         if request.method == 'POST':
-            smoke_form = SmokeForm(request.user, request.POST)
+            smoke_form = SmokeForm(request.user, tz_offset,  request.POST)
             if smoke_form.is_valid():
+                print('valid')
                 smoke = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
                 smoke.create_conso_cig()
                 return redirect('QuitSoonApp:today')
+            else:
+                print(smoke_form.errors)
         context['smoke_form'] = smoke_form
 
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
@@ -459,9 +462,9 @@ def health(request):
 
     context['alternatives'] = alternatives
     if alternatives :
-        form = HealthForm(request.user)
+        form = HealthForm(request.user, tz_offset)
         if request.method == 'POST':
-            form = HealthForm(request.user, request.POST)
+            form = HealthForm(request.user, tz_offset, request.POST)
             if form.is_valid():
                 new_health = HealthManager(request.user, form.cleaned_data, tz_offset)
                 new_health.create_conso_alternative()

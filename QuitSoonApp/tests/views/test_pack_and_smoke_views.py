@@ -11,6 +11,7 @@ from freezegun import freeze_time
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from QuitSoonApp.views import (
     UserProfile, paquets, smoke,
@@ -18,6 +19,8 @@ from QuitSoonApp.views import (
 from QuitSoonApp.models import (
     Paquet, ConsoCig,
 )
+from QuitSoonApp.forms import PaquetFormCreation, SmokeForm, ChoosePackFormWithEmptyFields
+
 
 
 class PacksAndSmokeTestCase(TestCase):
