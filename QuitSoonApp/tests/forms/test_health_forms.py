@@ -2,6 +2,7 @@
 
 import datetime
 import pytz
+from freezegun import freeze_time
 
 from django.test import TransactionTestCase, TestCase
 from django.contrib.auth import get_user_model
@@ -108,7 +109,7 @@ class HealthFormTestCase(TestCase):
 class HealthFormTestCase_field_configTestCase(HealthFormTestCase):
 
     def test_last_alternative(self):
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         self.assertEqual(form.last_alternative().type_activity, 'So')
         self.assertEqual(form.last_alternative('Su').substitut, 'P24')
         self.assertEqual(form.last_alternative('Ac', 'Sp').activity, 'COURSE')
@@ -116,23 +117,23 @@ class HealthFormTestCase_field_configTestCase(HealthFormTestCase):
         self.assertEqual(form.last_alternative('Ac', 'Lo'), None)
 
     def test_choices_type_alternative(self):
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         self.assertEqual(form.initial['type_alternative_field'][0], 'So')
         self.assertEqual(len(form.fields['type_alternative_field'].choices), 3)
 
     def test_choices_sp_field(self):
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         self.assertEqual(form.initial['sp_field'][0], self.db_alternative_activity_sp.id)
         self.assertEqual(len(form.fields['sp_field'].choices), 1)
         self.assertEqual(form.fields['sp_field'].choices[0][0], self.db_alternative_activity_sp.id)
 
     def test_choices_so_field(self):
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         self.assertEqual(form.initial['so_field'][0], self.db_alternative_activity_so2.id)
         self.assertEqual(len(form.fields['so_field'].choices), 2)
 
     def test_choices_lo_field(self):
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         try:
             self.assertTrue(form.initial['lo_field'])
         except Exception:
@@ -140,14 +141,14 @@ class HealthFormTestCase_field_configTestCase(HealthFormTestCase):
         self.assertEqual(len(form.fields['lo_field'].choices), 0)
 
     def test_choices_su_field(self):
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         self.assertEqual(form.initial['su_field'][0], self.db_alternative_substitut_p24.id)
         self.assertEqual(len(form.fields['su_field'].choices), 2)
 
     def test_choices_first_health(self):
         ConsoAlternative.objects.all().delete()
         self.assertEqual(ConsoAlternative.objects.count(), 0)
-        form = HealthForm(self.usertest)
+        form = HealthForm(self.usertest, -120)
         self.assertEqual(form.last_alternative().type_alternative, 'Su')
         self.assertEqual(form.last_alternative('Su').substitut, 'PAST')
         self.assertEqual(form.last_alternative('Ac', 'Sp').activity, 'COURSE')
@@ -171,11 +172,11 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
             'so_field':self.db_alternative_activity_so.id,
             'su_field':self.db_alternative_substitut_p24.id,
         }
-        form = HealthForm(self.usertest, data)
+        form = HealthForm(self.usertest, -120, data)
         self.assertTrue(form.is_valid())
 
     def test_required_fields(self):
-        form = HealthForm(self.usertest, {})
+        form = HealthForm(self.usertest, -120, {})
         self.assertFalse(form.is_valid())
         self.assertRaises(ValidationError)
         self.assertEqual(form.errors, {
@@ -197,13 +198,42 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
             'so_field':self.db_alternative_activity_so.id,
             'su_field':self.db_alternative_substitut_p24.id,
         }
-        form = HealthForm(self.usertest, data)
+        form = HealthForm(self.usertest, -120, data)
         self.assertFalse(form.is_valid())
         self.assertRaises(ValidationError)
         self.assertEqual(form.errors, {
             '__all__':["Vous n'avez pas renseigné de durée pour cette activité"],
             })
 
+    @freeze_time("2020-05-26 23:59:59", tz_offset=+2)
+    def test_date_form_gt_today(self):
+        data = {
+            'date_health':datetime.date(2020, 5, 27),
+            'time_health':datetime.time(00, 56),
+            'duration_hour':1,
+            'duration_min':30,
+            'type_alternative_field':'So',
+            'sp_field':self.db_alternative_activity_sp.id,
+            'so_field':self.db_alternative_activity_so.id,
+            'su_field':self.db_alternative_substitut_p24.id,
+        }
+        form = HealthForm(self.usertest, -120, data)
+        self.assertTrue(form.is_valid())
+
+    @freeze_time("2020-05-26 23:59:59", tz_offset=+2)
+    def test_date_form_gt_today(self):
+        data = {
+            'date_health':datetime.date(2020, 5, 27),
+            'time_health':datetime.time(2, 56),
+            'duration_hour':1,
+            'duration_min':30,
+            'type_alternative_field':'So',
+            'sp_field':self.db_alternative_activity_sp.id,
+            'so_field':self.db_alternative_activity_so.id,
+            'su_field':self.db_alternative_substitut_p24.id,
+        }
+        form = HealthForm(self.usertest, -120, data)
+        self.assertFalse(form.is_valid())
 
 class ChooseAlternativeFormWithEmptyFieldsTestCase(HealthFormTestCase):
 

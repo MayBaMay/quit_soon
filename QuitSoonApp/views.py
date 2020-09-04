@@ -18,6 +18,7 @@ from django.http import HttpResponse, JsonResponse, Http404
 from django.core.paginator import Paginator
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import F
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -64,16 +65,14 @@ def get_client_offset(request):
     if request.session.get('detected_tz'):
         return request.session.get('detected_tz')
     else:
-        return None
+        return 0
 
 def update_dt_user_model_field(user, tz_offset):
     if tz_offset:
-        for conso in ConsoCig.objects.filter(user=user):
-            conso.user_dt = conso.datetime_cig - timedelta(minutes=tz_offset)
-            conso.save()
-        for conso in ConsoAlternative.objects.filter(user=user):
-            conso.user_dt = conso.datetime_alter - timedelta(minutes=tz_offset)
-            conso.save()
+        conso = ConsoCig.objects.filter(user=user)
+        conso.update(user_dt=F('datetime_cig') - timedelta(minutes=tz_offset))
+        conso = ConsoAlternative.objects.filter(user=user)
+        conso.update(user_dt=F('datetime_alter') - timedelta(minutes=tz_offset))
 
 def register_view(request):
     """Registration view creating a user"""
@@ -119,12 +118,7 @@ def today(request):
             context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
             last = smoke.latest('datetime_cig').datetime_cig
             context['lastsmoke'] = get_delta_last_event(last)[0]
-            try:
-                context['average_number'] = round(smoke_stats.average_per_day)
-            except (ZeroDivisionError, TypeError):
-                # 1st day so no full day, average return None
-                context['average_number'] = """C'est votre 1er jour, les données sont insuffisantes aujourd'hui.
-                                               Retrouvez votre moyenne dès demain."""
+            context['average_number'] = round(smoke_stats.average_per_day)
     return render(request, 'QuitSoonApp/today.html', context)
 
 
@@ -314,13 +308,16 @@ def smoke(request):
     update_dt_user_model_field(request.user, tz_offset)
 
     if packs :
-        smoke_form = SmokeForm(request.user)
+        smoke_form = SmokeForm(request.user, tz_offset)
         if request.method == 'POST':
-            smoke_form = SmokeForm(request.user, request.POST)
+            smoke_form = SmokeForm(request.user, tz_offset,  request.POST)
             if smoke_form.is_valid():
+                print('valid')
                 smoke = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
                 smoke.create_conso_cig()
                 return redirect('QuitSoonApp:today')
+            else:
+                print(smoke_form.errors)
         context['smoke_form'] = smoke_form
 
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
@@ -465,9 +462,9 @@ def health(request):
 
     context['alternatives'] = alternatives
     if alternatives :
-        form = HealthForm(request.user)
+        form = HealthForm(request.user, tz_offset)
         if request.method == 'POST':
-            form = HealthForm(request.user, request.POST)
+            form = HealthForm(request.user, tz_offset, request.POST)
             if form.is_valid():
                 new_health = HealthManager(request.user, form.cleaned_data, tz_offset)
                 new_health.create_conso_alternative()
