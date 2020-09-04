@@ -30,13 +30,13 @@ class TestUpdateDtUserModelField(TestCase):
             qt_paquet=20,
             price=10,
             )
-        ConsoCig.objects.create(
+        self.conso1 = ConsoCig.objects.create(
             user=self.user,
             datetime_cig=datetime.datetime(2020, 5, 12, 23, 5, tzinfo=pytz.utc),
             paquet=db_pack_ind,
             given=False,
         )
-        ConsoCig.objects.create(
+        self.conso2 = ConsoCig.objects.create(
             user=self.user,
             datetime_cig=datetime.datetime(2020, 5, 13, 1, 5, tzinfo=pytz.utc),
             paquet=db_pack_ind,
@@ -54,12 +54,12 @@ class TestUpdateDtUserModelField(TestCase):
             substitut='P',
             nicotine=2,
             )
-        ConsoAlternative.objects.create(
+        self.conso3 = ConsoAlternative.objects.create(
             user=self.user,
             datetime_alter=datetime.datetime(2020, 5, 13, 9, 55, tzinfo=pytz.utc),
             alternative=alternative_sp,
             )
-        ConsoAlternative.objects.create(
+        self.conso4 = ConsoAlternative.objects.create(
             user=self.user,
             datetime_alter=datetime.datetime(2020, 5, 13, 20, 55, tzinfo=pytz.utc),
             alternative=alternative_su,
@@ -67,9 +67,11 @@ class TestUpdateDtUserModelField(TestCase):
 
     def test_view(self):
         update_dt_user_model_field(self.user, -60)
-        conso = ConsoCig.objects.filter(user=self.user)
-        self.assertEqual(conso[0].user_dt, datetime.datetime(2020, 5, 13, 0, 5, tzinfo=pytz.utc))
-        self.assertEqual(conso[1].user_dt, datetime.datetime(2020, 5, 13, 2, 5, tzinfo=pytz.utc))
-        conso = ConsoAlternative.objects.filter(user=self.user)
-        self.assertEqual(conso[0].user_dt, datetime.datetime(2020, 5, 13, 10, 55, tzinfo=pytz.utc))
-        self.assertEqual(conso[1].user_dt, datetime.datetime(2020, 5, 13, 21, 55, tzinfo=pytz.utc))
+        conso1 = ConsoCig.objects.get(pk=self.conso1.id)
+        self.assertEqual(conso1.user_dt, datetime.datetime(2020, 5, 13, 0, 5, tzinfo=pytz.utc))
+        conso2 = ConsoCig.objects.get(pk=self.conso2.id)
+        self.assertEqual(conso2.user_dt, datetime.datetime(2020, 5, 13, 2, 5, tzinfo=pytz.utc))
+        conso3 = ConsoAlternative.objects.get(pk=self.conso3.id)
+        self.assertEqual(conso3.user_dt, datetime.datetime(2020, 5, 13, 10, 55, tzinfo=pytz.utc))
+        conso4 = ConsoAlternative.objects.get(pk=self.conso4.id)
+        self.assertEqual(conso4.user_dt, datetime.datetime(2020, 5, 13, 21, 55, tzinfo=pytz.utc))
