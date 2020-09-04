@@ -199,8 +199,7 @@ class SmokeForm(ChoosePackForm):
             time = cleaned_data.get('time_smoke')
             dt_form = datetime.datetime.combine(date, time) + timedelta(minutes=self.tz_offset)
             dt_form = make_aware(dt_form, pytz.utc)
-
-            if dt_form.date() > timezone.now().date():
+            if dt_form.strftime("%Y/%m/%d") > timezone.now().strftime("%Y/%m/%d"):
                 raise forms.ValidationError("Vous ne pouvez pas enregistrer de craquage pour les jours à venir")
 
         except TypeError:
