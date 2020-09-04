@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 import datetime
+from datetime import timedelta
+import pytz
 
+from django.utils import timezone
+from django.utils.timezone import make_aware
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -212,6 +216,12 @@ class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
 class HealthForm(ChooseAlternativeForm):
     """Class generating a form for user healthy action"""
 
+    def __init__(self, user, tz_offset, *args, **kwargs):
+        self.user = user
+        self.tz_offset = tz_offset
+        super(HealthForm, self).__init__(user, *args, **kwargs)
+
+
     date_health = forms.DateField(
         required=True,
         label='Date',
@@ -244,16 +254,12 @@ class HealthForm(ChooseAlternativeForm):
              choices= [tuple([x,x]) for x in range(0, 60, 5)]),
     )
 
-    def clean_date_health(self):
-        data = self.cleaned_data['date_health']
-        if data > datetime.date.today():
-            raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
-        return data
-
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""
         cleaned_data = super(HealthForm, self).clean()
-        date_alter = cleaned_data.get('date_health')
+
+        date_health = cleaned_data.get('date_health')
+        time_health = cleaned_data.get('time_health')
         duration_hour = cleaned_data.get('duration_hour')
         duration_min = cleaned_data.get('duration_min')
         type_alternative = cleaned_data.get('type_alternative_field')
@@ -261,3 +267,15 @@ class HealthForm(ChooseAlternativeForm):
         # check if duration for user activiy
         if not duration_hour and not duration_min and type_alternative != 'Su':
             raise forms.ValidationError("Vous n'avez pas renseigné de durée pour cette activité")
+
+        try:
+            dt_form = datetime.datetime.combine(date_health, time_health) + timedelta(minutes=self.tz_offset)
+            dt_form = make_aware(dt_form, pytz.utc)
+
+            if dt_form.date() > timezone.now().date():
+                raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
+
+        except TypeError:
+            raise forms.ValidationError("Données temporelles incorrectes")
+
+        return cleaned_data

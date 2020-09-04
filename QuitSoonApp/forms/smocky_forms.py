@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 import datetime
+from datetime import timedelta
+import pytz
 
+from django.utils import timezone
+from django.utils.timezone import make_aware
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -159,6 +163,11 @@ class ChoosePackFormWithEmptyFields(ChoosePackForm):
 class SmokeForm(ChoosePackForm):
     """Class generating a form for user smoking action"""
 
+    def __init__(self, user, tz_offset, *args, **kwargs):
+        self.user = user
+        self.tz_offset = tz_offset
+        super(SmokeForm, self).__init__(user, *args, **kwargs)
+
     date_smoke = forms.DateField(
         required=True,
         label='Date',
@@ -182,8 +191,19 @@ class SmokeForm(ChoosePackForm):
         widget=forms.CheckboxInput()
     )
 
-    def clean_date_smoke(self):
-        data = self.cleaned_data['date_smoke']
-        if data > datetime.date.today():
-            raise forms.ValidationError("Vous ne pouvez pas enregistrer de craquage pour les jours à venir")
-        return data
+    def clean(self):
+        cleaned_data = super(SmokeForm, self).clean()
+
+        try:
+            date = cleaned_data.get('date_smoke')
+            time = cleaned_data.get('time_smoke')
+            dt_form = datetime.datetime.combine(date, time) + timedelta(minutes=self.tz_offset)
+            dt_form = make_aware(dt_form, pytz.utc)
+
+            if dt_form.date() > timezone.now().date():
+                raise forms.ValidationError("Vous ne pouvez pas enregistrer de craquage pour les jours à venir")
+
+        except TypeError:
+            raise forms.ValidationError("Données temporelles incorrectes")
+
+        return cleaned_data
