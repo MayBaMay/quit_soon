@@ -272,7 +272,7 @@ class HealthForm(ChooseAlternativeForm):
             dt_form = datetime.datetime.combine(date_health, time_health) + timedelta(minutes=self.tz_offset)
             dt_form = make_aware(dt_form, pytz.utc)
 
-            if dt_form.date() > timezone.now().date():
+            if dt_form.strftime("%Y/%m/%d") > timezone.now().strftime("%Y/%m/%d"):
                 raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
 
         except TypeError:
