@@ -137,7 +137,8 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
             'nb_pack_field':self.db_pack_nb.id,
             'given_field':False,
             }
-        print(timezone.now(), timezone.now().tzinfo)
+        print(timezone.now().tzinfo)
+
         form = SmokeForm(self.usertest, -120, data)
         self.assertTrue(form.is_valid())
 
