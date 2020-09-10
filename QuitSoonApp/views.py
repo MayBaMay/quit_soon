@@ -114,8 +114,11 @@ def today(request):
     if UserProfile.objects.filter(user=request.user).exists():
         context['profile'] = True
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
+        current_tz = timezone.get_current_timezone()
+        user_now = current_tz.normalize(timezone.now().astimezone(current_tz))
+        print(user_now)
         if smoke:
-            context['smoke_today'] = smoke_stats.nb_per_day(datetime.date.today())
+            context['smoke_today'] = smoke_stats.nb_per_day(user_now.date())
             last = smoke.latest('datetime_cig').datetime_cig
             context['lastsmoke'] = get_delta_last_event(last)[0]
             context['average_number'] = round(smoke_stats.average_per_day)

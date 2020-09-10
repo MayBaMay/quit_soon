@@ -276,7 +276,7 @@ class HealthForm(ChooseAlternativeForm):
             dt_form = current_tz.normalize(dt_form.astimezone(current_tz))
             user_now = current_tz.normalize(user_now.astimezone(current_tz))
 
-            if dt_form.date() > timezone.now().date():
+            if dt_form.date() > user_now.date():
                 raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
 
         except TypeError:
