@@ -78,7 +78,7 @@ if django.VERSION < (1, 10):
         'tz_detect.middleware.TimezoneMiddleware',
     )
 
-TZ_DETECT_COUNTRIES = ('CN', 'US', 'IN', 'JP', 'BR', 'RU', 'DE', 'FR', 'GB')
+TZ_DETECT_COUNTRIES = ('FR', 'BE', 'CH', 'CA', 'CN', 'US', 'IN', 'JP', 'BR', 'RU', 'DE', 'GB')
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',

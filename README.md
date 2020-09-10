@@ -5,9 +5,9 @@ Projet #13 Openclassrooms Python
 This open source project was created for the OpenClassRooms' Python developer course (Project 13/13)). It is a DJANGO application integrating a back-end part based on Python 3.7.
 
 This app helps user to track its smoking habits and helps to reduce it in order to quit permanently.<br/>
-The user, once connected to its account, fill:
+The user, once connected to its account, enters:
 * A user profile with smoking habits when starting using the app,
-* Type (roll-your-own and manufactured cigarettes), brand, price of cigarette pack (and amount of tabacco in rolled cigarette) in order to calculate the most precisely possible how much the user spent each time he smokes,
+* Type (roll-your-own and manufactured cigarettes), brand, price of cigarette pack (and amount of tabacco in rolled cigarette) in order to calculate the most precisely possible how much the user spend each time he smokes,
 * each cigarette smoked
 * At the mean time, the user can track all the alternatives used in order to avoid smoking. It can be nicotine substitutes, sport, leisure activities or health care. It allows user to value all those ways to fight against temptation.
 * each alternative used (with nicotine for nicotine substitutes and duration for activities)
@@ -58,5 +58,5 @@ This project can be tested on url http://nicotinekill.com/<br/>
 
 ## Next Steps
 * improve app presentation
-* improve, and possibly, add new graphs, stats...
-*
+* improve, and possibly, add new usefull graphs, stats...
+* 

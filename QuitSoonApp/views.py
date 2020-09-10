@@ -312,7 +312,6 @@ def smoke(request):
         if request.method == 'POST':
             smoke_form = SmokeForm(request.user, tz_offset,  request.POST)
             if smoke_form.is_valid():
-                print('valid')
                 smoke = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
                 smoke.create_conso_cig()
                 return redirect('QuitSoonApp:today')

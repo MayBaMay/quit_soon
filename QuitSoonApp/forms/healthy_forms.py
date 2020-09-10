@@ -257,9 +257,8 @@ class HealthForm(ChooseAlternativeForm):
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""
         cleaned_data = super(HealthForm, self).clean()
-
-        date_health = cleaned_data.get('date_health')
-        time_health = cleaned_data.get('time_health')
+        date = cleaned_data.get('date_health')
+        time = cleaned_data.get('time_health')
         duration_hour = cleaned_data.get('duration_hour')
         duration_min = cleaned_data.get('duration_min')
         type_alternative = cleaned_data.get('type_alternative_field')
@@ -269,10 +268,15 @@ class HealthForm(ChooseAlternativeForm):
             raise forms.ValidationError("Vous n'avez pas renseigné de durée pour cette activité")
 
         try:
-            dt_form = datetime.datetime.combine(date_health, time_health) + timedelta(minutes=self.tz_offset)
-            dt_form = make_aware(dt_form, pytz.utc)
+            current_tz = timezone.get_current_timezone()
+            # get datetime_form and now() user in utc
+            dt_form = datetime.datetime.combine(date, time, tzinfo=pytz.utc) + timedelta(minutes=self.tz_offset)
+            user_now = timezone.now()
+            # get both variable in current timezone in order to compare dates
+            dt_form = current_tz.normalize(dt_form.astimezone(current_tz))
+            user_now = current_tz.normalize(user_now.astimezone(current_tz))
 
-            if dt_form.strftime("%Y/%m/%d") > timezone.now().strftime("%Y/%m/%d"):
+            if dt_form.date() > timezone.now().date():
                 raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
 
         except TypeError:
