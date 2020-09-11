@@ -31,13 +31,26 @@
         {% endif %}
         {% csrf_token %}
         {{ form.non_field_errors }}
-        {% for field in form %}
-          <div class="fieldWrapper form-group ">
-            <label>{{ field.label }}</label>
-            {{ field }}
-            {{ field.error }}
-          </div>
-        {% endfor %}
+        <div class="fieldWrapper form-group ">
+          <label>Type de cigarette</label>
+          {{ form.type_cig }}
+          {{ form.type_cig.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          <label>Marque</label>
+          {{ form.brand }}
+          {{ form.brand.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          <label id="qt">Nombre par paquet</label>
+          {{ form.qt_paquet }}
+          {{ form.qt_paquet.error }}
+        </div>
+        <div class="fieldWrapper form-group ">
+          <label>Prix</label>
+          {{ form.price }}
+          {{ form.price.error }}
+        </div>
         <input id="" type="submit" class="btn btn-primary btn-user btn-block mt-3" value="Sauvergarder">
       </form>
     </div>
@@ -68,7 +81,7 @@
                 <td>
                   {{ paquet.price_per_cig }}€/cig
                 </td>
-                
+
               <tr>
             </table>
                   <a class="icon-link" href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
@@ -96,28 +109,27 @@
                   {{ paquet.price }}€
                 </td>
                 <td>
-                  {{ paquet.g_per_cig }}g/cigarette
-                </td>
-                <td>
-                  <a  class="cig-change icon-link" href="#"><i class="fas fa-edit"></i></a>
-                  <form class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
-                    <input type="hidden" name="brand" value="{{ paquet.brand }}">
-                    <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
-                    <input type="hidden" name="price" value="{{ paquet.price|unlocalize }}">
-                    <input type="number" step="0.1" name="g_per_cig" value="{{ paquet.g_per_cig|unlocalize }}">
-                  </form>
-                </td>
+                    <p style="display:inline" class="g_per_cig">{{ paquet.g_per_cig }}</p>
+                    <form style="display:inline" class="form-cig-change hide" action="{% url 'QuitSoonApp:change_g_per_cig' %}" method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="type_cig" value="{{ paquet.type_cig }}">
+                      <input type="hidden" name="brand" value="{{ paquet.brand }}">
+                      <input type="hidden" name="qt_paquet" value="{{ paquet.qt_paquet }}">
+                      <input type="hidden" name="price" value="{{ paquet.price|unlocalize }}">
+                      <input type="number" step="0.1" name="g_per_cig" value="{{ paquet.g_per_cig|unlocalize }}">
+                    </form>
+                    <p style="display:inline">g/cig</p>
+                    <a style="display:inline" class="cig-change icon-link" href="#"><i class="fas fa-edit"></i></a>
+                 </td>
                 <td>
                   {{ paquet.price_per_cig }}€/cig
                 </td>
-                
+
               </tr>
             </table>
                   <a class="icon-link" href="/delete_pack/{{paquet.id}}/"><i class="fa fa-trash " aria-hidden="true"></i></a>
                   </li>
-          
+
           {% endfor %}
           </ul>
         {% endif %}
