@@ -18,6 +18,7 @@ class TypeAlternativeForm(UserRelatedModelForm):
     class Meta:
         model = Alternative
         fields = ['type_alternative']
+        labels = {'type_alternative': "Type d'alternative"}
 
 
 class ActivityForm(UserRelatedModelForm):
@@ -25,6 +26,10 @@ class ActivityForm(UserRelatedModelForm):
     class Meta:
         model = Alternative
         fields = ['type_activity', 'activity']
+        labels = {
+            'type_activity': "Type d'activité",
+            'activity': 'Activité'
+        }
 
     def clean_activity(self):
         data = self.cleaned_data['activity']

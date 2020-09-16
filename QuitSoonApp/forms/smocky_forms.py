@@ -27,6 +27,12 @@ class PaquetFormCreation(PaquetForm):
     class Meta:
         model = Paquet
         fields = ['type_cig', 'brand', 'qt_paquet', 'price']
+        labels = {
+            'type_cig': 'Type de cigarettes',
+            'brand': 'Marque',
+            'qt_paquet':'Nombre par paquet',
+            'price':' Prix du paquet'
+        }
 
     def clean(self):
         cleaned_data = super(PaquetFormCreation, self).clean()

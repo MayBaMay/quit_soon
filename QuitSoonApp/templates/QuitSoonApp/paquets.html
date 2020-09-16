@@ -32,22 +32,22 @@
         {% csrf_token %}
         {{ form.non_field_errors }}
         <div class="fieldWrapper form-group ">
-          <label>Type de cigarette</label>
+          <label>{{ form.type_cig.label }}</label>
           {{ form.type_cig }}
           {{ form.type_cig.error }}
         </div>
         <div class="fieldWrapper form-group ">
-          <label>Marque</label>
+          <label>{{ form.brand.label }}</label>
           {{ form.brand }}
           {{ form.brand.error }}
         </div>
         <div class="fieldWrapper form-group ">
-          <label id="qt">Nombre par paquet</label>
+          <label id="qt">{{ form.qt_paquet.label }}</label>
           {{ form.qt_paquet }}
           {{ form.qt_paquet.error }}
         </div>
         <div class="fieldWrapper form-group ">
-          <label>Prix</label>
+          <label>{{ form.price.label }}</label>
           {{ form.price }}
           {{ form.price.error }}
         </div>
