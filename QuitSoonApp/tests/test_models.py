@@ -102,12 +102,15 @@ class TestModels(TestCase):
         self.assertEqual(Paquet.objects.filter(user=self.usertest).count(), 2)
         self.assertEqual(self.paquet.type_cig, 'IND')
         self.assertEqual(self.paquet2.type_cig, 'ROL')
+        self.assertEqual(str(self.paquet), 'IND CAMEL 20U')
 
     def test_consocig_model(self):
         """ test conso cig creation"""
         self.assertTrue(ConsoCig.objects.filter(user=self.usertest).exists())
         self.assertEqual(ConsoCig.objects.filter(user=self.usertest).count(), 2)
         self.assertEqual(ConsoCig.objects.filter(user=self.usertest, paquet=self.paquet).count(), 1)
+        self.assertEqual(str(self.consocig2), 'usertest 2020-05-13 00:00:00+00:00-None')
+        self.assertEqual(str(self.consocig), 'usertest 2020-05-13 13:55:00+00:00-IND')
 
     def test_alternative_model(self):
         """ test alternative creation"""

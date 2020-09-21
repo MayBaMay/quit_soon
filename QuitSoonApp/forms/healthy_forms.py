@@ -272,19 +272,17 @@ class HealthForm(ChooseAlternativeForm):
         if not duration_hour and not duration_min and type_alternative != 'Su':
             raise forms.ValidationError("Vous n'avez pas renseigné de durée pour cette activité")
 
-        try:
-            current_tz = timezone.get_current_timezone()
-            # get datetime_form and now() user in utc
-            dt_form = datetime.datetime.combine(date, time, tzinfo=pytz.utc) + timedelta(minutes=self.tz_offset)
-            user_now = timezone.now()
-            # get both variable in current timezone in order to compare dates
-            dt_form = current_tz.normalize(dt_form.astimezone(current_tz))
-            user_now = current_tz.normalize(user_now.astimezone(current_tz))
+        current_tz = timezone.get_current_timezone()
+        # get datetime_form and now() user in utc
+        dt_form = datetime.datetime.combine(date, time, tzinfo=pytz.utc) + timedelta(minutes=self.tz_offset)
+        user_now = timezone.now()
+        # get both variable in current timezone in order to compare dates
+        dt_form = current_tz.normalize(dt_form.astimezone(current_tz))
+        user_now = current_tz.normalize(user_now.astimezone(current_tz))
+        print(dt_form, user_now)
+        print(dt_form.date(), user_now.date())
 
-            if dt_form.date() > user_now.date():
-                raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
-
-        except TypeError:
-            raise forms.ValidationError("Données temporelles incorrectes")
+        if dt_form.date() > user_now.date():
+            raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
 
         return cleaned_data

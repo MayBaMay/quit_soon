@@ -209,7 +209,7 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
     def test_date_form_gt_today(self):
         data = {
             'date_health':datetime.date(2020, 5, 27),
-            'time_health':datetime.time(00, 56),
+            'time_health':datetime.time(3, 56),
             'duration_hour':1,
             'duration_min':30,
             'type_alternative_field':'So',
@@ -218,10 +218,13 @@ class HealthFormTestCase_validation_data(HealthFormTestCase):
             'su_field':self.db_alternative_substitut_p24.id,
         }
         form = HealthForm(self.usertest, -120, data)
-        self.assertTrue(form.is_valid())
+        self.assertRaises(ValidationError)
+        self.assertEqual(form.errors, {
+                '__all__':["Vous ne pouvez pas enregistrer d'action saine pour les jours à venir"],
+                })
 
     @freeze_time("2020-05-26 23:59:59", tz_offset=+2)
-    def test_date_form_gt_today(self):
+    def test_date_form_inf_today(self):
         data = {
             'date_health':datetime.date(2020, 5, 27),
             'time_health':datetime.time(2, 56),

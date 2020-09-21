@@ -7,8 +7,10 @@ import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from QuitSoonApp.views import (
+    get_client_offset,
     update_dt_user_model_field
 )
 from QuitSoonApp.models import (
@@ -23,6 +25,8 @@ class TestUpdateDtUserModelField(TestCase):
         """setup tests"""
         self.user = User.objects.create_user(
             'TestUser', 'test@test.com', 'testpassword')
+        self.client.login(username='TestUser', password='testpassword')
+
         db_pack_ind = Paquet.objects.create(
             user=self.user,
             type_cig='IND',
@@ -65,7 +69,16 @@ class TestUpdateDtUserModelField(TestCase):
             alternative=alternative_su,
             )
 
-    def test_view(self):
+    def test_get_client_offset(self):
+        """test function get_client_offset"""
+        session = self.client.session
+        session['detected_tz'] = -360
+        session.save()
+        response = self.client.get(reverse('QuitSoonApp:today'))
+        get_client_offset(response.content)
+
+    def test_update_dt_user_model_field(self):
+        """test function update_dt_user_model_field"""
         update_dt_user_model_field(self.user, -60)
         conso1 = ConsoCig.objects.get(pk=self.conso1.id)
         self.assertEqual(conso1.user_dt, datetime.datetime(2020, 5, 13, 0, 5, tzinfo=pytz.utc))

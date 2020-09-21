@@ -63,6 +63,19 @@ class SmokeManagerTestCase(TestCase):
         self.assertEqual(smoke.get_request_data('time_smoke'), datetime.time(13, 15))
         self.assertEqual(smoke.get_request_data('ind_pack_field'), self.db_pack_ind.id)
 
+    def test_invalid_datetime(self):
+        """test if date or time invalid in args"""
+        data = {
+            'date_smoke': 'invalid',
+            'time_smoke': datetime.time(14, 15),
+            'type_cig_field':'ROL',
+            'ind_pack_field':self.db_pack_ind.id,
+            'rol_pack_field': self.db_pack_rol.id,
+            'given_field':False,
+            }
+        smoke = SmokeManager(self.usertest, data)
+        self.assertEqual(smoke.datetime_cig, None)
+
     def test_get_pack_ind(self):
         """test SmokeManager.get_pack method with new smoke datas and given_field=False & type_cig_field='IND'"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
@@ -87,6 +100,11 @@ class SmokeManagerTestCase(TestCase):
         smoke = SmokeManager(self.usertest, self.old_smoke_ind_data)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
+
+    def test_get_pack_smoke_fail(self):
+        """ test method get get_pack fail, exception raised cause wrong id"""
+        smoke = SmokeManager(self.usertest, 10394)
+        self.assertEqual(smoke.get_pack, None)
 
     def test_create_conso_cig(self):
         """test SmokeManager.create_conso_cig method with new conso datas"""

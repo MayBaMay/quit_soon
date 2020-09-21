@@ -126,7 +126,7 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
             })
 
     @freeze_time("2020-06-17 23:59:59", tz_offset=+2)
-    def test_clean_gt_today(self):
+    def test_clean_inf_today(self):
         """Function testing if form is invalide for days after today"""
         data = {
             'date_smoke':datetime.date(2020, 6, 18),
@@ -137,10 +137,28 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
             'nb_pack_field':self.db_pack_nb.id,
             'given_field':False,
             }
-        print(timezone.now().tzinfo)
-
         form = SmokeForm(self.usertest, -120, data)
         self.assertTrue(form.is_valid())
+
+
+    @freeze_time("2020-06-17 23:59:59", tz_offset=+2)
+    def test_clean_gt_today(self):
+        """Function testing if form is invalide for days after today"""
+        data = {
+            'date_smoke':datetime.date(2020, 6, 18),
+            'time_smoke':datetime.time(3, 21),
+            'type_cig_field':'IND',
+            'ind_pack_field':self.db_pack_ind.id,
+            'rol_pack_field':self.db_pack_rol.id,
+            'nb_pack_field':self.db_pack_nb.id,
+            'given_field':False,
+            }
+        form = SmokeForm(self.usertest, -120, data)
+        self.assertFalse(form.is_valid())
+        self.assertRaises(ValidationError)
+        self.assertEqual(form.errors, {
+            '__all__':["Vous ne pouvez pas enregistrer de craquage pour les jours à venir"],
+            })
 
     def test_last_smoke_first_smoke(self):
         """ test last_smoke method first user ConsoCig"""
@@ -154,20 +172,30 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
             datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             )
-        form = SmokeForm(self.usertest, -120,  self.valid_smoking_datas)
+        form = SmokeForm(self.usertest, -120)
         self.assertEqual(form.last_smoke, self.db_pack_ind2)
+
+    def test_last_smoke_only_given(self):
+        """ test get last paquet while user only smoked given cig """
+        db_smoke_0 = ConsoCig.objects.create(
+            user=self.usertest,
+            datetime_cig=datetime.datetime(2020, 6, 16, 10, 15, tzinfo=pytz.utc),
+            paquet=None,
+            )
+        form = SmokeForm(self.usertest, -120)
+        self.assertEqual(form.last_smoke, self.db_pack_nb)
 
     def test_smoke_last_none(self):
         """ test last_smoke method with last one given=True, before exists given=False """
         db_smoke_0 = ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 16, 10, 15, tzinfo=pytz.utc),
-            paquet=self.db_pack_ind2,
+            paquet=self.db_pack_nb,
             )
         db_smoke_1 = ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
-            paquet=self.db_pack_nb,
+            paquet=self.db_pack_ind2,
             )
         db_smoke_2 = ConsoCig.objects.create(
             user=self.usertest,
@@ -180,7 +208,7 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
             paquet=None,
             )
         form = SmokeForm(self.usertest, -120,  self.valid_smoking_datas)
-        self.assertEqual(form.last_smoke, self.db_pack_nb)
+        self.assertEqual(form.last_smoke, self.db_pack_ind2)
 
     def test_config_field(self):
         """ test config_field method """

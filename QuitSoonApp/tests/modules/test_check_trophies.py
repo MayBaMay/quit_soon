@@ -26,8 +26,6 @@ from QuitSoonApp.tests.MOCK_DATA import (
     row_paquet_data, fake_smoke_for_trophies, fake_smoke
     )
 
-# user = User.objects.get(username='maykimay')
-# stats = SmokeStats(user, datetime.date(2020, 7, 20))
 
 class ChecktrophyTestCase(TestCase):
     """class testing Create_smoke """

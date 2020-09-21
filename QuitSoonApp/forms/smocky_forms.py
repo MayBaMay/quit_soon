@@ -109,8 +109,6 @@ class ChoosePackForm(forms.Form):
                 for conso in self.user_conso.order_by('-datetime_cig'):
                     if conso.paquet:
                         return conso.paquet
-                    else:
-                        pass
                 return Paquet.objects.filter(user=self.user, display=True).last()
         else:
             return Paquet.objects.filter(user=self.user, display=True).last()

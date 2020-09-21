@@ -40,10 +40,44 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.smoke.populate_db()
         self.stats = SmokeStats(self.user, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), -120)
 
-    def test_get_datetime_start(self):
+    def test_user_no_profile(self):
+        """test create stats while user didn't create a profile"""
+        user = User.objects.create_user(
+            'testuser', 'testfsdF@test.com', 'testpassword')
+        stats = SmokeStats(user, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), -120)
+        self.assertEqual(stats.starting_nb_cig, 0)
+
+    def test_get_aware_last_day(self):
+        """test get last day including client tz_offset"""
+        stats_no_tz = SmokeStats(self.user, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), 0)
+        self.assertEqual(stats_no_tz.tz_offset, 0)
+        self.assertEqual(stats_no_tz.lastday, make_aware(datetime.datetime(2019, 11, 28, 12, 0)))
+
+    def test_get_datetime_start_with_profile(self):
+        """test get sarting app datetime including tz_offset"""
         self.assertEqual(self.stats.datetime_start, make_aware(datetime.datetime(2019, 9, 28, 11, 0), pytz.utc))
 
+    def test_get_datetime_start_no_profile(self):
+        """test get datetime while user didn't create a profile but saved a conso"""
+        user = User.objects.create_user(
+            'testuser', 'testdfqdsfq@test.com', 'testpassword')
+        db_pack= Paquet.objects.create(
+            user=user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        db_smoke = ConsoCig.objects.create(
+            user=user,
+            datetime_cig=datetime.datetime(2019, 9, 16, 10, 15, tzinfo=pytz.utc),
+            paquet=db_pack,
+            )
+        stats = SmokeStats(user, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), -120)
+        self.assertEqual(stats.datetime_start, make_aware(datetime.datetime(2019, 9, 16, 12, 15), pytz.utc))
+
     def test_nb_full_period_for_average(self):
+        """test method calculating nb_full periods in order to calculate average"""
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'day'), 61)
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'week'), 8)
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2019,11,28), 'month'), 1)
@@ -52,6 +86,7 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(self.stats.nb_full_period_for_average(datetime.date(2020,8,5), 'month'), 10)
 
     def test_nb_full_period_for_average_dates_first_and_last_day_of_month(self):
+        """test method nb_full_period_for_average with complex dates"""
         user = User.objects.create_user(
             'OtherUser', 'newemail@test.com', 'testpassword')
         profile = UserProfile.objects.create(
@@ -65,6 +100,7 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(stats.nb_full_period_for_average(datetime.date(2020, 2, 1), 'month'), 2)
 
     def test_update_models_dt_user(self):
+        """test method update_dt_user_model_field with actual timedelta tz_offset"""
         conso = ConsoCig.objects.get(user=self.user, datetime_cig=datetime.datetime(2019, 9, 28, 9, 0, tzinfo=pytz.utc))
         self.assertEqual(conso.user_dt, datetime.datetime(2019, 9, 28, 11, 0, tzinfo=pytz.utc))
 
@@ -134,9 +170,11 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(round(self.stats.average_money_per_day, 2),  Decimal('2.61'))
 
     def test_total_money_with_starting_nb_cig(self):
+        """test method total_money_with_starting_nb_cig"""
         self.assertEqual(round(self.stats.total_money_with_starting_nb_cig, 2), Decimal('591.70'))
 
     def test_money_saved(self):
+        """test method money_saved"""
         self.assertEqual(self.stats.money_saved, Decimal('432.54'))
 
 
@@ -189,12 +227,15 @@ class SmokeStatsTestCaseSmallData(TestCase):
             )
 
     def test_total_money_smoked(self):
+        """test method total_money_smoked"""
         self.assertEqual(self.stats.total_money_smoked, Decimal('8.245'))
 
     def test_total_money_with_starting_nb_cig(self):
+        """test method total_money_with_starting_nb_cig"""
         self.assertEqual(self.stats.total_money_with_starting_nb_cig, Decimal('9.7'))
 
     def test_money_saved(self):
+        """test method money_saved"""
         self.assertEqual(self.stats.money_saved, Decimal('1.46'))
 
 
@@ -218,36 +259,47 @@ class StatsFirstDay(TestCase):
         self.stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)
 
     def test_first_day(self):
+        """test first day user use app"""
         self.assertTrue(self.stats.first_day)
 
     def test_total_smoke_all_days(self):
+        """test method total_smoke_all_days for first day user"""
         self.assertEqual(self.stats.total_smoke_all_days, 17)
 
     def test_average_per_day(self):
+        """test method average_per_day for first day user"""
         self.assertEqual(self.stats.average_per_day, 17)
 
     def test_count_no_smoking_day(self):
+        """test method count_no_smoking_day for first day user"""
         self.assertEqual(self.stats.count_no_smoking_day, 0)
 
     def test_total_cig_with_old_habits(self):
+        """test method total_cig_with_old_habits for first day user"""
         self.assertEqual(self.stats.total_cig_with_old_habits, 20)
 
     def test_nb_not_smoked_cig_full_days(self):
+        """test method nb_not_smoked_cig_full_days for first day user"""
         self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 3)
 
     def test_total_money_smoked(self):
+        """test method total_money_smoked for first day user"""
         self.assertEqual(self.stats.total_money_smoked, Decimal('8.245'))
 
     def test_average_money_per_day(self):
+        """test method average_money_per_day for first day user"""
         self.assertEqual(self.stats.average_money_per_day, self.stats.total_money_smoked)
 
     def test_total_money_with_starting_nb_cig(self):
+        """test method money_with_starting_nb_cig for first day user"""
         self.assertEqual(self.stats.total_money_with_starting_nb_cig,  Decimal('9.700'))
 
     def test_money_saved(self):
+        """test method money_saved for first day user"""
         self.assertEqual(self.stats.money_saved, Decimal('1.46'))
 
     def test_average_alternative_first_day(self):
+        """test method average_alternative for first day user"""
         alternatives = CreateAlternative(self.user, row_alternative_data)
         alternatives.populate_db()
         ConsoAlternative.objects.create(
@@ -263,11 +315,6 @@ class StatsFirstDay(TestCase):
             )
         stats = HealthyStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)
         self.assertTrue(stats.first_day)
-        self.assertEqual(stats.report_substitut_average_per_period(datetime.date(2020, 6, 19)), 40)
-        self.assertEqual(stats.report_substitut_average_per_period(datetime.date(2020, 6, 19), type='Sp'), 40)
-        self.assertEqual(stats.report_substitut_average_per_period(datetime.date(2020, 6, 19), type='So'), None)
-        self.assertEqual(stats.report_substitut_average_per_period(datetime.date(2020, 6, 19), category='Su'), 1)
-        self.assertEqual(stats.report_substitut_average_per_period(datetime.date(2020, 6, 19), category='Sudgfqdgq'), None)
 
 
 class HealthyStatsTestCase(TestCase):
@@ -289,10 +336,12 @@ class HealthyStatsTestCase(TestCase):
         self.stats = HealthyStats(self.user, make_aware(datetime.datetime(2019, 11, 28, 23, 59), pytz.utc), -120)
 
     def test_update_models_dt_user(self):
+        """test method updating field dt_user in db wwith actual tz_offset"""
         conso = ConsoAlternative.objects.get(user=self.user, datetime_alter=datetime.datetime(2019, 9, 28, 20, 20, tzinfo=pytz.utc))
         self.assertEqual(conso.user_dt, datetime.datetime(2019, 9, 28, 22, 20, tzinfo=pytz.utc))
 
     def test_filter_queryset_for_report(self):
+        """test method filter_queryset_for_report"""
         self.assertEqual(self.stats.filter_queryset_for_report().count(), 35)
         self.assertEqual(self.stats.filter_queryset_for_report(type='Sp').count(), 16)
         self.assertEqual(self.stats.filter_queryset_for_report('Su').count(), 23)
@@ -314,3 +363,20 @@ class HealthyStatsTestCase(TestCase):
         self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='month', type='PAST'), 10)
 
         self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Adfqsfc', period='weekdgfa', type='Pdsf'), None)
+
+    def test_filter_by_period(self):
+        """test method filter_by_period"""
+        self.assertEqual(self.stats.filter_by_period(datetime.date(2019, 10, 11), 'day', self.stats.user_activities).count(), 2)
+        self.assertEqual(self.stats.filter_by_period(datetime.date(2019, 10, 11), 'week', self.stats.user_activities).count(), 6)
+        self.assertEqual(self.stats.filter_by_period(datetime.date(2019, 10, 11), 'month', self.stats.user_activities).count(), 21)
+
+    def test_convert_minutes_to_hours_min_str(self):
+        """test method convert_minutes_to_hours_min_str"""
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str('dfgqefg'), None)
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(), None)
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(25),'25 minutes')
+        self.assertEqual(self.stats.convert_minutes_to_hours_min_str(384),'6h24')
+
+    def test_nicotine_per_day(self):
+        """test method nicotine_per_day"""
+        self.assertEqual(self.stats.nicotine_per_day(datetime.date(2019, 10, 19)), 9)

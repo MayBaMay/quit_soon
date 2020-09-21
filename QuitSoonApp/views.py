@@ -164,13 +164,9 @@ def new_parameters(request):
             data[field]=data[field][0]
         # check wich form (existing packs or new pack)
         try:
-            if data['id_ref_pack'] == None:
-                existing_pack = False
-            elif data['id_ref_pack'] == '':
-                existing_pack = False
-            else:
+            if data['ref_pack']:
                 existing_pack = True
-        except:
+        except KeyError:
             existing_pack = False
         # if new pack, createpack with PaquetFormCreation
         if not existing_pack:
@@ -209,7 +205,6 @@ def new_name(request):
                 response_data = {'response':"fail", 'name':user.username}
     else:
         raise Http404()
-    print(response_data)
     return HttpResponse(JsonResponse(response_data))
 
 def new_email(request):

@@ -229,12 +229,19 @@ class UserProfileTestCase(TransactionTestCase):
         # Anonymous user redirect to login by LoginRequiredMiddleware
         self.assertEqual(response.status_code, 302)
 
+    def test_new_name_user(self):
+        """test change nameview"""
+        self.client.login(username=self.user.username, password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:new_name'))
+        # new_name view only post, raise 404 error if get
+        self.assertEqual(response.status_code, 404)
+
     def test_new_name(self):
         """test change nameview"""
         self.client.login(username=self.user.username, password='testpassword')
         user_id = self.user.id
         data = {'username':'NewName'}
-        self.client.post(reverse('QuitSoonApp:new_name'),
+        response = self.client.post(reverse('QuitSoonApp:new_name'),
                          data=data,
                          HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(User.objects.filter(username="NewName").exists(), True)
@@ -266,6 +273,13 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:new_email'))
         # Anonymous user redirect to login by LoginRequiredMiddleware
         self.assertEqual(response.status_code, 302)
+
+    def test_new_email_user(self):
+        """test change nameview"""
+        self.client.login(username=self.user.username, password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:new_email'))
+        # new_name view only post, raise 404 error if get
+        self.assertEqual(response.status_code, 404)
 
     def test_new_email(self):
         """test change nameview"""
@@ -394,6 +408,31 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.post(reverse('QuitSoonApp:new_parameters'))
         self.assertEqual(response.status_code, 302)
 
+    def test_new_parameters_old_pack(self):
+        self.client.login(username='Test', password='testpassword')
+        self.assertFalse(UserProfile.objects.filter(user=self.user).exists())
+        pack = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        data = {
+            'date_start': '2020-05-17',
+            'starting_nb_cig': 30,
+            'ref_pack':pack.id,
+            'brand':'',
+            'qt_paquet':'',
+            'price':'',
+            }
+        self.client.post(reverse('QuitSoonApp:new_parameters'), data=data)
+        # test userprofile created
+        self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
+        self.assertEqual(UserProfile.objects.get(user=self.user).date_start, datetime.date(2020, 5, 17))
+        self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 30)
+        self.assertEqual(Paquet.objects.get(user=self.user, first=True).id, pack.id)
+
     def test_new_parameters_post_noprofile_nopack(self):
         self.client.login(username='Test', password='testpassword')
         self.assertFalse(UserProfile.objects.filter(user=self.user).exists())
@@ -440,6 +479,8 @@ class UserProfileTestCase(TransactionTestCase):
             'price':30,
             }
         self.client.post(reverse('QuitSoonApp:new_parameters'), data=data)
+        # test existing_pack = False
+        self.assertRaises(KeyError)
         # test pack created with first=True
         self.assertTrue(Paquet.objects.filter(user=self.user, first=True).exists())
         self.assertEqual(Paquet.objects.get(user=self.user, first=True).brand, 'BRANDTEST')
@@ -448,3 +489,5 @@ class UserProfileTestCase(TransactionTestCase):
         self.assertTrue(UserProfile.objects.filter(user=self.user).exists())
         self.assertEqual(UserProfile.objects.get(user=self.user).date_start, datetime.date(2020, 5, 17))
         self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)
+
+        # def test_new_parameters_new_pack(self):

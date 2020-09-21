@@ -24,11 +24,10 @@ class Stats:
     def __init__(self, user, lastday, tz_offset):
         self.profile = UserProfile.objects.filter(user=user).exists()
         self.user = user
+        self.tz_offset = tz_offset
         if tz_offset:
-            self.tz_offset = tz_offset
             self.lastday = lastday - timedelta(minutes=tz_offset)
         else:
-            self.tz_offset = 0
             self.lastday = lastday
         self.datetime_start = self.get_datetime_start()
         if self.profile:
@@ -282,11 +281,13 @@ class HealthyStats(Stats):
         self.user_conso_subsitut = self.user_conso_all_days.filter(alternative__type_alternative='Su')
 
     def update_dt_user_model_field(self):
+        """Update fielf user_dt with actual client tz_offset"""
         for conso in self.user_conso_all_days:
             conso.user_dt = conso.datetime_alter - timedelta(minutes=self.tz_offset)
             conso.save()
 
     def filter_queryset_for_report(self, category='Ac', type=None):
+        """Filter queryset used to create stats"""
         if category == 'Ac':
             queryset = self.user_activities
             if type:
@@ -316,29 +317,6 @@ class HealthyStats(Stats):
                 queryset = self.filter_by_period(date, period, queryset)
                 return queryset.count()
         return None
-
-    def report_substitut_average_per_period(self, date, category='Ac', period='day', type=None):
-
-        if self.first_day:
-            queryset = self.filter_queryset_for_report(category, type)
-        else:
-            # get only full days data so exclude today
-            queryset = self.filter_queryset_for_report(category, type).exclude(user_dt__date=date)
-
-        if category == 'Ac':
-            sum = queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
-            if self.first_day:
-                return sum
-            else:
-                return sum / self.nb_full_period_for_average(date, period)
-        elif category == 'Su':
-            count = queryset.count()
-            if self.first_day:
-                return count
-            else:
-                return count / self.nb_full_period_for_average(date, period)
-        else:
-            return None
 
     def filter_by_period(self, date, period, queryset):
         # filter by period

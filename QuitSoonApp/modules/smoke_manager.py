@@ -43,7 +43,7 @@ class SmokeManager:
     def get_request_data(self, data):
         try:
             return self.datas[data]
-        except KeyError:
+        except (KeyError, TypeError):
             return None
 
     @property

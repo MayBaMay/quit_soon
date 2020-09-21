@@ -63,6 +63,19 @@ class HealthManagerTestCase(TestCase):
         )
         self.data_id = {'id_health': self.health_sp.id}
 
+    def test_invalid_datetime(self):
+        """test if date or time invalid in args"""
+        data = {
+            'date_health': 'invalid',
+            'time_health': datetime.time(14, 15),
+            'type_alternative_field':'Su',
+            'sp_field': self.alternative_sp.id,
+            'so_field': self.alternative_so.id,
+            'su_field':self.alternative_su.id,
+            }
+        health = HealthManager(self.usertest, data)
+        self.assertEqual(health.datetime_alter, None)
+
     def test_get_request_data(self):
         """test HealthManager.get_request_data method"""
         health = HealthManager(self.usertest, self.data_sp)
@@ -71,25 +84,35 @@ class HealthManagerTestCase(TestCase):
         self.assertEqual(health.get_request_data('sp_field'), self.alternative_sp.id)
 
     def test_get_alternative_with_infos(self):
+        """test get alternative with valid infos"""
         health = HealthManager(self.usertest, self.data_sp)
         self.assertEqual(health.get_alternative, self.alternative_sp)
         health = HealthManager(self.usertest, self.data_su)
         self.assertEqual(health.get_alternative, self.alternative_su)
 
     def test_get_alternative_with_id(self):
+        """test get alternative with valid id"""
         health = HealthManager(self.usertest, self.data_id)
         self.assertEqual(health.get_conso_alternative, self.health_sp)
         self.assertEqual(health.get_alternative, self.alternative_sp)
 
+    def test_get_alternative_fail(self):
+        """ test method get alternativ fail, exception raised"""
+        health = HealthManager(self.usertest, 10394)
+        self.assertEqual(health.get_alternative, None)
+
     def test_get_duration(self):
+        """test get activity duration method"""
         health = HealthManager(self.usertest, self.data_sp)
         self.assertEqual(health.get_duration, 90)
 
     def test_get_conso_alternative_with_infos(self):
+        """test get conso alternative with valid infos"""
         health = HealthManager(self.usertest, self.data_sp)
         self.assertEqual(health.get_conso_alternative, self.health_sp)
 
     def test_create_conso_alternative(self):
+        """test create conso alternative with valid data"""
         new_health = HealthManager(self.usertest, self.data_su)
         new = new_health.create_conso_alternative()
         self.assertTrue(new)
