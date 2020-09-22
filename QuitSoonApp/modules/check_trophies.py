@@ -38,7 +38,8 @@ class trophy_checking:
         for type, challenge in self.challenges.items():
             for cig in challenge['nb_cig']:
                 # only challenges with less cig then usual user conso
-                if cig < self.stats.starting_nb_cig:
+                if cig < self.stats.starting_nb_cig or self.stats.starting_nb_cig == 0:
+                    # if starting_nb_cig == 0 add all challenges anyway or there wouldn't be any to look at
                     for days in challenge['nb_days']:
                         # only if challenge not already saved as trophy in db
                         if Trophy.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():

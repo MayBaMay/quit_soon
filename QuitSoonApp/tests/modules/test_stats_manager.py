@@ -342,9 +342,9 @@ class HealthyStatsTestCase(TestCase):
 
     def test_filter_queryset_for_report(self):
         """test method filter_queryset_for_report"""
-        self.assertEqual(self.stats.filter_queryset_for_report().count(), 35)
+        self.assertEqual(self.stats.filter_queryset_for_report().count(), 34)
         self.assertEqual(self.stats.filter_queryset_for_report(type='Sp').count(), 16)
-        self.assertEqual(self.stats.filter_queryset_for_report('Su').count(), 23)
+        self.assertEqual(self.stats.filter_queryset_for_report('Su').count(), 24)
         self.assertEqual(self.stats.filter_queryset_for_report('Su', type='P').count(), 9)
 
     def test_report_substitut_per_period(self):

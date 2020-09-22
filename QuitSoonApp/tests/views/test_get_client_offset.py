@@ -69,14 +69,6 @@ class TestUpdateDtUserModelField(TestCase):
             alternative=alternative_su,
             )
 
-    def test_get_client_offset(self):
-        """test function get_client_offset"""
-        session = self.client.session
-        session['detected_tz'] = -360
-        session.save()
-        response = self.client.get(reverse('QuitSoonApp:today'))
-        get_client_offset(response.content)
-
     def test_update_dt_user_model_field(self):
         """test function update_dt_user_model_field"""
         update_dt_user_model_field(self.user, -60)

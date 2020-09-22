@@ -274,6 +274,13 @@ class UserProfileTestCase(TransactionTestCase):
         # Anonymous user redirect to login by LoginRequiredMiddleware
         self.assertEqual(response.status_code, 302)
 
+    def test_get_new_email_user(self):
+        """test change nameview"""
+        self.client.login(username=self.user.username, password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:new_email'))
+        # new_name view only post, raise 404 error if get
+        self.assertEqual(response.status_code, 404)
+
     def test_new_email_user(self):
         """test change nameview"""
         self.client.login(username=self.user.username, password='testpassword')
@@ -319,6 +326,13 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:new_password'))
         # Anonymous user redirect to login by LoginRequiredMiddleware
         self.assertEqual(response.status_code, 302)
+
+    def test_get_new_password_user(self):
+        """test change nameview"""
+        self.client.login(username=self.user.username, password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:new_password'))
+        # new_name view only post, raise 404 error if get
+        self.assertEqual(response.status_code, 404)
 
     def test_new_password_success(self):
         """test userpage view in post method"""

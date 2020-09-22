@@ -116,7 +116,6 @@ def today(request):
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
         current_tz = timezone.get_current_timezone()
         user_now = current_tz.normalize(timezone.now().astimezone(current_tz))
-        print(user_now)
         if smoke:
             context['smoke_today'] = smoke_stats.nb_per_day(user_now.date())
             last = smoke.latest('datetime_cig').datetime_cig
@@ -313,8 +312,6 @@ def smoke(request):
                 smoke = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
                 smoke.create_conso_cig()
                 return redirect('QuitSoonApp:today')
-            else:
-                print(smoke_form.errors)
         context['smoke_form'] = smoke_form
 
     smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
@@ -491,7 +488,6 @@ def health_list(request):
     # check if packs are in parameters to fill fields with actual packs
     alternatives = Alternative.objects.filter(user=request.user, display=True)
 
-    print('user :', request.user)
     # update user_dt field
     tz_offset = get_client_offset(request)
     update_dt_user_model_field(request.user, tz_offset)
@@ -552,6 +548,7 @@ def report(request, **kwargs):
         context['average_money'] = round(smoke_stats.average_money_per_day, 2)
         context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
 
+        today = timezone.now() - timedelta(tz_offset)
         activity_stats = {}
         if healthy_stats.user_activities:
             for type in Alternative.TYPE_ACTIVITY:
@@ -560,7 +557,7 @@ def report(request, **kwargs):
                     activity_stats[type[0]]['exists'] = True
                 activity_stats[type[0]]['name'] = type[1]
                 for period in ['day', 'week', 'month']:
-                    minutes = healthy_stats.report_substitut_per_period(datetime.date.today(), period=period, type=type[0])
+                    minutes = healthy_stats.report_substitut_per_period(today, period=period, type=type[0])
                     activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
             context['activity_stats'] = activity_stats
         substitut_stats = {}
@@ -571,10 +568,9 @@ def report(request, **kwargs):
                     substitut_stats[type[0]]['exists'] = True
                 substitut_stats[type[0]]['name'] = type[1]
                 for period in ['day', 'week', 'month']:
-                    nicotine = healthy_stats.report_substitut_per_period(datetime.date.today(),'Su', period=period, type=type[0])
+                    nicotine = healthy_stats.report_substitut_per_period(today,'Su', period=period, type=type[0])
                     substitut_stats[type[0]][period] = nicotine
             context['substitut_stats'] = substitut_stats
-
         return render(request, 'QuitSoonApp/report.html', context)
     else:
         context['no_data'] = True
@@ -636,7 +632,6 @@ class ChartData(APIView):
                          'money_smoked':[],
                          'nicotine':[]}
 
-            # print(smoke_stats.list_dates)
             for date in smoke_stats.list_dates:
                 user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
                 if healthy_stats.report_substitut_per_period(date):

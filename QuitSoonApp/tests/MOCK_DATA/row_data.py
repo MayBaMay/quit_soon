@@ -409,7 +409,7 @@ row_conso_alt_data = [
 {'date_alter': '2019-11-25', 'time_alter': '21:37', 'alternative': 1001, 'activity_duration': 75},
 {'date_alter': '2019-11-27', 'time_alter': '17:08', 'alternative': 1003, 'activity_duration': 30},
 {'date_alter': '2019-11-27', 'time_alter': '11:30', 'alternative': 1002, 'activity_duration': 65},
-{'date_alter': '2019-11-27', 'time_alter': '19:16', 'alternative': 1002, 'activity_duration': 30},
+{'date_alter': '2019-11-27', 'time_alter': '19:16', 'alternative': 1005},
 ]
 
 fake_smoke = [

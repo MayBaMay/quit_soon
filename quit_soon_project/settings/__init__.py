@@ -73,11 +73,6 @@ MIDDLEWARE = [
     'tz_detect.middleware.TimezoneMiddleware',
 ]
 
-if django.VERSION < (1, 10):
-    MIDDLEWARE_CLASSES += (
-        'tz_detect.middleware.TimezoneMiddleware',
-    )
-
 TZ_DETECT_COUNTRIES = ('FR', 'BE', 'CH', 'CA', 'CN', 'US', 'IN', 'JP', 'BR', 'RU', 'DE', 'GB')
 
 AUTHENTICATION_BACKENDS = (
