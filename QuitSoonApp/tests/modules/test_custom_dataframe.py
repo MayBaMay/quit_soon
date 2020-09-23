@@ -41,7 +41,7 @@ class DataFrameDateTestCase(TestCase):
         self.custom_df_nicotine = DataFrameDate(self.data_dict, 'nicotine')
 
     def test_df_creation(self):
-        assert_frame_equal(self.custom_df_nb_cig.df, self.custom_df_nb_cig.df)
+        assert_frame_equal(self.custom_df_nb_cig.df_chartdata, self.custom_df_nb_cig.df_chartdata)
 
     def test_daily_dataframe(self):
         assert_frame_equal(self.custom_df_nb_cig.day_df, self.custom_df_nb_cig.day_df)

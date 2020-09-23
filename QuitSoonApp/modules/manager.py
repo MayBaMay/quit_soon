@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+"""Base classes for models manager"""
+
 import datetime
 from datetime import timedelta
 import pytz
 
 from django.utils.timezone import make_aware
-from django.contrib.auth.models import User
 
 
 class BaseManager:
@@ -31,7 +32,8 @@ class ManagerConso(BaseManager):
         if not tz_offset:
             tz_offset = 0
 
-    def get_datetime_client_aware(self, date, time, tz_offset):
+    @staticmethod
+    def get_datetime_client_aware(date, time, tz_offset):
         """return in utc actual client datetime using tz_offset"""
         try:
             datetime_client = datetime.datetime.combine(date, time)

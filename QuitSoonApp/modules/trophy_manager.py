@@ -18,7 +18,10 @@ class TrophyManager:
     def __init__(self, stats):
         self.stats = stats
         if stats.user_conso_full_days:
-            self.df = self.smoking_values_per_dates_with_all_dates_df(self.all_dates, self.values_per_dates)
+            self.stats_df = self.smoking_values_per_dates_with_all_dates_df(
+                self.all_dates,
+                self.values_per_dates
+                )
         self.challenges = {
             'conso' : {
                 'nb_cig': [20, 15, 10, 5, 4, 3, 2, 1],
@@ -26,7 +29,11 @@ class TrophyManager:
                 },
             'zero_cig': {
                 'nb_cig': [0],
-                'nb_days': [1, 2, 3, 4, 7, 10, 15, 20, 25, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+                'nb_days': [
+                    1, 2, 3, 4, 7,
+                    10, 15, 20, 25, 30,
+                    60, 90, 120, 150, 180, 210, 240, 270, 300, 330
+                    ]
                 },
             }
         # initialise all_user_challenges in a dict with bool in trophies or ot
@@ -36,14 +43,20 @@ class TrophyManager:
     def all_user_challenges_before_parsing(self):
         """get all trophies accomplished by user before parsing"""
         challenges_dict = {}
-        for type, challenge in self.challenges.items():
+        for challenge in self.challenges.values():
             for cig in challenge['nb_cig']:
                 # only challenges with less cig then usual user conso
                 if cig < self.stats.starting_nb_cig or self.stats.starting_nb_cig == 0:
-                    # if starting_nb_cig == 0 add all challenges anyway or there wouldn't be any to look at
+                    # if starting_nb_cig == 0 add all challenges anyway
+                    # or there wouldn't be any to look at
                     for days in challenge['nb_days']:
                         # only if challenge not already saved as trophy in db
-                        if Trophy.objects.filter(user=self.stats.user, nb_cig=cig, nb_jour=days).exists():
+                        db_trophy = Trophy.objects.filter(
+                            user=self.stats.user,
+                            nb_cig=cig,
+                            nb_jour=days
+                            )
+                        if db_trophy.exists():
                             challenges_dict[(cig, days)] = True
                         else:
                             challenges_dict[(cig, days)] = False
@@ -75,7 +88,8 @@ class TrophyManager:
         all_days_df.index = pd.to_datetime(all_days_df.index)
         return all_days_df
 
-    def smoking_values_per_dates_with_all_dates_df(self, all_days_df, nb_cig_per_date_df):
+    @staticmethod
+    def smoking_values_per_dates_with_all_dates_df(all_days_df, nb_cig_per_date_df):
         """
         get dataframe with all passed dates(index) and count cig per dates (col nb_cig)
         """
@@ -88,15 +102,15 @@ class TrophyManager:
 
     def get_conso_occurence(self, challenge):
         """get occurence conso lower than challenge"""
-        self.df['lower'] = self.df['nb_cig'].apply(lambda x: False if x > challenge else True)
-        lower = self.df.lower
-        self.df['upper'] = self.df['nb_cig'].apply(lambda x: True if x > challenge else False)
-        upper = self.df.upper
+        self.stats_df['lower'] = self.stats_df['nb_cig'].apply(lambda x: not x > challenge)
+        lower = self.stats_df.lower
+        self.stats_df['upper'] = self.stats_df['nb_cig'].apply(lambda x: x > challenge)
+        upper = self.stats_df.upper
         return lower.groupby(upper.cumsum()).sum()
 
     def get_nans_occurence(self):
         """ get NaNs occurence in dataframe """
-        return self.df.nb_cig.isnull().groupby(self.df.nb_cig.notnull().cumsum()).sum()
+        return self.stats_df.nb_cig.isnull().groupby(self.stats_df.nb_cig.notnull().cumsum()).sum()
 
     @property
     def list_user_challenges(self):
@@ -162,16 +176,16 @@ class TrophyManager:
         while True:
             for i in range(len(non_smoking_month)):
                 compare = [non_smoking_month[i]]
-                n = 0
+                next_month = 0
                 # based on trophy compared following data would be different size
                 for month in compared_month:
                     try:
-                        n+=1
-                        compare.append(non_smoking_month[i+n])
+                        next_month += 1
+                        compare.append(non_smoking_month[i+next_month])
                     except IndexError:
                         # comparing data out of list index, pass next trophy checking
                         break
-                if not False in compare:
+                if False not in compare:
                     # only full month and non smoked, break to pass next trophy checking
                     return True
             # end index in non_smoking_month, pass next trophy checking
@@ -186,15 +200,15 @@ class TrophyManager:
         """
         non_smoking_month = []
         # proceed year after year to get appropriate calendar
-        for year in self.df.date.dt.year.drop_duplicates().tolist():
-            df_year = self.df[self.df.date.dt.year == year]
+        for year in self.stats_df.date.dt.year.drop_duplicates().tolist():
+            df_year = self.stats_df[self.stats_df.date.dt.year == year]
             for index, value in df_year.date.dt.month.value_counts().sort_index().items():
                 # if full month
                 if value == calendar.monthrange(year, index)[1]:
                     # Get True if all data in this month are NaNs
-                    nb_nans_in_month = df_year[(df_year.date.dt.month == index)].isnull().sum().nb_cig
+                    nb_month_nans = df_year[(df_year.date.dt.month == index)].isnull().sum().nb_cig
                     total_rows_in_month = df_year[(df_year.date.dt.month == index)].shape[0]
-                    if nb_nans_in_month == total_rows_in_month:
+                    if nb_month_nans == total_rows_in_month:
                         ## one month without smoking
                         non_smoking_month.append(True)
                     else:

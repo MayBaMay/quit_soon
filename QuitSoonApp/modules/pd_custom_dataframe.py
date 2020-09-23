@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 """Make dictionnary into panda dataframe with period treatment properties """
 
-from datetime import datetime as dt
 from datetime import timedelta
-import json
 
 import pandas as pd
 
@@ -15,19 +13,22 @@ class DataFrameDate:
     """
 
     def __init__(self, data_dict, focus):
-        self.df = pd.DataFrame(data_dict, columns=['date', focus, 'activity_duration']).set_index('date')
+        self.df_chartdata = pd.DataFrame(
+            data_dict,
+            columns=['date', focus, 'activity_duration']
+            ).set_index('date')
 
     @property
     def day_df(self):
         """dataframe in a dayly bases"""
-        day_df = self.df.groupby(pd.Grouper(freq='D')).sum()
+        day_df = self.df_chartdata.groupby(pd.Grouper(freq='D')).sum()
         day_df.index = day_df.index.strftime("%d/%m/%y")
         return day_df
 
     @property
     def week_df(self):
         """dataframe in a weekly bases"""
-        week_df = self.df.groupby(pd.Grouper(freq='W')).sum()
+        week_df = self.df_chartdata.groupby(pd.Grouper(freq='W')).sum()
         # format index
         for date in week_df.index:
             start = date - timedelta(days=date.weekday())
@@ -41,6 +42,6 @@ class DataFrameDate:
     @property
     def month_df(self):
         """dataframe in a monthly bases"""
-        month_df = self.df.groupby(pd.Grouper(freq='M')).sum()
+        month_df = self.df_chartdata.groupby(pd.Grouper(freq='M')).sum()
         month_df.index = month_df.index.strftime("%m/%y")
         return month_df
