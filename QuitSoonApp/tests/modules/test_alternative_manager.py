@@ -17,12 +17,12 @@ class SavePackTestCase(TestCase):
 
     def test_get_request_data(self):
         """test method get_request_data"""
-        datas ={
+        data ={
             'type_alternative':'Su',
             'substitut':'P24',
             'nicotine': 2,
             }
-        alternative = AlternativeManager(self.usertest, datas)
+        alternative = AlternativeManager(self.usertest, data)
         self.assertEqual(alternative.get_request_data('type_alternative'), 'Su')
         self.assertEqual(alternative.get_request_data('type_activity'), None)
         self.assertEqual(alternative.get_request_data('activity'), None)
@@ -30,25 +30,25 @@ class SavePackTestCase(TestCase):
         self.assertEqual(alternative.get_request_data('nicotine'), 2)
 
     def test_if_strNone_get_None_or_str(self):
-        """test method if_strNone_get_None_or_str"""
+        """test method get_str"""
         data = 'None'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), None)
+        self.assertEqual(AlternativeManager.get_str(data), None)
         data = 1637
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), '1637')
+        self.assertEqual(AlternativeManager.get_str(data), '1637')
         data = 'Su'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_str(data), 'Su')
+        self.assertEqual(AlternativeManager.get_str(data), 'Su')
 
     def test_if_strNone_get_None_or_float(self):
-        """test method if_strNone_get_None_or_float"""
+        """test method str_get_float"""
         data = 'None'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), None)
+        self.assertEqual(AlternativeManager.str_get_float(data), None)
         data = '2'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), 2.0)
+        self.assertEqual(AlternativeManager.str_get_float(data), 2.0)
         data = '2.0'
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), 2.0)
+        self.assertEqual(AlternativeManager.str_get_float(data), 2.0)
         data = 'erreur'
-        self.assertRaises(ValueError, AlternativeManager.if_strNone_get_None_or_float(data))
-        self.assertEqual(AlternativeManager.if_strNone_get_None_or_float(data), None)
+        self.assertRaises(ValueError, AlternativeManager.str_get_float(data))
+        self.assertEqual(AlternativeManager.str_get_float(data), None)
 
     def test_get_alternative(self):
         """test method get_alternative"""
@@ -60,22 +60,22 @@ class SavePackTestCase(TestCase):
             display=False,
             )
 
-        datas ={
+        data ={
             'type_alternative':'Ac',
             'type_activity':'Sp',
             'activity': 'COURSE',
             }
-        alt = AlternativeManager(self.usertest, datas)
+        alt = AlternativeManager(self.usertest, data)
         self.assertTrue(alt.get_alternative)
 
     def test_create_new_alternative(self):
         """test SavePack.create_alternative method if type_alternative != 'Su'"""
-        datas ={
+        data ={
             'type_alternative':'Ac',
             'type_activity':'Sp',
             'activity': 'COURSE',
             }
-        alternative = AlternativeManager(self.usertest, datas)
+        alternative = AlternativeManager(self.usertest, data)
         alternative.create_alternative()
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,
@@ -95,12 +95,12 @@ class SavePackTestCase(TestCase):
             display=False,
             )
 
-        datas ={
+        data ={
             'type_alternative':'Su',
             'substitut':'P24',
             'nicotine': 2,
             }
-        alternative = AlternativeManager(self.usertest, datas)
+        alternative = AlternativeManager(self.usertest, data)
         alternative.create_alternative()
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,
@@ -114,12 +114,12 @@ class SavePackTestCase(TestCase):
 
     def test_create_new_alternative_substitut(self):
         """test SavePack.create_alternative method if type_alternative == 'Su'"""
-        datas ={
+        data ={
             'type_alternative':'Su',
             'substitut':'P24',
             'nicotine': 2,
             }
-        alternative = AlternativeManager(self.usertest, datas)
+        alternative = AlternativeManager(self.usertest, data)
         alternative.create_alternative()
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,
@@ -137,12 +137,12 @@ class SavePackTestCase(TestCase):
             substitut='ECIG',
             nicotine=2.0,
             )
-        datas ={
+        data ={
             'type_alternative':'Su',
             'substitut':'ECIG',
             'nicotine': 2,
             }
-        alternative = AlternativeManager(self.usertest, datas)
+        alternative = AlternativeManager(self.usertest, data)
         alternative.create_alternative()
         db_create_alternative = Alternative.objects.filter(
             user=self.usertest,

@@ -3,7 +3,6 @@
 """Module testing report view """
 
 import datetime
-from datetime import date as real_date
 import pytz
 from decimal import Decimal
 from unittest import mock
@@ -12,6 +11,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from ..MOCK_DATA import (
     Create_packs, Create_smoke,
@@ -20,7 +20,7 @@ from ..MOCK_DATA import (
     row_alternative_data, row_conso_alt_data, fake_smoke
     )
 from QuitSoonApp.models import UserProfile
-from django.utils import timezone
+
 
 
 # This is the function that replaces django.utils.timezone.now()
@@ -87,12 +87,12 @@ class ReportViewTestCase(TestCase):
         )
 
         response = self.client.get(reverse('QuitSoonApp:report'))
-        self.assertEqual(response.context['total_number'], 329)
-        self.assertEqual(response.context['average_number'], 5)
-        self.assertEqual(response.context['non_smoked'], 871)
-        self.assertEqual(response.context['total_money'], Decimal('159.16'))
-        self.assertEqual(response.context['average_money'], Decimal('2.65'))
-        self.assertEqual(response.context['saved_money'], Decimal('422.84'))
+        self.assertEqual(response.context['smoky_report']['total_number'], 329)
+        self.assertEqual(response.context['smoky_report']['average_number'], 5)
+        self.assertEqual(response.context['smoky_report']['non_smoked'], 871)
+        self.assertEqual(response.context['smoky_report']['total_money'], Decimal('159.16'))
+        self.assertEqual(response.context['smoky_report']['average_money'], Decimal('2.65'))
+        self.assertEqual(response.context['smoky_report']['saved_money'], Decimal('422.84'))
 
     def test_user_with_profile_health_report(self, *args):
         """test health reporting in report view"""
@@ -103,19 +103,19 @@ class ReportViewTestCase(TestCase):
         )
         response = self.client.get(reverse('QuitSoonApp:report'))
         self.assertEqual(
-            response.context['activity_stats']['Sp'],
+            response.context['healthy_report']['activity_stats']['Sp'],
             {'exists': True, 'name': 'Sport', 'day': None, 'week': '1h15', 'month': '4h20'}
             )
         self.assertEqual(
-            response.context['activity_stats']['Lo'],
+            response.context['healthy_report']['activity_stats']['Lo'],
             {'exists': True, 'name': 'Loisir', 'day': '1h05', 'week': '1h05', 'month': '4h40'}
             )
         self.assertEqual(
-            response.context['substitut_stats']['PAST'],
+            response.context['healthy_report']['substitut_stats']['PAST'],
             {'exists': True, 'name': 'Pastilles', 'day': 1, 'week': 1, 'month': 5}
             )
         self.assertEqual(
-            response.context['substitut_stats']['GM'],
+            response.context['healthy_report']['substitut_stats']['GM'],
             {'name': 'Gommes à mâcher', 'day': None, 'week': None, 'month': None}
             )
 

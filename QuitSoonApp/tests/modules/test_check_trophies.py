@@ -13,7 +13,7 @@ from django.db import IntegrityError
 from django.test import TestCase
 from django.utils.timezone import make_aware
 
-from QuitSoonApp.modules import trophy_checking
+from QuitSoonApp.modules import TrophyManager
 from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
@@ -44,7 +44,7 @@ class ChecktrophyTestCase(TestCase):
         self.smoke = Create_smoke(self.user, fake_smoke_for_trophies)
         self.smoke.populate_db()
         stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 12, 31, 12, 0), pytz.utc), -120)
-        self.check_trophy = trophy_checking(stats)
+        self.check_trophy = TrophyManager(stats)
 
     def test_values_per_dates(self):
         """
@@ -171,7 +171,7 @@ class ChecktrophyTestCase(TestCase):
         """
         ConsoCig.objects.filter(user=self.user, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
         stats = SmokeStats(self.user, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
-        check_trophy = trophy_checking(stats)
+        check_trophy = TrophyManager(stats)
         self.assertTrue(check_trophy.check_days_trophies(challenge=(15, 3)))
         self.assertFalse(check_trophy.check_days_trophies(challenge=(15, 7)))
         self.assertTrue(check_trophy.check_days_trophies(challenge=(10, 3)))
@@ -239,7 +239,7 @@ class ChecktrophyTestCase(TestCase):
         ConsoCig.objects.filter(user=self.user, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
         stats = SmokeStats(self.user, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
 
-        check_trophy = trophy_checking(stats)
+        check_trophy = TrophyManager(stats)
         check_trophy.trophies_accomplished
         self.assertEqual(
             check_trophy.user_trophies,
@@ -256,7 +256,7 @@ class ChecktrophyTestCase(TestCase):
         ConsoCig.objects.filter(user=self.user).delete()
         Trophy.objects.filter(user=self.user).delete()
         stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 12, 0), pytz.utc), -120)
-        check_trophy = trophy_checking(stats)
+        check_trophy = TrophyManager(stats)
         check_trophy.trophies_accomplished
         self.assertEqual(
             check_trophy.user_trophies,

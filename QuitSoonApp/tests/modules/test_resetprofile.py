@@ -11,7 +11,7 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophy
 )
-from QuitSoonApp.modules.resetprofile import ResetProfile
+from QuitSoonApp.modules.profile_manager import ProfileManager
 
 
 class ResetProfileTestCase(TestCase):
@@ -87,7 +87,7 @@ class ResetProfileTestCase(TestCase):
         )
 
     def test_get_request_data(self):
-        userprofile = ResetProfile(self.usertest, {})
+        userprofile = ProfileManager(self.usertest, {})
         self.assertIsNone(userprofile.date_start)
         self.assertRaises(KeyError, userprofile.get_request_data('date_start'))
 
@@ -98,7 +98,7 @@ class ResetProfileTestCase(TestCase):
             starting_nb_cig=3
         )
         self.assertTrue(UserProfile.objects.filter(user=self.usertest).exists())
-        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
+        userprofile = ProfileManager(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
         self.assertFalse(UserProfile.objects.filter(user=self.usertest).exists())
         self.assertTrue(Paquet.objects.filter(user=self.usertest).exists())
         self.assertFalse(Paquet.objects.filter(user=self.usertest, first=True).exists())
@@ -112,7 +112,7 @@ class ResetProfileTestCase(TestCase):
 
 
     def test_new_profile(self):
-        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
+        userprofile = ProfileManager(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
         userprofile.new_profile()
         self.assertTrue(UserProfile.objects.filter(user=self.usertest).exists())
         self.assertEqual(UserProfile.objects.get(user=self.usertest).date_start, datetime.date(2020, 5, 15))
@@ -126,7 +126,7 @@ class ResetProfileTestCase(TestCase):
             date_start='2012-12-12',
             starting_nb_cig=3
         )
-        userprofile = ResetProfile(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
+        userprofile = ProfileManager(self.usertest, {'date_start':'2020-05-15', 'starting_nb_cig':20, 'ref_pack':self.paquet2.id})
         userprofile.new_profile()
         self.assertTrue(UserProfile.objects.filter(user=self.usertest).exists())
         self.assertEqual(UserProfile.objects.get(user=self.usertest).date_start, datetime.date(2020, 5, 15))

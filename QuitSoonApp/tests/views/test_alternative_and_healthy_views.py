@@ -113,7 +113,7 @@ class AlternativeAndHealthyTestCase(TestCase):
         self.assertTrue(db_alternative.exists())
 
     def test_delete_alternative_views_activity(self):
-        """Test client post delete_alternative view with activity datas"""
+        """Test client post delete_alternative view with activity data"""
         db_alternative = Alternative.objects.create(
             user=self.user,
             type_alternative='Ac',
@@ -131,7 +131,7 @@ class AlternativeAndHealthyTestCase(TestCase):
         self.assertFalse(filter_alternative.exists())
 
     def test_delete_alternative_views_substitut(self):
-        """Test client post delete_alternative view with substitut datas"""
+        """Test client post delete_alternative view with substitut data"""
         db_alternative = Alternative.objects.create(
             user=self.user,
             type_alternative='Su',
@@ -149,7 +149,7 @@ class AlternativeAndHealthyTestCase(TestCase):
         self.assertFalse(filter_alternative.exists())
 
     def test_delete_alternative_views_substitut_used_in_ConsoAlternative(self):
-        """Test client post delete_alternative view with substitut datas while used in ConsoAlternative"""
+        """Test client post delete_alternative view with substitut data while used in ConsoAlternative"""
         db_alternative = Alternative.objects.create(
             user=self.user,
             type_alternative='Su',
@@ -373,7 +373,7 @@ class HealthListTestCase(TestCase):
         Alternative.objects.filter(user=self.user).delete()
         response = self.client.get(reverse('QuitSoonApp:health_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['alternatives'].count(), 0)
+        self.assertFalse(response.context['alternatives'])
         self.assertTrue('health_form' not in response.context.keys())
         self.assertTrue('health' not in response.context.keys())
 

@@ -138,8 +138,8 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(self.stats.total_cig_with_old_habits, 1220)
 
     def test_nb_not_smoked_cig_full_days(self):
-        """test method nb_not_smoked_cig_full_days"""
-        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 891)
+        """test method nb_not_smoked_cig"""
+        self.assertEqual(self.stats.nb_not_smoked_cig, 891)
 
     def test_list_dates(self):
         """test method list_dates"""
@@ -211,8 +211,8 @@ class SmokeStatsTestCaseSmallData(TestCase):
         self.assertEqual(self.stats.total_cig_with_old_habits, 20)
 
     def test_nb_not_smoked_cig_full_days(self):
-        """test method nb_not_smoked_cig_full_days"""
-        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 3)
+        """test method nb_not_smoked_cig"""
+        self.assertEqual(self.stats.nb_not_smoked_cig, 3)
 
     def test_average_money_per_day(self):
         """test method average_money_per_day"""
@@ -279,8 +279,8 @@ class StatsFirstDay(TestCase):
         self.assertEqual(self.stats.total_cig_with_old_habits, 20)
 
     def test_nb_not_smoked_cig_full_days(self):
-        """test method nb_not_smoked_cig_full_days for first day user"""
-        self.assertEqual(self.stats.nb_not_smoked_cig_full_days, 3)
+        """test method nb_not_smoked_cig for first day user"""
+        self.assertEqual(self.stats.nb_not_smoked_cig, 3)
 
     def test_total_money_smoked(self):
         """test method total_money_smoked for first day user"""
@@ -343,26 +343,26 @@ class HealthyStatsTestCase(TestCase):
     def test_filter_queryset_for_report(self):
         """test method filter_queryset_for_report"""
         self.assertEqual(self.stats.filter_queryset_for_report().count(), 34)
-        self.assertEqual(self.stats.filter_queryset_for_report(type='Sp').count(), 16)
+        self.assertEqual(self.stats.filter_queryset_for_report(type_alt='Sp').count(), 16)
         self.assertEqual(self.stats.filter_queryset_for_report('Su').count(), 24)
-        self.assertEqual(self.stats.filter_queryset_for_report('Su', type='P').count(), 9)
+        self.assertEqual(self.stats.filter_queryset_for_report('Su', type_alt='P').count(), 9)
 
     def test_report_substitut_per_period(self):
-        """test method report_substitut_per_period """
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19)), 155)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), type='Lo'), 125)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='week'), 215)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='week', type='Sp'), 60)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='month'), 808)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), period='month', type='Sp'), 413)
+        """test method report_alternative_per_period """
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19)), 155)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), type_alt='Lo'), 125)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), period='week'), 215)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), period='week', type_alt='Sp'), 60)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), period='month'), 808)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), period='month', type_alt='Sp'), 413)
 
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su'), 2)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', type='PAST'), 1)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='week'), 3)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='week', type='PAST'), 2)
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Su', period='month', type='PAST'), 10)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), 'Su'), 2)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), 'Su', type_alt='PAST'), 1)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), 'Su', period='week'), 3)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), 'Su', period='week', type_alt='PAST'), 2)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), 'Su', period='month', type_alt='PAST'), 10)
 
-        self.assertEqual(self.stats.report_substitut_per_period(datetime.date(2019, 10, 19), 'Adfqsfc', period='weekdgfa', type='Pdsf'), None)
+        self.assertEqual(self.stats.report_alternative_per_period(datetime.date(2019, 10, 19), 'Adfqsfc', period='weekdgfa', type_alt='Pdsf'), None)
 
     def test_filter_by_period(self):
         """test method filter_by_period"""

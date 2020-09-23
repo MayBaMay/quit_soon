@@ -28,7 +28,7 @@ class test_PaquetFormCreation(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_PaquetFormCreation_is_not_valid(self):
-        """test invalid PaquetFormCreation, datas already in DB"""
+        """test invalid PaquetFormCreation, data already in DB"""
         Paquet.objects.create(
             user=self.user,
             type_cig='IND',

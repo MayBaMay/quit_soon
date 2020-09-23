@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
-import datetime
-from datetime import datetime as dt
-from datetime import date
+"""
+Module interacting with Trophy models
+"""
+
 import calendar
 import pandas as pd
-from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db import transaction
 
 from QuitSoonApp.models import Trophy
 
 
-class trophy_checking:
+class TrophyManager:
+    """Manage informations of trophies earned by user"""
 
     def __init__(self, stats):
         self.stats = stats
@@ -33,7 +34,7 @@ class trophy_checking:
 
     @property
     def all_user_challenges_before_parsing(self):
-        """"""
+        """get all trophies accomplished by user before parsing"""
         challenges_dict = {}
         for type, challenge in self.challenges.items():
             for cig in challenge['nb_cig']:
@@ -191,9 +192,9 @@ class trophy_checking:
                 # if full month
                 if value == calendar.monthrange(year, index)[1]:
                     # Get True if all data in this month are NaNs
-                    nb_Nans_in_month = df_year[(df_year.date.dt.month == index)].isnull().sum().nb_cig
+                    nb_nans_in_month = df_year[(df_year.date.dt.month == index)].isnull().sum().nb_cig
                     total_rows_in_month = df_year[(df_year.date.dt.month == index)].shape[0]
-                    if nb_Nans_in_month == total_rows_in_month:
+                    if nb_nans_in_month == total_rows_in_month:
                         ## one month without smoking
                         non_smoking_month.append(True)
                     else:

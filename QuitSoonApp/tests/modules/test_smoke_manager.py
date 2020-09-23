@@ -46,7 +46,7 @@ class SmokeManagerTestCase(TestCase):
             'rol_pack_field': self.db_pack_rol.id,
             'given_field':False,
             }
-        self.new_datas_rol = datas ={
+        self.new_datas_rol = data ={
             'date_smoke': datetime.date(2020, 5, 17),
             'time_smoke': datetime.time(13, 15),
             'type_cig_field':'ROL',
@@ -77,26 +77,26 @@ class SmokeManagerTestCase(TestCase):
         self.assertEqual(smoke.datetime_cig, None)
 
     def test_get_pack_ind(self):
-        """test SmokeManager.get_pack method with new smoke datas and given_field=False & type_cig_field='IND'"""
+        """test SmokeManager.get_pack method with new smoke data and given_field=False & type_cig_field='IND'"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
 
     def test_get_pack_rol(self):
-        """test SmokeManager.get_pack method with new smoke datas : given_field=False & type_cig_field='ROL'"""
+        """test SmokeManager.get_pack method with new smoke data : given_field=False & type_cig_field='ROL'"""
         smoke = SmokeManager(self.usertest, self.new_datas_rol)
         self.assertEqual(smoke.get_pack, self.db_pack_rol)
         self.assertEqual(smoke.get_pack, self.db_pack_rol)
 
     def test_get_pack__given_cig(self):
-        """test SmokeManager.get_pack method with new smoke datas and given_field=True"""
+        """test SmokeManager.get_pack method with new smoke data and given_field=True"""
         self.new_datas_ind['given_field'] = True
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_pack, None)
         self.assertEqual(smoke.get_pack, None)
 
     def test_get_pack_smoke_id(self):
-        """test SmokeManager.get_pack method with id_smoke in datas (for delete_smoke view)"""
+        """test SmokeManager.get_pack method with id_smoke in data (for delete_smoke view)"""
         smoke = SmokeManager(self.usertest, self.old_smoke_ind_data)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
@@ -107,7 +107,7 @@ class SmokeManagerTestCase(TestCase):
         self.assertEqual(smoke.get_pack, None)
 
     def test_create_conso_cig(self):
-        """test SmokeManager.create_conso_cig method with new conso datas"""
+        """test SmokeManager.create_conso_cig method with new conso data"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         smoke.create_conso_cig()
         new_smoke = ConsoCig.objects.filter(user=self.usertest,
@@ -147,7 +147,7 @@ class SmokeManagerTestCase(TestCase):
         self.assertEqual(smoke.get_conso_cig, self.db_smoke_ind)
 
     def test_get_conso_cig_new_conso(self):
-        """test SmokeManager.conso_cig method after creation object with new conso datas"""
+        """test SmokeManager.conso_cig method after creation object with new conso data"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         smoke.create_conso_cig()
         self.assertEqual(smoke.get_conso_cig, ConsoCig.objects.get(
@@ -158,7 +158,7 @@ class SmokeManagerTestCase(TestCase):
             ))
 
     def test_get_conso_cig_not_created(self):
-        """test SmokeManager.conso_cig method without creating object with new conso datas"""
+        """test SmokeManager.conso_cig method without creating object with new conso data"""
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_conso_cig, None)
 

@@ -113,7 +113,7 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
         self.assertTrue(form.is_valid())
 
     def test_SmokeForm_is_not_valid(self):
-        """test invalid SmokeForm, datas missing"""
+        """test invalid SmokeForm, data missing"""
         form = SmokeForm(self.usertest, -120,  {})
         self.assertFalse(form.is_valid())
         for error in form.errors:

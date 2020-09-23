@@ -67,7 +67,7 @@ class PacksAndSmokeTestCase(TestCase):
         self.assertEqual(db_pack[0].g_per_cig, None)
 
     def test_paquets_view_post_fails(self):
-        """Test client post a form with invalid datas"""
+        """Test client post a form with invalid data"""
         brandtest = Paquet.objects.create(
             user=self.user,
             type_cig='ROL',
@@ -75,12 +75,12 @@ class PacksAndSmokeTestCase(TestCase):
             qt_paquet=50,
             price=30,
             )
-        datas = {'type_cig':'ROL',
+        data = {'type_cig':'ROL',
                 'brand':'BRANDTEST',
                 'qt_paquet':'50',
                 'price':'30'}
         response = self.client.post(reverse('QuitSoonApp:paquets'),
-                                    data=datas)
+                                    data=data)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
         db_pack = Paquet.objects.filter(

@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 
-import time
-import datetime
-from datetime import time as t
-from datetime import timedelta
-from dateutil import relativedelta
-import pytz
-from decimal import Decimal
+"""QuitSoon Application views"""
+
 import json
+import datetime
+from datetime import timedelta
 import pandas as pd
 
 from django.shortcuts import render, redirect
@@ -29,7 +26,6 @@ from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
-    Objectif, Trophy
 )
 from QuitSoonApp.forms import (
     RegistrationForm,
@@ -43,12 +39,12 @@ from QuitSoonApp.forms import (
     ChooseAlternativeFormWithEmptyFields, HealthForm,
     )
 from QuitSoonApp.modules import (
-    ResetProfile,
+    ProfileManager,
     PackManager, SmokeManager,
     AlternativeManager, HealthManager,
     SmokeStats, HealthyStats,
     get_delta_last_event,
-    trophy_checking,
+    TrophyManager,
     DataFrameDate
     )
 
@@ -57,17 +53,16 @@ def index(request):
     """index View"""
     if request.user.is_authenticated:
         return redirect('QuitSoonApp:today')
-    else:
-        return render(request, 'index.html')
+    return render(request, 'index.html')
 
 def get_client_offset(request):
-    # timezone offset returned by client with django-tz-detect
+    """ timezone offset returned by client with django-tz-detect"""
     if request.session.get('detected_tz'):
         return request.session.get('detected_tz')
-    else:
-        return 0
+    return 0
 
 def update_dt_user_model_field(user, tz_offset):
+    """update dt_user field in database with actual user time"""
     if tz_offset:
         conso = ConsoCig.objects.filter(user=user)
         conso.update(user_dt=F('datetime_cig') - timedelta(minutes=tz_offset))
@@ -106,8 +101,7 @@ def today(request):
     """Welcome page if user.is_authenticated. Actions for the day"""
     context = {}
     tz_offset = get_client_offset(request)
-    smoke = ConsoCig.objects.filter(user=request.user)
-    health = ConsoAlternative.objects.filter(user=request.user)
+    smoke_conso = ConsoCig.objects.filter(user=request.user)
     # update user_dt field
     update_dt_user_model_field(request.user, tz_offset)
 
@@ -116,9 +110,9 @@ def today(request):
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
         current_tz = timezone.get_current_timezone()
         user_now = current_tz.normalize(timezone.now().astimezone(current_tz))
-        if smoke:
+        if smoke_conso:
             context['smoke_today'] = smoke_stats.nb_per_day(user_now.date())
-            last = smoke.latest('datetime_cig').datetime_cig
+            last = smoke_conso.latest('datetime_cig').datetime_cig
             context['lastsmoke'] = get_delta_last_event(last)[0]
             context['average_number'] = round(smoke_stats.average_per_day)
     return render(request, 'QuitSoonApp/today.html', context)
@@ -155,7 +149,6 @@ def profile(request):
 
 def new_parameters(request):
     """View changing user smoking habits when starting using app"""
-    response_data = {'response':None}
     if request.method == 'POST':
         # make request.POST mutable
         data = dict(request.POST)
@@ -181,11 +174,10 @@ def new_parameters(request):
         # reset parameters
         parameter_form = ParametersForm(request.user, data)
         if parameter_form.is_valid():
-            reset = ResetProfile(request.user, parameter_form.cleaned_data)
+            reset = ProfileManager(request.user, parameter_form.cleaned_data)
             reset.new_profile()
         return redirect('QuitSoonApp:profile')
-    else:
-        raise Http404()
+    raise Http404()
 
 def new_name(request):
     """View changing user name"""
@@ -238,7 +230,7 @@ def new_password(request):
             old_password = request.POST['old_password']
             new_password1 = request.POST['new_password1']
             new_password2 = request.POST['new_password2']
-            if request.user.check_password(old_password) == False:
+            if not request.user.check_password(old_password):
                 response_data = {'response':"incorrect old password"}
             elif new_password1 != new_password2:
                 response_data = {'response':"new password not confirmed"}
@@ -263,11 +255,11 @@ def paquets(request):
             form = PaquetFormCreation(request.user)
             context['first'] = False
     # select users packs for display in paquets page
-    paquets = Paquet.objects.filter(user=request.user, display=True)
+    displayed_pack = Paquet.objects.filter(user=request.user, display=True)
     context['form'] = form
     # get packs per type
-    context['ind'] = paquets.filter(type_cig='IND')
-    context['rol'] = paquets.filter(type_cig='ROL')
+    context['ind'] = displayed_pack.filter(type_cig='IND')
+    context['rol'] = displayed_pack.filter(type_cig='ROL')
     return render(request, 'QuitSoonApp/paquets.html', context)
 
 def delete_pack(request, id_pack):
@@ -280,9 +272,8 @@ def delete_pack(request, id_pack):
         new_pack = PackManager(request.user, data)
         new_pack.delete_pack()
         return redirect('QuitSoonApp:paquets')
-    else:
-        # asked out of form so not expected request from user
-        raise Http404()
+    # asked out of form so not expected request from user
+    raise Http404()
 
 def change_g_per_cig(request):
     """
@@ -309,16 +300,16 @@ def smoke(request):
         if request.method == 'POST':
             smoke_form = SmokeForm(request.user, tz_offset,  request.POST)
             if smoke_form.is_valid():
-                smoke = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
-                smoke.create_conso_cig()
+                smoky = SmokeManager(request.user, smoke_form.cleaned_data, tz_offset)
+                smoky.create_conso_cig()
                 return redirect('QuitSoonApp:today')
         context['smoke_form'] = smoke_form
 
-    smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
-    context['smoke'] = smoke
-    context['nb_smoke_today']= smoke.filter(datetime_cig__date=timezone.now().date()).count()
-    if smoke:
-        last = smoke.latest('datetime_cig').datetime_cig
+    smoke_conso = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
+    context['smoke'] = smoke_conso
+    context['nb_smoke_today']= smoke_conso.filter(datetime_cig__date=timezone.now().date()).count()
+    if smoke_conso:
+        last = smoke_conso.latest('datetime_cig').datetime_cig
         context['lastsmoke'] = get_delta_last_event(last)
     return render(request, 'QuitSoonApp/smoke.html', context)
 
@@ -328,49 +319,50 @@ def delete_smoke(request, id_smoke):
     """
     if ConsoCig.objects.filter(user=request.user, id=id_smoke).exists():
         data = {'id_smoke':id_smoke}
-        smoke = SmokeManager(request.user, data)
-        smoke.delete_conso_cig()
+        smoky = SmokeManager(request.user, data)
+        smoky.delete_conso_cig()
         return redirect('QuitSoonApp:smoke_list')
-    else:
-        raise Http404()
+    raise Http404()
+
+def filter_smoke_to_display(data, smoke_conso):
+    """filter smoke list to display user depending on user choice"""
+    if data['type_cig_field'] != 'empty':
+        if data['type_cig_field'] == 'given':
+            smoke_conso = smoke_conso.filter(given=True)
+        else:
+            smoke_conso = smoke_conso.filter(
+                paquet__type_cig=data['type_cig_field']
+                )
+            if data['ind_pack_field'] != 'empty':
+                pack = Paquet.objects.get(id=int(data['ind_pack_field']))
+                smoke_conso = smoke_conso.filter(paquet__brand=pack.brand)
+            elif data['rol_pack_field'] != 'empty':
+                pack = Paquet.objects.get(id=int(data['rol_pack_field']))
+                smoke_conso = smoke_conso.filter(paquet__brand=pack.brand)
+    return smoke_conso
 
 def smoke_list(request):
     """list conso cig"""
     context = {}
-    profile = UserProfile.objects.filter(user=request.user)
-    context['profile'] = profile
+    context['profile'] = UserProfile.objects.filter(user=request.user)
     packs = Paquet.objects.filter(user=request.user, display=True)
     context['packs'] = packs
-
     # update user_dt field
     tz_offset = get_client_offset(request)
     update_dt_user_model_field(request.user, tz_offset)
-
-    if packs.exists():
-        smoke = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
-        if smoke.exists() :
-            smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
-            if request.method == 'POST':
-                smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
-                if smoke_list_form.is_valid():
-                    data = smoke_list_form.cleaned_data
-                    if data['type_cig_field'] != 'empty':
-                        if data['type_cig_field'] == 'given':
-                            smoke = smoke.filter(given=True)
-                        else:
-                            smoke = smoke.filter(paquet__type_cig=data['type_cig_field'])
-                            if data['ind_pack_field'] != 'empty':
-                                pack = Paquet.objects.get(id=int(data['ind_pack_field']))
-                                smoke = smoke.filter(paquet__brand=pack.brand)
-                            elif data['rol_pack_field'] != 'empty':
-                                pack = Paquet.objects.get(id=int(data['rol_pack_field']))
-                                smoke = smoke.filter(paquet__brand=pack.brand)
-            paginator = Paginator(smoke, 20)
-
-            page = request.GET.get('page')
-            page_smoke = paginator.get_page(page)
-            context['smoke'] = page_smoke
-            context['smoke_list_form'] = smoke_list_form
+    smoke_conso = ConsoCig.objects.filter(user=request.user).order_by('-datetime_cig')
+    if packs.exists() and smoke_conso.exists():
+        smoke_list_form = ChoosePackFormWithEmptyFields(request.user)
+        if request.method == 'POST':
+            smoke_list_form = ChoosePackFormWithEmptyFields(request.user, request.POST)
+            if smoke_list_form.is_valid():
+                data = smoke_list_form.cleaned_data
+                smoke_conso = filter_smoke_to_display(data, smoke_conso)
+        paginator = Paginator(smoke_conso, 20)
+        page = request.GET.get('page')
+        page_smoke = paginator.get_page(page)
+        context['smoke'] = page_smoke
+        context['smoke_list_form'] = smoke_list_form
     return render(request, 'QuitSoonApp/smoke_list.html', context)
 
 def alternatives(request):
@@ -420,16 +412,16 @@ def alternatives(request):
                     substitut_form = SubstitutForm(request.user)
 
     # select users packs for display in paquets page
-    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    displayed_alt = Alternative.objects.filter(user=request.user, display=True)
     context = {
         'alternative_form':alternative_form,
         'activity_form':activity_form,
         'substitut_form':substitut_form,
         # get packs per type
-        'Sp':alternatives.filter(type_activity='Sp'),
-        'Lo':alternatives.filter(type_activity='Lo'),
-        'So':alternatives.filter(type_activity='So'),
-        'Su':alternatives.filter(type_alternative='Su'),
+        'Sp':displayed_alt.filter(type_activity='Sp'),
+        'Lo':displayed_alt.filter(type_activity='Lo'),
+        'So':displayed_alt.filter(type_activity='So'),
+        'Su':displayed_alt.filter(type_alternative='Su'),
         }
     return render(request, 'QuitSoonApp/alternatives.html', context)
 
@@ -443,19 +435,18 @@ def delete_alternative(request, id_alternative):
         new_alternative = AlternativeManager(request.user, data)
         new_alternative.delete_alternative()
         return redirect('QuitSoonApp:alternatives')
-    else:
-        raise Http404()
+    raise Http404()
 
 def health(request):
     """User do a healthy activity or uses substitutes"""
     context = {}
     tz_offset = get_client_offset(request)
     # check if alternatives are in parameters to fill fields with actual alternatives
-    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    displayed_alt = Alternative.objects.filter(user=request.user, display=True)
     update_dt_user_model_field(request.user, tz_offset)
 
-    context['alternatives'] = alternatives
-    if alternatives :
+    context['alternatives'] = displayed_alt
+    if displayed_alt :
         form = HealthForm(request.user, tz_offset)
         if request.method == 'POST':
             form = HealthForm(request.user, tz_offset, request.POST)
@@ -464,10 +455,10 @@ def health(request):
                 new_health.create_conso_alternative()
                 return redirect('QuitSoonApp:today')
         context['form'] = form
-    health = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
-    context['health'] = health
-    if health:
-        last = health.latest('datetime_alter').datetime_alter
+    healthy = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
+    context['health'] = healthy
+    if healthy:
+        last = healthy.latest('datetime_alter').datetime_alter
         context['lasthealth'] = get_delta_last_event(last)
     return render(request, 'QuitSoonApp/health.html', context)
 
@@ -477,135 +468,164 @@ def delete_health(request, id_health):
     """
     if ConsoAlternative.objects.filter(user=request.user, id=id_health).exists():
         data = {'id_health':id_health}
-        health = HealthManager(request.user, data)
-        health.delete_conso_alternative()
+        healthy = HealthManager(request.user, data)
+        healthy.delete_conso_alternative()
         return redirect('QuitSoonApp:health_list')
-    else:
-        raise Http404()
+    raise Http404()
+
+def filter_health_to_display(data, health_conso):
+    """filter health list to display user depending on user choice"""
+    if data['type_alternative_field'] != 'empty':
+        if data['type_alternative_field'] == 'Su':
+            health_conso = health_conso.filter(
+                alternative__type_alternative=data['type_alternative_field']
+                )
+            if data['su_field'] != 'empty':
+                alt = Alternative.objects.get(id=int(data['su_field']))
+                health_conso = health_conso.filter(alternative__substitut=alt.substitut)
+        else:
+            health_conso = health_conso.filter(
+                alternative__type_activity=data['type_alternative_field']
+                )
+            if data['sp_field'] != 'empty':
+                alt = Alternative.objects.get(id=int(data['sp_field']))
+                health_conso = health_conso.filter(alternative__activity=alt.activity)
+            elif data['so_field'] != 'empty':
+                alt = Alternative.objects.get(id=int(data['so_field']))
+                health_conso = health_conso.filter(alternative__activity=alt.activity)
+            elif data['lo_field'] != 'empty':
+                alt = Alternative.objects.get(id=int(data['lo_field']))
+                health_conso = health_conso.filter(alternative__activity=alt.activity)
+    return health_conso
 
 def health_list(request):
+    """Show user saved healthy activities"""
     context = {}
-    # check if packs are in parameters to fill fields with actual packs
-    alternatives = Alternative.objects.filter(user=request.user, display=True)
+    # check if Alternative are in parameters to fill fields with actual Alternative
+    displayed_alt = Alternative.objects.filter(user=request.user, display=True)
 
     # update user_dt field
     tz_offset = get_client_offset(request)
     update_dt_user_model_field(request.user, tz_offset)
 
-    context['alternatives'] = alternatives
-    if alternatives.exists():
-        health = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
-        if health.exists():
-            health_form = ChooseAlternativeFormWithEmptyFields(request.user)
-            if request.method == 'POST':
-                health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
-                if health_form.is_valid():
-                    data = health_form.cleaned_data
-                    if data['type_alternative_field'] != 'empty':
-                        if data['type_alternative_field'] == 'Su':
-                            health = health.filter(alternative__type_alternative=data['type_alternative_field'])
-                            if data['su_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['su_field']))
-                                health = health.filter(alternative__substitut=alt.substitut)
-                        else:
-                            health = health.filter(alternative__type_activity=data['type_alternative_field'])
-                            if data['sp_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['sp_field']))
-                                health = health.filter(alternative__activity=alt.activity)
-                            elif data['so_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['so_field']))
-                                health = health.filter(alternative__activity=alt.activity)
-                            elif data['lo_field'] != 'empty':
-                                alt = Alternative.objects.get(id=int(data['lo_field']))
-                                health = health.filter(alternative__activity=alt.activity)
-            paginator = Paginator(health, 20)
-            page = request.GET.get('page')
-            page_health = paginator.get_page(page)
-            context['health'] = page_health
-            context['health_form'] = health_form
+    context['alternatives'] = displayed_alt.exists()
+    health_conso = ConsoAlternative.objects.filter(user=request.user).order_by('-datetime_alter')
+    if displayed_alt and health_conso.exists():
+        health_form = ChooseAlternativeFormWithEmptyFields(request.user)
+        if request.method == 'POST':
+            health_form = ChooseAlternativeFormWithEmptyFields(request.user, request.POST)
+            if health_form.is_valid():
+                data = health_form.cleaned_data
+                health_conso = filter_health_to_display(data, health_conso)
+        paginator = Paginator(health_conso, 20)
+        page = request.GET.get('page')
+        page_health = paginator.get_page(page)
+        context['health'] = page_health
+        context['health_form'] = health_form
     return render(request, 'QuitSoonApp/health_list.html', context)
 
-def report(request, **kwargs):
+def smoky_report(smoke_stats):
+    """user smoking report"""
+    stats = {
+        'smoke_user_conso_full_days': smoke_stats.user_conso_full_days,
+        'total_number': smoke_stats.total_smoke_all_days,
+        'average_number': round(smoke_stats.average_per_day),
+        'non_smoked': smoke_stats.nb_not_smoked_cig,
+        'total_money': round(smoke_stats.total_money_smoked, 2),
+        'saved_money': round(smoke_stats.money_saved, 2),
+        'average_money': round(smoke_stats.average_money_per_day, 2),
+    }
+    return stats
+
+def healthy_report(healthy_stats):
+    """user healthy activities and substiuts report"""
+    stats = {'user_conso_subsitut': healthy_stats.user_conso_subsitut.exists()}
+    current_tz = timezone.get_current_timezone()
+    user_now = current_tz.normalize(timezone.now().astimezone(current_tz))
+    activity_stats = {}
+    if healthy_stats.user_activities:
+        for type_act in Alternative.TYPE_ACTIVITY:
+            activity_stats[type_act[0]] = {}
+            conso = ConsoAlternative.objects.filter(alternative__type_activity=type_act[0])
+            if conso.exists():
+                activity_stats[type_act[0]]['exists'] = True
+            activity_stats[type_act[0]]['name'] = type_act[1]
+            for period in ['day', 'week', 'month']:
+                minutes = healthy_stats.report_alternative_per_period(
+                    user_now.date(),
+                    period=period,
+                    type_alt=type_act[0]
+                    )
+                str_minutes = healthy_stats.convert_minutes_to_hours_min_str(minutes)
+                activity_stats[type_act[0]][period] = str_minutes
+        stats['activity_stats'] = activity_stats
+    substitut_stats = {}
+    if healthy_stats.user_conso_subsitut:
+        for type_alt in Alternative.SUBSTITUT:
+            substitut_stats[type_alt[0]] = {}
+            if ConsoAlternative.objects.filter(alternative__substitut=type_alt[0]).exists():
+                substitut_stats[type_alt[0]]['exists'] = True
+            substitut_stats[type_alt[0]]['name'] = type_alt[1]
+            for period in ['day', 'week', 'month']:
+                nicotine = healthy_stats.report_alternative_per_period(
+                    user_now.date(),'Su',
+                    period=period,
+                    type_alt=type_alt[0]
+                    )
+                substitut_stats[type_alt[0]][period] = nicotine
+        stats['substitut_stats'] = substitut_stats
+    return stats
+
+
+def report(request):
     """Page with user results, graphs..."""
     context = {}
     tz_offset = get_client_offset(request)
     update_dt_user_model_field(request.user, tz_offset)
-
-    profile = UserProfile.objects.filter(user=request.user).exists()
     smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
     healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
-
     # graphs with smoke and health activities
     if smoke_stats.user_conso_all_days or healthy_stats.user_conso_all_days:
-
         # generate context
-        context['smoke_user_conso_full_days'] = smoke_stats.user_conso_full_days
-        context['total_number'] = smoke_stats.total_smoke_all_days
-        context['average_number'] = round(smoke_stats.average_per_day)
-        context['non_smoked'] = smoke_stats.nb_not_smoked_cig_full_days
-        context['total_money'] = round(smoke_stats.total_money_smoked, 2)
-        context['saved_money'] = round(smoke_stats.money_saved, 2)
-        context['average_money'] = round(smoke_stats.average_money_per_day, 2)
-        context['user_conso_subsitut'] = healthy_stats.user_conso_subsitut.exists()
-
-        today = timezone.now() - timedelta(tz_offset)
-        activity_stats = {}
-        if healthy_stats.user_activities:
-            for type in Alternative.TYPE_ACTIVITY:
-                activity_stats[type[0]] = {}
-                if ConsoAlternative.objects.filter(alternative__type_activity=type[0]).exists():
-                    activity_stats[type[0]]['exists'] = True
-                activity_stats[type[0]]['name'] = type[1]
-                for period in ['day', 'week', 'month']:
-                    minutes = healthy_stats.report_substitut_per_period(today, period=period, type=type[0])
-                    activity_stats[type[0]][period] = healthy_stats.convert_minutes_to_hours_min_str(minutes)
-            context['activity_stats'] = activity_stats
-        substitut_stats = {}
-        if healthy_stats.user_conso_subsitut:
-            for type in Alternative.SUBSTITUT:
-                substitut_stats[type[0]] = {}
-                if ConsoAlternative.objects.filter(alternative__substitut=type[0]).exists():
-                    substitut_stats[type[0]]['exists'] = True
-                substitut_stats[type[0]]['name'] = type[1]
-                for period in ['day', 'week', 'month']:
-                    nicotine = healthy_stats.report_substitut_per_period(today,'Su', period=period, type=type[0])
-                    substitut_stats[type[0]][period] = nicotine
-            context['substitut_stats'] = substitut_stats
+        context['smoky_report'] = smoky_report(smoke_stats)
+        context['healthy_report'] = healthy_report(healthy_stats)
         return render(request, 'QuitSoonApp/report.html', context)
-    else:
-        context['no_data'] = True
-        return render(request, 'QuitSoonApp/report.html', context)
+    context['no_data'] = True
+    return render(request, 'QuitSoonApp/report.html', context)
 
 def objectifs(request):
     """Page with user trophies and goals"""
     context = {}
     tz_offset = get_client_offset(request)
-    profile = UserProfile.objects.filter(user=request.user).exists()
     stats = SmokeStats(request.user, timezone.now(), tz_offset)
-    trophy = trophy_checking(stats)
+    trophy = TrophyManager(stats)
     trophy.create_trophies()
     context['challenges'] = trophy.user_trophies
     return render(request, 'QuitSoonApp/objectifs.html', context)
 
 
 class ChartData(APIView):
+    """API receiving user choices from client and returning chart data"""
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, format=None):
-
+    def get(self, request):
+        """API get method"""
         period = request.GET.get('period') or 'Jour'
-        show_healthy = request.GET.get('show_healthy') or False
         charttype = request.GET.get('charttype') or 'nb_cig'
-        datesRange = request.GET.get('datesRange') or 0
+        dates_range = request.GET.get('datesRange') or 0
+
+        smoke_stats = SmokeStats(
+            request.user,
+            timezone.now(),
+            get_client_offset(request)
+            )
 
         if charttype == 'time':
 
-            tz_offset = get_client_offset(request)
-            smoke = SmokeStats(request.user, timezone.now(), tz_offset)
-            nb_full_days = smoke.nb_full_days_since_start
-            qs = smoke.user_conso_full_days.values()
-            data_cig = pd.DataFrame(qs)
+            nb_full_days = smoke_stats.nb_full_days_since_start
+            conso_values = smoke_stats.user_conso_full_days.values()
+            data_cig = pd.DataFrame(conso_values)
             data = data_cig.user_dt.dt.hour.value_counts()
             data_dict = {}
             for hour in range(0,25):
@@ -621,9 +641,10 @@ class ChartData(APIView):
 
         else:
 
-            tz_offset = get_client_offset(request)
-            smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
-            healthy_stats = HealthyStats(request.user, timezone.now(), tz_offset)
+            healthy_stats = HealthyStats(
+                request.user,
+                timezone.now(),
+                get_client_offset(request))
 
             # generate data for graphs
             user_dict = {'date':[],
@@ -633,9 +654,13 @@ class ChartData(APIView):
                          'nicotine':[]}
 
             for date in smoke_stats.list_dates:
-                user_dict['date'].append(datetime.datetime.combine(date, datetime.datetime.min.time()))
-                if healthy_stats.report_substitut_per_period(date):
-                    user_dict['activity_duration'].append(healthy_stats.report_substitut_per_period(date))
+                user_dict['date'].append(
+                    datetime.datetime.combine(date, datetime.datetime.min.time())
+                    )
+                if healthy_stats.report_alternative_per_period(date):
+                    user_dict['activity_duration'].append(
+                        healthy_stats.report_alternative_per_period(date)
+                        )
                 else:
                     user_dict['activity_duration'].append(0)
                 if charttype == 'nb_cig':
@@ -647,21 +672,21 @@ class ChartData(APIView):
             # keep only usefull keys and value in user_dict
             user_dict = {i:user_dict[i] for i in user_dict if user_dict[i]!=[]}
 
-            df = DataFrameDate(user_dict, charttype)
+            df_chart = DataFrameDate(user_dict, charttype)
             if period == 'Jour':
-                df = df.day_df
+                df_chart = df_chart.day_df
             elif period == 'Semaine':
-                df = df.week_df
+                df_chart = df_chart.week_df
             elif period == 'Mois':
-                df = df.month_df
+                df_chart = df_chart.month_df
 
-            if len(df.index) > 7:
-                if int(datesRange):
-                    df = df.iloc[-7 + int(datesRange): int(datesRange) ]
+            if len(df_chart.index) > 7:
+                if int(dates_range):
+                    df_chart = df_chart.iloc[-7 + int(dates_range): int(dates_range) ]
                 else:
-                    df = df.tail(7)
+                    df_chart = df_chart.tail(7)
 
-            values = df.to_json(orient="values")
+            values = df_chart.to_json(orient="values")
             parsed = json.loads(values)
             formated_data = []
             formated_activity_data = []
@@ -669,7 +694,7 @@ class ChartData(APIView):
                 formated_data.append(elt[0])
                 formated_activity_data.append(elt[1])
 
-            result = df.to_json(orient="split")
+            result = df_chart.to_json(orient="split")
             parsed = json.loads(result)
             parsed["data"] = {'base':formated_data, 'activity':formated_activity_data}
             parsed["min_cig"] = UserProfile.objects.get(user=request.user).starting_nb_cig
