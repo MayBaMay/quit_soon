@@ -11,101 +11,22 @@ from django.core.exceptions import ValidationError
 
 from QuitSoonApp.forms import PaquetFormCreation, SmokeForm, ChoosePackFormWithEmptyFields
 from QuitSoonApp.models import Paquet, ConsoCig
+from ..MOCK_DATA import BaseTestCase, BaseAllPacksTestCase
 
 
-class PaquetFormCreationTestCase(TestCase):
-
-    def setUp(self):
-        """setup tests"""
-        self.usertest = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
-
-    def test_clean_brand(self):
-        data = {
-            'type_cig':'IND',
-            'brand':'camel',
-            'qt_paquet':20,
-            'price':10,
-            }
-        form = PaquetFormCreation(self.usertest, data)
-        self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data.get('brand'), 'CAMEL')
-
-    def test_clean(self):
-        self.db_pack_ind = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        data = {
-            'type_cig':'IND',
-            'brand':'camel',
-            'qt_paquet':20,
-            'price':10,
-            }
-        form = PaquetFormCreation(self.usertest, data)
-        self.assertFalse(form.is_valid())
-        self.assertRaises(ValidationError)
-
-
-class ChoosingPackFormsTestCase(TestCase):
-    """test PaquetFormCreation"""
+class SmokeFormTestCase(BaseAllPacksTestCase):
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
-        self.db_pack_undisplayed = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='LUCKY',
-            qt_paquet=20,
-            price=10,
-            display=False
-            )
-        self.db_pack_ind = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        self.db_pack_ind2 = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='PHILIP MORRIS',
-            qt_paquet=20,
-            price=10.2,
-            )
-        self.db_pack_rol = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='ROL',
-            brand='1637',
-            qt_paquet=30,
-            price=12,
-            )
-        self.db_pack_nb = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='beedies',
-            qt_paquet=30,
-            price=5,
-            )
-
+        super().setUp()
         self.valid_smoking_datas = {
             'date_smoke':datetime.date(2020, 5, 11),
             'time_smoke':datetime.time(12, 56),
             'type_cig_field':'IND',
             'ind_pack_field':self.db_pack_ind.id,
             'rol_pack_field':self.db_pack_rol.id,
-            'nb_pack_field':self.db_pack_nb.id,
             'given_field':False,
             }
-
-
-class SmokeFormTestCase(ChoosingPackFormsTestCase):
 
     def test_SmokeForm_is_valid(self):
         """test valid SmokeForm"""
@@ -249,47 +170,3 @@ class SmokeFormTestCase(ChoosingPackFormsTestCase):
             form.config_field('rol_pack_field', 'ROL'),
             ((pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)),)
             )
-
-
-class ChoosePackFormWithEmptyFieldsTestCase(ChoosingPackFormsTestCase):
-
-    def test_config_fields(self):
-        bd_consocig1 = ConsoCig.objects.create(
-            user=self.usertest,
-            datetime_cig=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
-            paquet=self.db_pack_ind,
-            given=False,
-        )
-        bd_consocig2 = ConsoCig.objects.create(
-            user=self.usertest,
-            datetime_cig=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
-            paquet=self.db_pack_ind,
-            given=False,
-        )
-        bd_consocig3 = ConsoCig.objects.create(
-            user=self.usertest,
-            datetime_cig=datetime.datetime(2020, 5, 13, 22, 5, tzinfo=pytz.utc),
-            paquet=None,
-            given=True,
-        )
-        form = ChoosePackFormWithEmptyFields(self.usertest)
-        self.assertEqual(form.initial['type_cig_field'], ('empty', '------------------'))
-        self.assertEqual(form.fields['type_cig_field'].choices[1][0],'IND')
-        self.assertEqual(form.fields['type_cig_field'].choices[2],('given', 'Clopes taxées'))
-        self.assertEqual(form.initial['ind_pack_field'], ('empty', '------------------'))
-        self.assertEqual(form.fields['ind_pack_field'].choices[1],(self.db_pack_ind.id, 'CAMEL /20U'))
-        self.assertEqual(form.initial['rol_pack_field'], ('empty', '------------------'))
-
-
-    def test_valid_empty_data(self):
-        data = {'type_cig_field':'empty'}
-        form = ChoosePackFormWithEmptyFields(self.usertest, data)
-        self.assertTrue(form.is_valid())
-
-        data = {
-            'type_cig_field':'empty',
-            'ind_pack_field':'empty',
-            'rol_pack_field':'empty',
-            }
-        form = ChoosePackFormWithEmptyFields(self.usertest, data)
-        self.assertTrue(form.is_valid())

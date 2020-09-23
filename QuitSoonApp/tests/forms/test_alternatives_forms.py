@@ -9,47 +9,44 @@ from QuitSoonApp.forms import (
     SubstitutForm
     )
 from QuitSoonApp.models import Alternative
+from ..MOCK_DATA import BaseTestCase
 
-
-class test_TypeAlternativeForm(TestCase):
+class test_TypeAlternativeForm(BaseTestCase):
     """test TypeAlternativeForm"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        super().setUp()
 
     def test_form(self):
         """test ParametersForm"""
-        data = {'user':self.user, 'type_alternative':'Ac'}
-        form = TypeAlternativeForm(self.user, data=data)
+        data = {'user':self.usertest, 'type_alternative':'Ac'}
+        form = TypeAlternativeForm(self.usertest, data=data)
         self.assertTrue(form.is_valid())
 
 
-class test_ActivityForm(TestCase):
+class test_ActivityForm(BaseTestCase):
     """test ActivityForm"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        super().setUp()
 
     def test_form(self):
         """test ActivityForm"""
-        data = {'user':self.user, 'type_activity':'Sp', 'activity':'Course à pied'}
-        form = ActivityForm(self.user, data=data)
+        data = {'user':self.usertest, 'type_activity':'Sp', 'activity':'Course à pied'}
+        form = ActivityForm(self.usertest, data=data)
         self.assertTrue(form.is_valid())
 
-class test_SubstitutForm(TestCase):
+class test_SubstitutForm(BaseTestCase):
     """test SubstitutForm"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        super().setUp()
 
     def test_form(self):
         """test SubstitutForm"""
-        data = {'user':self.user, 'substitut':'PAST', 'nicotine':2.0}
-        form = SubstitutForm(self.user, data=data)
+        data = {'user':self.usertest, 'substitut':'PAST', 'nicotine':2.0}
+        form = SubstitutForm(self.usertest, data=data)
         self.assertTrue(form.is_valid())

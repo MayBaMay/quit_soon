@@ -16,32 +16,25 @@ from QuitSoonApp.views import today
 from QuitSoonApp.models import (
     UserProfile, Paquet, ConsoCig, ConsoAlternative
 )
+from ..MOCK_DATA import BaseTestCase
 
-
-class PacksAndSmokeTestCase(TestCase):
+class PacksAndSmokeTestCase(BaseTestCase):
     """
     Tests on parameters page packs and smoking page
     """
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.client.login(username=self.user.username, password='testpassword')
+        super().setUp()
+        self.client.login(username=self.usertest.username, password='arandompassword')
         UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start='2020-05-13',
             starting_nb_cig=20
         )
-        self.db_pack_ind = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        self.db_pack_ind = self.camel
         ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 9, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
@@ -60,7 +53,7 @@ class PacksAndSmokeTestCase(TestCase):
     def test_today_view_get(self):
         """Test get today view"""
         ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 14, 19, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,

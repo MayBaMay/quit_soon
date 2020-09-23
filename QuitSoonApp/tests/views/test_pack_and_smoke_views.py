@@ -20,21 +20,20 @@ from QuitSoonApp.models import (
     Paquet, ConsoCig,
 )
 from QuitSoonApp.forms import PaquetFormCreation, SmokeForm, ChoosePackFormWithEmptyFields
+from ..MOCK_DATA import BaseTestCase
 
 
-
-class PacksAndSmokeTestCase(TestCase):
+class PacksAndSmokeTestCase(BaseTestCase):
     """
     Tests on parameters page packs and smoking page
     """
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.client.login(username=self.user.username, password='testpassword')
+        super().setUp()
+        self.client.login(username=self.usertest.username, password='arandompassword')
         UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start='2020-05-13',
             starting_nb_cig=20
         )
@@ -55,13 +54,7 @@ class PacksAndSmokeTestCase(TestCase):
                                     data=data)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
-        db_pack = Paquet.objects.filter(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        db_pack = self.filter_pack_camel
         self.assertTrue(db_pack.exists())
         self.assertEqual(db_pack[0].unit, 'U')
         self.assertEqual(db_pack[0].g_per_cig, None)
@@ -69,7 +62,7 @@ class PacksAndSmokeTestCase(TestCase):
     def test_paquets_view_post_fails(self):
         """Test client post a form with invalid data"""
         brandtest = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
@@ -84,7 +77,7 @@ class PacksAndSmokeTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'QuitSoonApp/paquets.html')
         db_pack = Paquet.objects.filter(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
@@ -96,7 +89,7 @@ class PacksAndSmokeTestCase(TestCase):
     def test_delete_pack_views(self):
         """Test client post delete_pack view"""
         db_pack = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
@@ -107,7 +100,7 @@ class PacksAndSmokeTestCase(TestCase):
             args=[db_pack.id]))
         self.assertEqual(response.status_code, 302)
         filter = Paquet.objects.filter(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
@@ -124,7 +117,7 @@ class PacksAndSmokeTestCase(TestCase):
     def test_change_g_per_cig_view(self):
         """Test client post hange_g_per_cig view"""
         pack = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=40,
@@ -155,13 +148,7 @@ class PacksAndSmokeTestCase(TestCase):
 
     def test_smoke_get_form(self):
         """ test get smoke view with packs saved by user, get form"""
-        db_pack_ind = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        db_pack_ind = self.camel
         response = self.client.get(reverse('QuitSoonApp:smoke'))
         self.assertTrue(response.context['packs'].exists())
         self.assertFalse(response.context['smoke'].exists())
@@ -170,7 +157,7 @@ class PacksAndSmokeTestCase(TestCase):
     def test_smoke_post_validform_given_true(self):
         """ test post smoke view with given=True """
         db_pack_ind = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='IND',
             brand='NEW BRAND',
             qt_paquet=20,
@@ -186,34 +173,16 @@ class PacksAndSmokeTestCase(TestCase):
         response = self.client.post(reverse('QuitSoonApp:smoke'),
                                     data=data)
         filter_smoke = ConsoCig.objects.filter(
-            user=self.user,
+            user=self.usertest,
         )
         self.assertTrue(filter_smoke.exists())
         self.assertEqual(filter_smoke.count(), 1)
 
     def test_smoke_post_validform_given_false(self):
         """ test post smoke view with given=false """
-        db_pack_ind = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        db_pack_ind2 = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='PHILIP MORRIS',
-            qt_paquet=20,
-            price=10.2,
-            )
-        db_pack_rol = Paquet.objects.create(
-            user=self.user,
-            type_cig='ROL',
-            brand='1637',
-            qt_paquet=30,
-            price=12,
-            )
+        db_pack_ind = self.camel
+        db_pack_ind2 = self.philip_morris
+        db_pack_rol = self.rol_1637
         data = {
             'date_smoke':datetime.date(2020, 5, 26),
             'time_smoke':datetime.time(12, 56),
@@ -224,7 +193,7 @@ class PacksAndSmokeTestCase(TestCase):
             }
         response = self.client.post(reverse('QuitSoonApp:smoke'), data=data)
         filter_smoke = ConsoCig.objects.filter(
-            user=self.user,
+            user=self.usertest,
         )
         self.assertTrue(filter_smoke.exists())
         self.assertEqual(filter_smoke.count(), 1)
@@ -232,15 +201,9 @@ class PacksAndSmokeTestCase(TestCase):
     @freeze_time("2020-05-26 20:21:34")
     def test_smoke_get_lastsmoke(self):
         """ test get smoke view with packs saved by user, get form"""
-        db_pack_ind = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        db_pack_ind = self.camel
         ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 26, 12, 5, tzinfo=pytz.utc),
             paquet=db_pack_ind,
             given=False,
@@ -259,7 +222,7 @@ class PacksAndSmokeTestCase(TestCase):
     def test_delete_smoke_given_true(self):
         """ test get delete_smoke smoke.given=True """
         db_smoke_given = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
             given=True,
@@ -268,20 +231,14 @@ class PacksAndSmokeTestCase(TestCase):
             'QuitSoonApp:delete_smoke',
             args=[db_smoke_given.id]))
         self.assertEqual(response.status_code, 302)
-        filter_conso = ConsoCig.objects.filter(user=self.user, id=db_smoke_given.id)
+        filter_conso = ConsoCig.objects.filter(user=self.usertest, id=db_smoke_given.id)
         self.assertFalse(filter_conso.exists())
 
     def test_delete_smoke_given_false(self):
         """ test get delete_smoke smoke.given=False """
-        db_pack = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        db_pack = self.camel
         db_smoke = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 17, 13, 15, tzinfo=pytz.utc),
             paquet=db_pack,
             given=False,
@@ -291,86 +248,54 @@ class PacksAndSmokeTestCase(TestCase):
             'QuitSoonApp:delete_smoke',
             args=[db_smoke.id]))
         self.assertEqual(response.status_code, 302)
-        filter_conso = ConsoCig.objects.filter(user=self.user, id=id)
+        filter_conso = ConsoCig.objects.filter(user=self.usertest, id=id)
         self.assertFalse(filter_conso.exists())
 
 
-class SmokeListTestCase(TestCase):
+class SmokeListTestCase(BaseTestCase):
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.client.login(username=self.user.username, password='testpassword')
+        super().setUp()
+        self.client.login(username=self.usertest.username, password='arandompassword')
         UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start='2020-05-13',
             starting_nb_cig=20
         )
 
-        self.db_pack_undisplayed = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='LUCKY',
-            qt_paquet=20,
-            price=10,
-            display=False
-            )
-        self.db_pack_ind = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        self.db_pack_ind2 = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='PHILIP MORRIS',
-            qt_paquet=20,
-            price=10.2,
-            )
-        self.db_pack_rol = Paquet.objects.create(
-            user=self.user,
-            type_cig='ROL',
-            brand='1637',
-            qt_paquet=30,
-            price=12,
-            )
-        self.db_pack_nb = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='beedies',
-            qt_paquet=30,
-            price=5,
-            )
+        self.db_pack_undisplayed = self.lucky
+        self.db_pack_ind = self.camel
+        self.db_pack_ind2 = self.philip_morris
+        self.db_pack_rol = self.rol_1637
+        self.db_pack_nb = self.beedies
 
         self.bd_consocig0 = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 9, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_rol,
             given=False,
         )
         self.bd_consocig1 = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 9, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
         )
         self.bd_consocig2 = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 11, 5, tzinfo=pytz.utc),
             paquet=self.db_pack_ind,
             given=False,
         )
         self.bd_consocig3 = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 22, 5, tzinfo=pytz.utc),
             paquet=None,
             given=True,
         )
         self.bd_consocig4 = ConsoCig.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 22, 35, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             given=False,
@@ -382,7 +307,7 @@ class SmokeListTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_smoke_list_no_pack_saved(self):
-        Paquet.objects.filter(user=self.user).delete()
+        Paquet.objects.filter(user=self.usertest).delete()
         response = self.client.get(reverse('QuitSoonApp:smoke_list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['packs'].count(), 0)
@@ -390,10 +315,10 @@ class SmokeListTestCase(TestCase):
         self.assertTrue('smoke_list_form' not in response.context.keys())
 
     def test_smoke_list_no_smoke_saved(self):
-        ConsoCig.objects.filter(user=self.user).delete()
+        ConsoCig.objects.filter(user=self.usertest).delete()
         response = self.client.get(reverse('QuitSoonApp:smoke_list'))
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.context['packs'], Paquet.objects.filter(user=self.user, display=True))
+        self.assertTrue(response.context['packs'], Paquet.objects.filter(user=self.usertest, display=True))
         self.assertTrue('smoke' not in response.context.keys())
         self.assertTrue('smoke_list_form' not in response.context.keys())
 
@@ -403,7 +328,7 @@ class SmokeListTestCase(TestCase):
                 'rol_pack_field':'empty'}
         response = self.client.post(reverse('QuitSoonApp:smoke_list'),
                                     data=data)
-        self.assertTrue(response.context['packs'], Paquet.objects.filter(user=self.user, display=True))
+        self.assertTrue(response.context['packs'], Paquet.objects.filter(user=self.usertest, display=True))
         self.assertTrue(response.context['smoke'][0], self.bd_consocig4)
         self.assertTrue(response.context['smoke'][1], self.bd_consocig3)
         self.assertTrue(response.context['smoke'][2], self.bd_consocig2)

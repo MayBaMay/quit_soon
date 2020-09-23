@@ -11,13 +11,13 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.forms import HealthForm, ChooseAlternativeFormWithEmptyFields, ActivityForm
 from QuitSoonApp.models import Alternative, ConsoAlternative
+from ..MOCK_DATA import BaseTestCase
 
 
-class ActivityFormTestCase(TestCase):
+class ActivityFormTestCase(BaseTestCase):
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        super().setUp()
 
     def test_clean_activity(self):
         data = {
@@ -29,12 +29,11 @@ class ActivityFormTestCase(TestCase):
         self.assertTrue(form.cleaned_data.get('activity'), 'COURSE')
 
 
-class HealthFormTestCase(TestCase):
+class HealthFormTestCase(BaseTestCase):
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        super().setUp()
         self.db_alternative_undisplayed = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',

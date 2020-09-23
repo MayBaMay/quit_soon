@@ -10,15 +10,15 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Alternative, ConsoAlternative
 from QuitSoonApp.modules import HealthManager
+from ..MOCK_DATA import BaseTestCase
 
 
-class HealthManagerTestCase(TestCase):
+class HealthManagerTestCase(BaseTestCase):
     """class testing HealthManager """
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+        super().setUp()
         self.alternative_sp = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',

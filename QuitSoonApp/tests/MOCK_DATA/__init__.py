@@ -6,3 +6,4 @@ from .row_data import (
     row_paquet_data, row_conso_cig_data,
     row_alternative_data, row_conso_alt_data, fake_smoke, fake_smoke_for_trophies
     )
+from .data_creation import BaseTestCase, BaseAllPacksTestCase

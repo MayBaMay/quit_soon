@@ -22,28 +22,28 @@ from QuitSoonApp.models import (
 from QuitSoonApp.modules import SmokeStats
 
 from QuitSoonApp.tests.MOCK_DATA import (
+    BaseTestCase, 
     Create_packs, Create_smoke,
     row_paquet_data, fake_smoke_for_trophies, fake_smoke
     )
 
 
-class ChecktrophyTestCase(TestCase):
+class ChecktrophyTestCase(BaseTestCase):
     """class testing Create_smoke """
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+        super().setUp()
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2020-06-19",
             starting_nb_cig=20
             )
-        self.packs = Create_packs(self.user, row_paquet_data)
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smoke = Create_smoke(self.user, fake_smoke_for_trophies)
+        self.smoke = Create_smoke(self.usertest, fake_smoke_for_trophies)
         self.smoke.populate_db()
-        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 12, 31, 12, 0), pytz.utc), -120)
+        stats = SmokeStats(self.usertest, make_aware(datetime.datetime(2020, 12, 31, 12, 0), pytz.utc), -120)
         self.check_trophy = TrophyManager(stats)
 
     def test_values_per_dates(self):
@@ -153,8 +153,8 @@ class ChecktrophyTestCase(TestCase):
             (0, 120), (0, 150), (0, 180), (0, 210), (0, 240),
             (0, 270), (0, 300) , (0, 330)])
         #trophy checking already done ones and trophies exits in trophy table
-        Trophy.objects.create(user=self.user, nb_cig=0, nb_jour=1)
-        Trophy.objects.create(user=self.user, nb_cig=15, nb_jour=3)
+        Trophy.objects.create(user=self.usertest, nb_cig=0, nb_jour=1)
+        Trophy.objects.create(user=self.usertest, nb_cig=15, nb_jour=3)
         trophies = self.check_trophy.list_user_challenges
         self.assertEqual(trophies, [
             (15, 7), (10, 3), (10, 7), (5, 3), (5, 7), (4, 3), (4, 7),
@@ -169,8 +169,8 @@ class ChecktrophyTestCase(TestCase):
         for element in occurence, check if >= element in trophy to succeed list
         return list of trophies to create
         """
-        ConsoCig.objects.filter(user=self.user, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
-        stats = SmokeStats(self.user, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
+        ConsoCig.objects.filter(user=self.usertest, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
+        stats = SmokeStats(self.usertest, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
         check_trophy = TrophyManager(stats)
         self.assertTrue(check_trophy.check_days_trophies(challenge=(15, 3)))
         self.assertFalse(check_trophy.check_days_trophies(challenge=(15, 7)))
@@ -235,9 +235,9 @@ class ChecktrophyTestCase(TestCase):
             (0, 240): False, (0, 270): False, (0, 300): False, (0, 330): False}
             )
         # test with less days non smoked
-        Trophy.objects.filter(user=self.user).delete()
-        ConsoCig.objects.filter(user=self.user, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
-        stats = SmokeStats(self.user, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
+        Trophy.objects.filter(user=self.usertest).delete()
+        ConsoCig.objects.filter(user=self.usertest, datetime_cig__gte=dt(2020, 7, 5, 23, 59, tzinfo=pytz.utc)).delete()
+        stats = SmokeStats(self.usertest, make_aware(dt(2020, 6, 26, 12, 0), pytz.utc), -120)
 
         check_trophy = TrophyManager(stats)
         check_trophy.trophies_accomplished
@@ -253,9 +253,9 @@ class ChecktrophyTestCase(TestCase):
             (0, 240): False, (0, 270): False, (0, 300): False, (0, 330): False}
             )
         # test first day
-        ConsoCig.objects.filter(user=self.user).delete()
-        Trophy.objects.filter(user=self.user).delete()
-        stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 12, 0), pytz.utc), -120)
+        ConsoCig.objects.filter(user=self.usertest).delete()
+        Trophy.objects.filter(user=self.usertest).delete()
+        stats = SmokeStats(self.usertest, make_aware(datetime.datetime(2020, 6, 19, 12, 0), pytz.utc), -120)
         check_trophy = TrophyManager(stats)
         check_trophy.trophies_accomplished
         self.assertEqual(
@@ -276,7 +276,7 @@ class ChecktrophyTestCase(TestCase):
         With list trophies to create, create trophies in database
         """
         self.check_trophy.create_trophies()
-        trophies = Trophy.objects.filter(user=self.user)
+        trophies = Trophy.objects.filter(user=self.usertest)
         self.assertTrue(trophies.exists())
         self.assertTrue(trophies.count(), len(self.check_trophy.trophies_accomplished))
         self.assertTrue(trophies.get(nb_cig=0, nb_jour=1))

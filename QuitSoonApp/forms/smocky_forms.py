@@ -12,7 +12,7 @@ from .base_forms import (
 
 
 class PaquetForm(UserRelatedModelForm):
-    """Paquet choice form"""
+    """commmon method to all pack choice form"""
 
     def clean_brand(self):
         """clean field brand, make upper"""
@@ -161,7 +161,6 @@ class SmokeForm(ChoosePackForm):
         super().__init__(user, *args, **kwargs)
 
     date_smoke = date_field
-
     time_smoke = time_field
 
     given_field = forms.BooleanField(

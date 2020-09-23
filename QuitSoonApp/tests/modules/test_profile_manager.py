@@ -12,14 +12,14 @@ from QuitSoonApp.models import (
     Objectif, Trophy
 )
 from QuitSoonApp.modules.profile_manager import ProfileManager
+from ..MOCK_DATA import BaseTestCase
 
 
-class ResetProfileTestCase(TestCase):
+class ResetProfileTestCase(BaseTestCase):
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+        super().setUp()
         self.paquet = Paquet.objects.create(
             user=self.usertest,
             brand='CAMEL',

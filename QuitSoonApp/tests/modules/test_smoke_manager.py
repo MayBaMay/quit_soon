@@ -10,29 +10,17 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Paquet, ConsoCig
 from QuitSoonApp.modules import SmokeManager
+from ..MOCK_DATA import BaseTestCase
 
 
-class SmokeManagerTestCase(TestCase):
+class SmokeManagerTestCase(BaseTestCase):
     """class testing SmokeManager """
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
-        self.db_pack_ind = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        self.db_pack_rol = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='ROL',
-            brand='1637',
-            qt_paquet=30,
-            price=12,
-            )
+        super().setUp()
+        self.db_pack_ind = self.camel
+        self.db_pack_rol = self.rol_1637
         self.db_smoke_ind = ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),

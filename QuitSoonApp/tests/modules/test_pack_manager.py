@@ -11,15 +11,15 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Paquet, ConsoCig
 from QuitSoonApp.modules import PackManager
+from ..MOCK_DATA import BaseTestCase
 
 
-class PackManagerTestCase(TestCase):
+class PackManagerTestCase(BaseTestCase):
     """class testing PackManager """
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+        super().setUp()
 
     def test_get_unit_u(self):
         """test PackManager.get_unit method if type_cig == IND"""
@@ -82,7 +82,7 @@ class PackManagerTestCase(TestCase):
         self.assertEqual(pack.get_g_per_cig(data['g_per_cig']), 0.9)
         self.assertEqual(pack.g_per_cig, 0.9)
 
-    def tes_get_price_per_cig_u(self):
+    def test_get_price_per_cig_u(self):
         """test PackManager.get_price_per_cig method if type_cig == 'IND'"""
         data ={
             'type_cig':'IND',
@@ -116,14 +116,7 @@ class PackManagerTestCase(TestCase):
             }
         pack = PackManager(self.usertest, data)
         pack.create_pack()
-        db_pack = Paquet.objects.filter(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            first=True,
-            )
+        db_pack = self.filter_pack_camel.filter(first=True)
         self.assertTrue(db_pack.exists())
         self.assertEqual(db_pack[0].unit, 'U')
         self.assertEqual(db_pack[0].g_per_cig, None)
@@ -223,24 +216,11 @@ class PackManagerTestCase(TestCase):
 
     def test_delete_unused_pack_ind(self):
         """test PackManager.delete_pack method with unused pack"""
-        db_pack = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        db_pack = self.camel
         data = {'id_pack': db_pack.id}
         pack = PackManager(self.usertest, data)
         pack.delete_pack()
-        db_pack = Paquet.objects.filter(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        self.assertFalse(db_pack.exists())
+        self.assertFalse(Paquet.objects.filter(id=db_pack.id).exists())
 
     def test_delete_used_pack_ind(self):
         """test PackManager.delete_pack method with used pack"""

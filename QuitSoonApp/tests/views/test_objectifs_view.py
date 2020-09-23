@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 
 from ..MOCK_DATA import (
+    BaseTestCase,
     Create_packs, Create_smoke,
     row_paquet_data, fake_smoke_for_trophies,
     )
@@ -42,16 +43,15 @@ class TestMyTest(TestCase):
 
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class ReportViewTestCase(TestCase):
+class ReportViewTestCase(BaseTestCase):
     """test report view"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.packs = Create_packs(self.user, row_paquet_data)
+        super().setUp()
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smokes = Create_smoke(self.user, fake_smoke_for_trophies)
+        self.smokes = Create_smoke(self.usertest, fake_smoke_for_trophies)
         self.smokes.populate_db()
 
     def test_get_report_view_anonymous_user(self, *args):
@@ -69,7 +69,7 @@ class ReportViewTestCase(TestCase):
 
     def test_user_no_profile(self, *args):
         """test report view without a user profile"""
-        self.client.login(username=self.user.username, password='testpassword')
+        self.client.login(username=self.usertest.username, password='arandompassword')
         response = self.client.get(reverse('QuitSoonApp:objectifs'))
         self.assertEqual(response.status_code, 302, *args)
         self.assertRedirects(
@@ -83,9 +83,9 @@ class ReportViewTestCase(TestCase):
 
     def test_user_with_profile_smoke_report(self, *args):
         """test smoke reporting in report view"""
-        self.client.login(username=self.user.username, password='testpassword')
+        self.client.login(username=self.usertest.username, password='arandompassword')
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2020-06-19",
             starting_nb_cig=20,
         )

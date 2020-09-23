@@ -15,6 +15,7 @@ from QuitSoonApp.models import UserProfile, Paquet, ConsoCig, Alternative, Conso
 from QuitSoonApp.modules import Stats, SmokeStats, HealthyStats
 
 from ..MOCK_DATA import (
+    BaseTestCase,
     Create_packs, Create_smoke,
     CreateAlternative, CreateConsoAlternative,
     row_paquet_data, row_conso_cig_data,
@@ -22,23 +23,22 @@ from ..MOCK_DATA import (
     )
 
 
-class SmokeStatsTestCaseBigData(TestCase):
+class SmokeStatsTestCaseBigData(BaseTestCase):
     """class testing Create_smoke """
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+        super().setUp()
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
         )
-        self.packs = Create_packs(self.user, row_paquet_data)
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smoke = Create_smoke(self.user, row_conso_cig_data)
+        self.smoke = Create_smoke(self.usertest, row_conso_cig_data)
         self.smoke.populate_db()
-        self.stats = SmokeStats(self.user, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), -120)
+        self.stats = SmokeStats(self.usertest, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), -120)
 
     def test_user_no_profile(self):
         """test create stats while user didn't create a profile"""
@@ -49,7 +49,7 @@ class SmokeStatsTestCaseBigData(TestCase):
 
     def test_get_aware_last_day(self):
         """test get last day including client tz_offset"""
-        stats_no_tz = SmokeStats(self.user, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), 0)
+        stats_no_tz = SmokeStats(self.usertest, make_aware(datetime.datetime(2019, 11, 28, 12, 0), pytz.utc), 0)
         self.assertEqual(stats_no_tz.tz_offset, 0)
         self.assertEqual(stats_no_tz.lastday, make_aware(datetime.datetime(2019, 11, 28, 12, 0)))
 
@@ -61,13 +61,7 @@ class SmokeStatsTestCaseBigData(TestCase):
         """test get datetime while user didn't create a profile but saved a conso"""
         user = User.objects.create_user(
             'testuser', 'testdfqdsfq@test.com', 'testpassword')
-        db_pack= Paquet.objects.create(
-            user=user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        db_pack = self.camel
         db_smoke = ConsoCig.objects.create(
             user=user,
             datetime_cig=datetime.datetime(2019, 9, 16, 10, 15, tzinfo=pytz.utc),
@@ -101,7 +95,7 @@ class SmokeStatsTestCaseBigData(TestCase):
 
     def test_update_models_dt_user(self):
         """test method update_dt_user_model_field with actual timedelta tz_offset"""
-        conso = ConsoCig.objects.get(user=self.user, datetime_cig=datetime.datetime(2019, 9, 28, 9, 0, tzinfo=pytz.utc))
+        conso = ConsoCig.objects.get(user=self.usertest, datetime_cig=datetime.datetime(2019, 9, 28, 9, 0, tzinfo=pytz.utc))
         self.assertEqual(conso.user_dt, datetime.datetime(2019, 9, 28, 11, 0, tzinfo=pytz.utc))
 
     def test_get_nb_per_day_smoke(self):
@@ -183,18 +177,18 @@ class SmokeStatsTestCaseSmallData(TestCase):
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
+        self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2020-06-19",
             starting_nb_cig=20
             )
-        self.packs = Create_packs(self.user, row_paquet_data)
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smoke = Create_smoke(self.user, fake_smoke)
+        self.smoke = Create_smoke(self.usertest, fake_smoke)
         self.smoke.populate_db()
-        self.stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 20, 12, 0), pytz.utc), -120)
+        self.stats = SmokeStats(self.usertest, make_aware(datetime.datetime(2020, 6, 20, 12, 0), pytz.utc), -120)
 
     def test_get_nb_per_day_smoke(self):
         """test method get_nb_per_day_smoke"""
@@ -244,19 +238,19 @@ class StatsFirstDay(TestCase):
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
+        self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2020-06-19",
             starting_nb_cig=20
             )
-        self.packs = Create_packs(self.user, row_paquet_data)
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smoke = Create_smoke(self.user, fake_smoke)
+        self.smoke = Create_smoke(self.usertest, fake_smoke)
         self.smoke.populate_db()
-        ConsoCig.objects.filter(user=self.user, datetime_cig__gt=datetime.datetime(2020, 6, 19, 22, 0, tzinfo=pytz.utc)).delete()
-        self.stats = SmokeStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)
+        ConsoCig.objects.filter(user=self.usertest, datetime_cig__gt=datetime.datetime(2020, 6, 19, 22, 0, tzinfo=pytz.utc)).delete()
+        self.stats = SmokeStats(self.usertest, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)
 
     def test_first_day(self):
         """test first day user use app"""
@@ -300,20 +294,20 @@ class StatsFirstDay(TestCase):
 
     def test_average_alternative_first_day(self):
         """test method average_alternative for first day user"""
-        alternatives = CreateAlternative(self.user, row_alternative_data)
+        alternatives = CreateAlternative(self.usertest, row_alternative_data)
         alternatives.populate_db()
         ConsoAlternative.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_alter=datetime.datetime(2020, 6, 19, 11, 55, tzinfo=pytz.utc),
             alternative=Alternative.objects.get(id=1001),
             activity_duration=40
             )
         ConsoAlternative.objects.create(
-            user=self.user,
+            user=self.usertest,
             datetime_alter=datetime.datetime(2020, 6, 19, 13, 30, tzinfo=pytz.utc),
             alternative=Alternative.objects.get(id=1004),
             )
-        stats = HealthyStats(self.user, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)
+        stats = HealthyStats(self.usertest, make_aware(datetime.datetime(2020, 6, 19, 23, 59), pytz.utc), -120)
         self.assertTrue(stats.first_day)
 
 
@@ -322,22 +316,22 @@ class HealthyStatsTestCase(TestCase):
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
+        self.usertest = User.objects.create_user(
             'NewUserTest', 'test@test.com', 'testpassword')
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
         )
-        self.alternatives = CreateAlternative(self.user, row_alternative_data)
+        self.alternatives = CreateAlternative(self.usertest, row_alternative_data)
         self.alternatives.populate_db()
-        self.healthy = CreateConsoAlternative(self.user, row_conso_alt_data)
+        self.healthy = CreateConsoAlternative(self.usertest, row_conso_alt_data)
         self.healthy.populate_db()
-        self.stats = HealthyStats(self.user, make_aware(datetime.datetime(2019, 11, 28, 23, 59), pytz.utc), -120)
+        self.stats = HealthyStats(self.usertest, make_aware(datetime.datetime(2019, 11, 28, 23, 59), pytz.utc), -120)
 
     def test_update_models_dt_user(self):
         """test method updating field dt_user in db wwith actual tz_offset"""
-        conso = ConsoAlternative.objects.get(user=self.user, datetime_alter=datetime.datetime(2019, 9, 28, 20, 20, tzinfo=pytz.utc))
+        conso = ConsoAlternative.objects.get(user=self.usertest, datetime_alter=datetime.datetime(2019, 9, 28, 20, 20, tzinfo=pytz.utc))
         self.assertEqual(conso.user_dt, datetime.datetime(2019, 9, 28, 22, 20, tzinfo=pytz.utc))
 
     def test_filter_queryset_for_report(self):

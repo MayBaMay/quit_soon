@@ -19,6 +19,7 @@ from QuitSoonApp.views import (
 from QuitSoonApp.models import (
     UserProfile, Paquet
 )
+from ..MOCK_DATA import BaseTestCase
 
 
 class AnonymousUserTestCase(TestCase):
@@ -28,13 +29,14 @@ class AnonymousUserTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'index.html')
 
-class RegisterClientTestCase(TestCase):
+class RegisterClientTestCase(BaseTestCase):
     """
     Tests on register view
     """
 
     def setUp(self):
         """setup tests"""
+        super().setUp()
         self.user = User.objects.create_user(
             'registerTestUser', 'test@test.com', 'testpassword')
 
@@ -55,20 +57,20 @@ class RegisterClientTestCase(TestCase):
         self.assertTrue(User.objects.filter(username='NewUserTest').exists())
         self.assertTrue(User.objects.get(username='NewUserTest').is_authenticated)
 
-    def test_register_smoke_user(self):
+    def test_register_fail_user(self):
         """Test client register with success"""
-        data = {'username':'registerTestUser',
+        data = {'username':'arandomname',
                 'email':'testnewUser@test.com',
                 'password1':'t3stpassword',
                 'password2':'t3stpassword'}
         response = self.client.post(reverse('QuitSoonApp:register'),
                          data=data)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(User.objects.filter(username='registerTestUser').exists())
-        self.assertFalse(User.objects.get(username='registerTestUser').email == 'testnewUser@test.com')
+        self.assertTrue(User.objects.filter(username='arandomname').exists())
+        self.assertFalse(User.objects.get(username='arandomname').email == 'testnewUser@test.com')
         self.assertRaises(ValidationError)
 
-    def test_register_smoke_email(self):
+    def test_register_fail_email(self):
         """Test client register with success"""
         data = {'username':'NewUserTest',
                 'email':'test@test.com',
@@ -428,7 +430,7 @@ class UserProfileTestCase(TransactionTestCase):
         pack = Paquet.objects.create(
             user=self.user,
             type_cig='IND',
-            brand='CAMEL',
+            brand='NEWBRAND',
             qt_paquet=20,
             price=10,
             )

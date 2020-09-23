@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 
-import datetime
-import pytz
+"""App models"""
 
-from django.utils.timezone import make_aware
 from django.db import models
-import django.dispatch
 from django.contrib.auth.models import User
 
 
 class UserProfile(models.Model):
+    """User profile model"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date_start = models.DateField()
     starting_nb_cig = models.IntegerField()
 
 
 class Paquet(models.Model):
+    """Paquet model"""
     TYPE_CIG = [
         ('IND', 'Cigarettes'),
         ('ROL', 'Tabac à rouler'),
@@ -51,9 +50,11 @@ class Paquet(models.Model):
 
 
 class ConsoCig(models.Model):
+    """ConsoCig model"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     datetime_cig = models.DateTimeField(null=True)
-    user_dt = models.DateTimeField(null=True, default=None) # calculation real dt user with tz_offset
+    # user_dt : calculation real dt user with tz_offset
+    user_dt = models.DateTimeField(null=True, default=None)
     paquet = models.ForeignKey(Paquet, on_delete=models.CASCADE, null=True)
     given = models.BooleanField(default=False)
 
@@ -65,6 +66,7 @@ class ConsoCig(models.Model):
         return "%s %s-%s" % (self.user, self.datetime_cig, paquet)
 
 class Alternative(models.Model):
+    """Alternative model"""
 
     TYPE_ALTERNATIVE = [
         ('Ac', 'Activité'),
@@ -114,13 +116,16 @@ class Alternative(models.Model):
 
 
 class ConsoAlternative(models.Model):
+    """ConsoAlternative model"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     datetime_alter = models.DateTimeField(null=True)
-    user_dt = models.DateTimeField(null=True, default=None) # calculation real dt user with tz_offset
+    # user_dt : calculation real dt user with tz_offset
+    user_dt = models.DateTimeField(null=True, default=None)
     alternative = models.ForeignKey(Alternative, on_delete=models.CASCADE)
     activity_duration = models.IntegerField(null=True)
 
 class Objectif(models.Model):
+    """Objectif model"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     qt = models.IntegerField(unique=True)
     datetime_creation = models.DateTimeField()
@@ -129,6 +134,7 @@ class Objectif(models.Model):
 
 
 class Trophy(models.Model):
+    """Trophy model"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nb_cig = models.IntegerField()
     nb_jour = models.IntegerField()

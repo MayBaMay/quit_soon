@@ -7,13 +7,13 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Alternative, ConsoAlternative
 from QuitSoonApp.modules import AlternativeManager
+from ..MOCK_DATA import BaseTestCase
 
-class SavePackTestCase(TestCase):
+class SavePackTestCase(BaseTestCase):
 
     def setUp(self):
         """setup tests"""
-        self.usertest = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+        super().setUp()
 
     def test_get_request_data(self):
         """test method get_request_data"""

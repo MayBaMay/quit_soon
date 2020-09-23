@@ -9,15 +9,15 @@ from QuitSoonApp.forms import (
     ParametersForm,
     )
 from QuitSoonApp.models import Paquet
+from ..MOCK_DATA import BaseTestCase
 
 
-class test_registration(TestCase):
+class test_registration(BaseTestCase):
     """test registration form"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        super().setUp()
 
     def test_valid_data(self):
         """test succes form"""
@@ -67,22 +67,15 @@ class test_registration(TestCase):
         self.assertRaises(ValidationError)
 
 
-class test_ParametersForm(TestCase):
+class test_ParametersForm(BaseTestCase):
     """test ParametersForm with smoking habits"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
-        self.pack = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
+        super().setUp()
+        self.pack = self.camel
         self.pack2 = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='1637',
             qt_paquet=30,
@@ -92,7 +85,7 @@ class test_ParametersForm(TestCase):
 
     def test_form_get(self):
         """test get form with choices field"""
-        form = ParametersForm(self.user)
+        form = ParametersForm(self.usertest)
         self.assertEqual(len(form.fields['ref_pack'].choices), 2)
         self.assertTrue((self.pack.id, 'CAMEL /20U') in form.fields['ref_pack'].choices)
         self.assertTrue((self.pack2.id, '1637 /30G') in form.fields['ref_pack'].choices)
@@ -100,7 +93,7 @@ class test_ParametersForm(TestCase):
     def test_form_post_first_connection(self):
         """test ParametersForm while request.POST include newpack creation"""
         newpack = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
@@ -116,7 +109,7 @@ class test_ParametersForm(TestCase):
             'price':'30',
             'ref_pack': newpack.id
             }
-        form = ParametersForm(self.user, data)
+        form = ParametersForm(self.usertest, data)
         self.assertTrue(form.is_valid())
 
     def test_form_post(self):
@@ -126,12 +119,12 @@ class test_ParametersForm(TestCase):
             'starting_nb_cig': '20',
             'packs': str(self.pack.id)
             }
-        form = ParametersForm(self.user, data)
+        form = ParametersForm(self.usertest, data)
         self.assertTrue(form.is_valid())
 
     def test_form_post_missing_data(self):
         """test form with no data required fields"""
-        form = ParametersForm(self.user, {})
+        form = ParametersForm(self.usertest, {})
         self.assertEqual(form.errors, {
             'date_start': ['Ce champ est obligatoire.'],
             'starting_nb_cig': ['Ce champ est obligatoire.'],

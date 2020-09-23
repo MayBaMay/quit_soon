@@ -15,6 +15,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from ..MOCK_DATA import (
+    BaseTestCase,
     Create_packs, Create_smoke,
     CreateAlternative, CreateConsoAlternative,
     row_paquet_data, row_conso_cig_data,
@@ -44,17 +45,16 @@ class TestMyTest(TestCase):
         self.assertEqual(mocked_now(), NOW_FOR_TESTING)
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class ChartDataSmokingDataTestCase(APITestCase):
+class ChartDataSmokingDataTestCase(APITestCase, BaseTestCase):
     """Test API return all smoking data"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.client.login(username=self.user.username, password='testpassword')
-        self.packs = Create_packs(self.user, row_paquet_data)
+        super().setUp()
+        self.client.login(username=self.usertest.username, password='arandompassword')
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smokes = Create_smoke(self.user, row_conso_cig_data)
+        self.smokes = Create_smoke(self.usertest, row_conso_cig_data)
         self.smokes.populate_db()
 
     def test_1(self, *args):

@@ -14,14 +14,13 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from ..MOCK_DATA import (
+    BaseTestCase,
     Create_packs, Create_smoke,
     CreateAlternative, CreateConsoAlternative,
     row_paquet_data, row_conso_cig_data,
     row_alternative_data, row_conso_alt_data, fake_smoke
     )
 from QuitSoonApp.models import UserProfile
-
-
 
 # This is the function that replaces django.utils.timezone.now()
 def mocked_now():
@@ -43,21 +42,20 @@ class TestMyTest(TestCase):
         self.assertEqual(mocked_now(), NOW_FOR_TESTING)
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class ReportViewTestCase(TestCase):
+class ReportViewTestCase(BaseTestCase):
     """test report view"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.client.login(username=self.user.username, password='testpassword')
-        self.packs = Create_packs(self.user, row_paquet_data)
+        super().setUp()
+        self.client.login(username=self.usertest.username, password='arandompassword')
+        self.packs = Create_packs(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smokes = Create_smoke(self.user, row_conso_cig_data)
+        self.smokes = Create_smoke(self.usertest, row_conso_cig_data)
         self.smokes.populate_db()
-        self.alternatives = CreateAlternative(self.user, row_alternative_data)
+        self.alternatives = CreateAlternative(self.usertest, row_alternative_data)
         self.alternatives.populate_db()
-        self.healthy = CreateConsoAlternative(self.user, row_conso_alt_data)
+        self.healthy = CreateConsoAlternative(self.usertest, row_conso_alt_data)
         self.healthy.populate_db()
 
     def test_get_report_view_anonymous_user(self, *args):
@@ -81,7 +79,7 @@ class ReportViewTestCase(TestCase):
     def test_user_with_profile_smoke_report(self, *args):
         """test smoke reporting in report view"""
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
         )
@@ -97,7 +95,7 @@ class ReportViewTestCase(TestCase):
     def test_user_with_profile_health_report(self, *args):
         """test health reporting in report view"""
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
         )
@@ -119,16 +117,15 @@ class ReportViewTestCase(TestCase):
             {'name': 'Gommes à mâcher', 'day': None, 'week': None, 'month': None}
             )
 
-class ReportViewNoDataTestCase(TestCase):
+class ReportViewNoDataTestCase(BaseTestCase):
     """test report view"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            'TestUser', 'test@test.com', 'testpassword')
-        self.client.login(username=self.user.username, password='testpassword')
+        super().setUp()
+        self.client.login(username=self.usertest.username, password='arandompassword')
         self.profile = UserProfile.objects.create(
-            user=self.user,
+            user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
         )
