@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
+""" User change parameters form """
+
 from django import forms
 
 from QuitSoonApp.models import Paquet
+from .base_forms import (
+    date_field,
+    )
 
 class ParametersForm(forms.Form):
     """A form for user to define smoking habits when starting using app"""
 
-    date_start = forms.DateField(
-        required=True,
-        label='Date',
-        widget=forms.DateInput(
-            attrs={'class':"form-control currentDate",
-                    'type':'date'},
-            )
-    )
+    date_start = date_field
 
     starting_nb_cig = forms.IntegerField(
         required=True,
@@ -35,11 +33,11 @@ class ParametersForm(forms.Form):
     def __init__(self, user, *args, **kwargs):
 
         self.user = user
-        super(ParametersForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         user_packs = Paquet.objects.filter(user=self.user, display=True)
-        CHOICES = []
+        choices = []
         for pack in user_packs:
             display = "{} /{}{}".format(pack.brand, pack.qt_paquet, pack.unit)
-            CHOICES.append((pack.id, display))
-        CHOICES = tuple(CHOICES)
-        self.fields['ref_pack'].choices = CHOICES
+            choices.append((pack.id, display))
+        choices = tuple(choices)
+        self.fields['ref_pack'].choices = choices
