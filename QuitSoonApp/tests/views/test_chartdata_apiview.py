@@ -1,4 +1,7 @@
  #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Test ChartData APIView"""
 
@@ -15,8 +18,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from ..MOCK_DATA import (
-    BaseTestCase,
-    Create_packs, Create_smoke,
+    CreatePacks, CreateSmoke,
     CreateAlternative, CreateConsoAlternative,
     row_paquet_data, row_conso_cig_data,
     row_alternative_data, row_conso_alt_data, fake_smoke
@@ -45,23 +47,30 @@ class TestMyTest(TestCase):
         self.assertEqual(mocked_now(), NOW_FOR_TESTING)
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class ChartDataSmokingDataTestCase(APITestCase, BaseTestCase):
+class ChartDataSmokingDataTestCase(APITestCase):
     """Test API return all smoking data"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username=self.usertest.username, password='arandompassword')
-        self.packs = Create_packs(self.usertest, row_paquet_data)
+        self.packs = CreatePacks(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smokes = Create_smoke(self.usertest, row_conso_cig_data)
+        self.smokes = CreateSmoke(self.usertest, row_conso_cig_data)
         self.smokes.populate_db()
 
     def test_1(self, *args):
 
         factory = APIRequestFactory()
         view = ChartData.as_view()
-        request = factory.get('/ChartApi/', {'period': 'Jour', 'show_healthy': False, 'charttype': 'nb_cig', 'datesRange': 0})
+        request = factory.get(
+            '/ChartApi/',
+            {'period': 'Jour', 'show_healthy': False, 'charttype': 'nb_cig', 'datesRange': 0}
+            )
 
         response = self.client.get(reverse('QuitSoonApp:ChartApi'), kwargs=request)
         print(response.content)

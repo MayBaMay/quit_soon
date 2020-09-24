@@ -1,33 +1,33 @@
 #!/usr/bin/env python
+# pylint: disable=W0613 #Unused argument 'args' (unused-argument)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Module testing objectifs view """
 
-import datetime
-from datetime import date as real_date
-import pytz
-from decimal import Decimal
 from unittest import mock
-from unittest.mock import patch
+import datetime
+import pytz
 
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-
-from ..MOCK_DATA import (
-    BaseTestCase,
-    Create_packs, Create_smoke,
-    row_paquet_data, fake_smoke_for_trophies,
-    )
-from QuitSoonApp.models import UserProfile
 from django.utils import timezone
 
+from QuitSoonApp.models import UserProfile
+from ..MOCK_DATA import (
+    CreatePacks, CreateSmoke,
+    row_paquet_data, fake_smoke_for_trophies,
+    )
 
-# This is the function that replaces django.utils.timezone.now()
+
 def mocked_now():
+    """This is the function that replaces django.utils.timezone.now()"""
     return NOW_FOR_TESTING
 
-# This function shows that the mocking is in effect even outside of the TestMyTest scope.
 def a_func():
+    """This function shows that the mocking is in effect even outside of the TestMyTest scope."""
     return timezone.now()
 
 # Make now() a constant
@@ -35,7 +35,9 @@ NOW_FOR_TESTING = datetime.datetime(2020, 12, 31, 12, tzinfo=pytz.timezone('utc'
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
 class TestMyTest(TestCase):
+    """test mock now """
     def test_time_zone(self, *args):
+        """test mock now """
         # After patching, mock passes in some extra vars. Put *args to handle them.
         self.assertEqual(timezone.now(), NOW_FOR_TESTING)
         self.assertEqual(timezone.now().date(), NOW_FOR_TESTING.date())
@@ -43,15 +45,19 @@ class TestMyTest(TestCase):
 
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class ReportViewTestCase(BaseTestCase):
+class ReportViewTestCase(TestCase):
     """test report view"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
-        self.packs = Create_packs(self.usertest, row_paquet_data)
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
+        self.packs = CreatePacks(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smokes = Create_smoke(self.usertest, fake_smoke_for_trophies)
+        self.smokes = CreateSmoke(self.usertest, fake_smoke_for_trophies)
         self.smokes.populate_db()
 
     def test_get_report_view_anonymous_user(self, *args):
@@ -84,7 +90,7 @@ class ReportViewTestCase(BaseTestCase):
     def test_user_with_profile_smoke_report(self, *args):
         """test smoke reporting in report view"""
         self.client.login(username=self.usertest.username, password='arandompassword')
-        self.profile = UserProfile.objects.create(
+        UserProfile.objects.create(
             user=self.usertest,
             date_start="2020-06-19",
             starting_nb_cig=20,

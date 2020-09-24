@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Module testing save_pack module"""
 
@@ -11,15 +14,18 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Paquet, ConsoCig
 from QuitSoonApp.modules import PackManager
-from ..MOCK_DATA import BaseTestCase
 
 
-class PackManagerTestCase(BaseTestCase):
+class PackManagerTestCase(TestCase):
     """class testing PackManager """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_get_unit_u(self):
         """test PackManager.get_unit method if type_cig == IND"""
@@ -116,7 +122,14 @@ class PackManagerTestCase(BaseTestCase):
             }
         pack = PackManager(self.usertest, data)
         pack.create_pack()
-        db_pack = self.filter_pack_camel.filter(first=True)
+        db_pack = Paquet.objects.filter(
+            user=self.usertest,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            first=True,
+            )
         self.assertTrue(db_pack.exists())
         self.assertEqual(db_pack[0].unit, 'U')
         self.assertEqual(db_pack[0].g_per_cig, None)
@@ -175,7 +188,7 @@ class PackManagerTestCase(BaseTestCase):
         self.assertEqual(db_pack[0].display, True)
 
     def test_init_first(self):
-        """test PackManager.get_unit method if type_cig == IND"""
+        """test PackManager init_first method"""
         data ={
             'type_cig':'IND',
             'brand':'Camel',
@@ -190,6 +203,7 @@ class PackManagerTestCase(BaseTestCase):
         self.assertEqual(Paquet.objects.filter(user=self.usertest, first=True).count(), 1)
 
     def test_init_first_with_non_displayed_pack(self):
+        """test PackManager init_first method with non displayed pack"""
         db_pack = Paquet.objects.create(
             user=self.usertest,
             type_cig='ROL',
@@ -216,7 +230,13 @@ class PackManagerTestCase(BaseTestCase):
 
     def test_delete_unused_pack_ind(self):
         """test PackManager.delete_pack method with unused pack"""
-        db_pack = self.camel
+        db_pack = Paquet.objects.create(
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
         data = {'id_pack': db_pack.id}
         pack = PackManager(self.usertest, data)
         pack.delete_pack()

@@ -1,12 +1,10 @@
 #!/usr/bin/env python
+# pylint: disable=duplicate-code
+
 
 """Test pd_custom_dataframe module"""
 
-# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.testing.assert_frame_equal.html
-# pandas.testing.assert_frame_equal(left, right, check_dtype=True, check_index_type='equiv', check_column_type='equiv', check_frame_type=True, check_less_precise=False, check_names=True, by_blocks=False, check_exact=False, check_datetimelike_compat=False, check_categorical=True, check_like=False, obj='DataFrame')[source]
-
 import datetime
-import pandas as pd
 from pandas._testing import assert_frame_equal
 
 from django.test import TestCase
@@ -41,16 +39,20 @@ class DataFrameDateTestCase(TestCase):
         self.custom_df_nicotine = DataFrameDate(self.data_dict, 'nicotine')
 
     def test_df_creation(self):
+        """test df creation method"""
         assert_frame_equal(self.custom_df_nb_cig.df_chartdata, self.custom_df_nb_cig.df_chartdata)
 
     def test_daily_dataframe(self):
+        """test day_df method"""
         assert_frame_equal(self.custom_df_nb_cig.day_df, self.custom_df_nb_cig.day_df)
         self.assertEqual(self.custom_df_nb_cig.day_df.loc['05/06/20', 'nb_cig'], 9)
 
     def test_weekly_dataframe(self):
+        """test week_df method"""
         assert_frame_equal(self.custom_df_nb_cig.week_df, self.custom_df_nb_cig.week_df)
         self.assertEqual(self.custom_df_nb_cig.week_df.loc['08/06-14/06', 'nb_cig'], 7)
 
     def test_monthly_dataframe(self):
+        """test month_df method"""
         assert_frame_equal(self.custom_df_nb_cig.month_df, self.custom_df_nb_cig.month_df)
         self.assertEqual(self.custom_df_nb_cig.month_df.loc['06/20', 'nb_cig'], 21)

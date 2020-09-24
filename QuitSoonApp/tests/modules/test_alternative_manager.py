@@ -1,4 +1,10 @@
-from decimal import Decimal
+#!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+
+"""Test AlternativeManager module"""
+
 import datetime
 import pytz
 
@@ -7,13 +13,18 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Alternative, ConsoAlternative
 from QuitSoonApp.modules import AlternativeManager
-from ..MOCK_DATA import BaseTestCase
 
-class SavePackTestCase(BaseTestCase):
+
+class SavePackTestCase(TestCase):
+    """test saving Paquet with AlternativeManager"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_get_request_data(self):
         """test method get_request_data"""
@@ -29,7 +40,7 @@ class SavePackTestCase(BaseTestCase):
         self.assertEqual(alternative.get_request_data('substitut'), 'P24')
         self.assertEqual(alternative.get_request_data('nicotine'), 2)
 
-    def test_if_strNone_get_None_or_str(self):
+    def test_get_str(self):
         """test method get_str"""
         data = 'None'
         self.assertEqual(AlternativeManager.get_str(data), None)
@@ -38,7 +49,7 @@ class SavePackTestCase(BaseTestCase):
         data = 'Su'
         self.assertEqual(AlternativeManager.get_str(data), 'Su')
 
-    def test_if_strNone_get_None_or_float(self):
+    def test_str_get_float(self):
         """test method str_get_float"""
         data = 'None'
         self.assertEqual(AlternativeManager.str_get_float(data), None)
@@ -52,7 +63,7 @@ class SavePackTestCase(BaseTestCase):
 
     def test_get_alternative(self):
         """test method get_alternative"""
-        old = Alternative.objects.create(
+        Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',
             type_activity='Sp',
@@ -86,7 +97,10 @@ class SavePackTestCase(BaseTestCase):
         self.assertTrue(db_create_alternative.exists())
 
     def test_create_new_alternative_already_in_db(self):
-        """test SavePack.create_alternative method if type_alternative == 'Su' and alternative already in db"""
+        """
+        test SavePack.create_alternative method
+        if type_alternative == 'Su' and alternative already in db
+        """
         Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
@@ -198,7 +212,7 @@ class SavePackTestCase(BaseTestCase):
             type_activity='So',
             activity='PSYCHOLOGUE',
             )
-        conso = ConsoAlternative.objects.create(
+        ConsoAlternative.objects.create(
             user=self.usertest,
             datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,
@@ -223,7 +237,7 @@ class SavePackTestCase(BaseTestCase):
             substitut='ECIG',
             nicotine=2.0,
             )
-        conso = ConsoAlternative.objects.create(
+        ConsoAlternative.objects.create(
             user=self.usertest,
             datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,

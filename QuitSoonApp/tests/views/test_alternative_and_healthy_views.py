@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# pylint: disable=R0902 #Too many instance attributes (12/7) (too-many-instance-attributes)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """tests views related to user alternatives or healthy actions """
 
@@ -9,23 +13,23 @@ from django.test import TestCase, TransactionTestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 
-from QuitSoonApp.views import (
-    alternatives, health,
-)
 from QuitSoonApp.models import (
     UserProfile, Alternative, ConsoAlternative,
 )
-from ..MOCK_DATA import BaseTestCase
 
 
-class AlternativeAndHealthyTestCase(BaseTestCase):
+class AlternativeAndHealthyTestCase(TestCase):
     """
     Tests on parameters pages, health (alternatives) or smoke (packs)
     """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username=self.usertest.username, password='arandompassword')
         UserProfile.objects.create(
             user=self.usertest,
@@ -120,7 +124,9 @@ class AlternativeAndHealthyTestCase(BaseTestCase):
             type_activity='So',
             activity='tabacologue',
             )
-        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id]))
+        response = self.client.post(
+            reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id])
+            )
         self.assertEqual(response.status_code, 302)
         filter_alternative = Alternative.objects.filter(
             user=self.usertest,
@@ -138,7 +144,9 @@ class AlternativeAndHealthyTestCase(BaseTestCase):
             substitut='GM',
             nicotine=None,
             )
-        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id]))
+        response = self.client.post(
+            reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id])
+            )
         self.assertEqual(response.status_code, 302)
         filter_alternative = Alternative.objects.filter(
             user=self.usertest,
@@ -148,15 +156,18 @@ class AlternativeAndHealthyTestCase(BaseTestCase):
             )
         self.assertFalse(filter_alternative.exists())
 
-    def test_delete_alternative_views_substitut_used_in_ConsoAlternative(self):
-        """Test client post delete_alternative view with substitut data while used in ConsoAlternative"""
+    def test_delete_alternative_views_substitut_used_in_healthy(self):
+        """
+        Test client post delete_alternative view with substitut data
+        while used in ConsoAlternative
+        """
         db_alternative = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Su',
             substitut='GM',
             nicotine=None,
             )
-        conso = ConsoAlternative.objects.create(
+        ConsoAlternative.objects.create(
             user=self.usertest,
             datetime_alter=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             alternative=db_alternative,
@@ -166,7 +177,9 @@ class AlternativeAndHealthyTestCase(BaseTestCase):
             alternative=db_alternative,
             )
         self.assertTrue(filter_conso.exists())
-        response = self.client.post(reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id]))
+        response = self.client.post(
+            reverse('QuitSoonApp:delete_alternative', args=[db_alternative.id])
+            )
         self.assertEqual(response.status_code, 302)
         filter_alternative = Alternative.objects.filter(
             user=self.usertest,
@@ -178,12 +191,14 @@ class AlternativeAndHealthyTestCase(BaseTestCase):
         self.assertEqual(filter_alternative[0].display, False)
 
     def test_delete_alternative_views_wrong_arg(self):
+        """test post delete_alternative view with invalid argument"""
         response = self.client.post(reverse(
             'QuitSoonApp:delete_alternative',
             args=[3453]))
         self.assertEqual(response.status_code, 404)
 
 class HealthTestCase(TransactionTestCase):
+    """test health view allowing user to save ConsoAlternative"""
 
     def setUp(self):
         """setup tests"""
@@ -255,19 +270,22 @@ class HealthTestCase(TransactionTestCase):
 
     def test_health_post_form_success(self):
         """ test get health view post form"""
-        response = self.client.post(reverse('QuitSoonApp:health'), data=self.data_su)
-        filter = ConsoAlternative.objects.filter(user=self.usertest, alternative=self.alternative_su)
-        self.assertTrue(filter.exists())
+        self.client.post(reverse('QuitSoonApp:health'), data=self.data_su)
+        filter_health = ConsoAlternative.objects.filter(
+            user=self.usertest,
+            alternative=self.alternative_su
+            )
+        self.assertTrue(filter_health.exists())
 
     def test_healt_fail_no_duration_activity(self):
         """ test get health view post with error in data : no duration for activity"""
-        response = self.client.post(reverse('QuitSoonApp:health'), data=self.data_sp)
-        filter = ConsoAlternative.objects.filter(
+        self.client.post(reverse('QuitSoonApp:health'), data=self.data_sp)
+        filter_health = ConsoAlternative.objects.filter(
             user=self.usertest,
             alternative=self.alternative_sp,
             datetime_alter__date=datetime.date(2020, 5, 10)
             )
-        self.assertFalse(filter.exists())
+        self.assertFalse(filter_health.exists())
 
     def test_delete_health_fail(self):
         """ test get delete_health view with unexisting ConsoAlternative """
@@ -285,11 +303,16 @@ class HealthTestCase(TransactionTestCase):
         filter_conso = ConsoAlternative.objects.filter(user=self.usertest, id=self.health_sp.id)
         self.assertFalse(filter_conso.exists())
 
-class HealthListTestCase(BaseTestCase):
+class HealthListTestCase(TestCase):
+    """test health_list view resturning the list of ConsoAlternative """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username=self.usertest.username, password='arandompassword')
 
         UserProfile.objects.create(
@@ -364,11 +387,13 @@ class HealthListTestCase(BaseTestCase):
         )
 
     def test_health_list_get_anonymoususer(self):
+        """test get health_list view for anonymoususer"""
         self.client.logout()
         response = self.client.get(reverse('QuitSoonApp:health_list'))
         self.assertEqual(response.status_code, 302)
 
     def test_health_list_no_alternative_saved(self):
+        """test health_list view while no Alternative in user db"""
         Alternative.objects.filter(user=self.usertest).delete()
         response = self.client.get(reverse('QuitSoonApp:health_list'))
         self.assertEqual(response.status_code, 200)
@@ -377,6 +402,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health' not in response.context.keys())
 
     def test_health_list_no_health_saved(self):
+        """test health_list view while no ConsoAlternative in user db"""
         ConsoAlternative.objects.filter(user=self.usertest).delete()
         response = self.client.get(reverse('QuitSoonApp:health_list'))
         self.assertEqual(response.status_code, 200)
@@ -386,6 +412,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health' not in response.context.keys())
 
     def test_health_list_empty_fields(self):
+        """test post health_list view with empty field """
         data = {'type_alternative_field':'empty',
                 'sp_field':'empty',
                 'so_field':'empty',
@@ -406,6 +433,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health_form' in response.context.keys())
 
     def test_only_type_alternative_field_su(self):
+        """test post healt_list view with filled only substitut"""
         data = {'type_alternative_field':'Su',
                 'sp_field':'empty',
                 'so_field':'empty',
@@ -418,6 +446,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health_form' in response.context.keys())
 
     def test_only_type_alternative_field_sp(self):
+        """test post healt_list view with filled only sport"""
         data = {'type_alternative_field':'Sp',
                 'sp_field':'empty',
                 'so_field':'empty',
@@ -436,6 +465,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health_form' in response.context.keys())
 
     def test_only_sp_field(self):
+        """test post healt_list view with filled sport and name sport"""
         data = {'type_alternative_field':'Sp',
                 'sp_field':self.alternative_sp.id,
                 'so_field':'empty',
@@ -454,6 +484,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health_form' in response.context.keys())
 
     def test_only_so_field(self):
+        """test post healt_list view with filled 'soin' and name 'soin'"""
         data = {'type_alternative_field':'So',
                 'sp_field':'empty',
                 'so_field':self.alternative_so.id,
@@ -472,6 +503,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health_form' in response.context.keys())
 
     def test_only_lo_field(self):
+        """test post healt_list view with filled 'loisir' and name 'loisir'"""
         data = {'type_alternative_field':'Lo',
                 'sp_field':'empty',
                 'so_field':'empty',
@@ -484,6 +516,7 @@ class HealthListTestCase(BaseTestCase):
         self.assertTrue('health_form' in response.context.keys())
 
     def test_only_su_field(self):
+        """test post healt_list view with filled 'substitut' and name 'substitut'"""
         data = {'type_alternative_field':'Su',
                 'sp_field':'empty',
                 'so_field':'empty',

@@ -1,57 +1,66 @@
 #!/usr/bin/env python
+# pylint: disable=W0613 #Unused argument 'args' (unused-argument)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Module testing report view """
 
-import datetime
-import pytz
 from decimal import Decimal
 from unittest import mock
-from unittest.mock import patch
+import datetime
+import pytz
 
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from QuitSoonApp.models import UserProfile
 from ..MOCK_DATA import (
-    BaseTestCase,
-    Create_packs, Create_smoke,
+    CreatePacks, CreateSmoke,
     CreateAlternative, CreateConsoAlternative,
     row_paquet_data, row_conso_cig_data,
-    row_alternative_data, row_conso_alt_data, fake_smoke
+    row_alternative_data, row_conso_alt_data
     )
-from QuitSoonApp.models import UserProfile
 
-# This is the function that replaces django.utils.timezone.now()
+
 def mocked_now():
+    """This is the function that replaces django.utils.timezone.now()"""
     return NOW_FOR_TESTING
 
-# This function shows that the mocking is in effect even outside of the TestMyTest scope.
 def a_func():
+    """This function shows that the mocking is in effect even outside of the TestMyTest scope."""
     return timezone.now()
 
 # Make now() a constant
 NOW_FOR_TESTING = datetime.datetime(2019, 11, 27, 20, tzinfo=pytz.timezone('utc'))
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class TestMyTest(TestCase):
+class TestMockNow(TestCase):
+    """test mock now"""
     def test_time_zone(self, *args):
+        """test mock now"""
         # After patching, mock passes in some extra vars. Put *args to handle them.
         self.assertEqual(timezone.now(), NOW_FOR_TESTING)
         self.assertEqual(timezone.now().date(), NOW_FOR_TESTING.date())
         self.assertEqual(mocked_now(), NOW_FOR_TESTING)
 
 @mock.patch('django.utils.timezone.now', side_effect=mocked_now)
-class ReportViewTestCase(BaseTestCase):
+class ReportViewTestCase(TestCase):
     """test report view"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username=self.usertest.username, password='arandompassword')
-        self.packs = Create_packs(self.usertest, row_paquet_data)
+        self.packs = CreatePacks(self.usertest, row_paquet_data)
         self.packs.populate_db()
-        self.smokes = Create_smoke(self.usertest, row_conso_cig_data)
+        self.smokes = CreateSmoke(self.usertest, row_conso_cig_data)
         self.smokes.populate_db()
         self.alternatives = CreateAlternative(self.usertest, row_alternative_data)
         self.alternatives.populate_db()
@@ -78,7 +87,7 @@ class ReportViewTestCase(BaseTestCase):
 
     def test_user_with_profile_smoke_report(self, *args):
         """test smoke reporting in report view"""
-        self.profile = UserProfile.objects.create(
+        UserProfile.objects.create(
             user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
@@ -94,7 +103,7 @@ class ReportViewTestCase(BaseTestCase):
 
     def test_user_with_profile_health_report(self, *args):
         """test health reporting in report view"""
-        self.profile = UserProfile.objects.create(
+        UserProfile.objects.create(
             user=self.usertest,
             date_start="2019-09-28",
             starting_nb_cig=20,
@@ -117,12 +126,16 @@ class ReportViewTestCase(BaseTestCase):
             {'name': 'Gommes à mâcher', 'day': None, 'week': None, 'month': None}
             )
 
-class ReportViewNoDataTestCase(BaseTestCase):
+class ReportViewNoDataTestCase(TestCase):
     """test report view"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username=self.usertest.username, password='arandompassword')
         self.profile = UserProfile.objects.create(
             user=self.usertest,
@@ -131,5 +144,6 @@ class ReportViewNoDataTestCase(BaseTestCase):
         )
 
     def test_report_view_no_data(self):
+        """test get report view with no data"""
         response = self.client.get(reverse('QuitSoonApp:report'))
         self.assertEqual(response.context['no_data'], True)

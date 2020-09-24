@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+# pylint: disable=C0103 #Method name "test_smokeForm_is_valid" doesn't conform to snake_case naming style (invalid-name)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+"""test Forms related to Alternative model"""
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -8,15 +13,18 @@ from QuitSoonApp.forms import (
     ActivityForm,
     SubstitutForm
     )
-from QuitSoonApp.models import Alternative
-from ..MOCK_DATA import BaseTestCase
 
-class test_TypeAlternativeForm(BaseTestCase):
+
+class test_typealternativeForm(TestCase):
     """test TypeAlternativeForm"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_form(self):
         """test ParametersForm"""
@@ -25,12 +33,16 @@ class test_TypeAlternativeForm(BaseTestCase):
         self.assertTrue(form.is_valid())
 
 
-class test_ActivityForm(BaseTestCase):
+class test_activityform(TestCase):
     """test ActivityForm"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_form(self):
         """test ActivityForm"""
@@ -38,12 +50,16 @@ class test_ActivityForm(BaseTestCase):
         form = ActivityForm(self.usertest, data=data)
         self.assertTrue(form.is_valid())
 
-class test_SubstitutForm(BaseTestCase):
+class test_substitutform(TestCase):
     """test SubstitutForm"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_form(self):
         """test SubstitutForm"""

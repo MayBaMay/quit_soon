@@ -1,9 +1,11 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=W0611 #False Positiv Unused today imported from QuitSoonApp.views (unused-import)
+# pylint: disable=duplicate-code
 
 """tests views related to user paquets or smoking """
 
 
-from decimal import Decimal
 import datetime
 import pytz
 from freezegun import freeze_time
@@ -14,25 +16,34 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.views import today
 from QuitSoonApp.models import (
-    UserProfile, Paquet, ConsoCig, ConsoAlternative
+    UserProfile, Paquet, ConsoCig
 )
-from ..MOCK_DATA import BaseTestCase
 
-class PacksAndSmokeTestCase(BaseTestCase):
+class PacksAndSmokeTestCase(TestCase):
     """
     Tests on parameters page packs and smoking page
     """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username=self.usertest.username, password='arandompassword')
         UserProfile.objects.create(
             user=self.usertest,
             date_start='2020-05-13',
             starting_nb_cig=20
         )
-        self.db_pack_ind = self.camel
+        self.db_pack_ind = Paquet.objects.create(
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
         ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 13, 9, 5, tzinfo=pytz.utc),

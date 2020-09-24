@@ -1,24 +1,69 @@
 #!/usr/bin/env python
+# pylint: disable=C0103 #Method name "test_smokeForm_is_valid" doesn't conform to snake_case naming style (invalid-name)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+
+"""test Forms related to ConsoCig model"""
 
 import datetime
 import pytz
 from freezegun import freeze_time
 
-from django.utils import timezone
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
-from QuitSoonApp.forms import PaquetFormCreation, SmokeForm, ChoosePackFormWithEmptyFields
+from QuitSoonApp.forms import SmokeForm
 from QuitSoonApp.models import Paquet, ConsoCig
-from ..MOCK_DATA import BaseTestCase, BaseAllPacksTestCase
 
 
-class SmokeFormTestCase(BaseAllPacksTestCase):
+class SmokeFormTestCase(TestCase):
+    """Test SmokeForm"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
+        self.db_pack_undisplayed = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='LUCKY',
+            qt_paquet=20,
+            price=10,
+            display=False
+            )
+        self.db_pack_ind = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+            )
+        self.db_pack_ind2 = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='PHILIP MORRIS',
+            qt_paquet=20,
+            price=10.2,
+            )
+        self.db_pack_rol = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='ROL',
+            brand='1637',
+            qt_paquet=30,
+            price=12,
+            )
+        self.db_pack_nb = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='IND',
+            brand='BEEDIES',
+            qt_paquet=30,
+            price=5,
+            )
         self.valid_smoking_datas = {
             'date_smoke':datetime.date(2020, 5, 11),
             'time_smoke':datetime.time(12, 56),
@@ -28,12 +73,12 @@ class SmokeFormTestCase(BaseAllPacksTestCase):
             'given_field':False,
             }
 
-    def test_SmokeForm_is_valid(self):
+    def test_smokeForm_is_valid(self):
         """test valid SmokeForm"""
         form = SmokeForm(self.usertest, -120,  self.valid_smoking_datas)
         self.assertTrue(form.is_valid())
 
-    def test_SmokeForm_is_not_valid(self):
+    def test_smokeForm_is_not_valid(self):
         """test invalid SmokeForm, data missing"""
         form = SmokeForm(self.usertest, -120,  {})
         self.assertFalse(form.is_valid())
@@ -88,7 +133,7 @@ class SmokeFormTestCase(BaseAllPacksTestCase):
 
     def test_smoke_last_none_first_smoke(self):
         """ test last_smoke method with last smoke given=False smoke """
-        db_smoke = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
@@ -98,7 +143,7 @@ class SmokeFormTestCase(BaseAllPacksTestCase):
 
     def test_last_smoke_only_given(self):
         """ test get last paquet while user only smoked given cig """
-        db_smoke_0 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 16, 10, 15, tzinfo=pytz.utc),
             paquet=None,
@@ -108,22 +153,22 @@ class SmokeFormTestCase(BaseAllPacksTestCase):
 
     def test_smoke_last_none(self):
         """ test last_smoke method with last one given=True, before exists given=False """
-        db_smoke_0 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 16, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_nb,
             )
-        db_smoke_1 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             )
-        db_smoke_2 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
             )
-        db_smoke_3 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             paquet=None,
@@ -133,17 +178,17 @@ class SmokeFormTestCase(BaseAllPacksTestCase):
 
     def test_config_field(self):
         """ test config_field method """
-        db_smoke_1 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
             paquet=self.db_pack_ind2,
             )
-        db_smoke_2 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             given=True,
             )
-        db_smoke_3 = ConsoCig.objects.create(
+        ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 13, 15, tzinfo=pytz.utc),
             given=True,
@@ -153,17 +198,35 @@ class SmokeFormTestCase(BaseAllPacksTestCase):
         pack2 = self.db_pack_ind2
         pack3 = self.db_pack_nb
         self.assertTrue(
-            (pack1.id, "{} /{}{}".format(pack1.brand, pack1.qt_paquet, pack1.unit)) in form.config_field('ind_pack_field','IND')
+            (pack1.id,
+             "{} /{}{}".format(
+                 pack1.brand,
+                 pack1.qt_paquet,
+                 pack1.unit)
+             ) in form.config_field('ind_pack_field','IND')
             )
         self.assertTrue(
-            (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)) in form.config_field('ind_pack_field','IND')
+            (pack2.id,
+             "{} /{}{}".format(
+                 pack2.brand,
+                 pack2.qt_paquet,
+                 pack2.unit)
+             ) in form.config_field('ind_pack_field','IND')
             )
         self.assertTrue(
-            (pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)) in form.config_field('ind_pack_field','IND')
+            (pack3.id,
+             "{} /{}{}".format(
+                 pack3.brand,
+                 pack3.qt_paquet,
+                 pack3.unit
+                 )
+             ) in form.config_field('ind_pack_field','IND')
             )
         self.assertEqual(
             form.initial['ind_pack_field'],
-            (pack2.id, "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit))
+            (pack2.id,
+             "{} /{}{}".format(pack2.brand, pack2.qt_paquet, pack2.unit)
+             )
             )
         pack3 = self.db_pack_rol
         self.assertEqual(

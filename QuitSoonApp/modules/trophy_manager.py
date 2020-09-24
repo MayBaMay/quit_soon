@@ -125,7 +125,6 @@ class TrophyManager:
                 challenges_list.append((challenge[0], challenge[1]))
         return challenges_list
 
-    @property
     def trophies_accomplished(self):
         """ get list of trophies accomplished by user and to be created in DB """
         new_trophies = []
@@ -219,7 +218,7 @@ class TrophyManager:
 
     def create_trophies(self):
         """create new trophies"""
-        for trophy in self.trophies_accomplished:
+        for trophy in self.trophies_accomplished():
             try:
                 with transaction.atomic():
                     Trophy.objects.create(user=self.stats.user, nb_cig=trophy[0], nb_jour=trophy[1])

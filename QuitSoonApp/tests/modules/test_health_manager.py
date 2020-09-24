@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# pylint: disable=R0902 #Too many instance attributes (12/7) (too-many-instance-attributes)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Module testing health user action manager module"""
 
@@ -10,15 +14,18 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Alternative, ConsoAlternative
 from QuitSoonApp.modules import HealthManager
-from ..MOCK_DATA import BaseTestCase
 
 
-class HealthManagerTestCase(BaseTestCase):
+class HealthManagerTestCase(TestCase):
     """class testing HealthManager """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.alternative_sp = Alternative.objects.create(
             user=self.usertest,
             type_alternative='Ac',
@@ -127,11 +134,16 @@ class HealthManagerTestCase(BaseTestCase):
         """test HealtheManager.create_conso_alternative method with data"""
         health = HealthManager(self.usertest, self.data_id)
         health.delete_conso_alternative()
-        filter_conso = ConsoAlternative.objects.filter(user=self.usertest, id=self.data_id['id_health'])
+        filter_conso = ConsoAlternative.objects.filter(
+            user=self.usertest,
+            id=self.data_id['id_health']
+            )
         self.assertFalse(filter_conso.exists())
 
-    def test_delete_conso_cig_given_cig(self):
-        """test HealtheManager.create_conso_alternative method with data"""
+    def test_delete_conso_cig_given_cig_fail(self):
+        """
+        test HealtheManager.create_conso_alternative method with invalid data
+        """
         health = HealthManager(self.usertest, {'id_health': 92})
         health.delete_conso_alternative()
         filter_conso = ConsoAlternative.objects.filter(user=self.usertest, id=92)

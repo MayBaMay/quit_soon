@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Module testing save_smoke module"""
 
@@ -10,17 +13,32 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.models import Paquet, ConsoCig
 from QuitSoonApp.modules import SmokeManager
-from ..MOCK_DATA import BaseTestCase
 
 
-class SmokeManagerTestCase(BaseTestCase):
+class SmokeManagerTestCase(TestCase):
     """class testing SmokeManager """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
-        self.db_pack_ind = self.camel
-        self.db_pack_rol = self.rol_1637
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
+        self.db_pack_ind = Paquet.objects.create(
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
+        self.db_pack_rol = Paquet.objects.create(
+            user=self.usertest,
+            type_cig='ROL',
+            brand='1637',
+            qt_paquet=30,
+            price=12,
+            )
         self.db_smoke_ind = ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 6, 17, 10, 15, tzinfo=pytz.utc),
@@ -34,7 +52,7 @@ class SmokeManagerTestCase(BaseTestCase):
             'rol_pack_field': self.db_pack_rol.id,
             'given_field':False,
             }
-        self.new_datas_rol = data ={
+        self.new_datas_rol = {
             'date_smoke': datetime.date(2020, 5, 17),
             'time_smoke': datetime.time(13, 15),
             'type_cig_field':'ROL',
@@ -65,13 +83,19 @@ class SmokeManagerTestCase(BaseTestCase):
         self.assertEqual(smoke.datetime_cig, None)
 
     def test_get_pack_ind(self):
-        """test SmokeManager.get_pack method with new smoke data and given_field=False & type_cig_field='IND'"""
+        """
+        test SmokeManager.get_pack method with new smoke data
+        and given_field=False & type_cig_field='IND'
+        """
         smoke = SmokeManager(self.usertest, self.new_datas_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
         self.assertEqual(smoke.get_pack, self.db_pack_ind)
 
     def test_get_pack_rol(self):
-        """test SmokeManager.get_pack method with new smoke data : given_field=False & type_cig_field='ROL'"""
+        """
+        test SmokeManager.get_pack method with new smoke data :
+        given_field=False & type_cig_field='ROL'
+        """
         smoke = SmokeManager(self.usertest, self.new_datas_rol)
         self.assertEqual(smoke.get_pack, self.db_pack_rol)
         self.assertEqual(smoke.get_pack, self.db_pack_rol)
@@ -157,8 +181,8 @@ class SmokeManagerTestCase(BaseTestCase):
         filter_conso = ConsoCig.objects.filter(user=self.usertest, paquet=self.db_pack_ind.id)
         self.assertFalse(filter_conso.exists())
 
-    def test_delete_conso_cig(self):
-        """test SmokeManager.delete_conso method"""
+    def test_delete_conso_cig_fail(self):
+        """test SmokeManager.delete_conso method failing cause wrong id"""
         smoke = SmokeManager(self.usertest, {'id_smoke': 17364})
         self.assertRaises(AttributeError, smoke.delete_conso_cig())
 

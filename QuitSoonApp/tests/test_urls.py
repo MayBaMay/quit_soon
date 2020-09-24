@@ -1,4 +1,11 @@
+#!/usr/bin/env python
+# pylint: disable=R0904 #Too many public methods (22/20) (too-many-public-methods)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+
 """urls.py tests"""
+
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 

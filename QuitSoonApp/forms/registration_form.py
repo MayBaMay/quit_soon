@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
 
 """User registration form"""
 

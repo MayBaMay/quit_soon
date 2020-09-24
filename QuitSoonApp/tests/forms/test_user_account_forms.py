@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+
+"""
+Tests forms related to user informations:
+RegistrationForm and ParametersForm
+"""
 
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -9,15 +17,18 @@ from QuitSoonApp.forms import (
     ParametersForm,
     )
 from QuitSoonApp.models import Paquet
-from ..MOCK_DATA import BaseTestCase
 
 
-class test_registration(BaseTestCase):
+class RegistrationTestCase(TestCase):
     """test registration form"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_valid_data(self):
         """test succes form"""
@@ -67,13 +78,23 @@ class test_registration(BaseTestCase):
         self.assertRaises(ValidationError)
 
 
-class test_ParametersForm(BaseTestCase):
+class ParametersFormTestCase(TestCase):
     """test ParametersForm with smoking habits"""
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
-        self.pack = self.camel
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
+        self.pack = Paquet.objects.create(
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
         self.pack2 = Paquet.objects.create(
             user=self.usertest,
             type_cig='ROL',

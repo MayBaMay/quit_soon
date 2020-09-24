@@ -1,33 +1,44 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
 
-# """ """
+
+""" test function update_dt_user_model_field using get_client_offset """
 
 import datetime
 import pytz
 
 from django.test import TestCase
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 from QuitSoonApp.views import (
-    get_client_offset,
     update_dt_user_model_field
 )
 from QuitSoonApp.models import (
-    UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
 )
-from ..MOCK_DATA import BaseTestCase
 
-class TestUpdateDtUserModelField(BaseTestCase):
+
+class TestUpdateDtUserModelField(TestCase):
+    """test update dt_user field in database """
 
     def setUp(self):
         """setup tests"""
-        super().setUp()
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
         self.client.login(username='arandomname', password='arandompassword')
 
-        db_pack_ind = self.camel
+        db_pack_ind = Paquet.objects.create(
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
         self.conso1 = ConsoCig.objects.create(
             user=self.usertest,
             datetime_cig=datetime.datetime(2020, 5, 12, 23, 5, tzinfo=pytz.utc),

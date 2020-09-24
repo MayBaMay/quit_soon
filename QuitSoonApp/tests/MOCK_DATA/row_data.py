@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=C0301 # Line too long (102/100) (line-too-long)
 
 """
 Test data
