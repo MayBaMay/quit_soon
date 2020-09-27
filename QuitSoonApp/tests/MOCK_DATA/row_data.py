@@ -413,6 +413,24 @@ row_conso_alt_data = [
 {'date_alter': '2019-11-27', 'time_alter': '19:16', 'alternative': 1005},
 ]
 
+fake_healthy = [
+{'date_alter': '2020-06-20', 'time_alter': '11:30', 'alternative': 1002, 'activity_duration': 65},
+{'date_alter': '2020-06-20', 'time_alter': '10:37', 'alternative': 1005},
+{'date_alter': '2020-06-20', 'time_alter': '20:26', 'alternative': 1004},
+{'date_alter': '2020-06-20', 'time_alter': '10:37', 'alternative': 1005},
+{'date_alter': '2020-06-20', 'time_alter': '14:20', 'alternative': 1002, 'activity_duration': 30},
+{'date_alter': '2020-06-20', 'time_alter': '15:07', 'alternative': 1005},
+{'date_alter': '2020-06-20', 'time_alter': '09:07', 'alternative': 1005},
+{'date_alter': '2020-06-20', 'time_alter': '12:07', 'alternative': 1005},
+{'date_alter': '2020-06-20', 'time_alter': '18:07', 'alternative': 1005},
+{'date_alter': '2020-06-19', 'time_alter': '9:17', 'alternative': 1003, 'activity_duration': 30},
+{'date_alter': '2020-06-19', 'time_alter': '20:26', 'alternative': 1002, 'activity_duration': 40},
+{'date_alter': '2020-06-19', 'time_alter': '10:37', 'alternative': 1005},
+{'date_alter': '2020-06-19', 'time_alter': '12:37', 'alternative': 1005},
+{'date_alter': '2020-06-19', 'time_alter': '15:37', 'alternative': 1005},
+{'date_alter': '2020-06-19', 'time_alter': '20:26', 'alternative': 1004},
+]
+
 fake_smoke = [
 {'date_cig': '2020-06-20', 'time_cig': '19:12', 'paquet': 1001},
 {'date_cig': '2020-06-20', 'time_cig': '17:57', 'paquet': 1001},
@@ -448,7 +466,6 @@ fake_smoke = [
 {'date_cig': '2020-06-19', 'time_cig': '10:30', 'paquet': 1001},
 {'date_cig': '2020-06-19', 'time_cig': '09:30', 'paquet': 1001}
 ]
-
 
 fake_smoke_for_trophies = [
 {'date_cig': '2020-12-31', 'time_cig': '13:49', 'paquet': 1001},

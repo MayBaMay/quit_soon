@@ -26,23 +26,31 @@ class Stats:
     Class dedicated to stats calculation functions common for smoke and health
     """
     def __init__(self, user, lastday, tz_offset):
-        self.profile = UserProfile.objects.filter(user=user).exists()
         self.user = user
         self.tz_offset = tz_offset
-        if tz_offset:
-            self.lastday = lastday - timedelta(minutes=tz_offset)
-        else:
-            self.lastday = lastday
         self.datetime_start = self.get_datetime_start()
-        if self.profile:
-            self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
-        else:
-            self.starting_nb_cig = 0
-        self.nb_full_days_since_start = (self.lastday - self.datetime_start).days
+        self.lastday = self.get_last_day(lastday)
+        self.nb_full_days_since_start = (lastday - self.datetime_start).days
+
+    @property
+    def starting_nb_cig(self):
+        """starting_nb_cig in profile or 0"""
+        if UserProfile.objects.filter(user=self.user).exists():
+            return UserProfile.objects.get(user=self.user).starting_nb_cig
+        return 0
+
+    @property
+    def first_day(self):
+        """first day using app, Bool"""
         if self.nb_full_days_since_start:
-            self.first_day = False
-        else:
-            self.first_day = True
+            return False
+        return True
+
+    def get_last_day(self, lastday):
+        """get lastday without timedelta client tz_offset"""
+        if self.tz_offset:
+            return lastday - timedelta(minutes=self.tz_offset)
+        return lastday
 
     def get_datetime_start(self):
         """
@@ -63,7 +71,7 @@ class Stats:
             else:
                 min_conso_dt = None
 
-        if self.profile:
+        if UserProfile.objects.filter(user=self.user).exists():
             date_start = UserProfile.objects.get(user=self.user).date_start
             dt_start = datetime.datetime.combine(date_start, datetime.time(12, 0))
             dt_start_aware = make_aware(dt_start, pytz.utc)
@@ -126,7 +134,14 @@ class SmokeStats(Stats):
     def __init__(self, user, lastday, tz_offset):
         Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoCig.objects.filter(user=self.user)
+        self.stats_user_conso = self.get_user_conso()
         self.update_dt_user_model_field()
+
+    def get_user_conso(self):
+        """
+        get user conso depending on first day or not
+        for stats often use only full days data except for the first day
+        """
         date_range = (
             datetime.datetime.combine(
                 self.lastday,
@@ -137,7 +152,9 @@ class SmokeStats(Stats):
                 datetime.datetime.max.time().replace(tzinfo=pytz.UTC)
                 )
         )
-        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__range=date_range)
+        if self.first_day:
+            return self.user_conso_all_days
+        return self.user_conso_all_days.exclude(user_dt__range=date_range)
 
     def update_dt_user_model_field(self):
         """Update fielf user_dt with actual client tz_offset"""
@@ -162,26 +179,23 @@ class SmokeStats(Stats):
         return self.user_conso_all_days.count()
 
     @property
-    def total_smoke_full_days(self):
+    def total_smoke(self):
         """
         total number of cigarette smoked by user
         """
-        return self.user_conso_full_days.count()
+        return self.stats_user_conso.count()
 
     @property
     def average_per_day(self):
         """ smoke average per day in full days smoke"""
         if self.first_day:
-            return self.total_smoke_all_days
-        return self.total_smoke_full_days / self.nb_full_days_since_start
+            return self.total_smoke
+        return self.total_smoke / self.nb_full_days_since_start
 
     @property
     def count_smoking_day(self):
         """ number of days user smoked """
-        if self.first_day:
-            smoked_days = self.user_conso_all_days.order_by('user_dt__date')
-        else:
-            smoked_days = self.user_conso_full_days.order_by('user_dt__date')
+        smoked_days = self.stats_user_conso.order_by('user_dt__date')
         return smoked_days.distinct('user_dt__date').count()
 
     @property
@@ -204,9 +218,7 @@ class SmokeStats(Stats):
     @property
     def nb_not_smoked_cig(self):
         """number of cigarette user didn't smoke compare to old_habits"""
-        if self.first_day:
-            return self.total_cig_with_old_habits - self.total_smoke_all_days
-        return self.total_cig_with_old_habits - self.total_smoke_full_days
+        return self.total_cig_with_old_habits - self.total_smoke
 
     @property
     def no_smoking_day_list_dates(self):
@@ -214,13 +226,15 @@ class SmokeStats(Stats):
         list of day in which user didn't smoke in order to check if trophy accomplished
         so only look for full days and not current day
         """
-        no_smoking_day_list_dates = []
-        delta = self.lastday - self.datetime_start
-        for i in range(delta.days + 1):
-            day = self.datetime_start + timedelta(days=i)
-            if not self.user_conso_full_days.filter(user_dt__date=day).exists():
-                no_smoking_day_list_dates.append(day.date())
-        return no_smoking_day_list_dates
+        if not self.first_day:
+            no_smoking_day_list_dates = []
+            delta = self.lastday - self.datetime_start
+            for i in range(delta.days + 1):
+                day = self.datetime_start + timedelta(days=i)
+                if not self.stats_user_conso.filter(user_dt__date=day).exists():
+                    no_smoking_day_list_dates.append(day.date())
+            return no_smoking_day_list_dates
+        return None
 
     def money_smoked_per_day(self, date):
         """ total of money user spent the day in argument smoking cigarettes """
@@ -235,11 +249,7 @@ class SmokeStats(Stats):
     def total_money_smoked(self):
         """total money since starting day user spent on cigarettes"""
         money_smoked = 0
-        if self.first_day:
-            user_conso = self.user_conso_all_days
-        else:
-            user_conso = self.user_conso_full_days
-        for conso in user_conso:
+        for conso in self.stats_user_conso:
             if conso.paquet:
                 money_smoked += conso.paquet.price_per_cig
         return money_smoked
@@ -283,7 +293,7 @@ class HealthyStats(Stats):
         Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoAlternative.objects.filter(user=self.user)
         self.update_dt_user_model_field()
-        self.user_conso_full_days = self.user_conso_all_days.exclude(
+        self.stats_user_conso = self.user_conso_all_days.exclude(
             user_dt__range=(self.datetime_start, self.lastday)
             )
         self.user_activities = self.user_conso_all_days.exclude(alternative__type_alternative='Su')

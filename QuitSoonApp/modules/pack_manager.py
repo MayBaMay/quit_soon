@@ -20,25 +20,23 @@ class PackManager(BaseManager):
         if not self.id_pack:
             self.first = False
             if not Paquet.objects.filter(user=self.user).exists():
-                self.first = True
+                self.first =  True
             self.type_cig = self.get_request_data('type_cig')
             self.brand = self.get_request_data('brand')
             self.qt_paquet = self.get_request_data('qt_paquet')
-            self.unit = self.get_unit
             self.price = self.get_request_data('price')
-            g_per_cig = self.get_request_data('g_per_cig')
-            self.g_per_cig = self.get_g_per_cig(g_per_cig)
-            self.price_per_cig = self.get_price_per_cig
 
     @property
-    def get_unit(self):
+    def unit(self):
         """method getting unit from type_cig"""
         if self.type_cig in ['ROL', 'PIPE', 'GR']:
             return 'G'
         return 'U'
 
-    def get_g_per_cig(self, g_per_cig=''):
+    @property
+    def g_per_cig(self):
         """ column g_per_cig only needed for """
+        g_per_cig = self.get_request_data('g_per_cig')
         if g_per_cig:
             return g_per_cig
         if self.unit == 'G':
@@ -46,7 +44,7 @@ class PackManager(BaseManager):
         return None
 
     @property
-    def get_price_per_cig(self):
+    def price_per_cig(self):
         """ get price per cigarette """
         if self.unit == 'G':
             nb_cig = self.qt_paquet / self.g_per_cig
@@ -130,5 +128,5 @@ class PackManager(BaseManager):
         pack_filtered = self.filter_pack
         pack_filtered.update(
             g_per_cig=self.g_per_cig,
-            price_per_cig=self.get_price_per_cig
+            price_per_cig=self.price_per_cig
             )

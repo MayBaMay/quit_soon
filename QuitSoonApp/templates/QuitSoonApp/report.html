@@ -98,12 +98,12 @@
           <button class="btn-tab" data-toggle="tab2">
             <i class="fas fa-euro-sign"></i><span> Argent dépensé</span>
           </button>
-          {% if user_conso_subsitut %}
+          {% if healthy_report.user_conso_subsitut %}
           <button class="btn-tab" data-toggle="tab3">
             <i class="fas fa-smoking"></i><span> Substituts nicotiniques</span>
           </button>
           {% endif %}
-          {% if smoke_user_conso_full_days %}
+          {% if smoky_report.total_number %}
           <button class="btn-tab" data-toggle="tab4">
             <i class="fas fa-clock"></i><span> Moyenne par heure</span>
           </button>

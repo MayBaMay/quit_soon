@@ -177,12 +177,12 @@ class SmokeStatsTestCaseBigData(TestCase):
         self.assertEqual(self.stats.nb_per_day(datetime.date(2019, 9, 22)), 0)
 
     def test_total_smoke_all_days(self):
-        """test method total_smoke_full_days"""
-        self.assertEqual(self.stats.total_smoke_full_days, 329)
+        """test method total_smoke"""
+        self.assertEqual(self.stats.total_smoke, 329)
 
-    def test_total_smoke_full_days(self):
-        """test method total_smoke_full_days"""
-        self.assertEqual(self.stats.total_smoke_full_days, 329)
+    def test_total_smoke(self):
+        """test method total_smoke"""
+        self.assertEqual(self.stats.total_smoke, 329)
 
     def test_average_per_day(self):
         """test method average_per_day"""
@@ -280,6 +280,11 @@ class SmokeStatsTestCaseSmallData(TestCase):
             -120
             )
 
+    def test_get_user_conso(self):
+        """test method get_user_conso"""
+        self.assertEqual(self.stats.get_user_conso().count(), 17)
+        self.assertEqual(self.stats.stats_user_conso.count(), 17)
+
     def test_get_nb_per_day_smoke(self):
         """test method get_nb_per_day_smoke"""
         self.assertEqual(self.stats.nb_per_day(datetime.date(2020, 6, 19)), 17)
@@ -352,6 +357,11 @@ class StatsFirstDay(TestCase):
     def test_first_day(self):
         """test first day user use app"""
         self.assertTrue(self.stats.first_day)
+
+    def test_get_user_conso(self):
+        """test method get_user_conso"""
+        self.assertEqual(self.stats.get_user_conso().count(), 17)
+        self.assertEqual(self.stats.stats_user_conso.count(), 17)
 
     def test_total_smoke_all_days(self):
         """test method total_smoke_all_days for first day user"""

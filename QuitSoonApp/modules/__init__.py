@@ -11,3 +11,4 @@ from .stats_manager import Stats, SmokeStats, HealthyStats
 from .time_last_event import get_delta_last_event
 from .trophy_manager import TrophyManager
 from .pd_custom_dataframe import DataFrameDate
+from .chart_manager import ChartManager

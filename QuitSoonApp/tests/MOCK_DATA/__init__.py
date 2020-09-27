@@ -7,8 +7,8 @@ in order to acces them easily
 """
 
 from .row_data import (
-    row_paquet_data, row_conso_cig_data,
-    row_alternative_data, row_conso_alt_data, fake_smoke, fake_smoke_for_trophies
+    row_paquet_data, row_conso_cig_data, fake_smoke, fake_smoke_for_trophies,
+    row_alternative_data, row_conso_alt_data, fake_healthy
     )
 from .clean_data import (
     CreatePacks, CreateSmoke,

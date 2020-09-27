@@ -17,7 +17,7 @@ class TrophyManager:
 
     def __init__(self, stats):
         self.stats = stats
-        if stats.user_conso_full_days:
+        if stats.stats_user_conso:
             self.stats_df = self.smoking_values_per_dates_with_all_dates_df(
                 self.all_dates,
                 self.values_per_dates
@@ -65,7 +65,7 @@ class TrophyManager:
     @property
     def values_per_dates(self):
         """ get count cig smoked (col nb_cig) per dates(index) in DataFrame """
-        qs = self.stats.user_conso_full_days.values()
+        qs = self.stats.stats_user_conso.values()
         data_cig = pd.DataFrame(qs)
         # get nb_cig per date sorted
         nb_cig_per_date_serie = data_cig.user_dt.dt.date.value_counts().sort_index()
@@ -128,7 +128,7 @@ class TrophyManager:
     def trophies_accomplished(self):
         """ get list of trophies accomplished by user and to be created in DB """
         new_trophies = []
-        if self.stats.user_conso_full_days:
+        if self.stats.stats_user_conso:
             # only modify trophies if user
             for challenge in self.list_user_challenges:
 
