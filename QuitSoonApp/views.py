@@ -107,8 +107,7 @@ def today(request):
     if UserProfile.objects.filter(user=request.user).exists():
         context['profile'] = True
         smoke_stats = SmokeStats(request.user, timezone.now(), tz_offset)
-        current_tz = timezone.get_current_timezone()
-        user_now = current_tz.normalize(timezone.now().astimezone(current_tz))
+        user_now = timezone.now() - timedelta(minutes=tz_offset)
         if smoke_conso:
             context['smoke_today'] = smoke_stats.nb_per_day(user_now.date())
             last = smoke_conso.latest('datetime_cig').datetime_cig

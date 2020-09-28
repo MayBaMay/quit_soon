@@ -83,9 +83,11 @@ class Stats:
             return min_conso_dt - timedelta(minutes=self.tz_offset)
         return timezone.now()
 
-    @staticmethod
-    def daterange(start_date, end_date):
+    def daterange(self, start_date, end_date):
         """generate all dates from start_date to end_date """
+        current_tz = timezone.get_current_timezone()
+        start_date = current_tz.normalize(self.datetime_start.astimezone(current_tz))
+        end_date = current_tz.normalize(self.lastday.astimezone(current_tz))
         for num in range(int ((end_date - start_date + timedelta(1)).days)):
             yield start_date + timedelta(num)
 
@@ -97,6 +99,8 @@ class Stats:
         end_date = self.lastday
         for single_date in self.daterange(start_date, end_date):
             list_dates.append(single_date.date())
+        if self.lastday.date() not in list_dates:
+            list_dates.append(self.lastday.date())
         return list_dates
 
     def nb_full_period_for_average(self, date, period):

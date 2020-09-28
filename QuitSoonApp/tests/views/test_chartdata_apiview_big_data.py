@@ -129,20 +129,21 @@ class ChartDataSmokingBigData(BaseChartDataSTestCase):
             }
         response = self.client.get(self.url, data, format='json')
         self.assertEqual(response.status_code, 200)
+        print(response.data)
         self.assertJSONEqual(response.data, {
             'columns': ['nicotine', 'activity_duration'],
             'index': [
-                "17/11/19",
                 "18/11/19",
                 "19/11/19",
                 "20/11/19",
                 "21/11/19",
                 "22/11/19",
-                "23/11/19"
+                "23/11/19",
+                "24/11/19"
                 ],
             'data': {
-                'base': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.0],
-                'activity': [30, 0, 0, 0, 0, 100, 0]
+                'base': [0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 0.0],
+                'activity': [0, 0, 0, 0, 100, 0, 0]
                 },
             'min_cig': 20
             }
