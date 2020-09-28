@@ -1,45 +1,56 @@
 #!/usr/bin/env python
 
+"""Module dedicated to stats calculation functions"""
+
+
 import datetime
-from datetime import timedelta
-from dateutil import rrule
-from dateutil.relativedelta import relativedelta
 import calendar
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+from dateutil import rrule
 import pytz
 
 from django.utils.timezone import make_aware
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import IntegrityError
 from django.db.models import Sum
 from django.utils import timezone
 
 from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
-    Alternative, ConsoAlternative
+    ConsoAlternative
     )
 
+
 class Stats:
+    """
+    Class dedicated to stats calculation functions common for smoke and health
+    """
     def __init__(self, user, lastday, tz_offset):
-        self.profile = UserProfile.objects.filter(user=user).exists()
         self.user = user
-        if tz_offset:
-            self.tz_offset = tz_offset
-            self.lastday = lastday - timedelta(minutes=tz_offset)
-        else:
-            self.tz_offset = 0
-            self.lastday = lastday
+        self.tz_offset = tz_offset
         self.datetime_start = self.get_datetime_start()
-        if self.profile:
-            self.starting_nb_cig = UserProfile.objects.get(user=self.user).starting_nb_cig
-        else:
-            self.starting_nb_cig = 0
-        self.nb_full_days_since_start = (self.lastday - self.datetime_start).days
+        self.lastday = self.get_last_day(lastday)
+        self.nb_full_days_since_start = (lastday - self.datetime_start).days
+
+    @property
+    def starting_nb_cig(self):
+        """starting_nb_cig in profile or 0"""
+        if UserProfile.objects.filter(user=self.user).exists():
+            return UserProfile.objects.get(user=self.user).starting_nb_cig
+        return 0
+
+    @property
+    def first_day(self):
+        """first day using app, Bool"""
         if self.nb_full_days_since_start:
-            self.first_day = False
-        else:
-            self.first_day = True
+            return False
+        return True
+
+    def get_last_day(self, lastday):
+        """get lastday without timedelta client tz_offset"""
+        if self.tz_offset:
+            return lastday - timedelta(minutes=self.tz_offset)
+        return lastday
 
     def get_datetime_start(self):
         """
@@ -60,7 +71,7 @@ class Stats:
             else:
                 min_conso_dt = None
 
-        if self.profile:
+        if UserProfile.objects.filter(user=self.user).exists():
             date_start = UserProfile.objects.get(user=self.user).date_start
             dt_start = datetime.datetime.combine(date_start, datetime.time(12, 0))
             dt_start_aware = make_aware(dt_start, pytz.utc)
@@ -68,38 +79,58 @@ class Stats:
                 if min_conso_dt.date() == date_start:
                     return min_conso_dt - timedelta(minutes=self.tz_offset)
             return dt_start_aware
-        else:
-            if min_conso_dt:
-                return min_conso_dt - timedelta(minutes=self.tz_offset)
-            else:
-                return timezone.now()
+        if min_conso_dt:
+            return min_conso_dt - timedelta(minutes=self.tz_offset)
+        return timezone.now()
+
+    def daterange(self, start_date, end_date):
+        """generate all dates from start_date to end_date """
+        current_tz = timezone.get_current_timezone()
+        start_date = current_tz.normalize(self.datetime_start.astimezone(current_tz))
+        end_date = current_tz.normalize(self.lastday.astimezone(current_tz))
+        for num in range(int ((end_date - start_date + timedelta(1)).days)):
+            yield start_date + timedelta(num)
+
+    @property
+    def list_dates(self):
+        """list of all dates from day user started app and last_day in argument """
+        list_dates = []
+        start_date = self.datetime_start
+        end_date = self.lastday
+        for single_date in self.daterange(start_date, end_date):
+            list_dates.append(single_date.date())
+        if self.lastday.date() not in list_dates:
+            list_dates.append(self.lastday.date())
+        return list_dates
 
     def nb_full_period_for_average(self, date, period):
         """ get number of achieve full periods (days, weeks or months) since start """
         # # get the day before to get last full day
         lastfullday = date - timedelta(1)
-        if period == 'day':
-            day = rrule.rrule(rrule.DAILY, dtstart=self.datetime_start.date(), until=lastfullday)
-            return day.count()
         if period == 'week':
             weeks = rrule.rrule(rrule.WEEKLY, dtstart=self.datetime_start.date(), until=lastfullday)
             return weeks.count() - 1 # - current week
-
         if period == 'month':
             # get first day of month to calculte number of full months
             if self.datetime_start.day == 1:
-                first_day_of_month = self.datetime_start.date()
+                day_1_of_month = self.datetime_start.date()
             else:
-                first_day_of_month = self.datetime_start.date().replace(day=1) + relativedelta(months=1)
+                day_1_of_month = self.datetime_start.date().replace(day=1) + relativedelta(months=1)
             # get last day of month to calculate number of full months
             if lastfullday.day == calendar.monthrange(lastfullday.year,lastfullday.month)[1]:
                 last_day_of_month = lastfullday
             else:
                 last_month = lastfullday - relativedelta(months=1)
-                last_day_of_month = datetime.date(last_month.year, last_month.month, calendar.monthrange(last_month.year, last_month.month)[1])
-            month = rrule.rrule(rrule.MONTHLY, dtstart=first_day_of_month, until=last_day_of_month)
+                last_day_of_month = datetime.date(
+                    last_month.year,
+                    last_month.month,
+                    calendar.monthrange(last_month.year, last_month.month)[1]
+                    )
+            month = rrule.rrule(rrule.MONTHLY, dtstart=day_1_of_month, until=last_day_of_month)
             return month.count()
-
+        # else, excpect day
+        day = rrule.rrule(rrule.DAILY, dtstart=self.datetime_start.date(), until=lastfullday)
+        return day.count()
 
 class SmokeStats(Stats):
     """Generate stats reports on user smoke habits for past days"""
@@ -107,14 +138,30 @@ class SmokeStats(Stats):
     def __init__(self, user, lastday, tz_offset):
         Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoCig.objects.filter(user=self.user)
+        self.stats_user_conso = self.get_user_conso()
         self.update_dt_user_model_field()
+
+    def get_user_conso(self):
+        """
+        get user conso depending on first day or not
+        for stats often use only full days data except for the first day
+        """
         date_range = (
-            datetime.datetime.combine(self.lastday, datetime.datetime.min.time().replace(tzinfo=pytz.UTC)),
-            datetime.datetime.combine(self.lastday, datetime.datetime.max.time().replace(tzinfo=pytz.UTC))
+            datetime.datetime.combine(
+                self.lastday,
+                datetime.datetime.min.time().replace(tzinfo=pytz.UTC)
+                ),
+            datetime.datetime.combine(
+                self.lastday,
+                datetime.datetime.max.time().replace(tzinfo=pytz.UTC)
+                )
         )
-        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__range=date_range)
+        if self.first_day:
+            return self.user_conso_all_days
+        return self.user_conso_all_days.exclude(user_dt__range=date_range)
 
     def update_dt_user_model_field(self):
+        """Update fielf user_dt with actual client tz_offset"""
         for conso in self.user_conso_all_days:
             conso.user_dt = conso.datetime_cig - timedelta(minutes=self.tz_offset)
             conso.save()
@@ -136,35 +183,31 @@ class SmokeStats(Stats):
         return self.user_conso_all_days.count()
 
     @property
-    def total_smoke_full_days(self):
+    def total_smoke(self):
         """
         total number of cigarette smoked by user
         """
-        return self.user_conso_full_days.count()
+        return self.stats_user_conso.count()
 
     @property
     def average_per_day(self):
         """ smoke average per day in full days smoke"""
         if self.first_day:
-            return self.total_smoke_all_days
-        else:
-            return self.total_smoke_full_days / self.nb_full_days_since_start
+            return self.total_smoke
+        return self.total_smoke / self.nb_full_days_since_start
 
     @property
     def count_smoking_day(self):
         """ number of days user smoked """
-        if self.first_day:
-            return self.user_conso_all_days.order_by('user_dt__date').distinct('user_dt__date').count()
-        else:
-            return self.user_conso_full_days.order_by('user_dt__date').distinct('user_dt__date').count()
+        smoked_days = self.stats_user_conso.order_by('user_dt__date')
+        return smoked_days.distinct('user_dt__date').count()
 
     @property
     def count_no_smoking_day(self):
         """ number of day user didn't smoke """
         if self.first_day:
             return 1 - self.count_smoking_day
-        else:
-            return self.nb_full_days_since_start - self.count_smoking_day
+        return self.nb_full_days_since_start - self.count_smoking_day
 
     @property
     def total_cig_with_old_habits(self):
@@ -174,32 +217,12 @@ class SmokeStats(Stats):
         """
         if self.first_day:
             return self.starting_nb_cig
-        else:
-            return self.starting_nb_cig * self.nb_full_days_since_start
+        return self.starting_nb_cig * self.nb_full_days_since_start
 
     @property
-    def nb_not_smoked_cig_full_days(self):
-        if self.first_day:
-            return self.total_cig_with_old_habits - self.total_smoke_all_days
-        else:
-            return self.total_cig_with_old_habits - self.total_smoke_full_days
-
-    @staticmethod
-    def daterange(start_date, end_date):
-        """generate all dates from start_date to end_date """
-        start_date = start_date
-        for n in range(int ((end_date - start_date + timedelta(1)).days)):
-            yield start_date + timedelta(n)
-
-    @property
-    def list_dates(self):
-        """list of all dates from day user started app and last_day in argument """
-        list_dates = []
-        start_date = self.datetime_start
-        end_date = self.lastday
-        for single_date in self.daterange(start_date, end_date):
-            list_dates.append(single_date.date())
-        return list_dates
+    def nb_not_smoked_cig(self):
+        """number of cigarette user didn't smoke compare to old_habits"""
+        return self.total_cig_with_old_habits - self.total_smoke
 
     @property
     def no_smoking_day_list_dates(self):
@@ -207,13 +230,15 @@ class SmokeStats(Stats):
         list of day in which user didn't smoke in order to check if trophy accomplished
         so only look for full days and not current day
         """
-        no_smoking_day_list_dates = []
-        delta = self.lastday - self.datetime_start
-        for i in range(delta.days + 1):
-            day = self.datetime_start + timedelta(days=i)
-            if not self.user_conso_full_days.filter(user_dt__date=day).exists():
-                no_smoking_day_list_dates.append(day.date())
-        return no_smoking_day_list_dates
+        if not self.first_day:
+            no_smoking_day_list_dates = []
+            delta = self.lastday - self.datetime_start
+            for i in range(delta.days + 1):
+                day = self.datetime_start + timedelta(days=i)
+                if not self.stats_user_conso.filter(user_dt__date=day).exists():
+                    no_smoking_day_list_dates.append(day.date())
+            return no_smoking_day_list_dates
+        return None
 
     def money_smoked_per_day(self, date):
         """ total of money user spent the day in argument smoking cigarettes """
@@ -228,11 +253,7 @@ class SmokeStats(Stats):
     def total_money_smoked(self):
         """total money since starting day user spent on cigarettes"""
         money_smoked = 0
-        if self.first_day:
-            user_conso = self.user_conso_all_days
-        else:
-            user_conso = self.user_conso_full_days
-        for conso in user_conso:
+        for conso in self.stats_user_conso:
             if conso.paquet:
                 money_smoked += conso.paquet.price_per_cig
         return money_smoked
@@ -242,8 +263,7 @@ class SmokeStats(Stats):
         """ average money user spend per day smoking cigarettes """
         if self.first_day:
             return self.total_money_smoked
-        else:
-            return self.total_money_smoked / self.nb_full_days_since_start
+        return self.total_money_smoked / self.nb_full_days_since_start
 
     @property
     def total_money_with_starting_nb_cig(self):
@@ -277,82 +297,71 @@ class HealthyStats(Stats):
         Stats.__init__(self, user, lastday, tz_offset)
         self.user_conso_all_days = ConsoAlternative.objects.filter(user=self.user)
         self.update_dt_user_model_field()
-        self.user_conso_full_days = self.user_conso_all_days.exclude(user_dt__range=(self.datetime_start, self.lastday))
+        self.stats_user_conso = self.user_conso_all_days.exclude(
+            user_dt__range=(self.datetime_start, self.lastday)
+            )
         self.user_activities = self.user_conso_all_days.exclude(alternative__type_alternative='Su')
-        self.user_conso_subsitut = self.user_conso_all_days.filter(alternative__type_alternative='Su')
+        self.user_conso_subsitut = self.user_conso_all_days.filter(
+            alternative__type_alternative='Su'
+            )
 
     def update_dt_user_model_field(self):
+        """Update fielf user_dt with actual client tz_offset"""
         for conso in self.user_conso_all_days:
             conso.user_dt = conso.datetime_alter - timedelta(minutes=self.tz_offset)
             conso.save()
 
-    def filter_queryset_for_report(self, category='Ac', type=None):
+    def filter_queryset_for_report(self, category='Ac', type_alt=None):
+        """Filter queryset used to create stats"""
         if category == 'Ac':
             queryset = self.user_activities
-            if type:
-                queryset = queryset.filter(alternative__type_activity=type)
+            if type_alt:
+                queryset = queryset.filter(alternative__type_activity=type_alt)
             return queryset
-        elif category == 'Su':
+        if category == 'Su':
             queryset = self.user_conso_subsitut
-            if type:
-                queryset = queryset.filter(alternative__substitut=type)
+            if type_alt:
+                queryset = queryset.filter(alternative__substitut=type_alt)
             return queryset
-        else:
-            return None
+        return None
 
-    def report_substitut_per_period(self, date, category='Ac', period='day', type=None):
+    def report_alternative_per_period(self, date, category='Ac', period='day', type_alt=None):
         """
         For date, return for the period:
         time activities in minutes
         count substituts
         """
         # get based queryset
-        queryset = self.filter_queryset_for_report(category, type)
+        queryset = self.filter_queryset_for_report(category, type_alt)
         if queryset:
             if category == 'Ac':
                 queryset = self.filter_by_period(date, period, queryset)
                 return queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
-            elif category == 'Su':
+            if category == 'Su':
                 queryset = self.filter_by_period(date, period, queryset)
                 return queryset.count()
         return None
 
-    def report_substitut_average_per_period(self, date, category='Ac', period='day', type=None):
-
-        if self.first_day:
-            queryset = self.filter_queryset_for_report(category, type)
-        else:
-            # get only full days data so exclude today
-            queryset = self.filter_queryset_for_report(category, type).exclude(user_dt__date=date)
-
-        if category == 'Ac':
-            sum = queryset.aggregate(Sum('activity_duration'))['activity_duration__sum']
-            if self.first_day:
-                return sum
-            else:
-                return sum / self.nb_full_period_for_average(date, period)
-        elif category == 'Su':
-            count = queryset.count()
-            if self.first_day:
-                return count
-            else:
-                return count / self.nb_full_period_for_average(date, period)
-        else:
-            return None
-
-    def filter_by_period(self, date, period, queryset):
-        # filter by period
-        if period == 'day':
-            date_range = (
-                datetime.datetime.combine(date, datetime.datetime.min.time().replace(tzinfo=pytz.UTC)),
-                datetime.datetime.combine(date, datetime.datetime.max.time().replace(tzinfo=pytz.UTC))
-            )
-            return queryset.filter(user_dt__range=date_range)
-        elif period == 'week':
+    @staticmethod
+    def filter_by_period(date, period, queryset):
+        """ filter queryset by period """
+        if period == 'week':
             week_number = date.isocalendar()[1]
             return queryset.filter(user_dt__week=week_number)
-        elif period == 'month':
+        if period == 'month':
             return queryset.filter(user_dt__month=date.month)
+        # excpect period == 'days'
+        date_range = (
+            datetime.datetime.combine(
+                date,
+                datetime.datetime.min.time().replace(tzinfo=pytz.UTC)
+                ),
+            datetime.datetime.combine(
+                date,
+                datetime.datetime.max.time().replace(tzinfo=pytz.UTC)
+                )
+        )
+        return queryset.filter(user_dt__range=date_range)
 
     @staticmethod
     def convert_minutes_to_hours_min_str(minutes=0):

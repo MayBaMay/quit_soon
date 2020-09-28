@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+"""App urls"""
+
 from __future__ import unicode_literals
 from django.urls import path
 from django.contrib.auth import views as auth_views
@@ -9,6 +13,7 @@ app_name = 'QuitSoonApp'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('legals/', views.legals, name='legals'),
 
     path('register/', views.register_view, name='register'),
     path('login/', views.login_view, name='login'),
@@ -17,7 +22,7 @@ urlpatterns = [
     path('report/', views.report, name='report'),
     path('charts/', TemplateView.as_view(template_name="QuitSoonApp/charts.html"),
                    name='charts'),
-    path('api/chart/data', views.ChartData.as_view(), name='CahrtApi' ),
+    path('api/chart/data', views.ChartData.as_view(), name='ChartApi' ),
     path('objectifs/', views.objectifs, name='objectifs'),
 
     path('paquets/', views.paquets, name='paquets'),

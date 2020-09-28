@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+
+"""
+Tests forms related to user informations:
+RegistrationForm and ParametersForm
+"""
 
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -11,13 +19,16 @@ from QuitSoonApp.forms import (
 from QuitSoonApp.models import Paquet
 
 
-class test_registration(TestCase):
+class RegistrationTestCase(TestCase):
     """test registration form"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_valid_data(self):
         """test succes form"""
@@ -67,22 +78,25 @@ class test_registration(TestCase):
         self.assertRaises(ValidationError)
 
 
-class test_ParametersForm(TestCase):
+class ParametersFormTestCase(TestCase):
     """test ParametersForm with smoking habits"""
 
     def setUp(self):
         """setup tests"""
-        self.user = User.objects.create_user(
-            username="arandomname", email="random@email.com", password="arandompassword")
-        self.pack = Paquet.objects.create(
-            user=self.user,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
+        self.usertest = User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
             )
+        self.pack = Paquet.objects.create(
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
         self.pack2 = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='1637',
             qt_paquet=30,
@@ -92,7 +106,7 @@ class test_ParametersForm(TestCase):
 
     def test_form_get(self):
         """test get form with choices field"""
-        form = ParametersForm(self.user)
+        form = ParametersForm(self.usertest)
         self.assertEqual(len(form.fields['ref_pack'].choices), 2)
         self.assertTrue((self.pack.id, 'CAMEL /20U') in form.fields['ref_pack'].choices)
         self.assertTrue((self.pack2.id, '1637 /30G') in form.fields['ref_pack'].choices)
@@ -100,7 +114,7 @@ class test_ParametersForm(TestCase):
     def test_form_post_first_connection(self):
         """test ParametersForm while request.POST include newpack creation"""
         newpack = Paquet.objects.create(
-            user=self.user,
+            user=self.usertest,
             type_cig='ROL',
             brand='BRANDTEST',
             qt_paquet=50,
@@ -116,7 +130,7 @@ class test_ParametersForm(TestCase):
             'price':'30',
             'ref_pack': newpack.id
             }
-        form = ParametersForm(self.user, data)
+        form = ParametersForm(self.usertest, data)
         self.assertTrue(form.is_valid())
 
     def test_form_post(self):
@@ -126,12 +140,12 @@ class test_ParametersForm(TestCase):
             'starting_nb_cig': '20',
             'packs': str(self.pack.id)
             }
-        form = ParametersForm(self.user, data)
+        form = ParametersForm(self.usertest, data)
         self.assertTrue(form.is_valid())
 
     def test_form_post_missing_data(self):
         """test form with no data required fields"""
-        form = ParametersForm(self.user, {})
+        form = ParametersForm(self.usertest, {})
         self.assertEqual(form.errors, {
             'date_start': ['Ce champ est obligatoire.'],
             'starting_nb_cig': ['Ce champ est obligatoire.'],

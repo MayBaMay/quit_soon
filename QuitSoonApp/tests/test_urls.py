@@ -1,9 +1,16 @@
+#!/usr/bin/env python
+# pylint: disable=R0904 #Too many public methods (22/20) (too-many-public-methods)
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
+
 """urls.py tests"""
+
 from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 
 from QuitSoonApp.views import (
-    index, today,
+    index, legals, today,
     register_view, login_view,
     profile, new_name, new_email, new_password, new_parameters,
     report, objectifs,
@@ -18,6 +25,11 @@ class TestUrls(SimpleTestCase):
         """test index_url"""
         url = reverse('QuitSoonApp:index')
         self.assertEqual(resolve(url).func, index)
+
+    def test_legals_url_is_resolved(self):
+        """test legals_url"""
+        url = reverse('QuitSoonApp:legals')
+        self.assertEqual(resolve(url).func, legals)
 
     def test_register_view_url_is_resolved(self):
         """test register_view"""

@@ -1,14 +1,19 @@
 #!/usr/bin/env python
+# pylint: disable=W0212
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """tests reset password by user """
 
-from django.test import TestCase, TransactionTestCase
+from django.test import TransactionTestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.core import mail
 
 class ResetPasswordTransactionTestCase(TransactionTestCase):
+    """Test reset password feature"""
 
     def setUp(self):
         """setup tests"""
@@ -59,4 +64,5 @@ class ResetPasswordTransactionTestCase(TransactionTestCase):
         self.assertRedirects(response, '/accounts/reset/done/')
 
         self.assertTrue(
-            get_user_model()._default_manager.get().check_password('newpasswordforTest'))
+            get_user_model()._default_manager.get().check_password('newpasswordforTest')
+            )

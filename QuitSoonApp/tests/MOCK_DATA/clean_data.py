@@ -1,38 +1,50 @@
 #!/usr/bin/env python
+# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code
+
 
 """
 Clean tests data and populate test database
 """
 
+from decimal import Decimal
 from datetime import datetime as dt
 import pytz
-from decimal import Decimal
-from random import randint
-
-from django.core.exceptions import ObjectDoesNotExist
 
 from QuitSoonApp.models import Paquet, ConsoCig, Alternative, ConsoAlternative
 
 
 class CreateDataInDatabase:
+    """
+    Class with common methods and attributes
+    to parse, complete and use data to populate tables in testing database
+    """
 
     def __init__(self, user, row_data):
         self.user = user
         self.clean_data = row_data
-        for data in self.clean_data:
-            data = self.get_missing_data(data)
 
-    def date_format(self, date):
+    @staticmethod
+    def date_format(date):
+        """formate date into string"""
         return dt.strptime(date, '%Y-%m-%d').date()
 
-    def time_format(self, time):
+    @staticmethod
+    def time_format(time):
+        """formate time into string"""
         return dt.strptime(time, '%H:%M').time()
 
 
-class Create_packs(CreateDataInDatabase):
+class CreatePacks(CreateDataInDatabase):
     """Parse, complete and use data to populate table Paquet in test database"""
 
-    def get_missing_data(self, data):
+    def __init__(self, user, row_data):
+        super().__init__(user, row_data)
+        for data in self.clean_data:
+            data = self.get_missing_data(data)
+
+    @staticmethod
+    def get_missing_data(data):
         """complete row_data with expected info"""
         # unit, g_per_cig, price_per_cig
         if data['type_cig'] == 'ROL':
@@ -41,11 +53,10 @@ class Create_packs(CreateDataInDatabase):
             nb_cig = data['qt_paquet'] / data['g_per_cig']
             data['price_per_cig'] =  Decimal(data['price']) / Decimal(nb_cig)
             return data
-        else:
-            data['unit'] = 'U'
-            data['g_per_cig'] = None
-            data['price_per_cig'] = Decimal(data['price'])/data['qt_paquet']
-            return data
+        data['unit'] = 'U'
+        data['g_per_cig'] = None
+        data['price_per_cig'] = Decimal(data['price'])/data['qt_paquet']
+        return data
 
     def populate_db(self):
         """populate database with clean data"""
@@ -64,13 +75,18 @@ class Create_packs(CreateDataInDatabase):
                 first=data['first']
                 )
 
-class Create_smoke(CreateDataInDatabase):
+class CreateSmoke(CreateDataInDatabase):
     """Parse, complete and use data to populate table ConsoCig in test database"""
+
+    def __init__(self, user, row_data):
+        super().__init__(user, row_data)
+        for data in self.clean_data:
+            data = self.get_missing_data(data)
 
     def get_missing_data(self, data):
         """complete row_data with expected info"""
         try:
-            if data['given'] == True:
+            if data['given']:
                 data['paquet'] = None
             else:
                 # => data['given'] = False
@@ -82,21 +98,22 @@ class Create_smoke(CreateDataInDatabase):
 
     @staticmethod
     def get_pack(data):
+        """get Paquet instance with id"""
         data['given'] = False
         try:
             pack = Paquet.objects.get(id=data['paquet'])
             data['paquet'] = pack
-        except TypeError: #(ObjectDoesNotExist, KeyError, ):
-            # function called twice(paquet already filled)
+        except TypeError:
             pass
         return data
 
     def populate_db(self):
+        """Populate database with tests ConsoCig"""
         for data in self.clean_data:
             date = self.date_format(data['date_cig'])
             time = self.time_format(data['time_cig']).replace(tzinfo=pytz.UTC)
             datetime_cig = dt.combine(date, time)
-            conso = ConsoCig.objects.create(
+            ConsoCig.objects.create(
                 user=self.user,
                 datetime_cig=datetime_cig,
                 paquet=data['paquet'],
@@ -106,7 +123,13 @@ class Create_smoke(CreateDataInDatabase):
 class CreateAlternative(CreateDataInDatabase):
     """Parse, complete and use data to populate table Alternative in test database"""
 
-    def get_missing_data(self, data):
+    def __init__(self, user, row_data):
+        super().__init__(user, row_data)
+        for data in self.clean_data:
+            data = self.get_missing_data(data)
+
+    @staticmethod
+    def get_missing_data(data):
         """complete row_data with expected info"""
         try:
             if data['type_activity']:
@@ -118,6 +141,7 @@ class CreateAlternative(CreateDataInDatabase):
         return data
 
     def populate_db(self):
+        """Populate database with tests Alternative """
         for data in self.clean_data:
             Alternative.objects.create(
                 id=data['id'],
@@ -133,6 +157,11 @@ class CreateAlternative(CreateDataInDatabase):
 class CreateConsoAlternative(CreateDataInDatabase):
     """Parse, complete and use data to populate table ConsoCig in test database"""
 
+    def __init__(self, user, row_data):
+        super().__init__(user, row_data)
+        for data in self.clean_data:
+            data = self.get_missing_data(data)
+
     def get_missing_data(self, data):
         """complete row_data with expected info"""
         try:
@@ -144,15 +173,16 @@ class CreateConsoAlternative(CreateDataInDatabase):
 
     @staticmethod
     def get_alternative(data):
+        """get Alternative instance with id"""
         try:
             alt = Alternative.objects.get(id=data['alternative'])
             data['alternative'] = alt
-        except TypeError: #(ObjectDoesNotExist, KeyError, ):
-            # function called twice(paquet already filled)
+        except TypeError:
             pass
         return data['alternative']
 
     def populate_db(self):
+        """Populate database with test ConsoAlternative"""
         for data in self.clean_data:
             date = self.date_format(data['date_alter'])
             time = self.time_format(data['time_alter']).replace(tzinfo=pytz.UTC)

@@ -149,6 +149,18 @@
       .addClass("show");
   });
 
+  // update qt_paquet label depending on value type_cig
+  let select_type = $('#paquetform select')
+  select_type.on("click", function (e) {
+    if (select_type.val() == "ROL") {
+      $('#qt').text('Grammes par paquet');
+      $('#id_qt_paquet').val('30');
+    } else {
+      $('#qt').text('Nombre par paquet');
+      $('#id_qt_paquet').val('20');
+    }
+  });
+
   // modify g/cig form
   $(".cig-change").on("click", function (e) {
     if ($(this).attr("id") == "submit") {

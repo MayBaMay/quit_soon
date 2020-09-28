@@ -1,7 +1,9 @@
-from django.contrib.auth import get_user_model
+#!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+
+""" Allow user to authenticate with email """
+
 from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.backends import ModelBackend
-from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 
 
@@ -17,10 +19,12 @@ class EmailAuthBackend(BaseBackend):
             user = User.objects.get(email=username)
             if user.check_password(password):
                 return user
+            return None
         except User.DoesNotExist:
             return None
 
     def get_user(self, user_id):
+        """ Get use with id """
         try:
             user = User.objects.get(pk = user_id)
             # Note that you MUST use pk = user_id in getting the user.
