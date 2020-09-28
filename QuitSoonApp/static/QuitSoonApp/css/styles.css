@@ -1167,6 +1167,7 @@ tr:nth-child(even) {
   display: inline-block;
   padding: 0.2em 0.4em;
   border: none;
+  font-size: 1rem;
 }
 
 .info-table form {
@@ -1210,6 +1211,7 @@ tr:nth-child(even) {
 }
 
 .icon-link {
+  font-size: 1rem;
   padding: 0 0.5rem;
   display: flex;
   justify-content: center;
