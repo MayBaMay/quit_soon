@@ -20,15 +20,6 @@ from QuitSoonApp.models import (
 )
 
 
-class AnonymousUserTestCase(TestCase):
-    """test anonymousUser acces to app"""
-
-    def test_index_with_anonymous_user(self):
-        """test anonymousUser acces to index"""
-        response = self.client.get(reverse('QuitSoonApp:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'index.html')
-
 class RegisterClientTestCase(TestCase):
     """
     Tests on register view

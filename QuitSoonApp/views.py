@@ -55,16 +55,12 @@ def index(request):
     return render(request, 'index.html')
 
 def legals(request):
-    """index View"""
+    """legals View"""
     if request.user.is_authenticated:
         header_template_name = 'QuitSoonApp/base_header.html'
     else:
         header_template_name = 'base_header.html'
-
-    context = {
-        'header_template_name': header_template_name,
-    }
-
+    context = {'header_template_name': header_template_name}
     return render(request, 'legals.html', context)
 
 def get_client_offset(request):
