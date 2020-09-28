@@ -199,6 +199,28 @@ class ChartManagerTestCase(TestCase):
         self.assertEqual(test_df.loc['11/19', 'activity_duration'], 565)
 
     @freeze_time("2019-11-26 20:21:34")
+    def test_df_period_chart_fail(self):
+        """test df_period_chart method"""
+        user_options = {
+            'charttype':'nb_cig',
+             'period':'gqfgqeqfgq',
+             'dates_range': 0
+             }
+        chart = ChartManager(self.usertest, user_options, -120)
+        test_df = chart.df_period_chart(chart.generate_graph_data())
+        self.assertEqual(test_df.nb_cig.to_list(), [
+            12, 10, 11, 12, 1, 14, 8, 9, 6, 7, 7, 5, 6, 5, 8, 7, 6, 7, 6,
+             4, 10, 9, 5, 4, 6, 5, 7, 5, 6, 3, 4, 6, 2, 4, 6, 5, 3, 4, 2,
+             6, 3, 4, 5, 7, 4, 4, 5, 2, 2, 3, 6, 5, 7, 8, 8, 0, 2, 0, 0, 1
+            ])
+        self.assertEqual(test_df.activity_duration.to_list(), [
+            85, 0, 0, 0, 0, 30, 0, 0, 0, 0, 30, 30, 60, 98, 0, 0, 30, 0,
+            30, 0, 0, 155, 0, 0, 30, 0, 50, 0, 30, 60, 0, 55, 30, 90, 0,
+            0, 0, 30, 0, 40, 0, 30, 0, 55, 0, 0, 175, 0, 30, 0, 30, 0, 0,
+            0, 0, 100, 0, 0, 75, 0
+            ])
+
+    @freeze_time("2019-11-26 20:21:34")
     def test_resize_chart(self):
         """test resize_chart method"""
         user_options = {
@@ -211,21 +233,6 @@ class ChartManagerTestCase(TestCase):
         df_chart = chart.resize_chart(chart.df_period_chart(user_dict))
         # 7 nb_cig + 7 activity
         self.assertEqual(df_chart.size, 14)
-
-    @freeze_time("2019-11-26 20:21:34")
-    def test_isolate_data_per_types(self):
-        """test isolate_data_per_types method"""
-        user_options = {
-            'charttype':'nb_cig',
-             'period':'Jour',
-             'dates_range': -5
-             }
-        chart = ChartManager(self.usertest, user_options, -120)
-        user_dict = chart.generate_graph_data()
-        df_chart = chart.resize_chart(chart.df_period_chart(user_dict))
-        smoke_data, activity_data = chart.isolate_data_per_types(df_chart)
-        self.assertEqual(smoke_data, [ 2, 3, 6, 5, 7, 8, 8])
-        self.assertEqual(activity_data, [30, 0, 30, 0, 0, 0, 0])
 
     @freeze_time("2019-11-26 20:21:34")
     def test_get_parsed_data(self):

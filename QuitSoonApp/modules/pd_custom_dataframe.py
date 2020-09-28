@@ -28,7 +28,7 @@ class DataFrameDate:
     @property
     def week_df(self):
         """dataframe in a weekly bases"""
-        week_df = self.df_chartdata.groupby(pd.Grouper(freq='W')).sum()
+        week_df = self.df_chartdata.groupby(pd.Grouper(freq='W')).sum().round(2)
         # format index
         for date in week_df.index:
             start = date - timedelta(days=date.weekday())
@@ -42,6 +42,6 @@ class DataFrameDate:
     @property
     def month_df(self):
         """dataframe in a monthly bases"""
-        month_df = self.df_chartdata.groupby(pd.Grouper(freq='M')).sum()
+        month_df = self.df_chartdata.groupby(pd.Grouper(freq='M')).sum().round(2)
         month_df.index = month_df.index.strftime("%m/%y")
         return month_df

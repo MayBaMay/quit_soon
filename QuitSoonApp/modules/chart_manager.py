@@ -85,13 +85,11 @@ class ChartManager:
     def df_period_chart(self, user_dict):
         """ generate dataframe with chart data for specific self.user_options['period'] """
         df_chart = DataFrameDate(user_dict, self.user_options['charttype'])
-        if self.user_options['period'] == 'Jour':
-            return df_chart.day_df
         if self.user_options['period'] == 'Semaine':
             return df_chart.week_df
         if self.user_options['period'] == 'Mois':
             return df_chart.month_df
-        return None
+        return df_chart.day_df
 
     def resize_chart(self, df_chart):
         """resize size of chart to the last 7 days"""
@@ -105,23 +103,6 @@ class ChartManager:
                 df_chart = df_chart.tail(7)
         return df_chart
 
-    @staticmethod
-    def isolate_data_per_types(df_chart):
-        """
-        isolate values per types (and not dates)
-        from dataframe into a dictionnary
-        """
-        values = df_chart.to_json(orient="values")
-        parsed = json.loads(values)
-        smoke_data = []
-        activity_data = []
-        for elt in parsed:
-            # smoked values
-            smoke_data.append(elt[0])
-            # activity values
-            activity_data.append(elt[1])
-        return smoke_data, activity_data
-
     @property
     def get_parsed_data(self):
         """get parsed data for chart"""
@@ -130,10 +111,11 @@ class ChartManager:
         else:
             user_dict = self.generate_graph_data()
             df_chart = self.resize_chart(self.df_period_chart(user_dict))
-            smoke_data, activity_data = self.isolate_data_per_types(df_chart)
             result = df_chart.to_json(orient="split")
             parsed = json.loads(result)
             # overwrite 'data' ordered by types and not dates
+            smoke_data = df_chart[df_chart.columns[0]].to_list()
+            activity_data = df_chart[df_chart.columns[1]].to_list()
             parsed["data"] = {'base':smoke_data, 'activity':activity_data}
             parsed["min_cig"] = UserProfile.objects.get(user=self.user).starting_nb_cig
         return parsed
