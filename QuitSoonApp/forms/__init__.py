@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+"""Import all forms in root package"""
 
 from .registration_form import RegistrationForm
 from .parameters_form import ParametersForm

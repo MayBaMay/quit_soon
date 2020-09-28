@@ -24,14 +24,14 @@ class Command(BaseCommand):
             try:
                 user = User.objects.get(username=username)
                 db_json = {
-                    'QuitsoonApp/dumps/db0_User.json':User.objects.filter(username=username),
-                    'QuitsoonApp/dumps/db1_UserProfile.json':UserProfile.objects.filter(user=user),
-                    'QuitsoonApp/dumps/db2_Paquet.json':Paquet.objects.filter(user=user),
-                    'QuitsoonApp/dumps/db3_ConsoCig.json':ConsoCig.objects.filter(user=user),
-                    'QuitsoonApp/dumps/db4_Alternative.json': Alternative.objects.filter(user=user),
-                    'QuitsoonApp/dumps/db5_ConsoAlternative.json':ConsoAlternative.objects.filter(user=user),
-                    'QuitsoonApp/dumps/db6_Objectif.json':Objectif.objects.filter(user=user),
-                    'QuitsoonApp/dumps/db7_Trophy.json':Trophy.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db0_User.json':User.objects.filter(username=username),
+                    'QuitSoonApp/dumps/db1_UserProfile.json':UserProfile.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db2_Paquet.json':Paquet.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db3_ConsoCig.json':ConsoCig.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db4_Alternative.json': Alternative.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db5_ConsoAlternative.json':ConsoAlternative.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db6_Objectif.json':Objectif.objects.filter(user=user),
+                    'QuitSoonApp/dumps/db7_Trophy.json':Trophy.objects.filter(user=user),
                     }
                 for key, value in db_json.items():
                     with open(key, "w") as out:

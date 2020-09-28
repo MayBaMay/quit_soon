@@ -1,59 +1,63 @@
 #!/usr/bin/env python
 
 """
-This module allowes user to save a new instance of cigarettes pack
+Module interacting with Alternative models
 """
 
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..models import Alternative, ConsoAlternative
+from QuitSoonApp.models import Alternative, ConsoAlternative
+from .manager import BaseManager
 
-class AlternativeManager:
-    """class returning an new DB object paquet or False"""
 
-    def __init__(self, user, datas):
-        self.user = user
-        self.datas = datas
-        self.id = self.get_request_data('id_alternative')
-        if not self.id:
-            self.type_alternative = self.if_strNone_get_None_or_str(self.get_request_data('type_alternative'))
-            self.type_activity = self.if_strNone_get_None_or_str(self.get_request_data('type_activity'))
-            self.activity = self.if_strNone_get_None_or_str(self.get_request_data('activity'))
-            self.substitut = self.if_strNone_get_None_or_str(self.get_request_data('substitut'))
-            self.nicotine = self.if_strNone_get_None_or_float(self.get_request_data('nicotine'))
+class AlternativeManager(BaseManager):
+    """Manage informations of Alternative consumption"""
 
-    def get_request_data(self, data):
-        try:
-            return self.datas[data]
-        except KeyError:
-            return None
-
+    def __init__(self, user, data):
+        BaseManager.__init__(self, user, data)
+        self.id_alternative = self.get_request_data('id_alternative')
+        if not self.id_alternative:
+            self.type_alternative = self.get_str(
+                self.get_request_data('type_alternative')
+                )
+            self.type_activity = self.get_str(
+                self.get_request_data('type_activity')
+                )
+            self.activity = self.get_str(
+                self.get_request_data('activity')
+                                                 )
+            self.substitut = self.get_str(
+                self.get_request_data('substitut')
+                )
+            self.nicotine = self.str_get_float(
+                self.get_request_data('nicotine')
+                )
 
     @staticmethod
-    def if_strNone_get_None_or_str(data):
-        if data == 'None' or data == None:
+    def get_str(data):
+        """method return data formated as string"""
+        if data == 'None' or not data:
             return None
         return str(data)
 
     @staticmethod
-    def if_strNone_get_None_or_float(data):
-        if data == 'None' or data == None:
+    def str_get_float(data):
+        """method return string data as float"""
+        if data == 'None' or not data:
             return None
-        else:
-            if type(data) == str:
-                try:
-                    return float(data.replace(',','.'))
-                except ValueError:
-                    return None
-            else:
-                return float(data)
+        if isinstance(data, str):
+            try:
+                return float(data.replace(',','.'))
+            except ValueError:
+                return None
+        return float(data)
 
     @property
     def get_alternative(self):
+        """get Alternative instance with id or other data"""
         try:
-            if self.id:
-                alternative = Alternative.objects.get(id=self.id)
+            if self.id_alternative:
+                alternative = Alternative.objects.get(id=self.id_alternative)
             else:
                 alternative = Alternative.objects.get(
                     user=self.user,
@@ -69,8 +73,9 @@ class AlternativeManager:
 
     @property
     def filter_alternative(self):
-        if self.id:
-            alternative = Alternative.objects.filter(id=self.id)
+        """filter Alternative with id or other data"""
+        if self.id_alternative:
+            alternative = Alternative.objects.filter(id=self.id_alternative)
         else:
             alternative = Alternative.objects.filter(
                 user=self.user,
@@ -83,13 +88,13 @@ class AlternativeManager:
         return alternative
 
     def create_alternative(self):
-        """Create pack from datas"""
+        """Create Alternative instance from data"""
         # unicity checked in form and in model index
         if self.get_alternative:
-            newAlternative = self.filter_alternative
-            newAlternative.update(display=True)
+            new_alternative = self.filter_alternative
+            new_alternative.update(display=True)
         else:
-            newAlternative = Alternative.objects.create(
+            new_alternative = Alternative.objects.create(
                 user=self.user,
                 type_alternative=self.type_alternative,
                 type_activity=self.type_activity,
@@ -97,10 +102,11 @@ class AlternativeManager:
                 substitut=self.substitut,
                 nicotine=self.nicotine,
                 )
-        return newAlternative
+        return new_alternative
 
     def delete_alternative(self):
-        if self.id:
+        """delete Alternative instance with id"""
+        if self.id_alternative:
             if self.get_alternative:
                 alternative_filtered = self.filter_alternative
                 # check if already smoked by user

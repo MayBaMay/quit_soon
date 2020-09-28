@@ -1,54 +1,35 @@
 #!/usr/bin/env python
 
-import datetime
-from datetime import timedelta
-import pytz
+"""
+Module interacting with ConsoAlternative models
+"""
 
-from django.utils.timezone import make_aware
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 
 from QuitSoonApp.models import Alternative, ConsoAlternative
+from .manager import ManagerConso
 
 
-class HealthManager:
+class HealthManager(ManagerConso):
     """Manage informations of healthy actions"""
 
-    def __init__(self, user, datas, tz_offset=0):
-        self.datas = datas
-        if not tz_offset:
-            tz_offset = 0
-        self.user = user
-        self.id = self.get_request_data('id_health')
-        if not self.id:
-            self.datetime_alter = self.get_datetime_alter_aware(
+    def __init__(self, user, data, tz_offset=0):
+        ManagerConso.__init__(self, user, data)
+        self.id_health = self.get_request_data('id_health')
+        if not self.id_health:
+            self.datetime_alter = self.get_datetime_client_aware(
                 self.get_request_data('date_health'),
                 self.get_request_data('time_health'),
                 tz_offset
                 )
 
-    def get_datetime_alter_aware(self, date_health, time_health, tz_offset):
-        try:
-            dt_alter = datetime.datetime.combine(date_health, time_health)
-            dt_alter += timedelta(minutes=tz_offset)
-            dt_alter = make_aware(dt_alter, pytz.utc)
-            return dt_alter
-        except TypeError:
-            # get_request_data returned None
-            return None
-
-    def get_request_data(self, data):
-        try:
-            return self.datas[data]
-        except (KeyError, TypeError):
-            return None
-
     @property
     def get_conso_alternative(self):
+        """get ConsoAlternative instance with id or other data"""
         try:
-            if self.id:
-                health = ConsoAlternative.objects.get(id=self.id)
+            if self.id_health:
+                health = ConsoAlternative.objects.get(id=self.id_health)
             else:
                 health = ConsoAlternative.objects.get(
                     user=self.user,
@@ -62,29 +43,31 @@ class HealthManager:
 
     @property
     def get_alternative(self):
+        """get Alternative instance with ConsoAlternative id or other data"""
         try:
-            if self.id:
-            # when user wants to delete a heath action, ConsoAlternative.alternative is returned in request
+            if self.id_health:
+            # when user wants to delete a heath action,
+            # ConsoAlternative.alternative is returned in request
                 return self.get_conso_alternative.alternative
-            else:
-                type = self.get_request_data('type_alternative_field')
-                field = ''.join((type.lower(), '_field'))
-                id_alternative = self.get_request_data(field)
-                return Alternative.objects.get(id=id_alternative)
+            type_alt = self.get_request_data('type_alternative_field')
+            field = ''.join((type_alt.lower(), '_field'))
+            id_alternative = self.get_request_data(field)
+            return Alternative.objects.get(id=id_alternative)
         except (ObjectDoesNotExist, ValueError, AttributeError):
-                return None
+            return None
 
     @property
     def get_duration(self):
+        """get duration activity in minutes"""
         try:
-            hour = self.get_request_data('duration_hour')
-            min = self.get_request_data('duration_min')
-            return hour*60 + min
+            duration_hour = self.get_request_data('duration_hour')
+            duration_min = self.get_request_data('duration_min')
+            return duration_hour * 60 + duration_min
         except TypeError:
             return None
 
     def create_conso_alternative(self):
-        """Create ConsoAlternative from datas"""
+        """Create ConsoAlternative from data"""
         try:
             newconsoalternative = ConsoAlternative.objects.create(
                 user=self.user,
@@ -92,14 +75,15 @@ class HealthManager:
                 alternative=self.get_alternative,
                 activity_duration=self.get_duration,
                 )
-            self.id = newconsoalternative.id
+            self.id_health = newconsoalternative.id
             return newconsoalternative
         except (IntegrityError, AttributeError):
             return None
 
     def delete_conso_alternative(self):
+        """delete ConsoAlternative instance with id"""
         try:
-            if self.id:
+            if self.id_health:
                 self.get_conso_alternative.delete()
         except AttributeError:
             pass

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+ # pylint: disable=W0611 #Unused import * (unused-import)
+
 """
 Django settings for quit_soon_project project.
 
@@ -9,10 +12,10 @@ https://docs.djangoproject.com/en/3.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
-import django
 
 import os
 from dotenv import load_dotenv
+import django
 
 
 load_dotenv()
@@ -69,14 +72,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'quit_soon_project.middleware.login_middleware.LoginRequiredMiddleware',
+    'quit_soon_project.middleware.access_requirement_middleware.AccessRequirementMiddleware',
     'tz_detect.middleware.TimezoneMiddleware',
 ]
-
-if django.VERSION < (1, 10):
-    MIDDLEWARE_CLASSES += (
-        'tz_detect.middleware.TimezoneMiddleware',
-    )
 
 TZ_DETECT_COUNTRIES = ('FR', 'BE', 'CH', 'CA', 'CN', 'US', 'IN', 'JP', 'BR', 'RU', 'DE', 'GB')
 
@@ -164,6 +162,7 @@ LOGIN_EXEMPT_URLS = (
     r'^accounts/password_reset/done/$',
     r'^accounts/reset/',
     r'^reset/done/$',
+    r'^legals/$',
 )
 PROFILE_URL = '/profile/'
 PROFILE_EXEMPT_URLS = (

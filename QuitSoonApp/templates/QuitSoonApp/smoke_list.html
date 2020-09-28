@@ -64,14 +64,14 @@
                 <tr>
                 {% if conso.given %}
                   <td>
-                    {{ conso.user_dt }}
+                    {{ conso.user_dt|date:'d/m/y H:i' }}
                   </td>
                   <td>
                     Clope taxée
                   </td>
                 {% else %}
                 <td>
-                  {{ conso.user_dt }}
+                  {{ conso.user_dt|date:'d/m/y H:i' }}
                 </td>
                 <td>
                   {{ conso.paquet.brand }}

@@ -62,24 +62,19 @@
           <tbody>
           <tr>
           <td>
-            {{ conso.user_dt }}
+            {{ conso.user_dt|date:'d/m/y H:i' }}
           </td>
             {% if conso.alternative.type_activity %}
               <td>
-                {{ conso.alternative.type_activity }}
+                {{ conso.alternative.get_type_activity_display }}
                 {{ conso.alternative.activity }}
+                {{ conso.activity_duration }}min
               </td>
             {% endif %}
             {% if conso.alternative.substitut %}
               <td>
-                {{ conso.alternative.substitut }}
-                {{ conso.alternative.nicotine }}
-              </td>
-            {% endif %}
-            {% if conso.activity_duration %}
-              <td>
-                {{ conso.activity_duration }}min
-              </td>
+                {{ conso.alternative.get_substitut_display }}
+                {{ conso.alternative.nicotine }}mg
             {% endif %}
           </tr>
           </tbody>

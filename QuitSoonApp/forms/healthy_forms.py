@@ -1,71 +1,68 @@
 #!/usr/bin/env python
-import datetime
-from datetime import timedelta
-import pytz
 
-from django.utils import timezone
-from django.utils.timezone import make_aware
+""" Forms related to Alternative or ConsoAlternative models """
+
 from django import forms
-from django.core.exceptions import ValidationError
 
 from QuitSoonApp.models import Alternative, ConsoAlternative
-
-from .base_user_related_forms import UserRelatedModelForm
+from .base_forms import (
+    UserRelatedModelForm, type_field, date_field, time_field,
+    item_field, tomorrow_input,
+    )
 
 
 class TypeAlternativeForm(UserRelatedModelForm):
+    """TypeAlternativ choice form"""
 
     class Meta:
         model = Alternative
         fields = ['type_alternative']
+        labels = {'type_alternative': "Type d'alternative"}
 
 
 class ActivityForm(UserRelatedModelForm):
+    """Activity choice form"""
 
     class Meta:
         model = Alternative
         fields = ['type_activity', 'activity']
+        labels = {
+            'type_activity': "Type d'activité",
+            'activity': 'Activité'
+        }
 
     def clean_activity(self):
+        """clean activity field"""
         data = self.cleaned_data['activity']
         return data.upper()
 
 
 class SubstitutForm(UserRelatedModelForm):
+    """Substitut choice form"""
 
     class Meta:
         model = Alternative
         fields = ['substitut', 'nicotine']
+        labels = {
+            'substitut': "Substituts",
+            'nicotine': 'Nicotine (mg)'
+        }
 
 
 class ChooseAlternativeForm(forms.Form):
+    """Alternative choice form"""
 
-    type_alternative_field = forms.ChoiceField(
-        required=True,
-        choices=[],
-        widget=forms.Select
-            (attrs={'class':"form-control"}),
-        label='',
-        )
+    type_alternative_field = type_field
 
-    def alternative_field():
-        return forms.ChoiceField(
-        required=False,
-        choices=[],
-        widget=forms.Select
-            (attrs={'class':"form-control hide"}),
-        label='',
-        )
-
-    sp_field = alternative_field()
-    so_field = alternative_field()
-    lo_field = alternative_field()
-    su_field = alternative_field()
+    sp_field = item_field()
+    so_field = item_field()
+    lo_field = item_field()
+    su_field = item_field()
 
     def __init__(self, user, *args, **kwargs):
 
         self.user = user
-        super(ChooseAlternativeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.user_alternatives = Alternative.objects.filter(user=self.user, display=True)
         self.user_conso = ConsoAlternative.objects.filter(user=self.user)
@@ -75,58 +72,69 @@ class ChooseAlternativeForm(forms.Form):
         # choices = Sport, Loisir, Soin, Substitut (if alternatives of this types saved by user)
         # initial = last alternative type_activity or last alternative type_alternative(if =='Su')
         #########################################################################################
-        TYPE_ALTERNATIVE_CHOICES = []
-        for alternative in self.user_alternatives.filter(type_alternative='Ac').order_by('type_activity').distinct('type_activity'):
+        type_alternative_choices = []
+        user_conso_type = self.user_alternatives.filter(type_alternative='Ac')
+        ordered_user_conso_type = user_conso_type.order_by('type_activity')
+        for alternative in ordered_user_conso_type.distinct('type_activity'):
             # include user activity types
-            TYPE_ALTERNATIVE_CHOICES.append((alternative.type_activity, alternative.get_type_activity_display))
+            type_alternative_choices.append(
+                (alternative.type_activity, alternative.get_type_activity_display)
+                )
             if alternative.type_activity == self.last_alternative().type_activity:
-                self.initial['type_alternative_field'] = (alternative.type_activity, alternative.get_type_activity_display)
+                self.initial['type_alternative_field'] = (
+                    alternative.type_activity,
+                    alternative.get_type_activity_display
+                    )
         # if user has substituts, choice substitut
         if Alternative.objects.filter(user=self.user, type_alternative='Su'):
-            TYPE_ALTERNATIVE_CHOICES.append(('Su', 'Substitut'))
+            type_alternative_choices.append(('Su', 'Substitut'))
         if self.last_alternative().type_alternative == 'Su':
             self.initial['type_alternative_field'] = ('Su', 'Substitut')
         # define type_alternative_choices
-        TYPE_ALTERNATIVE_CHOICES = tuple(TYPE_ALTERNATIVE_CHOICES)
-        self.fields['type_alternative_field'].choices = TYPE_ALTERNATIVE_CHOICES
+        type_alternative_choices = tuple(type_alternative_choices)
+        self.fields['type_alternative_field'].choices = type_alternative_choices
 
         #########################################################################################
         # define type fields configuration (choices + initial)
         #########################################################################################
 
-        SP_FIELD_CHOICES = self.config_field('sp_field', 'Ac', 'Sp')
-        self.fields['sp_field'].choices = SP_FIELD_CHOICES
+        sp_field_choices = self.config_field('sp_field', 'Ac', 'Sp')
+        self.fields['sp_field'].choices = sp_field_choices
 
-        SO_FIELD_CHOICES = self.config_field('so_field', 'Ac', 'So')
-        self.fields['so_field'].choices = SO_FIELD_CHOICES
+        so_field_choices = self.config_field('so_field', 'Ac', 'So')
+        self.fields['so_field'].choices = so_field_choices
 
-        LO_FIELD_CHOICES = self.config_field('lo_field', 'Ac', 'Lo')
-        self.fields['lo_field'].choices = LO_FIELD_CHOICES
+        lo_field_choices = self.config_field('lo_field', 'Ac', 'Lo')
+        self.fields['lo_field'].choices = lo_field_choices
 
-        SU_FIELD_CHOICES = self.config_field('su_field', 'Su')
-        self.fields['su_field'].choices = SU_FIELD_CHOICES
+        su_field_choices = self.config_field('su_field', 'Su')
+        self.fields['su_field'].choices = su_field_choices
+
+    def filter_conso(self, type_alternative, type_activity):
+        """Filter ConsoAlternative depending on type_alternative or type_activity"""
+        if type_alternative == 'Su':
+            return self.user_conso.filter(alternative__type_alternative=type_alternative)
+        if type_alternative == 'Ac':
+            return self.user_conso.filter(alternative__type_activity=type_activity)
+        return self.user_conso
 
     def last_alternative(self, type_alternative=None, type_activity=None):
         """get user last healthy action or last created alternative"""
-        if type_alternative == 'Su':
-            conso = self.user_conso.filter(alternative__type_alternative=type_alternative)
-        elif type_alternative == 'Ac':
-            conso = self.user_conso.filter(alternative__type_activity=type_activity)
-        else:
-            # get last conso unrelated to type
-            conso = self.user_conso
-
+        conso = self.filter_conso(type_alternative, type_activity)
         if conso:
             lastalternative = conso.last().alternative
             if lastalternative:
                 return lastalternative
-        else:
-            filter = self.user_alternatives
-            if type_alternative:
-                filter = self.user_alternatives.filter(type_alternative=type_alternative)
-            if type_activity:
-                filter = self.user_alternatives.filter(type_activity=type_activity)
-            return filter.last()
+        filter_alternative = self.user_alternatives
+        if type_alternative:
+            filter_alternative = self.user_alternatives.filter(
+                type_alternative=type_alternative
+                )
+        if type_activity:
+            filter_alternative = self.user_alternatives.filter(
+                type_activity=type_activity
+                )
+        return filter_alternative.last()
 
     def config_field(self, field_name, type_alternative, type_activity=None):
         """
@@ -134,20 +142,26 @@ class ChooseAlternativeForm(forms.Form):
             type_activity if type_alternative='Ac' (get one field for each type of activity)
             type_alternative if type_alternative='Su' (get all substitutes in one field)
         """
-        CHOICES = []
+        choices = []
         if type_alternative == 'Ac':
             for alternative in self.user_alternatives.filter(type_activity=type_activity):
-                CHOICES.append((alternative.id, alternative.activity))
-                if alternative.activity == self.last_alternative(type_alternative, type_activity).activity:
+                choices.append((alternative.id, alternative.activity))
+                last_alternative_activity = self.last_alternative(
+                    type_alternative, type_activity
+                    ).activity
+                if alternative.activity == last_alternative_activity:
                     self.initial[field_name] = (alternative.id, alternative.activity)
-            return tuple(CHOICES)
-        elif type_alternative == 'Su':
+        if type_alternative == 'Su':
             for alternative in self.user_alternatives.filter(type_alternative=type_alternative):
-                display = "{} ({}mg)".format(alternative.get_substitut_display(), alternative.nicotine)
-                CHOICES.append((alternative.id, display))
-                if alternative.substitut == self.last_alternative(type_alternative).substitut and alternative.nicotine == self.last_alternative(type_alternative).nicotine:
-                    self.initial[field_name] = (alternative.id, display)
-            return tuple(CHOICES)
+                display = "{} ({}mg)".format(
+                    alternative.get_substitut_display(),
+                    alternative.nicotine
+                    )
+                choices.append((alternative.id, display))
+                if alternative.substitut == self.last_alternative(type_alternative).substitut:
+                    if alternative.nicotine == self.last_alternative(type_alternative).nicotine:
+                        self.initial[field_name] = (alternative.id, display)
+        return tuple(choices)
 
 
 class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
@@ -156,41 +170,45 @@ class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
     """
     def __init__(self, user, *args, **kwargs):
         ChooseAlternativeForm.__init__(self, user)
-        super(ChooseAlternativeFormWithEmptyFields, self).__init__(user, *args, **kwargs)
+        super().__init__(user, *args, **kwargs)
 
         #########################################################################################
         # define type alternative configuration (choices + initial)
         # choices = Sport, Loisir, Soin, Substitut (if alternatives of this types saved by user)
         # initial = empty '------------------'
         #########################################################################################
-        TYPE_ALTERNATIVE_CHOICES = []
-        for conso in self.user_conso.filter(alternative__type_alternative='Ac').order_by('alternative__type_activity').distinct('alternative__type_activity'):
+        type_alternative_choices = []
+        user_conso_type = self.user_conso.filter(alternative__type_alternative='Ac')
+        ordered_user_conso_type = user_conso_type.order_by('alternative__type_activity')
+        for conso in ordered_user_conso_type.distinct('alternative__type_activity'):
             # include user activity types
-            TYPE_ALTERNATIVE_CHOICES.append((conso.alternative.type_activity, conso.alternative.get_type_activity_display))
+            type_alternative_choices.append(
+                (conso.alternative.type_activity, conso.alternative.get_type_activity_display)
+                )
         # if user has substituts, choice substitut
         if self.user_conso.filter(alternative__type_alternative='Su'):
-            TYPE_ALTERNATIVE_CHOICES.append(('Su', 'Substitut'))
-        TYPE_ALTERNATIVE_CHOICES.insert(0, ('empty', '------------------'))
+            type_alternative_choices.append(('Su', 'Substitut'))
+        type_alternative_choices.insert(0, ('empty', '------------------'))
         self.initial['type_alternative_field'] = ('empty', '------------------')
         # define type_alternative_choices
-        TYPE_ALTERNATIVE_CHOICES = tuple(TYPE_ALTERNATIVE_CHOICES)
-        self.fields['type_alternative_field'].choices = TYPE_ALTERNATIVE_CHOICES
+        type_alternative_choices = tuple(type_alternative_choices)
+        self.fields['type_alternative_field'].choices = type_alternative_choices
 
         #########################################################################################
         # define type fields configuration (choices + initial)
         #########################################################################################
 
-        SP_FIELD_CHOICES = self.config_field('sp_field', 'Ac', 'Sp')
-        self.fields['sp_field'].choices = SP_FIELD_CHOICES
+        sp_field_choices = self.config_field('sp_field', 'Ac', 'Sp')
+        self.fields['sp_field'].choices = sp_field_choices
 
-        SO_FIELD_CHOICES = self.config_field('so_field', 'Ac', 'So')
-        self.fields['so_field'].choices = SO_FIELD_CHOICES
+        so_field_choices = self.config_field('so_field', 'Ac', 'So')
+        self.fields['so_field'].choices = so_field_choices
 
-        LO_FIELD_CHOICES = self.config_field('lo_field', 'Ac', 'Lo')
-        self.fields['lo_field'].choices = LO_FIELD_CHOICES
+        lo_field_choices = self.config_field('lo_field', 'Ac', 'Lo')
+        self.fields['lo_field'].choices = lo_field_choices
 
-        SU_FIELD_CHOICES = self.config_field('su_field', 'Su')
-        self.fields['su_field'].choices = SU_FIELD_CHOICES
+        su_field_choices = self.config_field('su_field', 'Su')
+        self.fields['su_field'].choices = su_field_choices
 
     def config_field(self, field_name, type_alternative, type_activity=None):
         """
@@ -198,20 +216,25 @@ class ChooseAlternativeFormWithEmptyFields(ChooseAlternativeForm):
             type_activity if type_alternative='Ac' (get one field for each type of activity)
             type_alternative if type_alternative='Su' (get all substitutes in one field)
         """
-        CHOICES = []
+        choices = []
         if type_alternative == 'Ac':
-            CHOICES.insert(0, ('empty', '------------------'))
+            choices.insert(0, ('empty', '------------------'))
             self.initial[field_name] = ('empty', '------------------')
-            for conso in self.user_conso.filter(alternative__type_activity=type_activity).order_by('alternative__activity').distinct('alternative__activity'):
-                CHOICES.append((conso.alternative.id, conso.alternative.activity))
-            return tuple(CHOICES)
-        elif type_alternative == 'Su':
-            CHOICES.insert(0, ('empty', '------------------'))
+            user_conso_type = self.user_conso.filter(alternative__type_activity=type_activity)
+            ordered_user_conso_type = user_conso_type.order_by('alternative__activity')
+            for conso in ordered_user_conso_type.distinct('alternative__activity'):
+                choices.append((conso.alternative.id, conso.alternative.activity))
+        if type_alternative == 'Su':
+            choices.insert(0, ('empty', '------------------'))
             self.initial[field_name] = ('empty', '------------------')
-            for conso in self.user_conso.filter(alternative__type_alternative=type_alternative).order_by('alternative__substitut').distinct('alternative__substitut'):
-                display = "{} ({}mg)".format(conso.alternative.get_substitut_display(), conso.alternative.nicotine)
-                CHOICES.append((conso.alternative.id, display))
-            return tuple(CHOICES)
+            user_conso_type = self.user_conso.filter(alternative__type_alternative=type_alternative)
+            ordered_user_conso_type = user_conso_type.order_by('alternative__substitut')
+            for conso in ordered_user_conso_type.distinct('alternative__substitut'):
+                display = "{} ({}mg)".format(
+                    conso.alternative.get_substitut_display(),
+                    conso.alternative.nicotine)
+                choices.append((conso.alternative.id, display))
+        return tuple(choices)
 
 class HealthForm(ChooseAlternativeForm):
     """Class generating a form for user healthy action"""
@@ -219,24 +242,12 @@ class HealthForm(ChooseAlternativeForm):
     def __init__(self, user, tz_offset, *args, **kwargs):
         self.user = user
         self.tz_offset = tz_offset
-        super(HealthForm, self).__init__(user, *args, **kwargs)
+        super().__init__(user, *args, **kwargs)
 
 
-    date_health = forms.DateField(
-        required=True,
-        label='Date',
-        widget=forms.DateInput(
-            attrs={'class':"form-control currentDate",
-                    'type':'date'},
-    ))
+    date_health = date_field
 
-    time_health = forms.TimeField(
-        required=True,
-        label='Heure',
-        widget=forms.TimeInput
-            (attrs={'class':"form-control currentTime",
-                    'type':'time'},
-    ))
+    time_health = time_field
 
     duration_hour = forms.IntegerField(
         required=False,
@@ -256,7 +267,7 @@ class HealthForm(ChooseAlternativeForm):
 
     def clean(self):
         """Clean all_field and specialy make sure total duration in not none for activities"""
-        cleaned_data = super(HealthForm, self).clean()
+        cleaned_data = super().clean()
         date = cleaned_data.get('date_health')
         time = cleaned_data.get('time_health')
         duration_hour = cleaned_data.get('duration_hour')
@@ -265,21 +276,14 @@ class HealthForm(ChooseAlternativeForm):
 
         # check if duration for user activiy
         if not duration_hour and not duration_min and type_alternative != 'Su':
-            raise forms.ValidationError("Vous n'avez pas renseigné de durée pour cette activité")
+            raise forms.ValidationError(
+                "Vous n'avez pas renseigné de durée pour cette activité"
+                )
 
-        try:
-            current_tz = timezone.get_current_timezone()
-            # get datetime_form and now() user in utc
-            dt_form = datetime.datetime.combine(date, time, tzinfo=pytz.utc) + timedelta(minutes=self.tz_offset)
-            user_now = timezone.now()
-            # get both variable in current timezone in order to compare dates
-            dt_form = current_tz.normalize(dt_form.astimezone(current_tz))
-            user_now = current_tz.normalize(user_now.astimezone(current_tz))
+        if tomorrow_input(date, time, self.tz_offset):
+            raise forms.ValidationError(
+                "Vous ne pouvez pas enregistrer d'action saine pour les jours à venir"
+                )
 
-            if dt_form.date() > timezone.now().date():
-                raise forms.ValidationError("Vous ne pouvez pas enregistrer d'action saine pour les jours à venir")
-
-        except TypeError:
-            raise forms.ValidationError("Données temporelles incorrectes")
 
         return cleaned_data

@@ -215,6 +215,8 @@ sup {
    */
 img {
   border-style: none;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 /* Forms
@@ -1715,15 +1717,11 @@ footer {
 }
 
 #health_list td:nth-child(1), #health_list td:nth-child(2) {
-  width: 8rem;
-}
-
-#health_list td:nth-child(3) {
-  width: 10rem;
+  width: 12rem;
 }
 
 #smoke_list td:nth-child(1), #smoke_list td:nth-child(2) {
-  width: 8rem;
+  width: 12rem;
 }
 
 #smoke .smoke-timer {
@@ -1880,6 +1878,16 @@ footer {
 
 #register .p1 .password_restrictions ul li {
   margin: 0.4em 0;
+}
+
+#legals {
+  grid-template-areas: "p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1 p1" "p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+}
+
+@media (min-width: 480px) {
+  #legals {
+    grid-template-areas: "p1 p1 p1 p1 p1 p1 p2 p2 p2 p2 p2 p2" "p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3 p3" "p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4 p4";
+  }
 }
 
 #index {

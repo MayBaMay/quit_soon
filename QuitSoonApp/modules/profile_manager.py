@@ -4,7 +4,8 @@
 This module reset userprofile parameters and reset users informations related
 such as informations in tables : ConsoCig, ConsoAlternative, Objectif and trophy
 """
-from django.contrib.auth.models import User
+
+from .manager import BaseManager
 from ..models import (
     UserProfile,
     Paquet, ConsoCig,
@@ -12,25 +13,19 @@ from ..models import (
     Objectif, Trophy
 )
 
-class ResetProfile:
 
-    def __init__(self, user, args):
-        self.user = user
-        self.datas = args
+class ProfileManager(BaseManager):
+    """Manage informations of Profile"""
+
+    def __init__(self, user, data):
+        BaseManager.__init__(self, user, data)
         self.date_start = self.get_request_data('date_start')
         self.starting_nb_cig = self.get_request_data('starting_nb_cig')
         self.ref_pack = self.get_request_data('ref_pack')
         self.clean_old_datas()
 
-    def get_request_data(self, data):
-        """get data from dict passed as argument"""
-        try:
-            return self.datas[data]
-        except KeyError:
-            return None
-
     def clean_old_datas(self):
-        """Clean all datas concerned for stats features"""
+        """Clean all data concerned for stats features"""
         # DELETE DATAS
         UserProfile.objects.filter(user=self.user).delete()
         ConsoCig.objects.filter(user=self.user).delete()
