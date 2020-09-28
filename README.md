@@ -7,9 +7,9 @@ This open source project was created for the OpenClassRooms' Python developer co
 This app helps user to track its smoking habits and helps to reduce it in order to quit permanently.<br/>
 The user, once connected to its account, enters:
 * A user profile with smoking habits when starting using the app,
-* Type (roll-your-own and manufactured cigarettes), brand, price of cigarette pack (and amount of tabacco in rolled cigarette) in order to calculate the most precisely possible how much the user spend each time he smokes,
+* Type (roll-your-own and manufactured cigarettes), brand, price of cigarette pack (and amount of tabacco in rolled cigarette) in order to calculate the most precisely possible how much the user spend each time he/she smokes,
 * each cigarette smoked
-* At the mean time, the user can track all the alternatives used in order to avoid smoking. It can be nicotine substitutes, sport, leisure activities or health care. It allows user to value all those ways to fight against temptation.
+* The user can also track all the alternatives used in order to avoid smoking. It can be nicotine substitutes, sport, leisure activities or health care. It allows user to value all those ways to fight against temptation.
 * each alternative used (with nicotine for nicotine substitutes and duration for activities)
 
 The app displays stats showing user informations with the data entered and allows him/her to obtain trophees in each step of the reduction process.
@@ -17,12 +17,12 @@ The app displays stats showing user informations with the data entered and allow
 ## How to install this project
 
 ### 1 - Fork the project
-### 2 - Clone the project on your PC
+### 2 - Clone the project on your computer
 ### 3 - Create and set the database
 This project was conceived with postgresql, but we can use an other db engine.
 
 #### STEP 1 : Create a database.
-(with postgresql)<br/>
+(with postgreSQL)<br/>
 `createdb <your database name>`
 
 #### STEP 2: Create your virtualenv
@@ -32,7 +32,7 @@ This project was conceived with postgresql, but we can use an other db engine.
 `source env/bin/activate`<br/>
 `pip install -r requirements.txt`<br/>
 
-#### STEP 3 : Create a setting file pur_beurre_project/settings/.env
+#### STEP 3 : Create a settings file quit_soon_project/settings/.env
 ```
 SECRET_KEY = '<your secret key>'
 
@@ -44,7 +44,7 @@ DB_PORT = '5432'
 
 ```
 
-#### STEP 4 : Migrate the model into the database
+#### STEP 4 : Migrate models into the database
 `./manage.py migrate`
 
 
@@ -58,5 +58,6 @@ This project can be tested on url http://nicotinekill.com/<br/>
 
 ## Next Steps
 * improve app presentation
-* improve, and possibly, add new usefull graphs, stats...
-* 
+* improve, and possibly add, new usefull graphs, stats...
+* delete account
+* allow user to create customised objectifs
