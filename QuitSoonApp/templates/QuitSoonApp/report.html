@@ -93,14 +93,14 @@
       <div class="tabbed-content-container graph-height">
         <div class="flex-center">
           <button class="btn-tab active" data-toggle="tab1">
-            <i class="fas fa-chart-bar"></i><span> Cigarettes fumées</span>
+            <i class="fas fa-smoking"></i><span> Cigarettes fumées</span>
           </button>
           <button class="btn-tab" data-toggle="tab2">
             <i class="fas fa-euro-sign"></i><span> Argent dépensé</span>
           </button>
           {% if healthy_report.user_conso_subsitut %}
           <button class="btn-tab" data-toggle="tab3">
-            <i class="fas fa-smoking"></i><span> Substituts nicotiniques</span>
+            <i class="fas fa-tablets""></i><span> Substituts nicotiniques</span>
           </button>
           {% endif %}
           {% if smoky_report.total_number %}
@@ -115,7 +115,7 @@
         <div class="tabbed-content" id="tab3"></div>
         <div class="tabbed-content" id="tab4"></div>
 
-        <div class="user-choices">
+        <div class="user-choices" style="margin-top:1rem">
           <div id="radio">
             <label style="display: inline-block;">
               <input type="radio" name="period" value="Jour" checked="">

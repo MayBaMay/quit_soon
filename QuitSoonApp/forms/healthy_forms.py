@@ -43,6 +43,10 @@ class SubstitutForm(UserRelatedModelForm):
     class Meta:
         model = Alternative
         fields = ['substitut', 'nicotine']
+        labels = {
+            'substitut': "Substituts",
+            'nicotine': 'Nicotine (mg)'
+        }
 
 
 class ChooseAlternativeForm(forms.Form):
