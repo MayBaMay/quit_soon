@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# pylint: disable=E5142 #User model imported from django.contrib.auth.models (imported-auth-user)
+# pylint: disable=duplicate-code
+
 
 """Module testing save_pack module"""
 
@@ -19,102 +22,98 @@ class PackManagerTestCase(TestCase):
     def setUp(self):
         """setup tests"""
         self.usertest = User.objects.create_user(
-            'NewUserTest', 'test@test.com', 'testpassword')
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
 
     def test_get_unit_u(self):
-        """test PackManager.get_unit method if type_cig == IND"""
-        datas ={
+        """test PackManager.unit method if type_cig == IND"""
+        data ={
             'type_cig':'IND',
             'brand':'Camel',
             'qt_paquet':20,
             'price':10,
             }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_unit, 'U')
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.unit, 'U')
 
     def test_get_unit_g(self):
-        """test PackManager.get_unit method if type_cig == ROL"""
-        datas ={
+        """test PackManager.unit method if type_cig == ROL"""
+        data ={
             'type_cig':'ROL',
             'brand':'1637',
             'qt_paquet':30,
             'price':11,
             }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_unit, 'G')
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.unit, 'G')
 
     def test_get_initial_g_per_cig_u(self):
-        """test PackManager.get_g_per_cig method when create new pack & if type_cig == 'IND'"""
-        datas ={
+        """test PackManager.g_per_cig property method when create new pack & if type_cig == 'IND'"""
+        data ={
             'type_cig':'IND',
             'brand':'Camel',
             'qt_paquet':20,
             'price':10,
             }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_g_per_cig(), None)
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.g_per_cig, None)
 
     def test_get_initial_g_per_cig_g(self):
-        """test PackManager.get_g_per_cig method when create new pack & if type_cig == 'ROL'"""
-        datas ={
+        """test PackManager.g_per_cig property method when create new pack & if type_cig == 'ROL'"""
+        data ={
             'type_cig':'ROL',
             'brand':'1637',
             'qt_paquet':30,
             'price':11,
             }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_g_per_cig(), 0.8)
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.g_per_cig, 0.8)
 
     def test_get_new_g_per_cig(self):
-        """test PackManager.get_g_per_cig method when create new pack & if type_cig == 'ROL'"""
-        datas ={
+        """test PackManager.g_per_cig property method when create new pack & if type_cig == 'ROL'"""
+        data ={
             'type_cig':'ROL',
             'brand':'1637',
             'qt_paquet':30,
             'price':11,
             'g_per_cig':0.9
             }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_g_per_cig(datas['g_per_cig']), 0.9)
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.g_per_cig, 0.9)
 
-    def tes_get_price_per_cig_u(self):
-        """test PackManager.get_price_per_cig method if type_cig == 'IND'"""
-        datas ={
+    def test_price_per_cig_u(self):
+        """test PackManager.g_per_cig property method if type_cig == 'IND'"""
+        data ={
             'type_cig':'IND',
             'brand':'Camel',
             'qt_paquet':20,
             'price':10,
         }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_price_per_cig, 0.5)
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.price_per_cig, 0.5)
 
-    def test_get_price_per_cig_rol(self):
-        """test PackManager.get_price_per_cig method if type_cig == 'IND'"""
-        datas ={
+    def test_price_per_cig_rol(self):
+        """test PackManager.g_per_cig property method if type_cig == 'IND'"""
+        data ={
             'type_cig':'ROL',
             'brand':'1637',
             'qt_paquet':30,
             'price':11,
             }
-        pack = PackManager(self.usertest, datas)
-        self.assertEqual(pack.get_price_per_cig, Decimal('0.2933333333333333333333333333'))
+        pack = PackManager(self.usertest, data)
         self.assertEqual(pack.price_per_cig, Decimal('0.2933333333333333333333333333'))
 
     def test_create_new_pack_ind(self):
         """test PackManager.create_pack method if type_cig == 'IND'"""
-        datas ={
+        data ={
             'type_cig':'IND',
             'brand':'CAMEL',
             'qt_paquet':20,
             'price':10,
             }
-        pack = PackManager(self.usertest, datas)
+        pack = PackManager(self.usertest, data)
         pack.create_pack()
         db_pack = Paquet.objects.filter(
             user=self.usertest,
@@ -131,13 +130,13 @@ class PackManagerTestCase(TestCase):
 
     def test_create_new_pack_rol(self):
         """test PackManager.create_pack method if type_cig == 'ROL'"""
-        datas ={
+        data ={
             'type_cig':'ROL',
             'brand':'TEST AUTRE',
             'qt_paquet':50,
             'price':30,
             }
-        pack = PackManager(self.usertest, datas)
+        pack = PackManager(self.usertest, data)
         pack.create_pack()
         db_pack = Paquet.objects.filter(
             user=self.usertest,
@@ -162,13 +161,13 @@ class PackManagerTestCase(TestCase):
             price=30,
             display=False,
             )
-        datas ={
+        data ={
             'type_cig':'ROL',
             'brand':'TEST AUTRE',
             'qt_paquet':50,
             'price':30,
             }
-        pack = PackManager(self.usertest, datas)
+        pack = PackManager(self.usertest, data)
         pack.create_pack()
         db_pack = Paquet.objects.filter(
             user=self.usertest,
@@ -182,14 +181,14 @@ class PackManagerTestCase(TestCase):
         self.assertEqual(db_pack[0].display, True)
 
     def test_init_first(self):
-        """test PackManager.get_unit method if type_cig == IND"""
-        datas ={
+        """test PackManager init_first method"""
+        data ={
             'type_cig':'IND',
             'brand':'Camel',
             'qt_paquet':20,
             'price':10,
             }
-        pack = PackManager(self.usertest, datas)
+        pack = PackManager(self.usertest, data)
         pack.init_first()
         self.assertTrue(pack.first)
         self.assertEqual(Paquet.objects.filter(user=self.usertest, first=True).count(), 0)
@@ -197,6 +196,7 @@ class PackManagerTestCase(TestCase):
         self.assertEqual(Paquet.objects.filter(user=self.usertest, first=True).count(), 1)
 
     def test_init_first_with_non_displayed_pack(self):
+        """test PackManager init_first method with non displayed pack"""
         db_pack = Paquet.objects.create(
             user=self.usertest,
             type_cig='ROL',
@@ -206,13 +206,13 @@ class PackManagerTestCase(TestCase):
             display=False,
             first=False,
             )
-        datas ={
+        data ={
             'type_cig':'ROL',
             'brand':'TEST AUTRE',
             'qt_paquet':50,
             'price':30,
             }
-        pack = PackManager(self.usertest, datas)
+        pack = PackManager(self.usertest, data)
         pack.init_first()
         pack.create_pack()
         filter_pack = Paquet.objects.filter(user=self.usertest, display=True, first=True)
@@ -224,23 +224,16 @@ class PackManagerTestCase(TestCase):
     def test_delete_unused_pack_ind(self):
         """test PackManager.delete_pack method with unused pack"""
         db_pack = Paquet.objects.create(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        datas = {'id_pack': db_pack.id}
-        pack = PackManager(self.usertest, datas)
+        user=self.usertest,
+        type_cig='IND',
+        brand='CAMEL',
+        qt_paquet=20,
+        price=10,
+        )
+        data = {'id_pack': db_pack.id}
+        pack = PackManager(self.usertest, data)
         pack.delete_pack()
-        db_pack = Paquet.objects.filter(
-            user=self.usertest,
-            type_cig='IND',
-            brand='CAMEL',
-            qt_paquet=20,
-            price=10,
-            )
-        self.assertFalse(db_pack.exists())
+        self.assertFalse(Paquet.objects.filter(id=db_pack.id).exists())
 
     def test_delete_used_pack_ind(self):
         """test PackManager.delete_pack method with used pack"""
@@ -256,8 +249,8 @@ class PackManagerTestCase(TestCase):
             datetime_cig=datetime.datetime(2020, 5, 13, 13, 55, tzinfo=pytz.utc),
             paquet=db_pack,
         )
-        datas ={'id_pack': db_pack.id}
-        pack = PackManager(self.usertest, datas)
+        data ={'id_pack': db_pack.id}
+        pack = PackManager(self.usertest, data)
         pack.delete_pack()
         filter_pack = Paquet.objects.filter(
             user=self.usertest,
@@ -282,14 +275,14 @@ class PackManagerTestCase(TestCase):
             )
         self.assertEqual(paquet.g_per_cig, 0.8)
         self.assertEqual(paquet.price_per_cig, 0.3)
-        datas ={
+        data ={
             'type_cig':'ROL',
             'brand':'TABACO',
             'qt_paquet':40,
             'price':15,
             'g_per_cig':0.6
             }
-        pack = PackManager(self.usertest, datas)
+        pack = PackManager(self.usertest, data)
         pack.update_pack_g_per_cig()
         find_pack = Paquet.objects.get(
             id=paquet.id,

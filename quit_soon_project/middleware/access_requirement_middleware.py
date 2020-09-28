@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# pylint: disable=W0613 #Unused argument 'view_func', 'view_args', 'view_kwargs'
+
+"""Url acces requirement (authentication and profile)"""
+
+
 import re
 
 from django.conf import settings
@@ -14,7 +20,8 @@ if hasattr(settings, 'PROFILE_EXEMPT_URLS'):
     EXEMPT_URLS_PROFILE += [re.compile(url) for url in settings.PROFILE_EXEMPT_URLS]
 
 
-class LoginRequiredMiddleware:
+class AccessRequirementMiddleware:
+    """Url acces requirement middlexare (authentication and profile)"""
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -23,7 +30,9 @@ class LoginRequiredMiddleware:
         response = self.get_response(request)
         return response
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
+    @staticmethod
+    def process_view(request, view_func, view_args, view_kwargs):
+        """process requirements called just before Django calls the view"""
         assert hasattr(request, 'user')
         path = request.path_info.lstrip('/')
 

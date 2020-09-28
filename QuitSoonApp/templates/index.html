@@ -27,44 +27,7 @@
         <div class="grid-container">
           <!-- Header -->
           <header>
-            <div class="header-content">
-              <div class="logo">
-                <span><a href="{% url 'QuitSoonApp:index' %}">
-                  <img class="NK-logo" src="{% static 'QuitSoonApp/img/logo.png' %}" alt="Nicotine Kill" height="50" width="50">
-                </a></span>
-              </div>
-
-              <nav>
-                <ul>
-                  <li class="dropdown-menu" data-toggle="user-menu">
-                    <span href="#" class="menu-item"
-                      ><i class="fas fa-user"></i><span>Connection</span></span
-                    >
-
-                    <span>
-                      <ul id="user-menu" class="sub-menu">
-                        <li>
-                          <a
-                            class="menu-item"
-                            href="{% url 'QuitSoonApp:login' %}"
-                          >
-                            Me connecter à mon compte
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            class="menu-item"
-                            href="{% url 'QuitSoonApp:register' %}"
-                          >
-                            Créer un compte
-                          </a>
-                        </li>
-                      </ul></span
-                    >
-                  </li>
-                </ul>
-              </nav>
-            </div>
+            {% include 'base_header.html' %}
           </header>
           <!-- End of header -->
 
@@ -73,7 +36,7 @@
           <!-- Page heading -->
           <div class="page-heading">
             {% comment %} <i class="fas fa-heart"></i> {% endcomment %}
-            <span>            
+            <span>
             <h1>Nicotine KILL!</h1>
             </span>
           </div>
@@ -96,21 +59,21 @@
               </p>
               <ul>
               <li>
-                - le nombre de cigarette fumé dans la journée
+                - le nombre de cigarettes fumées dans la journée
               </li>
               <li>
-                - la moyenne de cigarette par jour
+                - la moyenne de cigarettes par jour depuis que j'urilise l'application
               </li>
                <li>
-                
+
                 - l'argent dépensé pour ce poison et surtout l'argent que j'éconnomise en baissant ma consommation ...
               </li>
               </ul>
-                
+
                <p>
                </p>
                <p>
-                Pour me motiver à avoir des comportements plus sains, j'enregistre ces activités.
+                Pour me motiver à avoir des comportements plus sains, j'enregistre mes activités.
                </p>
                <p>
                 Que ce soit du sport, des soins ou des loisirs, j'appuie sur le
@@ -118,29 +81,30 @@
                </p>
                <p>
                 Je peux également y surveiller ma consommation de substitut
-                nicotinique qui me permette de lentement écrabouiller ma
+                nicotinique qui me permet de lentement écrabouiller ma
                 dépendance.
                </p>
                <p>
                 Je peux donc constater les effets bénéfiques de mes activités
                 saines et substituts sur ma consommation en baisse et me donner
-                encore plus envie de choisir d'autres alternative à : "Je
+                encore plus envie de choisir d'autres alternatives à : "Je
                 m'ennuie, allez, une petite clope...". Et ben non, je vais faire
                 autre chose!
                </p>
+               <p class="">
+                 <button class="btn btn-primary mr-5" type="button" name="button" href="{% url 'QuitSoonApp:login' %}">Me connecter</button>
+                 <button class="btn btn-primary ml-5" type="button" name="button" href="{% url 'QuitSoonApp:register' %}">Créer un compte</button>
+               </p>
               </div>
             </section>
+
             <section class="panel p2 pc-1">
               <h3>Je décide</h3>
-              <p>
-                Visuel profile day avec choix bouton rouge ou bouton vert
-              </p>
+              <img src="{% static 'QuitSoonApp/img/screenshot_today.PNG' %}" alt="NKToday">
             </section>
             <section class="panel p3 pc-1">
               <h3>Je constate</h3>
-              <p>
-                visuel page results
-              </p>
+              <img src="{% static 'QuitSoonApp/img/screenshot_chart.PNG' %}" alt="NKChart">
             </section>
           </main>
 
@@ -149,10 +113,12 @@
         </div>
         <!-- End grid container -->
 
-        
+
       </div>
     <!-- Footer -->
-        <footer>Contact : contact@nicotinekill.com</footer>
+        <footer>
+            {% include 'base_footer.html' %}
+        </footer>
       <!-- End of footer -->
     </div>
 

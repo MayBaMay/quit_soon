@@ -1,0 +1,40 @@
+{% load static %}
+
+<div class="header-content">
+  <div class="logo">
+    <span><a href="{% url 'QuitSoonApp:index' %}">
+      <img class="NK-logo" src="{% static 'QuitSoonApp/img/logo.png' %}" alt="Nicotine Kill" height="50" width="50">
+    </a></span>
+  </div>
+
+  <nav>
+    <ul>
+      <li class="dropdown-menu" data-toggle="user-menu">
+        <span href="#" class="menu-item"
+          ><i class="fas fa-user"></i><span>Connection</span></span
+        >
+
+        <span>
+          <ul id="user-menu" class="sub-menu">
+            <li>
+              <a
+                class="menu-item"
+                href="{% url 'QuitSoonApp:login' %}"
+              >
+                Me connecter à mon compte
+              </a>
+            </li>
+            <li>
+              <a
+                class="menu-item"
+                href="{% url 'QuitSoonApp:register' %}"
+              >
+                Créer un compte
+              </a>
+            </li>
+          </ul></span
+        >
+      </li>
+    </ul>
+  </nav>
+</div>

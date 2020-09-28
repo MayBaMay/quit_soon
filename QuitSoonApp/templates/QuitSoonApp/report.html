@@ -24,25 +24,25 @@
 
       <section class="panel p1 pc-1">
         <h2>MA CONSO :</h2>
-       <p class="flex-between"> Cigarettes fumées : <span class="text-highlight-error"> {{ total_number }}</span> <p />
-        <p class="flex-between"> Moyenne par jour : <span class="text-highlight-error"> {{ average_number }}</span> <p />
-        <p class="flex-between"> Cigarettes non fumées : <span class="text-highlight-error"> {{ non_smoked }}</span> <p />
+       <p class="flex-between"> Cigarettes fumées : <span class="text-highlight-error"> {{ smoky_report.total_number }}</span> <p />
+        <p class="flex-between"> Moyenne par jour : <span class="text-highlight-error"> {{ smoky_report.average_number }}</span> <p />
+        <p class="flex-between"> Cigarettes non fumées : <span class="text-highlight-error"> {{ smoky_report.non_smoked }}</span> <p />
       </section>
 
       <section class="panel p2 pc-1">
         <h2>MES SOUS:</h2>
-        <p class="flex-between"> Argent fumé : <span class="text-highlight-error"> {{ total_money }}€</span> <p />
-        <p class="flex-between"> Moyenne par jour : <span class="text-highlight-error"> {{ average_money }}€</span> <p />
-        <p class="flex-between"> Argent économisé : <span class="text-highlight-error"> {{ saved_money }}€</span> <p />
+        <p class="flex-between"> Argent fumé : <span class="text-highlight-error"> {{ smoky_report.total_money }}€</span> <p />
+        <p class="flex-between"> Moyenne par jour : <span class="text-highlight-error"> {{ smoky_report.average_money }}€</span> <p />
+        <p class="flex-between"> Argent économisé : <span class="text-highlight-error"> {{ smoky_report.saved_money }}€</span> <p />
         <br />
       </section>
 
-      {% if activity_stats or substitut_stats %}
+      {% if healthy_report.activity_stats or healthy_report.substitut_stats %}
         <section class="panel p3 pc-1">
           <h2>MES ALTERNATIVES :</h2>
           <p>
 
-          {% for type, values in activity_stats.items %}
+          {% for type, values in healthy_report.activity_stats.items %}
             {% if values.exists %}
               <h3>{{ values.name }}:</h3>
               <p class="text-highlight-success">
@@ -63,8 +63,8 @@
           {% endif %}
         {% endfor %}
 
-        {% if substitut_stats %}
-          {% for type, values in substitut_stats.items %}
+        {% if healthy_report.substitut_stats %}
+          {% for type, values in healthy_report.substitut_stats.items %}
             {% if values.exists %}
               <h3>{{ values.name }}:</h3>
               <p>
@@ -77,7 +77,7 @@
                 {% if values.month %}
                   {{ values.month }} ce mois-ci.
                 {% else %}
-                    Aucune activité ce mois-ci
+                    Aucun substitut ce mois-ci
                 {% endif %}
               {% endif %}
             </p>
@@ -93,17 +93,17 @@
       <div class="tabbed-content-container graph-height">
         <div class="flex-center">
           <button class="btn-tab active" data-toggle="tab1">
-            <i class="fas fa-chart-bar"></i><span> Cigarettes fumées</span>
+            <i class="fas fa-smoking"></i><span> Cigarettes fumées</span>
           </button>
           <button class="btn-tab" data-toggle="tab2">
             <i class="fas fa-euro-sign"></i><span> Argent dépensé</span>
           </button>
-          {% if user_conso_subsitut %}
+          {% if healthy_report.user_conso_subsitut %}
           <button class="btn-tab" data-toggle="tab3">
-            <i class="fas fa-smoking"></i><span> Substituts nicotiniques</span>
+            <i class="fas fa-tablets""></i><span> Substituts nicotiniques</span>
           </button>
           {% endif %}
-          {% if smoke_user_conso_full_days %}
+          {% if smoky_report.total_number %}
           <button class="btn-tab" data-toggle="tab4">
             <i class="fas fa-clock"></i><span> Moyenne par heure</span>
           </button>
@@ -115,7 +115,7 @@
         <div class="tabbed-content" id="tab3"></div>
         <div class="tabbed-content" id="tab4"></div>
 
-        <div class="user-choices">
+        <div class="user-choices" style="margin-top:1rem">
           <div id="radio">
             <label style="display: inline-block;">
               <input type="radio" name="period" value="Jour" checked="">

@@ -9,7 +9,7 @@
   <div class="page-heading">
     <i class="fas fa-heartbeat"></i>
     <span>
-    <h2>Mes alternatives</h2>
+    <h1>Mes alternatives</h1>
     </span>
   </div>
   <!-- End page heading -->
@@ -73,54 +73,84 @@
 
               <div class="">
                 {% if Sp %}
-                  <h3>Sports<h3>
-                  {% for activity in Sp %}
-                      <p class="flex-between">{{ activity.activity }}  <a href="/delete_alternative/{{activity.id}}/">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a></p>
-                    {% endfor %}
+                <h3>Sports</h3>
+                <ul>
+                {% for activity in Sp %}
+                <li class="flex-between">
+                  <table class="info-table">
+                    <tr>
+                      <td>
+                        {{ activity.activity }}
+                      </td>
+                    <tr>
+                  </table>
+                        <a class="icon-link" href="/delete_alternative/{{activity.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                        </li>
+                {% endfor %}
+                </ul>
                 {% endif %}
               </div>
 
               <div class="">
                 {% if Lo %}
-                  <h3>Loisirs</h3>
-                  {% for activity in Lo %}
-                  <p class="flex-between">
-                      {{ activity.activity }}
-                      <a href="/delete_alternative/{{activity.id}}/">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>        
-                      </p>       
-                  {% endfor %}
+                <h3>Loisirs</h3>
+                <ul>
+                {% for activity in Lo %}
+                <li class="flex-between">
+                  <table class="info-table">
+                    <tr>
+                      <td>
+                        {{ activity.activity }}
+                      </td>
+                    <tr>
+                  </table>
+                  <a class="icon-link" href="/delete_alternative/{{activity.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                  </li>
+                {% endfor %}
+                </ul>
                 {% endif %}
               </div>
 
               <div class="">
                 {% if So %}
-                  <h3>Soins</h3>
-                  {% for activity in So %}
-                    <p class="flex-between">
-                      {{ activity.activity }}
-                        <a href="/delete_alternative/{{activity.id}}/">
-                          <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>                </p>
-                  {% endfor %}
+                <h3>Soins</h3>
+                <ul>
+                {% for activity in So %}
+                <li class="flex-between">
+                  <table class="info-table">
+                    <tr>
+                      <td>
+                        {{ activity.activity }}
+                      </td>
+                    <tr>
+                  </table>
+                  <a class="icon-link" href="/delete_alternative/{{activity.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                  </li>
+                {% endfor %}
+                </ul>
                 {% endif %}
               </div>
 
               <div class="">
                 {% if Su %}
-                  <h3>Substituts</h3>
-                  {% for substitut in Su %}
-                    <p class="flex-between">
-                      {{ substitut.substitut }}
-                      {{ substitut.nicotine }}
-                      <a href="/delete_alternative/{{substitut.id}}/">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
-                      </a>
-                    </p>
-                  {% endfor %}
+                <h3>Substituts</h3>
+                <ul>
+                {% for substitut in Su %}
+                <li class="flex-between">
+                  <table class="info-table">
+                    <tr>
+                      <td>
+                        {{ substitut.get_substitut_display }}
+                      </td>
+                      <td>
+                        {{ substitut.nicotine }}mg
+                      </td>
+                    <tr>
+                  </table>
+                  <a class="icon-link" href="/delete_alternative/{{substitut.id}}/"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                  </li>
+                {% endfor %}
+                </ul>
                 {% endif %}
               </div>
 

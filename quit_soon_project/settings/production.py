@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# pylint: disable=W0611 #Unused import * (unused-import)
+
+"""
+Production settings
+"""
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
