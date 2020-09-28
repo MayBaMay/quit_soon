@@ -162,6 +162,7 @@ LOGIN_EXEMPT_URLS = (
     r'^accounts/password_reset/done/$',
     r'^accounts/reset/',
     r'^reset/done/$',
+    r'^legals/$',
 )
 PROFILE_URL = '/profile/'
 PROFILE_EXEMPT_URLS = (

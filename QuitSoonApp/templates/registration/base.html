@@ -27,13 +27,7 @@
         <div class="grid-container">
           <!-- Header -->
           <header>
-            <div class="header-content">
-              <div class="logo">
-                <span><a href="{% url 'QuitSoonApp:index' %}">
-                  <img class="NK-logo" src="{% static 'QuitSoonApp/img/logo.png' %}" alt="Nicotine Kill" height="50" width="50">
-                </a></span>
-              </div>
-            </div>
+            {% include 'base_header.html' %}
           </header>
           <!-- End of header -->
 
@@ -43,30 +37,13 @@
           <!-- End page content -->
         </div>
         <!-- End grid container -->
-
-           <!-- Static modal -->
-        <!-- {% if not user.is_authenticated %}
-        <div class="modal-container modal-static">
-          <div class="modal">
-            <div id="modal-1" class="modal-content">
-              <h1>VOUS N'ÊTES PAS CONNECTÉ</h1>
-              <button class="btn-cta">
-                <a href="{% url 'QuitSoonApp:login' %}">Me connecter</a>
-              </button>
-              <button class="btn-cta">
-                <a class="small" href="{% url 'QuitSoonApp:register' %}"
-                  >Créer un compte</a
-                >
-              </button>
-            </div>
-          </div>
-        </div>
-        {% endif %} -->
-
+        
       </div>
-      
+
       <!-- Footer -->
-      <footer>Contact : contact@nicotinekill.com</footer>
+      <footer>
+        {% include 'base_footer.html' %}
+      </footer>
       <!-- End of footer -->
     </div>
 

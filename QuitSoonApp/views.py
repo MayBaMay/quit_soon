@@ -54,6 +54,19 @@ def index(request):
         return redirect('QuitSoonApp:today')
     return render(request, 'index.html')
 
+def legals(request):
+    """index View"""
+    if request.user.is_authenticated:
+        header_template_name = 'QuitSoonApp/base_header.html'
+    else:
+        header_template_name = 'base_header.html'
+
+    context = {
+        'header_template_name': header_template_name,
+    }
+
+    return render(request, 'legals.html', context)
+
 def get_client_offset(request):
     """ timezone offset returned by client with django-tz-detect"""
     if request.session.get('detected_tz'):
