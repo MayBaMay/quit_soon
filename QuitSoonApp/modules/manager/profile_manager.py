@@ -6,7 +6,7 @@ such as informations in tables : ConsoCig, ConsoAlternative, Objectif and trophy
 """
 
 from .manager import BaseManager
-from ..models import (
+from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
