@@ -16,8 +16,16 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 from QuitSoonApp.models import (
-    UserProfile, Paquet
+    UserProfile,
+    Paquet, ConsoCig,
+    Alternative, ConsoAlternative,
 )
+from ..MOCK_DATA import (
+    CreatePacks, CreateSmoke,
+    CreateAlternative, CreateConsoAlternative,
+    row_paquet_data, fake_smoke,
+    row_alternative_data, row_conso_alt_data,
+    )
 
 
 class RegisterClientTestCase(TestCase):
@@ -211,6 +219,14 @@ class UserProfileTestCase(TransactionTestCase):
         """test get profile for anonymoususer"""
         response = self.client.get(reverse('QuitSoonApp:profile'))
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:login'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
 
     def test_profile_get_existing_profile_user_no_ref_pack(self):
         """test get profile for user without pack ref in context"""
@@ -252,6 +268,14 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:new_name'))
         # Anonymous user redirect to login by AccessRequirementMiddleware
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:login'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
 
     def test_new_name_user(self):
         """test change nameview"""
@@ -297,6 +321,14 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:new_email'))
         # Anonymous user redirect to login by AccessRequirementMiddleware
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:login'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
 
     def test_get_new_email_user(self):
         """test change nameview"""
@@ -350,6 +382,14 @@ class UserProfileTestCase(TransactionTestCase):
         response = self.client.get(reverse('QuitSoonApp:new_password'))
         # Anonymous user redirect to login by AccessRequirementMiddleware
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:login'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
 
     def test_get_new_password_user(self):
         """test change nameview"""
@@ -455,6 +495,14 @@ class UserProfileTestCase(TransactionTestCase):
         """test post parameters view for anonymous user"""
         response = self.client.post(reverse('QuitSoonApp:new_parameters'))
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:login'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
 
     def test_new_parameters_old_pack(self):
         """test post parameters view with exixting pack"""
@@ -550,4 +598,80 @@ class UserProfileTestCase(TransactionTestCase):
             )
         self.assertEqual(UserProfile.objects.get(user=self.user).starting_nb_cig, 20)
 
-        # def test_new_parameters_new_pack(self):
+
+class DeleteAccounttestCase(TestCase):
+    """test delete_account view"""
+
+    def test_delete_account_anonymous_user(self):
+        """test delete_account view for anonymous user"""
+        self.client.login(username='Test', password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:delete_account'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:login'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
+
+    def test_delete_account_no_profile(self):
+        """test delete_account view for user without profile"""
+        usertest = User.objects.create_user(
+            username='Test', email='test@test.com', password='testpassword'
+            )
+
+        self.client.login(username='Test', password='testpassword')
+        response = self.client.get(reverse('QuitSoonApp:delete_account'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:index'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
+        self.assertFalse(User.objects.filter(username=usertest.username).exists())
+
+    def test_delete_account_profile_data(self):
+        """test delete_account view for user with profile and data"""
+        usertest = User.objects.create_user(
+            'NewUserTest', 'test@test.com', 'testpassword')
+        self.client.login(username='NewUserTest', password='testpassword')
+        UserProfile.objects.create(
+            user=usertest,
+            date_start="2020-06-19",
+            starting_nb_cig=20
+            )
+        packs = CreatePacks(usertest, row_paquet_data)
+        packs.populate_db()
+        smoke = CreateSmoke(usertest, fake_smoke)
+        smoke.populate_db()
+        alternatives = CreateAlternative(usertest, row_alternative_data)
+        alternatives.populate_db()
+        healthy = CreateConsoAlternative(usertest, row_conso_alt_data)
+        healthy.populate_db()
+        self.assertTrue(User.objects.filter(username=usertest.username).exists())
+        self.assertTrue(UserProfile.objects.filter(user=usertest).exists())
+        self.assertTrue(Paquet.objects.filter(user=usertest).exists())
+        self.assertTrue(ConsoCig.objects.filter(user=usertest).exists())
+        self.assertTrue(Alternative.objects.filter(user=usertest).exists())
+        self.assertTrue(ConsoAlternative.objects.filter(user=usertest).exists())
+        response = self.client.get(reverse('QuitSoonApp:delete_account'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response,
+            reverse('QuitSoonApp:index'),
+            status_code=302,
+            target_status_code=200,
+            msg_prefix='',
+            fetch_redirect_response=True
+            )
+        self.assertFalse(User.objects.filter(username=usertest.username).exists())
+        self.assertFalse(UserProfile.objects.filter(user=usertest).exists())
+        self.assertFalse(Paquet.objects.filter(user=usertest).exists())
+        self.assertFalse(ConsoCig.objects.filter(user=usertest).exists())
+        self.assertFalse(Alternative.objects.filter(user=usertest).exists())
+        self.assertFalse(ConsoAlternative.objects.filter(user=usertest).exists())

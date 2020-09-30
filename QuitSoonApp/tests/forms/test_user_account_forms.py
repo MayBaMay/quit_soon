@@ -14,6 +14,7 @@ from django.contrib.auth.models import User
 
 from QuitSoonApp.forms import (
     RegistrationForm,
+    EmailValidationOnResetPassword,
     ParametersForm,
     )
 from QuitSoonApp.models import Paquet
@@ -150,3 +151,26 @@ class ParametersFormTestCase(TestCase):
             'date_start': ['Ce champ est obligatoire.'],
             'starting_nb_cig': ['Ce champ est obligatoire.'],
             })
+
+
+class EmailValidationOnResetPasswordTestCase(TestCase):
+    """test EmailValidationOnResetPassword """
+
+    def test_email_reset_form_fail(self):
+        """ test email reset form fail cause email not in db"""
+        data = {"email": "not_a_real_email@email.com"}
+        form = EmailValidationOnResetPassword(data)
+        print('erreurs',form.errors)
+        self.assertEqual(
+            form.errors["email"], ["L'adresse renseignée ne correspond à aucun compte utilisateur"]
+        )
+
+    def test_email_reset_form_success(self):
+        """test email reset form success"""
+        User.objects.create_user(
+            username="arandomname",
+            email="random@email.com",
+            password="arandompassword"
+            )
+        form = EmailValidationOnResetPassword("random@email.com")
+        self.assertTrue(form.is_valid)

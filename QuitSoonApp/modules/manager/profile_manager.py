@@ -5,13 +5,13 @@ This module reset userprofile parameters and reset users informations related
 such as informations in tables : ConsoCig, ConsoAlternative, Objectif and trophy
 """
 
-from .manager import BaseManager
 from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,
     Objectif, Trophy
 )
+from .manager import BaseManager
 
 
 class ProfileManager(BaseManager):

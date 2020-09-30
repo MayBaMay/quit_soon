@@ -7,6 +7,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 
+from QuitSoonApp.forms.registration_forms import EmailValidationOnResetPassword
 from . import views
 
 app_name = 'QuitSoonApp'
@@ -47,6 +48,7 @@ urlpatterns = [
     path('new_email/', views.new_email, name='new_email'),
     path('new_password/', views.new_password, name='new_password'),
     path('new_parameters/', views.new_parameters, name='new_parameters'),
+    path('delete_account/', views.delete_account, name='delete_account'),
 
     # Password reset
     #(ref: https://github.com/django/django/blob/master/django/contrib/auth/views.py)
@@ -54,7 +56,8 @@ urlpatterns = [
          auth_views.PasswordResetView.as_view(
              template_name='registration/password_reset_form.html',
              email_template_name='registration/password_reset_email.html',
-             subject_template_name='registration/password_reset_subject.txt'
+             subject_template_name='registration/password_reset_subject.txt',
+             form_class=EmailValidationOnResetPassword
              ),
          name='password_reset'),
 
