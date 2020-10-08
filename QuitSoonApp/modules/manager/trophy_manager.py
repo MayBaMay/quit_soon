@@ -173,8 +173,9 @@ class TrophyManager:
         # for each bool non_smoking_month => True if full month and no smoking
         # compare with following bool
         while True:
-            for i in range(len(non_smoking_month)):
-                compare = [non_smoking_month[i]]
+            # for i in range(len(non_smoking_month)):
+            for i, value in enumerate(non_smoking_month):
+                compare = [value]
                 next_month = 0
                 # based on trophy compared following data would be different size
                 for month in compared_month:
@@ -189,6 +190,7 @@ class TrophyManager:
                     return True
             # end index in non_smoking_month, pass next trophy checking
             break
+        # a
         return False
 
 
