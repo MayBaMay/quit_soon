@@ -11,7 +11,7 @@ import pytz
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.utils.timezone import make_aware
-from ..models import (
+from QuitSoonApp.models import (
     UserProfile,
     Paquet, ConsoCig,
     Alternative, ConsoAlternative,

@@ -2,7 +2,10 @@
 
 """Import all forms in root package"""
 
-from .registration_form import RegistrationForm
+from .registration_forms import (
+    RegistrationForm,
+    EmailValidationOnResetPassword
+    )
 from .parameters_form import ParametersForm
 from .healthy_forms import (
     TypeAlternativeForm,

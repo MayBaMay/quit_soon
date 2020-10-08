@@ -11,11 +11,18 @@ import pytz
 from freezegun import freeze_time
 
 from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
 from QuitSoonApp.forms import HealthForm, ChooseAlternativeFormWithEmptyFields, ActivityForm
-from QuitSoonApp.models import Alternative, ConsoAlternative
+from QuitSoonApp.models import Alternative, ConsoAlternative, UserProfile
 
 
 class ActivityFormTestCase(TestCase):
@@ -285,3 +292,201 @@ class ChooseAlternativeFormWithEmptyFieldsTestCase(HealthFormTestCase):
             }
         form = ChooseAlternativeFormWithEmptyFields(self.usertest, data)
         self.assertTrue(form.is_valid())
+
+
+class HealthFormStaticLiveServerTestCase(StaticLiveServerTestCase):
+    """Test ConsoAlternative Form changing depending on choices user"""
+
+    @classmethod
+    def setUpClass(cls):
+        """setup tests"""
+        super().setUpClass()
+        options = Options()
+        options.headless = True
+        cls.browser = WebDriver(options=options)
+        cls.browser.implicitly_wait(100)
+
+    @classmethod
+    def tearDownClass(cls):
+        """teardown tests"""
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        """setup tests"""
+        super().setUp()
+        self.user = User.objects.create(username='johnDo', email='test@test.com', is_active=True)
+        self.user.set_password('mot2passe5ecret')
+        self.user.save()
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
+        self.sport = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='Sp',
+            activity='COURSE',
+            )
+        self.soin = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='So',
+            activity='TABACOLOGUE',
+            )
+        self.loisir = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Ac',
+            type_activity='Lo',
+            activity='DESSIN',
+            )
+        self.substitut = Alternative.objects.create(
+            user=self.user,
+            type_alternative='Su',
+            substitut='P24',
+            nicotine=2,
+            )
+        self.login()
+
+    def login(self):
+        """login user in selenium driver"""
+        self.browser.get('%s%s' % (self.live_server_url, '/login/'))
+        username_input = self.browser.find_element_by_name("username")
+        username_input.send_keys('johnDo')
+        password_input = self.browser.find_element_by_name("password")
+        password_input.send_keys('mot2passe5ecret')
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+
+    def test_change_type_alternative(self):
+        """test user change tyoe alternative select"""
+        self.browser.get(self.live_server_url + '/health/')
+        id_sp_field = self.browser.find_element_by_css_selector("#id_sp_field")
+        id_so_field = self.browser.find_element_by_css_selector("#id_so_field")
+        id_lo_field = self.browser.find_element_by_css_selector("#id_lo_field")
+        id_su_field = self.browser.find_element_by_css_selector("#id_su_field")
+        duration = self.browser.find_element_by_css_selector("#duration-group")
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Sp']"
+            ).click()
+        self.assertTrue(id_sp_field.is_displayed())
+        self.assertFalse(id_so_field.is_displayed())
+        self.assertFalse(id_lo_field.is_displayed())
+        self.assertFalse(id_su_field.is_displayed())
+        self.assertTrue(duration.is_displayed())
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='So']"
+            ).click()
+        self.assertFalse(id_sp_field.is_displayed())
+        self.assertTrue(id_so_field.is_displayed())
+        self.assertFalse(id_lo_field.is_displayed())
+        self.assertFalse(id_su_field.is_displayed())
+        self.assertTrue(duration.is_displayed())
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Lo']"
+            ).click()
+        self.assertFalse(id_sp_field.is_displayed())
+        self.assertFalse(id_so_field.is_displayed())
+        self.assertTrue(id_lo_field.is_displayed())
+        self.assertFalse(id_su_field.is_displayed())
+        self.assertTrue(duration.is_displayed())
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Su']"
+            ).click()
+        self.assertFalse(id_sp_field.is_displayed())
+        self.assertFalse(id_so_field.is_displayed())
+        self.assertFalse(id_lo_field.is_displayed())
+        self.assertTrue(id_su_field.is_displayed())
+        self.assertFalse(duration.is_displayed())
+
+    def test_save_error_no_duration(self):
+        """test user save sport activity"""
+        self.browser.get(self.live_server_url + '/health/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Sp']"
+            ).click()
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+        WebDriverWait(self.browser, 3).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, 'errorlist'))
+            ).click()
+        self.assertEqual(
+            self.browser.find_element_by_css_selector('ul.errorlist li').text,
+            "Vous n'avez pas renseigné de durée pour cette activité"
+            )
+
+    def test_save_sp(self):
+        """test user save sport activity"""
+        self.browser.get(self.live_server_url + '/health/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Sp']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_duration_hour']/option[@value='1']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_duration_min']/option[@value='15']"
+            ).click()
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertTrue(
+            ConsoAlternative.objects.filter(
+                user=self.user,
+                alternative=self.sport,
+                activity_duration=75
+                ).exists()
+            )
+
+    def test_save_so(self):
+        """test user save sport activity"""
+        self.browser.get(self.live_server_url + '/health/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='So']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_duration_hour']/option[@value='0']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_duration_min']/option[@value='30']"
+            ).click()
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertTrue(
+            ConsoAlternative.objects.filter(
+                user=self.user,
+                alternative=self.soin,
+                activity_duration=30
+                ).exists()
+            )
+
+    def test_save_lo(self):
+        """test user save sport activity"""
+        self.browser.get(self.live_server_url + '/health/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Lo']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_duration_hour']/option[@value='2']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_duration_min']/option[@value='10']"
+            ).click()
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertTrue(
+            ConsoAlternative.objects.filter(
+                user=self.user,
+                alternative=self.loisir,
+                activity_duration=130
+                ).exists()
+            )
+
+    def test_save_su(self):
+        """test user save sport activity"""
+        self.browser.get(self.live_server_url + '/health/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_alternative_field']/option[@value='Su']"
+            ).click()
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertTrue(
+            ConsoAlternative.objects.filter(
+                user=self.user,
+                alternative=self.substitut,
+                ).exists()
+            )
