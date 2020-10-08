@@ -50,14 +50,26 @@
           ></a>
         </p>
       <p>
+        Modifier mon mot de passe
         <a
           href="#"
           id="newpassword"
           title="Modfier"
           class="toggle-modal"
           data-modal="modal_change_password"
-          >Modifier mon mot de passe <i class="fas fa-edit ml-1"></i
+          > <i class="fas fa-edit ml-1"></i
         ></a>
+      </p>
+      <p>
+        <a
+          href="#"
+          id="deleteaccount"
+          title="Supprimer"
+          class="toggle-modal"
+          data-modal="modal_delete_account"
+          style="text-decoration: underline;"
+          >Supprimer mon compte
+        </a>
       </p>
     </div>
   </section>
@@ -81,8 +93,10 @@
         </p>
         {% if paquet_ref %}
         <p>
-          Paquet de référence : {{ paquet_ref.brand }}({{ paquet_ref.qt_paquet }}
-          {{ paquet_ref.unit }}). Prix en début de suivi:{{ paquet_ref.price }}€
+          Paquet de référence : {{ paquet_ref.brand }}({{ paquet_ref.qt_paquet }}{{ paquet_ref.unit }})
+        </p>
+        <p>
+          Prix du paquet en début de suivi : {{ paquet_ref.price }}€
         </p>
         {% endif %} {% else %}
         <div class="" id="noprofile">
@@ -300,6 +314,23 @@
     </div>
     <!-- End of change-password-->
 
+    <!--  delete_account modal -->
+    <div id="modal_delete_account" class="modal-content">
+      <section>
+        <h4>Suppimer mon compte Nicotinekill</h4>
+        <div class="">
+          <p>Êtes-vous sûr de vouloir supprimer votre compte?</p>
+          <p>Attention, toutes vos données seront perdues...</p>
+        </div>
+        <div class="modal-buttons">
+            <a href="{% url 'QuitSoonApp:delete_account' %}" class="btn-cta">Valider</a>
+            <a class="btn-cta close-modal-btn">Annuler</a>
+        </div>
+
+      </section>
+    </div>
+    <!-- End of delete_account-->
+
     <!--  starting_parameters modal -->
 
     {% if userprofile %}
@@ -395,7 +426,9 @@
         </div>
       </section>
     </div>
+
     <!-- End of starting_parameters-->
+
   </div>
 </div>
 

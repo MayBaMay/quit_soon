@@ -748,6 +748,15 @@ body {
   }
 }
 
+.register_btn_div {
+  margin-top: 1.5rem;
+}
+
+.register_btn {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .modal-container {
   z-index: 9999;
   position: fixed;

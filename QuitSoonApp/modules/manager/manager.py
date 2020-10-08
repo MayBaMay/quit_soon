@@ -27,10 +27,8 @@ class BaseManager:
 class ManagerConso(BaseManager):
     """Models manager with consumption (ConsoCig and ConsoAlternative)"""
 
-    def __init__(self, user, data, tz_offset=0):
+    def __init__(self, user, data):
         BaseManager.__init__(self, user, data)
-        if not tz_offset:
-            tz_offset = 0
 
     @staticmethod
     def get_datetime_client_aware(date, time, tz_offset):

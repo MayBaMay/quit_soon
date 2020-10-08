@@ -8,7 +8,7 @@ from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from ..models import Paquet, ConsoCig
+from QuitSoonApp.models import Paquet, ConsoCig
 from .manager import BaseManager
 
 class PackManager(BaseManager):

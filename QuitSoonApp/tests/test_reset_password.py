@@ -10,7 +10,12 @@ from django.test import TransactionTestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import mail
+
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+
 
 class ResetPasswordTransactionTestCase(TransactionTestCase):
     """Test reset password feature"""
@@ -30,7 +35,7 @@ class ResetPasswordTransactionTestCase(TransactionTestCase):
 
         # post password_reset wrong email
         response = self.client.post('/password_reset/', {'email': 'not_a_real_email@email.com'})
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(len(mail.outbox), 0)
 
         # post password_reset email found
@@ -41,7 +46,6 @@ class ResetPasswordTransactionTestCase(TransactionTestCase):
                              status_code=302,
                              target_status_code=200,
                              fetch_redirect_response=True)
-        print(mail.outbox)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("http://", mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].subject, 'NicotineKill réinitialisation du mot de passe')
@@ -66,3 +70,31 @@ class ResetPasswordTransactionTestCase(TransactionTestCase):
         self.assertTrue(
             get_user_model()._default_manager.get().check_password('newpasswordforTest')
             )
+
+class WrongEmailResetTestCase(StaticLiveServerTestCase):
+    """
+    Tests reset_password with invalid email address
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """setup tests"""
+        super().setUpClass()
+        options = Options()
+        options.headless = True
+        cls.browser = WebDriver(options=options)
+
+    @classmethod
+    def tearDownClass(cls):
+        """teardown tests"""
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def test_reset_password_invalid_email(self):
+        """tests reset_password with invalid email address"""
+        self.browser.get('%s%s' % (self.live_server_url, '/password_reset/'))
+        email_input = self.browser.find_element_by_css_selector("#id_email")
+        email_input.send_keys('not_a_real_email@email.com')
+        self.browser.find_element_by_tag_name('button').click()
+        error = self.browser.find_element_by_tag_name('p').get_attribute('innerHTML')
+        self.assertEqual(error, "L'adresse renseignée ne correspond à aucun compte utilisateur")

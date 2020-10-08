@@ -9,6 +9,7 @@ from .base_forms import (
     date_field,
     )
 
+
 class ParametersForm(forms.Form):
     """A form for user to define smoking habits when starting using app"""
 
