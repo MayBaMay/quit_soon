@@ -13,7 +13,15 @@ from django.test import TransactionTestCase, TestCase
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.exceptions import ValidationError
+
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 from QuitSoonApp.models import (
     UserProfile,
@@ -126,9 +134,11 @@ class LoginClientTestCase(TransactionTestCase):
         self.assertTrue(auth.get_user(self.client), 'AnonymousUser')
         data = {'username':'test@test.com',
                 'password':'testpassword'}
-        response = self.client.post(reverse('QuitSoonApp:login'),
-                                    data=data,
-                                    follow=True)
+        response = self.client.post(
+            reverse('QuitSoonApp:login'),
+            data=data,
+            follow=True
+            )
         self.assertRedirects(
             response,
             '/profile/',
@@ -197,6 +207,62 @@ class LoginClientTestCase(TransactionTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(auth.get_user(self.client), 'AnonymousUser')
         self.assertRaises(ValidationError)
+
+
+class LogoutStaticLiveServerTestCase(StaticLiveServerTestCase):
+    """test logout user"""
+
+    @classmethod
+    def setUpClass(cls):
+        """setup tests"""
+        super().setUpClass()
+        options = Options()
+        options.headless = True
+        cls.browser = WebDriver(options=options)
+        cls.browser.implicitly_wait(100)
+
+    @classmethod
+    def tearDownClass(cls):
+        """teardown tests"""
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        """setup tests"""
+        super().setUp()
+        self.user = User.objects.create(username='johnDo', email='test@test.com', is_active=True)
+        self.user.set_password('mot2passe5ecret')
+        self.user.save()
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
+
+    def login(self):
+        """login user in selenium driver"""
+        self.browser.get('%s%s' % (self.live_server_url, '/login/'))
+        username_input = self.browser.find_element_by_name("username")
+        username_input.send_keys('johnDo')
+        password_input = self.browser.find_element_by_name("password")
+        password_input.send_keys('mot2passe5ecret')
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+
+
+    def test_logout(self):
+        """test logout app"""
+        self.login()
+        self.browser.get(self.live_server_url + '/')
+        user_menu = self.browser.find_element_by_xpath('//li[@class="dropdown-menu"][3]')
+        hov = ActionChains(self.browser).move_to_element(user_menu)
+        hov.perform()
+        WebDriverWait(self.browser, 3).until(
+            EC.element_to_be_clickable((By.ID, 'logout-link'))
+            ).click()
+        logout_modal = self.browser.find_element_by_css_selector("#modal-logout")
+        self.assertIn('content-active', logout_modal.get_attribute('class'))
+        self.browser.find_element_by_link_text('Valider').click()
+        self.assertEqual(self.browser.title, 'NicotineKill')
 
 
 class UserProfileTestCase(TransactionTestCase):

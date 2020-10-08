@@ -46,7 +46,6 @@ class ResetPasswordTransactionTestCase(TransactionTestCase):
                              status_code=302,
                              target_status_code=200,
                              fetch_redirect_response=True)
-        print(mail.outbox)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn("http://", mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].subject, 'NicotineKill réinitialisation du mot de passe')
@@ -83,19 +82,19 @@ class WrongEmailResetTestCase(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.headless = True
-        cls.selenium = WebDriver(options=options)
+        cls.browser = WebDriver(options=options)
 
     @classmethod
     def tearDownClass(cls):
         """teardown tests"""
-        cls.selenium.quit()
+        cls.browser.quit()
         super().tearDownClass()
 
     def test_reset_password_invalid_email(self):
         """tests reset_password with invalid email address"""
-        self.selenium.get('%s%s' % (self.live_server_url, '/password_reset/'))
-        email_input = self.selenium.find_element_by_css_selector("#id_email")
+        self.browser.get('%s%s' % (self.live_server_url, '/password_reset/'))
+        email_input = self.browser.find_element_by_css_selector("#id_email")
         email_input.send_keys('not_a_real_email@email.com')
-        self.selenium.find_element_by_tag_name('button').click()
-        error = self.selenium.find_element_by_tag_name('p').get_attribute('innerHTML')
+        self.browser.find_element_by_tag_name('button').click()
+        error = self.browser.find_element_by_tag_name('p').get_attribute('innerHTML')
         self.assertEqual(error, "L'adresse renseignée ne correspond à aucun compte utilisateur")

@@ -11,11 +11,15 @@ import pytz
 from freezegun import freeze_time
 
 from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+
 from QuitSoonApp.forms import SmokeForm
-from QuitSoonApp.models import Paquet, ConsoCig
+from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
 
 
 class SmokeFormTestCase(TestCase):
@@ -233,3 +237,115 @@ class SmokeFormTestCase(TestCase):
             form.config_field('rol_pack_field', 'ROL'),
             ((pack3.id, "{} /{}{}".format(pack3.brand, pack3.qt_paquet, pack3.unit)),)
             )
+
+
+class SmokeFormStaticLiveServerTestCase(StaticLiveServerTestCase):
+    """Test Paquet Form changing depending on choices user"""
+
+    @classmethod
+    def setUpClass(cls):
+        """setup tests"""
+        super().setUpClass()
+        options = Options()
+        options.headless = False
+        cls.browser = WebDriver(options=options)
+        cls.browser.implicitly_wait(100)
+
+    @classmethod
+    def tearDownClass(cls):
+        """teardown tests"""
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        """setup tests"""
+        super().setUp()
+        self.user = User.objects.create(username='johnDo', email='test@test.com', is_active=True)
+        self.user.set_password('mot2passe5ecret')
+        self.user.save()
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
+        self.ind = Paquet.objects.create(
+            user=self.user,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
+        )
+        self.rol = Paquet.objects.create(
+            user=self.user,
+            type_cig='ROL',
+            brand='1637',
+            qt_paquet=30,
+            price=12,
+            )
+        self.login()
+
+    def login(self):
+        """login user in selenium driver"""
+        self.browser.get('%s%s' % (self.live_server_url, '/login/'))
+        username_input = self.browser.find_element_by_name("username")
+        username_input.send_keys('johnDo')
+        password_input = self.browser.find_element_by_name("password")
+        password_input.send_keys('mot2passe5ecret')
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+
+    def test_given_cig_choice(self):
+        """test user check given checkbox"""
+        self.browser.get(self.live_server_url + '/smoke/')
+        self.browser.find_element_by_css_selector("#id_given_field").click()
+        self.assertFalse(
+            self.browser.find_element_by_css_selector("#cig_details").is_displayed()
+            )
+
+    def test_change_type_cig(self):
+        """test user change type cig"""
+        self.browser.get(self.live_server_url + '/smoke/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig_field']/option[@value='ROL']"
+            ).click()
+        self.assertFalse(
+            self.browser.find_element_by_css_selector("#id_ind_pack_field").is_displayed()
+            )
+        self.assertTrue(
+            self.browser.find_element_by_css_selector("#id_rol_pack_field").is_displayed()
+            )
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig_field']/option[@value='IND']"
+            ).click()
+        self.assertTrue(
+            self.browser.find_element_by_css_selector("#id_ind_pack_field").is_displayed()
+            )
+        self.assertFalse(
+            self.browser.find_element_by_css_selector("#id_rol_pack_field").is_displayed()
+            )
+
+    def test_save_rol_smoke(self):
+        """test user save a ROL cig smoked"""
+        self.browser.get(self.live_server_url + '/smoke/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig_field']/option[@value='ROL']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//input[@type='submit']"
+        ).click()
+        self.assertTrue(ConsoCig.objects.filter(user=self.user, paquet=self.rol).exists())
+        self.assertFalse(ConsoCig.objects.filter(user=self.user, paquet=self.ind).exists())
+
+    def test_save_ind_smoke(self):
+        """test user save a IND cig smoked"""
+        self.browser.get(self.live_server_url + '/smoke/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig_field']/option[@value='ROL']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig_field']/option[@value='IND']"
+            ).click()
+        self.browser.find_element_by_xpath(
+            "//input[@type='submit']"
+        ).click()
+        self.assertTrue(ConsoCig.objects.filter(user=self.user, paquet=self.ind).exists())
+        self.assertFalse(ConsoCig.objects.filter(user=self.user, paquet=self.rol).exists())

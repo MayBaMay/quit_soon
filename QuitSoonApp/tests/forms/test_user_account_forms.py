@@ -160,7 +160,6 @@ class EmailValidationOnResetPasswordTestCase(TestCase):
         """ test email reset form fail cause email not in db"""
         data = {"email": "not_a_real_email@email.com"}
         form = EmailValidationOnResetPassword(data)
-        print('erreurs',form.errors)
         self.assertEqual(
             form.errors["email"], ["L'adresse renseignée ne correspond à aucun compte utilisateur"]
         )
