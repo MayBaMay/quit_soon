@@ -170,6 +170,7 @@ PROFILE_EXEMPT_URLS = (
     r'^new_email/',
     r'^new_password/',
     r'^new_parameters/',
+    r'^delete_account/',
 )
 LOGOUT_REDIRECT_URL = '/'
 

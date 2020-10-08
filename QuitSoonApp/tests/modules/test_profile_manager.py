@@ -19,7 +19,7 @@ from QuitSoonApp.models import (
     Alternative, ConsoAlternative,
     Objectif, Trophy
 )
-from QuitSoonApp.modules.profile_manager import ProfileManager
+from QuitSoonApp.modules.manager.profile_manager import ProfileManager
 
 
 class ResetProfileTestCase(TestCase):

@@ -11,15 +11,19 @@ import datetime
 import pytz
 
 from django.test import TestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
 
 from QuitSoonApp.forms import (
     PaquetFormCreation,
     PaquetFormCustomGInCig,
     ChoosePackFormWithEmptyFields
     )
-from QuitSoonApp.models import Paquet, ConsoCig
+from QuitSoonApp.models import UserProfile, Paquet, ConsoCig
 
 
 class PaquetFormCreationTestCase(TestCase):
@@ -218,3 +222,62 @@ class ChoosePackFormWithEmptyFieldsTestCase(TestCase):
             }
         form = ChoosePackFormWithEmptyFields(self.usertest, data)
         self.assertTrue(form.is_valid())
+
+
+class PaquetFormStaticLiveServerTestCase(StaticLiveServerTestCase):
+    """Test Paquet Form changing depending on choices user"""
+
+    @classmethod
+    def setUpClass(cls):
+        """setup tests"""
+        super().setUpClass()
+        options = Options()
+        options.headless = True
+        cls.browser = WebDriver(options=options)
+        cls.browser.implicitly_wait(100)
+
+    @classmethod
+    def tearDownClass(cls):
+        """teardown tests"""
+        cls.browser.quit()
+        super().tearDownClass()
+
+    def setUp(self):
+        """setup tests"""
+        super().setUp()
+        self.user = User.objects.create(username='johnDo', email='test@test.com', is_active=True)
+        self.user.set_password('mot2passe5ecret')
+        self.user.save()
+        UserProfile.objects.create(
+            user=self.user,
+            date_start='2020-05-13',
+            starting_nb_cig=20
+        )
+        self.login()
+
+    def login(self):
+        """login user in selenium driver"""
+        self.browser.get('%s%s' % (self.live_server_url, '/login/'))
+        username_input = self.browser.find_element_by_name("username")
+        username_input.send_keys('johnDo')
+        password_input = self.browser.find_element_by_name("password")
+        password_input.send_keys('mot2passe5ecret')
+        self.browser.find_element_by_xpath('//input[@type="submit"]').click()
+
+    def test_change_choice_type_cig(self):
+        """test user change option type_cig"""
+        self.browser.get(self.live_server_url + '/paquets/')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig']/option[@value='ROL']"
+            ).click()
+        qt_label = self.browser.find_element_by_css_selector("#qt")
+        self.assertEqual(qt_label.get_attribute('innerHTML'), 'Grammes par paquet')
+        qt_paquet = self.browser.find_element_by_css_selector("#id_qt_paquet")
+        self.assertEqual(qt_paquet.get_attribute('value'), '30')
+        self.browser.find_element_by_xpath(
+            "//select[@id='id_type_cig']/option[@value='IND']"
+            ).click()
+        qt_label = self.browser.find_element_by_css_selector("#qt")
+        self.assertEqual(qt_label.get_attribute('innerHTML'), 'Nombre par paquet')
+        qt_paquet = self.browser.find_element_by_css_selector("#id_qt_paquet")
+        self.assertEqual(qt_paquet.get_attribute('value'), '20')

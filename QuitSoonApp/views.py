@@ -247,6 +247,13 @@ def new_password(request):
         raise Http404()
     return HttpResponse(JsonResponse(response_data))
 
+def delete_account(request):
+    """delete user account"""
+    user = User.objects.get(username=request.user)
+    user.delete()
+    return redirect('QuitSoonApp:index')
+
+
 def paquets(request):
     """Smoking parameters, user different packs"""
     context = {'first' : False}

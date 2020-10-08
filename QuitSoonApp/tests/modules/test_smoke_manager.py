@@ -26,11 +26,11 @@ class SmokeManagerTestCase(TestCase):
             password="arandompassword"
             )
         self.db_pack_ind = Paquet.objects.create(
-        user=self.usertest,
-        type_cig='IND',
-        brand='CAMEL',
-        qt_paquet=20,
-        price=10,
+            user=self.usertest,
+            type_cig='IND',
+            brand='CAMEL',
+            qt_paquet=20,
+            price=10,
         )
         self.db_pack_rol = Paquet.objects.create(
             user=self.usertest,

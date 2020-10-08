@@ -273,17 +273,13 @@ class HealthForm(ChooseAlternativeForm):
         duration_hour = cleaned_data.get('duration_hour')
         duration_min = cleaned_data.get('duration_min')
         type_alternative = cleaned_data.get('type_alternative_field')
-
         # check if duration for user activiy
         if not duration_hour and not duration_min and type_alternative != 'Su':
             raise forms.ValidationError(
                 "Vous n'avez pas renseigné de durée pour cette activité"
                 )
-
         if tomorrow_input(date, time, self.tz_offset):
             raise forms.ValidationError(
                 "Vous ne pouvez pas enregistrer d'action saine pour les jours à venir"
                 )
-
-
         return cleaned_data

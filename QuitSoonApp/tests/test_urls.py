@@ -12,7 +12,7 @@ from django.urls import resolve, reverse
 from QuitSoonApp.views import (
     index, legals, today,
     register_view, login_view,
-    profile, new_name, new_email, new_password, new_parameters,
+    profile, new_name, new_email, new_password, new_parameters, delete_account,
     report, objectifs,
     paquets, delete_pack, change_g_per_cig, smoke, delete_smoke, smoke_list,
     alternatives, delete_alternative, health, delete_health, health_list,
@@ -61,6 +61,11 @@ class TestUrls(SimpleTestCase):
         """test new_password"""
         url = reverse('QuitSoonApp:new_password')
         self.assertEqual(resolve(url).func, new_password)
+
+    def test_delete_account_url_is_resolved(self):
+        """test delete_account"""
+        url = reverse('QuitSoonApp:delete_account')
+        self.assertEqual(resolve(url).func, delete_account)
 
     def test_new_parameters_url_is_resolved(self):
         """test new_parameters"""

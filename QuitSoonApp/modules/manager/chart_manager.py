@@ -10,8 +10,8 @@ import pandas as pd
 from django.utils import timezone
 
 from QuitSoonApp.models import UserProfile
+from ..utils.pd_custom_dataframe import DataFrameDate
 from .stats_manager import SmokeStats, HealthyStats
-from .pd_custom_dataframe import DataFrameDate
 
 
 class ChartManager:
