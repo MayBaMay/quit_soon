@@ -302,7 +302,7 @@ class HealthFormStaticLiveServerTestCase(StaticLiveServerTestCase):
         """setup tests"""
         super().setUpClass()
         options = Options()
-        options.headless = False
+        options.headless = True
         cls.browser = WebDriver(options=options)
         cls.browser.implicitly_wait(100)
 
