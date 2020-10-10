@@ -58,6 +58,5 @@ This project can be tested on url http://nicotinekill.com/<br/>
 
 ## Next Steps
 * improve app presentation
-* improve, and possibly add, new usefull graphs, stats...
-* delete account
+* improve, and possibly add, new usefull charts, stats...
 * allow user to create customised objectifs
