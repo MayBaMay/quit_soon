@@ -18,7 +18,7 @@ cryptography==2.9.2
 cycler==0.10.0
 daphne==2.5.0
 Django==3.0.5
-django-debug-toolbar==2.2
+django-debug-toolbar==2.2.1
 django-ipware==3.0.0
 django-mathfilters==1.0.0
 django-nose==1.4.6
